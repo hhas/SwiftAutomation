@@ -1,0 +1,43 @@
+TO DO:
+
+- SpecifierFormatter.format() currently never shows Application(...) root as returned specifiers use generic AppRoot which never contains appData. This doesn't affect subsequent use of those specifiers, since the rest of the specifier consists of SpecifierNodes that do retain the AppData used to unpack them, but does screw up introspection a bit. Simplest fix here might be to pass existing appData as [optional] arg to SpecifierFormatter.format(). Best solution may be for Application constructors to pass weakrefd self to AppData constructor, so that returned specifiers always have targeted absolute root, and rely purely on formatter to deal with abbreviating nested specifiers. (Note: AEB never had this issue since all nodes including root were represented by single wrapper class.)
+
+
+
+- what methods need to go on Application? e.g. launch, transaction support
+
+
+
+- how to support sum types for return values? (this will be problematic given poor type introspection support in Swift2)
+
+
+
+- rename `asType:` to `type:`? (what's shortest possible? would unnamed trailing arg be practical?); any way to avoid 'asType:' parameter and match on return type only? (problem is that compilation fails unless type is already inferrable)
+
+
+
+- 'class' property support for Dictionary-AERecord mapping
+
+
+
+- if nil is not used as missingValue, should command args use Any! rather than Any (or AnyObject! rather than AnyObject) in order to implicitly unwrap optionals? (this'd save users having to unwrap optionals themselves, but would raise exception if a param wasn't nil); need to give more thought to supporting sum types in general
+
+- one problem with T coercion is that cMissingType can coerce to typeUnicodeText, giving "msng" - this is arguably unsafe, since it can't be distinguished from actual string results, and should either be treated as a Symbol or nil (in which case an error will be raised unless an appropriate sum type is specified)
+
+
+- should command methods support optional throwable trailing closure for custom-converting values that can't automatically be coerced to the required type? (this'd require passing both the unpacked-as-Any value and T.self; the problem is that complex structures such as lists and records could call this in all sorts of places with all sorts of different Ts so the same closure needs to return Any)
+
+
+
+- glue-specific subclasses should keep classnames short, e.g. TEDObject, TEDElements, TEDInsertion, TEDApplication
+
+
+- option to disable desc caching in specifiers (i.e. emulate exactly how AS does it)? (actually, it's not caching that's the issue so much as unpacking; it would be sufficient to do a full unpack, then repack as cachedDesc - a little inefficent if the objspec won't be re-sent to app, but since it's an extremely rare problem case this won't matter); option to enable 64-bit integer pack/unpack
+
+
+- by-test selector currently doesn't confirm ITS-based root before packing test clause; similarly, by-range selector doesn't confirm APP/CON-based roots for start+stop specifiers; implementing this either means extra mixin subclasses (so type system can enforce it) or pack-time checking (so it can be reported as a command error) - though whether it's worth doing has yet to be decided
+
+
+
+
+-  unlike AppleScript, which allows `every element of...` to be used as an explicit alternative to `elements of...`, there is not an `all` by-ordinal selector var defined on ElementsSpecifier. While one could be added, there's never been a reported use case to indicate the need for it (specifically, where an app's terminology fails to distinguish a property vs elements name, the classic example being the `text` keyword which is such a mess it has special-case treatment built into AEB's terminology parsers to ensure AEB glues disambiguate it in exactly the same way that AppleScript does). (note: symbols can also be passed to elements[idx]; however, it's more about forcing a 'property' specifier to be an all-elements specifier so don't think that helps in itself)
