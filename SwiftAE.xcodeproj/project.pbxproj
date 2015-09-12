@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		4F1D12151B973C1000875F74 /* TextEditGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1D12141B973C1000875F74 /* TextEditGlue.swift */; settings = {ASSET_TAGS = (); }; };
 		4F1D12411BA3042600875F74 /* SpecifierExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1D12401BA3042600875F74 /* SpecifierExtensions.swift */; settings = {ASSET_TAGS = (); }; };
 		4F1D12431BA312C800875F74 /* AEGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1D12421BA312C800875F74 /* AEGlue.swift */; settings = {ASSET_TAGS = (); }; };
+		4F2645A81BA4243E00256402 /* TextEditGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F2645A71BA4243E00256402 /* TextEditGlue.swift */; settings = {ASSET_TAGS = (); }; };
 		4F63C4281B7CF06E000D74EE /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F63C4271B7CF06E000D74EE /* main.swift */; };
 		4F63C4301B7CF133000D74EE /* AEConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F63C42E1B7CF133000D74EE /* AEConstants.swift */; };
 		4F63C4311B7CF133000D74EE /* Specifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F63C42F1B7CF133000D74EE /* Specifier.swift */; };
@@ -20,7 +20,7 @@
 		4F63C4431B87AC88000D74EE /* Symbol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F63C4421B87AC88000D74EE /* Symbol.swift */; };
 		4F63C4451B8A4DFC000D74EE /* Errors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F63C4441B8A4DFC000D74EE /* Errors.swift */; };
 		4F63C4471B8A669C000D74EE /* Support.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F63C4461B8A669C000D74EE /* Support.swift */; };
-		4FDD30FE1B932C29002BA20F /* Formatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FDD30FD1B932C29002BA20F /* Formatter.swift */; settings = {ASSET_TAGS = (); }; };
+		4FDD30FE1B932C29002BA20F /* SpecifierFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FDD30FD1B932C29002BA20F /* SpecifierFormatter.swift */; settings = {ASSET_TAGS = (); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -36,9 +36,12 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		4F1D12141B973C1000875F74 /* TextEditGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextEditGlue.swift; sourceTree = "<group>"; };
 		4F1D12401BA3042600875F74 /* SpecifierExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpecifierExtensions.swift; sourceTree = "<group>"; };
 		4F1D12421BA312C800875F74 /* AEGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AEGlue.swift; sourceTree = "<group>"; };
+		4F2645A41BA37C5000256402 /* SwiftAEGlueTemplate.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = SwiftAEGlueTemplate.txt; sourceTree = "<group>"; };
+		4F2645A51BA3F1F900256402 /* aeglue */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = aeglue; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.python; };
+		4F2645A71BA4243E00256402 /* TextEditGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextEditGlue.swift; sourceTree = "<group>"; };
+		4F2645A91BA424FC00256402 /* TextEditGlue-swift.sdef */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "TextEditGlue-swift.sdef"; sourceTree = "<group>"; };
 		4F63C4241B7CF06E000D74EE /* SwiftAE */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SwiftAE; sourceTree = BUILT_PRODUCTS_DIR; };
 		4F63C4271B7CF06E000D74EE /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		4F63C42E1B7CF133000D74EE /* AEConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AEConstants.swift; sourceTree = "<group>"; };
@@ -50,7 +53,7 @@
 		4F63C4421B87AC88000D74EE /* Symbol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Symbol.swift; sourceTree = "<group>"; };
 		4F63C4441B8A4DFC000D74EE /* Errors.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Errors.swift; sourceTree = "<group>"; };
 		4F63C4461B8A669C000D74EE /* Support.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Support.swift; sourceTree = "<group>"; };
-		4FDD30FD1B932C29002BA20F /* Formatter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Formatter.swift; sourceTree = "<group>"; };
+		4FDD30FD1B932C29002BA20F /* SpecifierFormatter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpecifierFormatter.swift; sourceTree = "<group>"; };
 		4FEFCF1C1B93A31E0013FFC8 /* TODO.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TODO.txt; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -68,15 +71,32 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4F2645A31BA37C2B00256402 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				4F63C4371B7CF1E0000D74EE /* Carbon.framework */,
+				4F63C4351B7CF1C8000D74EE /* AppKit.framework */,
+				4F63C4331B7CF1C4000D74EE /* Foundation.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		4F2645A61BA3F58F00256402 /* bin */ = {
+			isa = PBXGroup;
+			children = (
+				4F2645A51BA3F1F900256402 /* aeglue */,
+			);
+			name = bin;
+			sourceTree = "<group>";
+		};
 		4F63C41B1B7CF06E000D74EE = {
 			isa = PBXGroup;
 			children = (
 				4FEFCF1C1B93A31E0013FFC8 /* TODO.txt */,
-				4F63C4371B7CF1E0000D74EE /* Carbon.framework */,
-				4F63C4351B7CF1C8000D74EE /* AppKit.framework */,
-				4F63C4331B7CF1C4000D74EE /* Foundation.framework */,
+				4F2645A61BA3F58F00256402 /* bin */,
 				4F63C4261B7CF06E000D74EE /* SwiftAE */,
 				4F63C4321B7CF13E000D74EE /* test */,
+				4F2645A31BA37C2B00256402 /* Frameworks */,
 				4F63C4251B7CF06E000D74EE /* Products */,
 			);
 			sourceTree = "<group>";
@@ -96,12 +116,14 @@
 				4F63C4401B86A335000D74EE /* AppData.swift */,
 				4F63C42F1B7CF133000D74EE /* Specifier.swift */,
 				4F1D12401BA3042600875F74 /* SpecifierExtensions.swift */,
-				4FDD30FD1B932C29002BA20F /* Formatter.swift */,
+				4FDD30FD1B932C29002BA20F /* SpecifierFormatter.swift */,
 				4F63C4421B87AC88000D74EE /* Symbol.swift */,
 				4F63C4441B8A4DFC000D74EE /* Errors.swift */,
 				4F63C4461B8A669C000D74EE /* Support.swift */,
 				4F1D12421BA312C800875F74 /* AEGlue.swift */,
-				4F1D12141B973C1000875F74 /* TextEditGlue.swift */,
+				4F2645A71BA4243E00256402 /* TextEditGlue.swift */,
+				4F2645A91BA424FC00256402 /* TextEditGlue-swift.sdef */,
+				4F2645A41BA37C5000256402 /* SwiftAEGlueTemplate.txt */,
 			);
 			path = SwiftAE;
 			sourceTree = "<group>";
@@ -171,11 +193,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4FDD30FE1B932C29002BA20F /* Formatter.swift in Sources */,
+				4FDD30FE1B932C29002BA20F /* SpecifierFormatter.swift in Sources */,
+				4F2645A81BA4243E00256402 /* TextEditGlue.swift in Sources */,
 				4F63C4471B8A669C000D74EE /* Support.swift in Sources */,
 				4F1D12431BA312C800875F74 /* AEGlue.swift in Sources */,
 				4F63C4281B7CF06E000D74EE /* main.swift in Sources */,
-				4F1D12151B973C1000875F74 /* TextEditGlue.swift in Sources */,
 				4F63C4431B87AC88000D74EE /* Symbol.swift in Sources */,
 				4F63C4301B7CF133000D74EE /* AEConstants.swift in Sources */,
 				4F63C4311B7CF133000D74EE /* Specifier.swift in Sources */,

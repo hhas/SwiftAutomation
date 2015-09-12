@@ -9,13 +9,27 @@
 
 import Foundation
 
+let te = TextEdit()
+
+
+//print(TEDApp.documents[1].text)
+//print(te.documents[1].text)
+
+//*
 
 do {
-    let te = TextEdit()
     
     // send `open` and `get` AEs using raw four-char codes
-    let result = try te.sendAppleEvent(kCoreEventClass, kAEOpenDocuments, [keyDirectObject:NSURL.fileURLWithPath("/Users/has/todos.txt")])
-    print(result)
+    //let result = try te.sendAppleEvent(kCoreEventClass, kAEOpenDocuments, [keyDirectObject:NSURL.fileURLWithPath("/Users/has/todos.txt")])
+    //print(result)
+
+    let result1 = try te.make(new: TED.document) //, withProperties: [TED.text: "Hello World!"]) // TO DO: array and dict packing is currently busted so can't currently be used as command parameters
+    
+    if let objspec = result1 as? TEDObject { try objspec.text.set(to: "Hello!") } // temp kludge around for above
+    
+    print(result1) // TO DO: resulting specifier shows a 'TEDApp' root but needs to show 'TextEdit()' root; see TODO in SpecifierFormatter
+    
+    print(try (result1 as! TEDObject).text.get())
 
     let result2 = try te.sendAppleEvent("core", "getd", ["----": te.elements("docu")[1].property("pnam")])
     print(result2)
@@ -24,8 +38,15 @@ do {
     let result3 = try te.get(TEDApp.documents[1].name)
     print(result3)
     
-    let result4: Any = try te.documents[1].name.get() // convenience syntax for the above
+    let result3a: Any = try te.documents[1].name.get() // convenience syntax for the above
+    print(result3a)
+    
+    let result4 = try te.documents.name.get() // get name of every document (note: currently this example is only good for demo purposes: the `get` method result's dynamicType is Array<String>, but its static type is Any, and  Swift can't cast Any to Array<...> without falling over, so this result can't be used for anything useful; this is another reason why generic versions of commands are needed, but getting those to work right is a whole 'nother problem again...)
     print(result4)
+
+
+//    try te.documents.close(saving: TED.no) // close every document saving no
+
     
 //    let result5: String = try te.documents[1].name.get() // unpack get command's result as String; note: generic versions of commands are currently disabled as they don't yet work correctly
 //    print(result5)
@@ -37,7 +58,7 @@ do {
     print(error)
 }
 
-
+//*/
 
 
 

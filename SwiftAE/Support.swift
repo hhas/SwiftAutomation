@@ -30,6 +30,7 @@ public enum TargetApplication {
     case BundleIdentifier(String)
     case ProcessIdentifier(pid_t)
     case Descriptor(NSAppleEventDescriptor) // AEAddressDesc
+    case None // used in untargeted AppData instances; sendAppleEvent() will raise UntargetedCommandError if called
     
     var isRelaunchable: Bool {
         switch self {

@@ -118,6 +118,12 @@ public class SwiftAEError: ErrorType, CustomStringConvertible { // TO DO: should
     }
 }
 
+public class UntargetedCommandError: SwiftAEError {
+
+    convenience init() {
+        self.init(code: 1, message: "Untargeted specifiers can't send Apple events.")
+    }
+}
 
 public class NotImplementedError: SwiftAEError {
     convenience init() {
@@ -134,9 +140,9 @@ public class ConnectionError: SwiftAEError {
 
 public class PackError: SwiftAEError { // TO DO: include AppData? (c.f. UnpackError)
     
-    let object: Any?
+    let object: Any
     
-    init(object: Any?, message: String? = nil) {
+    init(object: Any, message: String? = nil) {
         self.object = object
         super.init(code: -1700, message: message) // TO DO: what error code?
     }

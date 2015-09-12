@@ -14,13 +14,13 @@ import AppKit
 
 public class Selector: CustomStringConvertible, SelfPacking { // TO DO: Equatable?
     
-    static let formatter = SpecifierFormatter() // TO DO: how to implement glue-specific hook?
-    
-    public private(set) var appData: AppData? = nil // TO DO: use ImplicitlyUnwrappedOptional<AppData>?
+    var _appData: AppData? // TO DO: this is awfully snaky; need to rethink (part of the problem is trying to serve two masters - static and dynamic glues - when the latter's requirements haven't even been defined yet)
     var cachedDesc: NSAppleEventDescriptor?
     
+    public var appData: AppData { return self._appData ?? self.rootSpecifier.dynamicType.nullAppData }
+    
     init(appData: AppData?, cachedDesc: NSAppleEventDescriptor?) { // cachedDesc is supplied on unpacking
-        self.appData = appData
+        self._appData = appData
         self.cachedDesc = cachedDesc
     }
     
@@ -32,8 +32,8 @@ public class Selector: CustomStringConvertible, SelfPacking { // TO DO: Equatabl
     
     public func packSelf(appData: AppData) throws -> NSAppleEventDescriptor {
         if self.cachedDesc == nil {
-            if self.appData == nil { // it's an untargeted specifier, so target it by adding AppData object to it
-                self.appData = appData
+            if self._appData == nil { // it's an untargeted specifier, so target it by adding AppData object to it
+                self._appData = appData
             }
             self.cachedDesc = try self.packSelf()
         }
@@ -46,9 +46,11 @@ public class Selector: CustomStringConvertible, SelfPacking { // TO DO: Equatabl
     
     // misc
     
-    public var description: String {
-        return self.dynamicType.formatter.format(self)
-    }
+    var parentSelector: Selector { return self }
+    
+    public var rootSpecifier: RootSpecifier { return RootSpecifier(rootObject: AppRootDesc, appData: nil) } // TO DO: bit janky
+    
+    public var description: String { return self.appData.formatter.format(self) }
 }
 
 
@@ -62,45 +64,46 @@ public class Selector: CustomStringConvertible, SelfPacking { // TO DO: Equatabl
 
 
 public protocol SpecifierProtocol {
-    var appData: AppData? {get}
-    var parentSpecifier: Selector {get}
-    
-    
+    var appData: AppData {get}
+    var parentSelector: Selector {get}
+    var rootSpecifier: RootSpecifier {get}
 }
 
 public class Specifier: Selector, SpecifierProtocol {
 
     // An object specifier is constructed as a linked list of AERecords of typeObjectSpecifier, terminated by a root descriptor (e.g. a null descriptor represents the root node of the app's Apple event object graph). The topmost node may also be an insertion location specifier, represented by an AERecord of typeInsertionLoc. The abstract Specifier class implements functionality common to both object and insertion specifiers.
     
-    private var _parentSpecifier: Selector? // note: object specifiers are lazily unpacked for efficiency, so this is nil if Specifier hasn't been fully unpacked yet (or if class is RootSpecifier, in which case it's unused)
+    private var _parentSelector: Selector? // note: object specifiers are lazily unpacked for efficiency, so this is nil if Specifier hasn't been fully unpacked yet (or if class is RootSpecifier, in which case it's unused)
 
-    public init(parentSpecifier: Selector?, appData: AppData?, cachedDesc: NSAppleEventDescriptor?) {
-        self._parentSpecifier = parentSpecifier
+    public init(parentSelector: Selector?, appData: AppData?, cachedDesc: NSAppleEventDescriptor?) {
+        self._parentSelector = parentSelector
         super.init(appData: appData, cachedDesc: cachedDesc)
     }
     
-    public var parentSpecifier: Selector { // 'from' in object specifier, or 'kobj' in insertion specifier
-        if self._parentSpecifier == nil {
+    public override var parentSelector: Selector { // 'from' in object specifier, or 'kobj' in insertion specifier
+        if self._parentSelector == nil {
             self.unpackParentSpecifiers()
         }
-        return self._parentSpecifier!
+        return self._parentSelector!
     }
+    
+    public override var rootSpecifier: RootSpecifier { return self.parentSelector.rootSpecifier }
     
     // unpacking
     
     private override func unpackParentSpecifiers() {
-        guard let cachedDesc = self.cachedDesc, appData = self.appData else {
+        guard let cachedDesc = self.cachedDesc, appData = self._appData else { // note: this must use _appData, not appData
             print("Can't unpack parent specifiers as cached AppData and/or AEDesc don't exist (this isn't supposed to happen).") // TO DO: DEBUG; delete
-            self._parentSpecifier = RootSpecifier(rootObject: SwiftAEError(code: 1, message: "Can't unpack parent specifiers as cached AppData and/or AEDesc don't exist (this isn't supposed to happen).")) // TO DO: implement ErrorSpecifier subclass that takes error info and always raises on use
+            self._parentSelector = RootSpecifier(rootObject: SwiftAEError(code: 1, message: "Can't unpack parent specifiers as cached AppData and/or AEDesc don't exist (this isn't supposed to happen).")) // TO DO: implement ErrorSpecifier subclass that takes error info and always raises on use
             return
         }
         do {
             let parentDesc = cachedDesc.descriptorForKeyword(keyAEContainer)!
-            self._parentSpecifier = try appData.unpack(parentDesc, asType: Specifier.self)
-            self._parentSpecifier!.unpackParentSpecifiers()
+            self._parentSelector = try appData.unpack(parentDesc, asType: Specifier.self)
+            self._parentSelector!.unpackParentSpecifiers()
         } catch {
             print("Deferred unpack parent specifier failed: \(error)") // TO DO: DEBUG; delete
-            self._parentSpecifier = RootSpecifier(rootObject: (cachedDesc.descriptorForKeyword(keyAEContainer))!) // TO DO: store SwiftAEError that captures and raises error on packing
+            self._parentSelector = RootSpecifier(rootObject: (cachedDesc.descriptorForKeyword(keyAEContainer))!) // TO DO: store SwiftAEError that captures and raises error on packing
         }
     }
     
@@ -111,8 +114,7 @@ public class Specifier: Selector, SpecifierProtocol {
     func sendAppleEvent<T>(eventClass: OSType, _ eventID: OSType, _ parameters: [OSType:Any] = [:],
                            waitReply: Bool = true, sendOptions: NSAppleEventSendOptions? = nil,
                            withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
-        guard let appData = self.appData else { throw SwiftAEError(code: 1, message: "Generic specifiers can't send Apple events.") }
-        return try appData.sendAppleEvent(eventClass, eventID: eventID, parentSpecifier: self,
+        return try self.appData.sendAppleEvent(eventClass, eventID: eventID, parentSpecifier: self,
                                           parameters: parameters, waitReply: waitReply, sendOptions: sendOptions,
                                           withTimeout: withTimeout, considering: considering, asType: T.self)
     }
@@ -120,10 +122,9 @@ public class Specifier: Selector, SpecifierProtocol {
     func sendAppleEvent<T>(eventClass: String, _ eventID: String, _ parameters: [String:Any] = [:],
                            waitReply: Bool = true, sendOptions: NSAppleEventSendOptions? = nil,
                             withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
-        guard let appData = self.appData else { throw SwiftAEError(code: 1, message: "Generic specifiers can't send Apple events.") }
         var params = [OSType:Any]()
         for (k, v) in parameters { params[UTGetOSTypeFromString(k)] = v }
-        return try appData.sendAppleEvent(UTGetOSTypeFromString(eventClass), eventID: UTGetOSTypeFromString(eventID), parentSpecifier: self,
+        return try self.appData.sendAppleEvent(UTGetOSTypeFromString(eventClass), eventID: UTGetOSTypeFromString(eventID), parentSpecifier: self,
                                           parameters: params, waitReply: waitReply, sendOptions: sendOptions,
                                           withTimeout: withTimeout, considering: considering, asType: T.self)
     }
@@ -132,8 +133,7 @@ public class Specifier: Selector, SpecifierProtocol {
     func sendAppleEvent(eventClass: OSType, _ eventID: OSType, _ parameters: [OSType:Any] = [:],
                         waitReply: Bool = true, sendOptions: NSAppleEventSendOptions? = nil,
                         withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        guard let appData = self.appData else { throw SwiftAEError(code: 1, message: "Generic specifiers can't send Apple events.") }
-        return try appData.sendAppleEvent(eventClass, eventID: eventID, parentSpecifier: self,
+        return try self.appData.sendAppleEvent(eventClass, eventID: eventID, parentSpecifier: self,
                                           parameters: parameters, waitReply: waitReply, sendOptions: sendOptions,
                                           withTimeout: withTimeout, considering: considering, asType: Any.self)
     }
@@ -141,10 +141,9 @@ public class Specifier: Selector, SpecifierProtocol {
     func sendAppleEvent(eventClass: String, _ eventID: String, _ parameters: [String:Any] = [:],
                         waitReply: Bool = true, sendOptions: NSAppleEventSendOptions? = nil,
                         withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        guard let appData = self.appData else { throw SwiftAEError(code: 1, message: "Generic specifiers can't send Apple events.") }
         var params = [OSType:Any]()
         for (k, v) in parameters { params[UTGetOSTypeFromString(k)] = v }
-        return try appData.sendAppleEvent(UTGetOSTypeFromString(eventClass), eventID: UTGetOSTypeFromString(eventID), parentSpecifier: self,
+        return try self.appData.sendAppleEvent(UTGetOSTypeFromString(eventClass), eventID: UTGetOSTypeFromString(eventID), parentSpecifier: self,
                                           parameters: params, waitReply: waitReply, sendOptions: sendOptions,
                                           withTimeout: withTimeout, considering: considering, asType: Any.self)
     }
@@ -160,14 +159,14 @@ public class InsertionSpecifier: Specifier { // packSelf
     public let insertionLocation: NSAppleEventDescriptor
 
     required public init(insertionLocation: NSAppleEventDescriptor,
-                parentSpecifier: Selector?, appData: AppData?, cachedDesc: NSAppleEventDescriptor?) {
+                parentSelector: Selector?, appData: AppData?, cachedDesc: NSAppleEventDescriptor?) {
         self.insertionLocation = insertionLocation
-        super.init(parentSpecifier: parentSpecifier, appData: appData, cachedDesc: cachedDesc)
+        super.init(parentSelector: parentSelector, appData: appData, cachedDesc: cachedDesc)
     }
     
     private override func packSelf() throws -> NSAppleEventDescriptor {
         let desc = NSAppleEventDescriptor.recordDescriptor().coerceToDescriptorType(typeInsertionLoc)!
-        desc.setDescriptor(try self.parentSpecifier.packSelf(self.appData!), forKeyword: keyAEObject)
+        desc.setDescriptor(try self.parentSelector.packSelf(self.appData), forKeyword: keyAEObject)
         desc.setDescriptor(self.insertionLocation, forKeyword: keyAEPosition)
         return desc
     }
@@ -194,19 +193,19 @@ public class ObjectSpecifier: Specifier, ObjectSpecifierProtocol { // represents
     // TO DO: ideally want a wantName:String? arg that takes human-readable name, if available, for display purposes (see also previous/next)
     
     required public init(wantType: NSAppleEventDescriptor, selectorForm: NSAppleEventDescriptor, selectorData: Any,
-            parentSpecifier: Selector?, appData: AppData?, cachedDesc: NSAppleEventDescriptor?) {
+            parentSelector: Selector?, appData: AppData?, cachedDesc: NSAppleEventDescriptor?) {
         self.wantType = wantType
         self.selectorForm = selectorForm
         self.selectorData = selectorData
-        super.init(parentSpecifier: parentSpecifier, appData: appData, cachedDesc: cachedDesc)
+        super.init(parentSelector: parentSelector, appData: appData, cachedDesc: cachedDesc)
     }
     
     private override func packSelf() throws -> NSAppleEventDescriptor {
         let desc = NSAppleEventDescriptor.recordDescriptor().coerceToDescriptorType(typeObjectSpecifier)!
-        desc.setDescriptor(try self.parentSpecifier.packSelf(self.appData!), forKeyword: keyAEContainer)
+        desc.setDescriptor(try self.parentSelector.packSelf(self.appData), forKeyword: keyAEContainer)
         desc.setDescriptor(self.wantType, forKeyword: keyAEDesiredClass)
         desc.setDescriptor(self.selectorForm, forKeyword: keyAEKeyForm)
-        desc.setDescriptor(try self.appData!.pack(self.selectorData), forKeyword: keyAEKeyData)
+        desc.setDescriptor(try self.appData.pack(self.selectorData), forKeyword: keyAEKeyData)
         return desc
     }
     
@@ -215,17 +214,19 @@ public class ObjectSpecifier: Specifier, ObjectSpecifierProtocol { // represents
     // Containment test constructors
     // TO DO: ideally the following should only appear on objects constructed from an Its root; however, this will make the class/protocol hierarchy more complicated, so may be more hassle than it's worth - maybe explore this later, once the current implementation is fully working
     
+    // TO DO: following should prob. use self.appData; when constructed from Its root, this will pass nullAppData
+    
     func beginsWith(value: Any) -> TestClause {
-        return ComparisonTest(operatorType: _BeginsWith, operand1: self, operand2: value, appData: self.appData, cachedDesc: nil)
+        return ComparisonTest(operatorType: _BeginsWith, operand1: self, operand2: value, appData: self._appData, cachedDesc: nil)
     }
     func endsWith(value: Any) -> TestClause {
-        return ComparisonTest(operatorType: _EndsWith, operand1: self, operand2: value, appData: self.appData, cachedDesc: nil)
+        return ComparisonTest(operatorType: _EndsWith, operand1: self, operand2: value, appData: self._appData, cachedDesc: nil)
     }
     func contains(value: Any) -> TestClause {
-        return ComparisonTest(operatorType: _Contains, operand1: self, operand2: value, appData: self.appData, cachedDesc: nil)
+        return ComparisonTest(operatorType: _Contains, operand1: self, operand2: value, appData: self._appData, cachedDesc: nil)
     }
     func isIn(value: Any) -> TestClause {
-        return ComparisonTest(operatorType: _IsIn, operand1: self, operand2: value, appData: self.appData, cachedDesc: nil)
+        return ComparisonTest(operatorType: _IsIn, operand1: self, operand2: value, appData: self._appData, cachedDesc: nil)
     }
 }
 
@@ -233,22 +234,22 @@ public class ObjectSpecifier: Specifier, ObjectSpecifierProtocol { // represents
 // Comparison test constructors
 
 func <(lhs: ObjectSpecifier, rhs: Any) -> TestClause {
-    return ComparisonTest(operatorType: _LT, operand1: lhs, operand2: rhs, appData: lhs.appData, cachedDesc: nil)
+    return ComparisonTest(operatorType: _LT, operand1: lhs, operand2: rhs, appData: lhs._appData, cachedDesc: nil)
 }
 func <=(lhs: ObjectSpecifier, rhs: Any) -> TestClause {
-    return ComparisonTest(operatorType: _LE, operand1: lhs, operand2: rhs, appData: lhs.appData, cachedDesc: nil)
+    return ComparisonTest(operatorType: _LE, operand1: lhs, operand2: rhs, appData: lhs._appData, cachedDesc: nil)
 }
 func ==(lhs: ObjectSpecifier, rhs: Any) -> TestClause {
-    return ComparisonTest(operatorType: _EQ, operand1: lhs, operand2: rhs, appData: lhs.appData, cachedDesc: nil)
+    return ComparisonTest(operatorType: _EQ, operand1: lhs, operand2: rhs, appData: lhs._appData, cachedDesc: nil)
 }
 func !=(lhs: ObjectSpecifier, rhs: Any) -> TestClause {
-    return ComparisonTest(operatorType: _NE, operand1: lhs, operand2: rhs, appData: lhs.appData, cachedDesc: nil)
+    return ComparisonTest(operatorType: _NE, operand1: lhs, operand2: rhs, appData: lhs._appData, cachedDesc: nil)
 }
 func >(lhs: ObjectSpecifier, rhs: Any) -> TestClause {
-    return ComparisonTest(operatorType: _GT, operand1: lhs, operand2: rhs, appData: lhs.appData, cachedDesc: nil)
+    return ComparisonTest(operatorType: _GT, operand1: lhs, operand2: rhs, appData: lhs._appData, cachedDesc: nil)
 }
 func >=(lhs: ObjectSpecifier, rhs: Any) -> TestClause {
-    return ComparisonTest(operatorType: _GE, operand1: lhs, operand2: rhs, appData: lhs.appData, cachedDesc: nil)
+    return ComparisonTest(operatorType: _GE, operand1: lhs, operand2: rhs, appData: lhs._appData, cachedDesc: nil)
 }
 
 
@@ -296,14 +297,12 @@ public struct RangeSelector: SelfPacking { // holds data for by-range selectors 
     }
     
     init(appData: AppData, desc: NSAppleEventDescriptor) throws {
-        let startDesc = desc.descriptorForKeyword(keyAERangeStart)
-        let stopDesc = desc.descriptorForKeyword(keyAERangeStop)
-        if startDesc == nil || stopDesc == nil {
+        guard let startDesc = desc.descriptorForKeyword(keyAERangeStart), stopDesc = desc.descriptorForKeyword(keyAERangeStop) else {
             throw UnpackError(appData: appData, descriptor: desc, type: RangeSelector.self, message: "Missing start/stop specifier in by-range specifier.")
         }
         do {
-            self.start = try appData.unpack(startDesc!)
-            self.stop = try appData.unpack(stopDesc!)
+            self.start = try appData.unpack(startDesc)
+            self.stop = try appData.unpack(stopDesc)
             self.wantType = NSAppleEventDescriptor(typeCode: typeType) // TO DO: wantType is incorrect; in principle this shouldn't matter as start and stop descs _should_ always be object specifiers, but paranoia is best; will need to rethink as it can't be reliably inferred here (since range desc should only appear in by-range object specifier desc, might be simplest just to unpack it directly from there instead of AppData)
         } catch {
             throw UnpackError(appData: appData, descriptor: desc, type: RangeSelector.self, message: "Failed to unpack start/stop specifier in by-range specifier.") // TO DO: or just return RangeSelector containing the original AEDescs?
@@ -326,7 +325,7 @@ public struct RangeSelector: SelfPacking { // holds data for by-range selectors 
 // note: glues don't define their own TestClause subclasses as tests don't implement any app-specific vars/methods, only the logical operators defined below, and there's little point doing so for static typechecking purposes as any values not handled by ElementsSpecifierExtension's subscript(test:TestClause) are accepted by its subscript(index:Any), so still wouldn't be caught at runtime (OTOH, it'd be worth considering should subscript(test:) need to be replaced with a separate byTest() method for any reason)
 
 
-// TO DO: currently, TestClauses can be constructed from any root, though only those constructed from Its roots are actually valid; checking this at compile-time would require a more complex class/protocol structure; checking this at runtime would require a Specifier.rootSpecifier getter that recursively walks parent specifiers until it reaches the root specifier and returns that (note: if implementing rootSpecifier var, it'll need to be overridden on ComparisonTest and LogicalTest as they don't have a `parentSpecifier` var but must instead use the appropriate operand; alternatively, might be cleaner just to implement a parentSpecifier getter on TestClause that returns the appropriate operand)
+// TO DO: currently, TestClauses can be constructed from any root, though only those constructed from Its roots are actually valid; checking this at compile-time would require a more complex class/protocol structure; checking this at runtime would require calling Selector.rootSpecifier.rootObject and checking object is 'its' descriptor
 
 public class TestClause: Selector { // AND, OR, and NOT are implemented as &&, ||, and ! operator overrides
     // TO DO: AND and OR could also be implemented as vararg funcs, but am inclined just to stick to two-arg operators and chain those when unpacking if >2
@@ -346,11 +345,11 @@ public class ComparisonTest: TestClause {
     
     private override func packSelf() throws -> NSAppleEventDescriptor {
         if self.operatorType === _NE { // AEM doesn't support a 'kAENotEqual' enum...
-            return try (!(self.operand1 == self.operand2)).packSelf(self.appData!) // so convert to kAEEquals+kAENOT
+            return try (!(self.operand1 == self.operand2)).packSelf(self._appData!) // so convert to kAEEquals+kAENOT
         } else {
             let desc = NSAppleEventDescriptor.recordDescriptor().coerceToDescriptorType(typeCompDescriptor)!
-            let opDesc1 = try self.appData!.pack(self.operand1)
-            let opDesc2 = try self.appData!.pack(self.operand2)
+            let opDesc1 = try self._appData!.pack(self.operand1)
+            let opDesc2 = try self._appData!.pack(self.operand2)
             if self.operatorType === _IsIn { // AEM doesn't support a 'kAEIsIn' enum...
                 desc.setDescriptor(_Contains, forKeyword: keyAECompOperator) // so use kAEContains with operands reversed
                 desc.setDescriptor(opDesc2, forKeyword: keyAEObject1)
@@ -362,6 +361,14 @@ public class ComparisonTest: TestClause {
             }
             return desc
         }
+    }
+    
+    public override var parentSelector: Selector {
+        return self.operand1
+    }
+    
+    public override var rootSpecifier: RootSpecifier {
+        return self.operand1.rootSpecifier
     }
 }
 
@@ -377,10 +384,14 @@ public class LogicalTest: TestClause {
     
     private override func packSelf() throws -> NSAppleEventDescriptor {
         let desc = NSAppleEventDescriptor.recordDescriptor().coerceToDescriptorType(typeLogicalDescriptor)!
-        let opDesc = try self.appData!.pack(self.operands)
+        let opDesc = try self._appData!.pack(self.operands)
         desc.setDescriptor(self.operatorType, forKeyword: keyAELogicalOperator)
         desc.setDescriptor(opDesc, forKeyword: keyAELogicalTerms)
         return desc
+    }
+    
+    public override var rootSpecifier: RootSpecifier {
+        return self.operands[0].rootSpecifier
     }
 }
 
@@ -388,13 +399,13 @@ public class LogicalTest: TestClause {
 // Logical test constructors
 
 func &&(lhs: TestClause, rhs: TestClause) -> TestClause {
-    return LogicalTest(operatorType: _AND, operands: [lhs, rhs], appData: lhs.appData, cachedDesc: nil)
+    return LogicalTest(operatorType: _AND, operands: [lhs, rhs], appData: lhs._appData, cachedDesc: nil)
 }
 func ||(lhs: TestClause, rhs: TestClause) -> TestClause {
-    return LogicalTest(operatorType: _OR, operands: [lhs, rhs], appData: lhs.appData, cachedDesc: nil)
+    return LogicalTest(operatorType: _OR, operands: [lhs, rhs], appData: lhs._appData, cachedDesc: nil)
 }
 prefix func !(lhs: TestClause) -> TestClause {
-    return LogicalTest(operatorType: _NOT, operands: [lhs], appData: lhs.appData, cachedDesc: nil)
+    return LogicalTest(operatorType: _NOT, operands: [lhs], appData: lhs._appData, cachedDesc: nil)
 }
 
 
@@ -405,29 +416,49 @@ prefix func !(lhs: TestClause) -> TestClause {
 // note: app glues will also define their own generic App, Con, and Its roots
 
 public class RootSpecifier: ObjectSpecifier { // app, con, its, custom root (note: this is a bit sloppy; `con` based specifiers are only for use in by-range selectors, and only `its` based specifiers should support comparison and logic tests; only targeted absolute (app-based/customroot-based) specifiers should implement commands, although single `app` root doesn't distinguish untargeted from targeted since that's determined by absence/presence of AppData object)
+
+    public override var appData: AppData { return self._appData ?? self.dynamicType.nullAppData }
     
     convenience init(rootObject: Any, appData: AppData? = nil) {
         // rootObject is either one of the three standard AEDescs indicating app/con/its root, or an arbitrary object supplied by caller (e.g. an AEAddressDesc if constructing a fully qualified specifier)
         self.init(wantType: NSAppleEventDescriptor.nullDescriptor(),
                    selectorForm: NSAppleEventDescriptor.nullDescriptor(), selectorData: rootObject,
-                   parentSpecifier: nil, appData: appData, cachedDesc: rootObject as? NSAppleEventDescriptor)
+                   parentSelector: nil, appData: appData, cachedDesc: rootObject as? NSAppleEventDescriptor)
     }
 
-    required public init(wantType: NSAppleEventDescriptor, selectorForm: NSAppleEventDescriptor, selectorData: Any, parentSpecifier: Selector?, appData: AppData?, cachedDesc: NSAppleEventDescriptor?) {
-        super.init(wantType: wantType, selectorForm: selectorForm, selectorData: selectorData, parentSpecifier: parentSpecifier, appData: appData, cachedDesc: cachedDesc)
+    required public init(wantType: NSAppleEventDescriptor, selectorForm: NSAppleEventDescriptor, selectorData: Any, parentSelector: Selector?, appData: AppData?, cachedDesc: NSAppleEventDescriptor?) {
+        super.init(wantType: wantType, selectorForm: selectorForm, selectorData: selectorData, parentSelector: parentSelector, appData: appData, cachedDesc: cachedDesc)
         
     }
     
-    override public var parentSpecifier: Selector { return self }
+    //
+    
+    class var nullAppData: AppData { return AppData(glueInfo: self.glueInfo) }
+
+
+    class var glueInfo: GlueInfo { // glue-defined subclasses should override this
+        return GlueInfo(insertionSpecifierType: InsertionSpecifier.self, objectSpecifierType: ObjectSpecifier.self,
+                        elementsSpecifierType: ElementsSpecifier.self, symbolType: Symbol.self,
+                        appRoot: RootSpecifier(rootObject: AppRootDesc, appData: nil),
+                        conRoot: RootSpecifier(rootObject: ConRootDesc, appData: nil),
+                        itsRoot: RootSpecifier(rootObject: ItsRootDesc, appData: nil),
+                        formatter: SpecifierFormatter()
+        )
+    }
+
+
+    // TO DO: subclassing ObjectSpecifier is slightly risky, since accidental recursion in the following does very bad things, so it's essential that all methods that operate on parent specifier are overridden
+    
+    override public var parentSelector: Selector { return self }
+    
+    override public var rootSpecifier: RootSpecifier { return self }
     
     public var rootObject: Any { return self.selectorData }
-    
-    // TO DO: overriding ObjectSpecifier is kinda risky, since accidental recursion does very bad things
     
     private override func unpackParentSpecifiers() {} // TO DO: temporary; delete once class hierarchy is sorted
     
     public override func packSelf() throws -> NSAppleEventDescriptor {
-        return try self.appData!.pack(self.selectorData)
+        return try self._appData!.pack(self.selectorData)
     }
 }
 
@@ -439,22 +470,11 @@ public let DefaultRelaunchMode: RelaunchMode = .Limited
 
 
 public class Application: RootSpecifier {
-
-    class var glueTypes: GlueTypes { // glue-defined subclasses should override this
-        return GlueTypes(
-                insertionSpecifierType: InsertionSpecifier.self,
-                objectSpecifierType: ObjectSpecifier.self,
-                elementsSpecifierType: ElementsSpecifier.self,
-                rootSpecifierType: RootSpecifier.self,
-                symbolType: Symbol.self,
-                appRoot: RootSpecifier(rootObject: AppRootDesc, appData: nil),
-                conRoot: RootSpecifier(rootObject: ConRootDesc, appData: nil),
-                itsRoot: RootSpecifier(rootObject: ItsRootDesc, appData: nil)
-        )
-    }
+    
+    public var targetApplication: TargetApplication {return self._appData!.target} // TO DO: include this? (might be useful to user for troubleshooting); what about processID (if local)?
     
     private convenience init(target: TargetApplication, launchOptions: LaunchOptions, relaunchMode: RelaunchMode) {
-        let appData = AppData(target: target, launchOptions: launchOptions, relaunchMode: relaunchMode, glueTypes: self.dynamicType.glueTypes)
+        let appData = AppData(target: target, launchOptions: launchOptions, relaunchMode: relaunchMode, glueInfo: self.dynamicType.glueInfo)
         self.init(rootObject: AppRootDesc, appData: appData)
     }
     
@@ -485,16 +505,16 @@ public class Application: RootSpecifier {
     
     
     public class func currentApplication() -> Self {
-        let appData = AppData(target: .Current, launchOptions: DefaultLaunchOptions, relaunchMode: DefaultRelaunchMode, glueTypes: self.glueTypes)
+        let appData = AppData(target: .Current, launchOptions: DefaultLaunchOptions, relaunchMode: DefaultRelaunchMode, glueInfo: self.glueInfo)
         return self.init(wantType: NSAppleEventDescriptor.nullDescriptor(),
                    selectorForm: NSAppleEventDescriptor.nullDescriptor(), selectorData: AppRootDesc,
-                   parentSpecifier: nil, appData: appData, cachedDesc: AppRootDesc)
+                   parentSelector: nil, appData: appData, cachedDesc: AppRootDesc)
     }
     
     public func customRoot(object: Any) -> Self { // TO DO: should AppData also provide an option to set default app root object, to be used in building and unpacking _all_ object specifiers?
         return self.dynamicType.init(wantType: NSAppleEventDescriptor.nullDescriptor(),
                    selectorForm: NSAppleEventDescriptor.nullDescriptor(), selectorData: object,
-                   parentSpecifier: nil, appData: appData, cachedDesc: nil)
+                   parentSelector: nil, appData: _appData, cachedDesc: nil)
     }
 }
 

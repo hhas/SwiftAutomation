@@ -9,7 +9,7 @@ import Foundation
 import AppKit
 
 
-// TO DO: create Formatter protocol, allowing formatter class to be completely replaced
+// TO DO: create Formatter protocol, allowing formatter class to be completely replaced?
 
 // TO DO: when formatting specifiers, what info is needed? appData, isNestedSpecifier; anything else? (note, this data ought to be available throughout; e.g. given a list of specifiers, current nesting flag should be carried over; there is also the question of when to adopt specifier's own appData vs use the one already provided to formatter; furthermore, it might be argued that AppData should do the formatting itself [although that leaves the flag problem])
 
@@ -31,20 +31,17 @@ class SpecifierFormatter { // TO DO: public
 //        return try SwiftAETranslateAppleEvent(event, useSDEF: useSDEF)
 //    }
     
+        
     
-    // note: for dynamic glues, generic specifiers will need to use generic 'recording' class, as in py-appscript; static glues, however, need formatter to be available on all specifier (and symbol?) classes at all times
-    
-    
+    let applicationClassName: String, classNamePrefix: String // used to render specifier roots (Application, App, Con, Its)
     let propertyNames: [OSType:String], elementsNames: [OSType:String] // note: dicts should also used in dynamic appdata to translate attribute names to ostypes
-    let applicationClassName: String, classNamePrefix: String
     
-    
-    required init(propertyNames: [OSType:String] = [:], elementsNames: [OSType:String] = [:],
-                  applicationClassName: String = "Application", classNamePrefix: String = "") {
-        self.propertyNames = propertyNames
-        self.elementsNames = elementsNames
+    required init(applicationClassName: String = "Application", classNamePrefix: String = "",
+                  propertyNames: [OSType:String] = [:], elementsNames: [OSType:String] = [:]) {
         self.applicationClassName = applicationClassName
         self.classNamePrefix = classNamePrefix
+        self.propertyNames = propertyNames
+        self.elementsNames = elementsNames
     }
     
     
@@ -112,23 +109,26 @@ class SpecifierFormatter { // TO DO: public
             }
         }
         var result  = applicationClassName
-        if let appData = specifier.appData { // TO DO: and is not already nested inside another specifier/command; TO DO: currently doesn't work for unpacked specifiers
-            switch appData.target { // TO DO: should launch and relaunch flags also be shown, or is that overkill?
-            case .Current:
-                result += ".currentApplication()"
-            case .Name(let name):
-                result += "(name: \(self.format(name)))"
-            case .URL(let url):
-                result += "(url: \(self.format(url)))"
-            case .BundleIdentifier(let bundleID):
-                result += "(bundleIdentifier: \(self.format(bundleID)))"
-            case .ProcessIdentifier(let pid):
-                result += "(processIdentifier: \(pid))"
-            case .Descriptor(let desc):
-                result += "(addressDescriptor: \(desc))"
-            }
-        } else {
+        switch specifier.appData.target { // TO DO: unpacked specifiers use untargeted RootSpecifier (supplied by AppData), so this will _always_ be .None, which defeats the point (in prototype, the AppData instance was captured in a new mutable formatter instance created by the receiving `description` property; this formatter then walked the specifier chain building up representation using that AppData instance, so even though the root specifier object itself was untargeted the full rendered specifier was displayed as having a targeted root, thus accurately reflecting its ability to dispatch events itself. the mutable renderer also rendered nested specifiers more attractively, since it could always display them with an untargeted App root regardless of how they were actually constructed)
+        case .None:
             result = "\(self.classNamePrefix)App"
+        case .Current:
+            result += ".currentApplication()"
+        /*
+        case .Name(let name):
+            result += "(name: \(self.format(name)))"
+        case .URL(let url):
+            result += "(url: \(self.format(url)))"
+        case .BundleIdentifier(let bundleID):
+            result += "(bundleIdentifier: \(self.format(bundleID)))"
+        case .ProcessIdentifier(let pid):
+            result += "(processIdentifier: \(pid))"
+        case .Descriptor(let desc):
+            result += "(addressDescriptor: \(desc))"
+        */
+        default:
+            // TO DO: worth adding another case .DefaultBundleIdentifier, to be used by default constructor, that would avoid showing args by default?
+            result += "()" // temporary; TO DO: option to show name, etc? also, should launch and relaunch flags also be shown, or is that overkill? (might show them if they're non-default values, but no point showing them when they're defaults)
         }
         if hasCustomRoot {
             result += ".customRoot(\(self.format(specifier.rootObject)))"
@@ -139,14 +139,14 @@ class SpecifierFormatter { // TO DO: public
     func formatInsertionSpecifier(specifier: InsertionSpecifier) -> String {
         if let name = [kAEBeginning: "beginning",
                        kAEEnd: "end", kAEBefore: "before", kAEAfter: "after"][specifier.insertionLocation.enumCodeValue] {
-            return "\(self.format(specifier.parentSpecifier)).\(name)"
+            return "\(self.format(specifier.parentSelector)).\(name)"
         }
-        return "<\(specifier.dynamicType)(kpos:\(specifier.insertionLocation),kobj:\(self.format(specifier.parentSpecifier)))>"
+        return "<\(specifier.dynamicType)(kpos:\(specifier.insertionLocation),kobj:\(self.format(specifier.parentSelector)))>"
     }
     
     func formatObjectSpecifier(specifier: ObjectSpecifier) -> String {
         let form = specifier.selectorForm.enumCodeValue
-        var result = self.format(specifier.parentSpecifier)
+        var result = self.format(specifier.parentSelector)
         switch form {
         case formPropertyID:
             // kludge, seld is either desc or symbol, depending on whether constructed or unpacked; TO DO: eliminate?
@@ -178,7 +178,7 @@ class SpecifierFormatter { // TO DO: public
             case formRelativePosition: // specifier.previous/next(SYMBOL)
                 if let seld = specifier.selectorData as? NSAppleEventDescriptor, // ObjectSpecifier.unpackSelf does not unpack ordinals
                     name = [kAEPrevious: "previous", kAENext: "next"][seld.enumCodeValue],
-                    parent = specifier.parentSpecifier as? ObjectSpecifier {
+                    parent = specifier.parentSelector as? ObjectSpecifier {
                         if specifier.wantType.typeCodeValue == parent.wantType.typeCodeValue {
                             return "\(result).\(name)()" // use shorthand form for neatness
                         } else {
@@ -195,7 +195,7 @@ class SpecifierFormatter { // TO DO: public
                 break
             }
         }
-        return "<\(specifier.dynamicType)(want:\(specifier.wantType),form:\(specifier.selectorForm),seld:\(formatValue(specifier.selectorData)),from:\(self.format(specifier.parentSpecifier)))>"
+        return "<\(specifier.dynamicType)(want:\(specifier.wantType),form:\(specifier.selectorForm),seld:\(formatValue(specifier.selectorData)),from:\(self.format(specifier.parentSelector)))>"
     }
     
     func formatComparisonTest(specifier: ComparisonTest) -> String {
