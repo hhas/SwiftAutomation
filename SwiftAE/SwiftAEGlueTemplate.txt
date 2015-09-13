@@ -128,7 +128,8 @@ public class «APPLICATION_CLASS_NAME»: «PREFIX»Root, ApplicationExtension {
 «+DEFAULT_INIT»
 
     public convenience init(launchOptions: LaunchOptions = DefaultLaunchOptions, relaunchMode: RelaunchMode = DefaultRelaunchMode) {
-        self.init(bundleIdentifier: "«BUNDLE_IDENTIFIER»", launchOptions: launchOptions, relaunchMode: relaunchMode)
+        self.init(rootObject: AppRootDesc, appData: self.dynamicType.nullAppData.targetCopy(
+                                .BundleIdentifier("«BUNDLE_IDENTIFIER»", true), launchOptions: launchOptions, relaunchMode: relaunchMode))
     }
 «-DEFAULT_INIT»
 }

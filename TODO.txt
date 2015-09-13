@@ -1,5 +1,19 @@
 TO DO:
 
+- In 10.11/Xcode7 GM, the following convenience init crashes with EXC_BAD_ACCESS immediately on returning from self.init(...):
+
+        public class TextEdit: TEDRoot, ApplicationExtension {
+            public convenience init(launchOptions: LaunchOptions = DefaultLaunchOptions, relaunchMode: RelaunchMode = DefaultRelaunchMode) {
+                self.init(bundleIdentifier: "com.apple.TextEdit", launchOptions: launchOptions, relaunchMode: relaunchMode)
+            }
+        }
+
+    Looks like problem is with calling inits in TextEdit class's protocol extension from TextEdit class's own init; calling super.init() works. File bug report, and use workaround in glue template for now.
+
+
+
+
+
 - SpecifierFormatter.format() currently never shows Application(...) root as returned specifiers use generic AppRoot which never contains appData. This doesn't affect subsequent use of those specifiers, since the rest of the specifier consists of SpecifierNodes that do retain the AppData used to unpack them, but does screw up introspection a bit. Simplest fix here might be to pass existing appData as [optional] arg to SpecifierFormatter.format(). Best solution may be for Application constructors to pass weakrefd self to AppData constructor, so that returned specifiers always have targeted absolute root, and rely purely on formatter to deal with abbreviating nested specifiers. (Note: AEB never had this issue since all nodes including root were represented by single wrapper class.)
 
 

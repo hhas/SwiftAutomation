@@ -348,7 +348,7 @@ public class ComparisonTest: TestClause {
             } else {
                 desc.setDescriptor(self.operatorType, forKeyword: keyAECompOperator)
                 desc.setDescriptor(opDesc1, forKeyword: keyAEObject1)
-                desc.setDescriptor(opDesc1, forKeyword: keyAEObject2)
+                desc.setDescriptor(opDesc2, forKeyword: keyAEObject2)
             }
             return desc
         }

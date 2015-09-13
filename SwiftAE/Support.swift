@@ -32,7 +32,7 @@ public enum TargetApplication {
     case Current
     case Name(String) // application's name (.app suffix is optional) or full path
     case URL(NSURL) // "file" or "eppc" URL
-    case BundleIdentifier(String)
+    case BundleIdentifier(String, Bool) // bundleID, isDefault
     case ProcessIdentifier(pid_t)
     case Descriptor(NSAppleEventDescriptor) // AEAddressDesc
     case None // used in untargeted AppData instances; sendAppleEvent() will raise UntargetedCommandError if called

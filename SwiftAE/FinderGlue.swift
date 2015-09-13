@@ -1,6 +1,6 @@
 //
 //  FinderGlue.swift
-//  Finder.app 10.10.5
+//  Finder.app 10.11
 //  SwiftAE.framework 0.7.0
 //  `aeglue -s -r Finder`
 //
@@ -1401,7 +1401,8 @@ public class FINRoot: RootSpecifier, FINQuery, RootSpecifierExtension {
 public class Finder: FINRoot, ApplicationExtension {
 
     public convenience init(launchOptions: LaunchOptions = DefaultLaunchOptions, relaunchMode: RelaunchMode = DefaultRelaunchMode) {
-        self.init(bundleIdentifier: "com.apple.finder", launchOptions: launchOptions, relaunchMode: relaunchMode)
+        self.init(rootObject: AppRootDesc, appData: self.dynamicType.nullAppData.targetCopy(
+                                .BundleIdentifier("com.apple.finder", true), launchOptions: launchOptions, relaunchMode: relaunchMode))
     }
 
 }

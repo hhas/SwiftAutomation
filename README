@@ -1,0 +1,72 @@
+# SwiftAE README
+
+## About
+
+SwiftAE provides client-side Apple event bindings for Apple's Swift language,
+enabling it to control "AppleScriptable" OS X applications directly.
+
+For example:
+
+  tell application "TextEdit" to get text of document 1
+
+  let result = try TextEdit().documents[1].text.get() as! String
+
+
+## Status
+
+SwiftAE is an in-progress port/rewrite of the AppleEventBridge framework's
+prototype Swift-AE support (https://bitbucket.org/hhas/appleeventbridge).
+SwiftAE's objective is to provide the Swift language with first-class
+application scripting support, equal in capability and compatibility to
+AppleScript, efficiently integrated with Swift's static type system.
+
+The Specifier classes are more or less complete, though due to bugs and
+vagaries of swiftc, these classes cannot be used directly but only as
+part of a generated glue; a default AEApplicationGlue is included for
+convenience. Apple event dispatch works, though has yet to be fully tested,
+and bugs may still exist in both.
+
+Type bridging is far from complete, and various issues have yet to be
+resolved, particularly coercion and casting. Arrays and Dictionaries
+currently cannot be used in application commands, and command methods
+always return Any (specializing return types via generics is proving
+tricky to implement reliably).
+
+Documentation is not yet included; for now, see the documentation for the
+prototype Swift-AE bridge in the AppleEventBridge project.
+
+
+## Get it
+
+To clone the SwiftAE Xcode project to your own machine:
+
+    git clone https://bitbucket.org/hhas/swiftae.git
+
+The project is currently configured to build a CLI executable for test
+purposes only. (Support for building an embeddable SwiftAE framework
+will be added once the code is complete.)
+
+For convenience, glue files for TextEdit, Finder, and iTunes are included
+in the project. Additional glues can be generated using the `aeglue` tool
+in the SwiftAE project folder, e.g.:
+
+    cd SwiftAE
+    ./aeglue Photos.app SwiftAE
+
+The `aeglue` tool currently requires the AppleEventBridge framework to
+generate additional application glue files. To clone the AppleEventBridge
+project to your own machine:
+
+    git clone https://bitbucket.org/hhas/appleeventbridge.git
+
+The AppleEventBridge.framework should be built and installed in:
+
+    ~/Library/Frameworks
+
+SwiftAE requires OS X 10.11 and Swift 2.0 and Xcode 7 GM or later.
+
+
+## Etc.
+
+No warranty given, E&OE, use at own risk, etc.
+

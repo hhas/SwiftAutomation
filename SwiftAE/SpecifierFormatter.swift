@@ -109,26 +109,22 @@ class SpecifierFormatter { // TO DO: public
             }
         }
         var result  = applicationClassName
-        switch specifier.appData.target { // TO DO: unpacked specifiers use untargeted RootSpecifier (supplied by AppData), so this will _always_ be .None, which defeats the point (in prototype, the AppData instance was captured in a new mutable formatter instance created by the receiving `description` property; this formatter then walked the specifier chain building up representation using that AppData instance, so even though the root specifier object itself was untargeted the full rendered specifier was displayed as having a targeted root, thus accurately reflecting its ability to dispatch events itself. the mutable renderer also rendered nested specifiers more attractively, since it could always display them with an untargeted App root regardless of how they were actually constructed)
+        switch specifier.appData.target { // TO DO: specifiers returned by app currently don't display correctly, showing untargeted App root instead of targeted Application root. i.e. AppData unpacks specifiers using untargeted App RootSpecifier as root, so this will _always_ be .None, which defeats the point (in prototype, the AppData instance was captured in a new mutable formatter instance created by the receiving `description` property; this formatter then walked the specifier chain building up representation using that AppData instance, so even though the root specifier object itself was untargeted the full rendered specifier was displayed as having a targeted root, thus accurately reflecting its ability to dispatch events itself. the mutable renderer also rendered nested specifiers more attractively, since it could always display them with an untargeted App root regardless of how they were actually constructed)
         case .None:
             result = "\(self.classNamePrefix)App"
         case .Current:
             result += ".currentApplication()"
-        /*
         case .Name(let name):
             result += "(name: \(self.format(name)))"
         case .URL(let url):
             result += "(url: \(self.format(url)))"
-        case .BundleIdentifier(let bundleID):
-            result += "(bundleIdentifier: \(self.format(bundleID)))"
+        case .BundleIdentifier(let bundleID, let isDefault):
+            result += isDefault ? "()" : "(bundleIdentifier: \(self.format(bundleID)))"
         case .ProcessIdentifier(let pid):
             result += "(processIdentifier: \(pid))"
         case .Descriptor(let desc):
             result += "(addressDescriptor: \(desc))"
-        */
-        default:
-            // TO DO: worth adding another case .DefaultBundleIdentifier, to be used by default constructor, that would avoid showing args by default?
-            result += "()" // temporary; TO DO: option to show name, etc? also, should launch and relaunch flags also be shown, or is that overkill? (might show them if they're non-default values, but no point showing them when they're defaults)
+        // TO DO: should launch and relaunch flags also be shown, or is that overkill? (might show them if they're non-default values, but no point showing them when they're defaults)
         }
         if hasCustomRoot {
             result += ".customRoot(\(self.format(specifier.rootObject)))"

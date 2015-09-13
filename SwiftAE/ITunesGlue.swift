@@ -1,6 +1,6 @@
 //
 //  ITunesGlue.swift
-//  iTunes.app 12.2.1
+//  iTunes.app 12.2.2
 //  SwiftAE.framework 0.7.0
 //  `aeglue -r iTunes`
 //
@@ -1390,7 +1390,8 @@ public class ITURoot: RootSpecifier, ITUQuery, RootSpecifierExtension {
 public class ITunes: ITURoot, ApplicationExtension {
 
     public convenience init(launchOptions: LaunchOptions = DefaultLaunchOptions, relaunchMode: RelaunchMode = DefaultRelaunchMode) {
-        self.init(bundleIdentifier: "com.apple.iTunes", launchOptions: launchOptions, relaunchMode: relaunchMode)
+        self.init(rootObject: AppRootDesc, appData: self.dynamicType.nullAppData.targetCopy(
+                                .BundleIdentifier("com.apple.iTunes", true), launchOptions: launchOptions, relaunchMode: relaunchMode))
     }
 
 }

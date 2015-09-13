@@ -1,6 +1,6 @@
 //
 //  TextEditGlue.swift
-//  TextEdit.app 1.10
+//  TextEdit.app 1.11
 //  SwiftAE.framework 0.7.0
 //  `aeglue -r TextEdit`
 //
@@ -714,7 +714,8 @@ public class TEDRoot: RootSpecifier, TEDQuery, RootSpecifierExtension {
 public class TextEdit: TEDRoot, ApplicationExtension {
 
     public convenience init(launchOptions: LaunchOptions = DefaultLaunchOptions, relaunchMode: RelaunchMode = DefaultRelaunchMode) {
-        self.init(bundleIdentifier: "com.apple.TextEdit", launchOptions: launchOptions, relaunchMode: relaunchMode)
+        self.init(rootObject: AppRootDesc, appData: self.dynamicType.nullAppData.targetCopy(
+                                .BundleIdentifier("com.apple.TextEdit", true), launchOptions: launchOptions, relaunchMode: relaunchMode))
     }
 
 }

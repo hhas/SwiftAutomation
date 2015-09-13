@@ -415,7 +415,7 @@ public class AppData {
                 } else {
                     throw ConnectionError(target: self.target, message: "Invalid URL scheme (not file/eppc).")
                 }
-            case .BundleIdentifier(let bundleIdentifier):
+            case .BundleIdentifier(let bundleIdentifier, _):
                 if let url = NSWorkspace.sharedWorkspace().URLForApplicationWithBundleIdentifier(bundleIdentifier) {
                     self._targetDescriptor = try processDescriptorForLocalApplication(url, launchOptions: self.launchOptions)
                 } else {

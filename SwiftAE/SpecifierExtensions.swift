@@ -177,7 +177,7 @@ extension ApplicationExtension {
     }
     
     public init(bundleIdentifier: String, launchOptions: LaunchOptions = DefaultLaunchOptions, relaunchMode: RelaunchMode = DefaultRelaunchMode) {
-        self.init(target: .BundleIdentifier(bundleIdentifier), launchOptions: launchOptions, relaunchMode: relaunchMode)
+        self.init(target: .BundleIdentifier(bundleIdentifier, false), launchOptions: launchOptions, relaunchMode: relaunchMode)
     }
     
     public init(processIdentifier: pid_t, launchOptions: LaunchOptions = DefaultLaunchOptions, relaunchMode: RelaunchMode = DefaultRelaunchMode) {

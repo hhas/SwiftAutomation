@@ -9,20 +9,22 @@
 
 import Foundation
 
-let te = TextEdit()
+//*
+
+do {
+    
+    let te = TextEdit(name:"TextEdit")
 
 
 //print(TEDApp.documents[1].text)
 //print(te.documents[1].text)
 
-//*
-
-do {
-    
     // send `open` and `get` AEs using raw four-char codes
     //let result = try te.sendAppleEvent(kCoreEventClass, kAEOpenDocuments, [keyDirectObject:NSURL.fileURLWithPath("/Users/has/todos.txt")])
     //print(result)
 
+    //*
+    
     let result1 = try te.make(new: TED.document) //, withProperties: [TED.text: "Hello World!"]) // TO DO: array and dict packing is currently busted so can't currently be used as command parameters
     
     if let objspec = result1 as? TEDObject { try objspec.text.set(to: "Hello!") } // temp kludge around for above
@@ -49,10 +51,11 @@ do {
     
     let result4 = try te.documents.name.get() 
     print(result4)
+    //*/
     
     // get every file of folder "Documents" of home whose name extension is "txt"
     
-    let q = Finder().home.folders["Documents"].files[FINIts.nameExtension == "txt"]
+    let q = Finder().home.folders["Documents"].files[FINIts.nameExtension == "txt"].name
     print(q)
     print(try q.get())
 
