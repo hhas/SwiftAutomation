@@ -69,14 +69,21 @@ public class AppData {
                                            its: glueInfo.rootSpecifierType.init(rootObject: ItsRootDesc, appData: self))
     }
     
-    public convenience init(glueInfo: GlueInfo) { // create an untargeted AppData instance
+    public convenience init() {
+        self.init(glueInfo: GlueInfo(insertionSpecifierType: InsertionSpecifier.self, objectSpecifierType: ObjectSpecifier.self,
+                                     elementsSpecifierType: ObjectSpecifier.self, rootSpecifierType: RootSpecifier.self,
+                                     symbolType: Symbol.self, formatter: SpecifierFormatter()))
+    }
+    
+    // create an untargeted AppData instance
+    public convenience init(glueInfo: GlueInfo) {
         self.init(target: .None, launchOptions: DefaultLaunchOptions, relaunchMode: .Never, glueInfo: glueInfo, rootObjects: nil)
     }
     
-    public func targetCopy(target: TargetApplication, launchOptions: LaunchOptions, relaunchMode: RelaunchMode) -> Self { // create a targeted copy of a [typically untargeted] AppData instance
-        return self.dynamicType.init(target: target,
-                                     launchOptions: launchOptions, relaunchMode: relaunchMode,
-                                     glueInfo: self.glueInfo, rootObjects: self.rootObjects)
+    // create a targeted copy of a [typically untargeted] AppData instance
+    public func targetCopy(target: TargetApplication, launchOptions: LaunchOptions, relaunchMode: RelaunchMode) -> Self {
+        return self.dynamicType.init(target: target, launchOptions: launchOptions, relaunchMode: relaunchMode,
+                                                        glueInfo: self.glueInfo, rootObjects: self.rootObjects)
     }
     
     

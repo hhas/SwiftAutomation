@@ -117,7 +117,7 @@ public class «PREFIX»Object: ObjectSpecifier, «PREFIX»Query {
 
 public class «PREFIX»Elements: «PREFIX»Object, ElementsSpecifierExtension {}
 
-public class «PREFIX»Root: RootSpecifier, «PREFIX»Query {
+public class «PREFIX»Root: RootSpecifier, «PREFIX»Query, RootSpecifierExtension {
     public typealias InsertionSpecifierType = «PREFIX»Insertion
     public typealias ObjectSpecifierType = «PREFIX»Object
     public typealias ElementsSpecifierType = «PREFIX»Elements

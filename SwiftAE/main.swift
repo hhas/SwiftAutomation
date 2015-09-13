@@ -31,18 +31,30 @@ do {
     
     print(try (result1 as! TEDObject).text.get())
 
+    
+    // get name of document 1
+    
+    // - using four-char code strings
     let result2 = try te.sendAppleEvent("core", "getd", ["----": te.elements("docu")[1].property("pnam")])
     print(result2)
     
-    // send `get` AEs using glue-defined terminology
+    // - using glue-defined terminology
     let result3 = try te.get(TEDApp.documents[1].name)
     print(result3)
     
     let result3a: Any = try te.documents[1].name.get() // convenience syntax for the above
     print(result3a)
     
-    let result4 = try te.documents.name.get() // get name of every document (note: currently this example is only good for demo purposes: the `get` method result's dynamicType is Array<String>, but its static type is Any, and  Swift can't cast Any to Array<...> without falling over, so this result can't be used for anything useful; this is another reason why generic versions of commands are needed, but getting those to work right is a whole 'nother problem again...)
+    // get name of every document (note: currently this example is only good for demo purposes: the `get` method result's dynamicType is Array<String>, but its static type is Any, and  Swift can't cast Any to Array<...> without falling over, so this result can't be used for anything useful; this is another reason why generic versions of commands are needed, but getting those to work right is a whole 'nother problem again...)
+    
+    let result4 = try te.documents.name.get() 
     print(result4)
+    
+    // get every file of folder "Documents" of home whose name extension is "txt"
+    
+    let q = Finder().home.folders["Documents"].files[FINIts.nameExtension == "txt"]
+    print(q)
+    print(try q.get())
 
 
 //    try te.documents.close(saving: TED.no) // close every document saving no

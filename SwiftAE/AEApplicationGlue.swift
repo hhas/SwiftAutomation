@@ -441,7 +441,7 @@ public class AEObject: ObjectSpecifier, AEQuery {
 
 public class AEElements: AEObject, ElementsSpecifierExtension {}
 
-public class AERoot: RootSpecifier, AEQuery {
+public class AERoot: RootSpecifier, AEQuery, RootSpecifierExtension {
     public typealias InsertionSpecifierType = AEInsertion
     public typealias ObjectSpecifierType = AEObject
     public typealias ElementsSpecifierType = AEElements

@@ -1380,7 +1380,7 @@ public class ITUObject: ObjectSpecifier, ITUQuery {
 
 public class ITUElements: ITUObject, ElementsSpecifierExtension {}
 
-public class ITURoot: RootSpecifier, ITUQuery {
+public class ITURoot: RootSpecifier, ITUQuery, RootSpecifierExtension {
     public typealias InsertionSpecifierType = ITUInsertion
     public typealias ObjectSpecifierType = ITUObject
     public typealias ElementsSpecifierType = ITUElements

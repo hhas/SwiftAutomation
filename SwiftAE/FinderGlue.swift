@@ -1391,7 +1391,7 @@ public class FINObject: ObjectSpecifier, FINQuery {
 
 public class FINElements: FINObject, ElementsSpecifierExtension {}
 
-public class FINRoot: RootSpecifier, FINQuery {
+public class FINRoot: RootSpecifier, FINQuery, RootSpecifierExtension {
     public typealias InsertionSpecifierType = FINInsertion
     public typealias ObjectSpecifierType = FINObject
     public typealias ElementsSpecifierType = FINElements

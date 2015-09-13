@@ -704,7 +704,7 @@ public class TEDObject: ObjectSpecifier, TEDQuery {
 
 public class TEDElements: TEDObject, ElementsSpecifierExtension {}
 
-public class TEDRoot: RootSpecifier, TEDQuery {
+public class TEDRoot: RootSpecifier, TEDQuery, RootSpecifierExtension {
     public typealias InsertionSpecifierType = TEDInsertion
     public typealias ObjectSpecifierType = TEDObject
     public typealias ElementsSpecifierType = TEDElements

@@ -151,8 +151,8 @@ extension ElementsSpecifierExtension {
 
 
 
-public protocol RootSpecifierExtension: ObjectSpecifierExtension { // TO DO: is this needed? or is it sufficient to put declarations in ApplicationExtension protocol?
-    init(rootObject: Any, appData: AppData?)
+public protocol RootSpecifierExtension: ObjectSpecifierExtension {
+    init(rootObject: Any, appData: AppData)
     static var nullAppData: AppData {get}
 }
 

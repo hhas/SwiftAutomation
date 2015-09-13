@@ -139,9 +139,9 @@
 				4F63C4421B87AC88000D74EE /* Symbol.swift */,
 				4F63C4441B8A4DFC000D74EE /* Errors.swift */,
 				4F63C4461B8A669C000D74EE /* Support.swift */,
+				4F2645A41BA37C5000256402 /* SwiftAEGlueTemplate.txt */,
 				4F2645AB1BA4F27700256402 /* AEApplicationGlue.swift */,
 				4F2645B31BA59A2000256402 /* sample glues */,
-				4F2645A41BA37C5000256402 /* SwiftAEGlueTemplate.txt */,
 			);
 			path = SwiftAE;
 			sourceTree = "<group>";
