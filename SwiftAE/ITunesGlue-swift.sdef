@@ -1,0 +1,544 @@
+<?xml version='1.0' encoding='utf-8'?>
+<dictionary>
+	<suite code="****" description="Common terms for most applications" name="Standard Suite">
+		
+		
+		<access-group identifier="*" />
+		<command code="aevtpdoc" description="Print the specified object(s)" name="print">
+			<direct-parameter description="list of objects to print" optional="yes" requires-access="r" type="specifier" />
+			<parameter code="pdlg" description="Should the application show the print dialog" name="printDialog:" optional="yes" type="boolean" />
+			<parameter code="prdt" description="the print settings" name="withProperties:" optional="yes" type="print settings" />
+			<parameter code="pKnd" description="the kind of printout desired" name="kind:" optional="yes" type="eKnd" />
+			<parameter code="pThm" description="name of theme to use for formatting the printout" name="theme:" optional="yes" type="text" />
+		</command>
+		<command code="coreclos" description="Close an object" name="close">
+			<direct-parameter description="the object to close" type="specifier" />
+		</command>
+		<command code="corecnte" description="Return the number of elements of a particular class within an object" name="count">
+			<direct-parameter description="the object whose elements are to be counted" requires-access="r" type="specifier" />
+			<parameter code="kocl" description="the class of the elements to be counted. Keyword 'each' is optional in AppleScript" name="each:" type="type" />
+			<result description="the number of elements" type="integer" />
+		</command>
+		<command code="coredelo" description="Delete an element from an object" name="delete">
+			<direct-parameter description="the element to delete" type="specifier" />
+		</command>
+		<command code="coreclon" description="Duplicate one or more object(s)" name="duplicate">
+			<direct-parameter description="the object(s) to duplicate" requires-access="r" type="specifier" />
+			<parameter code="insh" description="the new location for the object(s)" name="to:" optional="yes" type="location specifier" />
+			<result description="to the duplicated object(s)" type="specifier" />
+		</command>
+		<command code="coredoex" description="Verify if an object exists" name="exists">
+			<direct-parameter description="the object in question" requires-access="r" type="specifier" />
+			<result description="true if it exists, false if not" type="boolean" />
+		</command>
+		<command code="corecrel" description="Make a new element" name="make">
+			<parameter code="kocl" description="the class of the new element. Keyword 'new' is optional in AppleScript" name="new:" type="type" />
+			<parameter code="insh" description="the location at which to insert the element" name="at:" optional="yes" type="location specifier" />
+			<parameter code="prdt" description="the initial values for the properties of the element" name="withProperties:" optional="yes" type="record" />
+			<result description="to the new object(s)" type="specifier" />
+		</command>
+		<command code="coremove" description="Move playlist(s) to a new location" name="move">
+			<direct-parameter description="the playlist(s) to move" requires-access="r" type="playlist" />
+			<parameter code="insh" description="the new location for the playlist(s)" name="to:" type="location specifier" />
+		</command>
+		<command code="aevtodoc" description="open the specified object(s)" name="open">
+			<direct-parameter description="list of objects to open" type="specifier" />
+		</command>
+		<command code="aevtoapp" description="run iTunes" name="run" />
+		<command code="aevtquit" description="quit iTunes" name="quit" />
+		<command code="coresetd" name="set">
+			<direct-parameter type="specifier" />
+			<parameter code="data" name="to:" type="any" />
+		</command>
+		<class code="pset" name="printSettings" plural="printSettingss">
+			<property access="r" code="lwcp" description="the number of copies of a document to be printed" name="copies" type="integer" />
+			<property access="r" code="lwcl" description="Should printed copies be collated?" name="collating" type="boolean" />
+			<property access="r" code="lwfp" description="the first page of the document to be printed" name="startingPage" type="integer" />
+			<property access="r" code="lwlp" description="the last page of the document to be printed" name="endingPage" type="integer" />
+			<property access="r" code="lwla" description="number of logical pages laid across a physical page" name="pagesAcross" type="integer" />
+			<property access="r" code="lwld" description="number of logical pages laid out down a physical page" name="pagesDown" type="integer" />
+			<property access="r" code="lweh" description="how errors are handled" name="errorHandling" type="enum" />
+			<property access="r" code="lwqt" description="the time at which the desktop printer should print the document" name="requestedPrintTime" type="date" />
+			<property access="r" code="lwpf" description="printer specific options" name="printerFeatures" type="list" />
+			<property access="r" code="faxn" description="for fax number" name="faxNumber" type="text" />
+			<property access="r" code="trpr" description="for target printer" name="targetPrinter" type="text" />
+		</class>
+		<enumeration code="eKnd" name="eKnd">
+			<enumerator code="kTrk" description="a basic listing of tracks within a playlist" name="ITU.trackListing" />
+			<enumerator code="kAlb" description="a listing of a playlist grouped by album" name="ITU.albumListing" />
+			<enumerator code="kCDi" description="a printout of the playlist for jewel case inserts" name="ITU.cdInsert" />
+		</enumeration>
+		<enumeration code="enum" name="enum">
+			<enumerator code="lwst" description="Standard PostScript error handling" name="ITU.standard" />
+			<enumerator code="lwdt" description="print a detailed report of PostScript errors" name="ITU.detailed" />
+		</enumeration>
+	</suite>
+	<suite code="hook" description="The event suite specific to iTunes" name="iTunes Suite">
+		<command code="hookAdd " description="add one or more files to a playlist" name="add">
+			<access-group access="rw" identifier="com.apple.iTunes.library.read-write" />
+			<direct-parameter description="the file(s) to add">
+				<type list="yes" type="file" />
+			</direct-parameter>
+			<parameter code="insh" description="the location of the added file(s)" name="to:" optional="yes" type="location specifier" />
+			<result description="reference to added track(s)" type="track" />
+		</command>
+		<command code="hookBack" description="reposition to beginning of current track or go to previous track if already at start of current track" name="backTrack">
+			<access-group identifier="com.apple.iTunes.playback" />
+		</command>
+		<command code="hookConv" description="convert one or more files or tracks" name="convert">
+			<access-group access="rw" identifier="com.apple.iTunes.library.read-write" />
+			<direct-parameter description="the file(s)/tracks(s) to convert">
+				<type list="yes" type="specifier" />
+			</direct-parameter>
+			<result description="reference to converted track(s)" type="track" />
+		</command>
+		<command code="hookFast" description="skip forward in a playing track" name="fastForward">
+			<access-group identifier="com.apple.iTunes.playback" />
+		</command>
+		<command code="hookNext" description="advance to the next track in the current playlist" name="nextTrack">
+			<access-group identifier="com.apple.iTunes.playback" />
+		</command>
+		<command code="hookPaus" description="pause playback" name="pause">
+			<access-group identifier="com.apple.iTunes.playback" />
+		</command>
+		<command code="hookPlay" description="play the current track or the specified track or file." name="play">
+			<access-group identifier="com.apple.iTunes.playback" />
+			<direct-parameter description="item to play" optional="yes" requires-access="r" type="specifier" />
+			<parameter code="POne" description="If true, play this track once and then stop." name="once:" optional="yes" type="boolean" />
+		</command>
+		<command code="hookPlPs" description="toggle the playing/paused state of the current track" name="playpause">
+			<access-group identifier="com.apple.iTunes.playback" />
+		</command>
+		<command code="hookPrev" description="return to the previous track in the current playlist" name="previousTrack">
+			<access-group identifier="com.apple.iTunes.playback" />
+		</command>
+		<command code="hookRfrs" description="update file track information from the current information in the track’s file" name="refresh">
+			<access-group access="rw" identifier="com.apple.iTunes.library.read-write" />
+			<direct-parameter description="the file track to update" type="file track" />
+		</command>
+		<command code="hookResu" description="disable fast forward/rewind and resume playback, if playing." name="resume">
+			<access-group identifier="com.apple.iTunes.playback" />
+		</command>
+		<command code="hookRevl" description="reveal and select a track or playlist" name="reveal">
+			<access-group access="r" identifier="com.apple.iTunes.user-interface" />
+			<direct-parameter description="the item to reveal" type="item" />
+		</command>
+		<command code="hookRwnd" description="skip backwards in a playing track" name="rewind">
+			<access-group identifier="com.apple.iTunes.playback" />
+		</command>
+		<command code="hookSrch" description="search a playlist for tracks matching the search string. Identical to entering search text in the Search field in iTunes." name="search">
+			<access-group access="r" identifier="com.apple.iTunes.library.read" />
+			<direct-parameter description="the playlist to search" type="playlist" />
+			<parameter code="pTrm" description="the search text" name="for_:" type="text" />
+			<parameter code="pAre" description="area to search (default is all)" name="only:" optional="yes" type="eSrA" />
+			<result description="reference to found track(s)" type="track" />
+		</command>
+		<command code="hookStop" description="stop playback" name="stop">
+			<access-group identifier="com.apple.iTunes.playback" />
+		</command>
+		<command code="hookUpdt" description="update the specified iPod" name="update">
+			<access-group identifier="com.apple.iTunes.device" />
+			<direct-parameter description="the iPod to update" optional="yes" type="source" />
+		</command>
+		<command code="hookEjct" description="eject the specified iPod" name="eject">
+			<access-group identifier="com.apple.iTunes.device" />
+			<direct-parameter description="the iPod to eject" optional="yes" type="source" />
+		</command>
+		<command code="hookpSub" description="subscribe to a podcast feed" name="subscribe">
+			<access-group access="rw" identifier="com.apple.iTunes.library.read-write" />
+			<direct-parameter description="the URL of the feed to subscribe to" type="text" />
+		</command>
+		<command code="hookUpdp" description="update all subscribed podcast feeds" name="updateAllPodcasts">
+			<access-group identifier="com.apple.iTunes.podcast" />
+		</command>
+		<command code="hookUpd1" description="update podcast feed" name="updatePodcast">
+			<access-group identifier="com.apple.iTunes.podcast" />
+		</command>
+		<command code="hookDwnl" description="download podcast episode" name="download">
+			<access-group identifier="com.apple.iTunes.podcast" />
+			<direct-parameter type="URL track" />
+		</command>
+		
+		<class code="cAPD" description="an AirPlay device" inherits="item" name="AirPlayDevice" plural="AirPlay devices">
+			<property access="r" code="pAct" description="is the device currently being played to?" name="active" type="boolean" />
+			<property access="r" code="pAva" description="is the device currently available?" name="available" type="boolean" />
+			<property access="r" code="pKnd" description="the kind of the device" name="kind" type="eAPD" />
+			<property access="r" code="pMAC" description="the network (MAC) address of the device" name="networkAddress" type="text" />
+			<property access="r" code="pPro" description="is the device password- or passcode-protected?" name="protected" type="boolean" />
+			<property code="selc" description="is the device currently selected?" name="selected" type="boolean" />
+			<property access="r" code="pAud" description="does the device support audio playback?" name="supportsAudio" type="boolean" />
+			<property access="r" code="pVid" description="does the device support video playback?" name="supportsVideo" type="boolean" />
+			<property code="pVol" description="the output volume for the device (0 = minimum, 100 = maximum)" name="soundVolume" type="integer" />
+		</class>
+		<class code="capp" description="The application program" name="application" plural="applications">
+			<cocoa class="ITNSApplication" />
+			<element type="AirPlayDevice" />
+			<element type="browserWindow">
+				<access-group access="r" identifier="com.apple.iTunes.playback" />
+				<access-group access="rw" identifier="com.apple.iTunes.user-interface" />
+			</element>
+			<element type="encoder" />
+			<element type="EQPreset">
+				<access-group access="r" identifier="com.apple.iTunes.playback" />
+			</element>
+			<element type="EQWindow">
+				<access-group access="rw" identifier="com.apple.iTunes.user-interface" />
+			</element>
+			<element type="playlistWindow">
+				<access-group access="r" identifier="com.apple.iTunes.playback" />
+				<access-group access="rw" identifier="com.apple.iTunes.user-interface" />
+			</element>
+			<element type="source">
+				<access-group access="r" identifier="com.apple.iTunes.library.read" />
+				<access-group access="rw" identifier="com.apple.iTunes.library.read-write" />
+			</element>
+			<element type="visual" />
+			<element type="window">
+				<access-group access="r" identifier="com.apple.iTunes.playback" />
+				<access-group access="rw" identifier="com.apple.iTunes.user-interface" />
+			</element>
+			<property access="r" code="pAPE" description="is AirPlay currently enabled?" name="AirPlayEnabled" type="boolean" />
+			<property access="r" code="pCnv" description="is a track currently being converted?" name="converting" type="boolean" />
+			<property code="pAPD" description="the currently selected AirPlay device(s)" name="currentAirPlayDevices">
+				<type list="yes" type="AirPlay device" />
+			</property>
+			<property code="pEnc" description="the currently selected encoder (MP3, AIFF, WAV, etc.)" name="currentEncoder" type="encoder" />
+			<property code="pEQP" description="the currently selected equalizer preset" name="currentEQPreset" type="EQ preset" />
+			<property access="r" code="pPla" description="the playlist containing the currently targeted track" name="currentPlaylist" type="playlist">
+				<access-group access="r" identifier="com.apple.iTunes.playback" />
+			</property>
+
+			<property access="r" code="pStT" description="the name of the current song in the playing stream (provided by streaming server)" name="currentStreamTitle" type="text">
+				<access-group access="r" identifier="com.apple.iTunes.playback" />
+			</property>
+			<property access="r" code="pStU" description="the URL of the playing stream or streaming web site (provided by streaming server)" name="currentStreamURL" type="text">
+				<access-group access="r" identifier="com.apple.iTunes.playback" />
+			</property>
+			<property access="r" code="pTrk" description="the current targeted track" name="currentTrack" type="track">
+				<access-group access="r" identifier="com.apple.iTunes.playback" />
+			</property>
+			<property code="pVis" description=" the currently selected visual plug-in" name="currentVisual" type="visual" />
+			<property code="pEQ " description="is the equalizer enabled?" name="EQEnabled" type="boolean">
+				<access-group access="rw" identifier="com.apple.iTunes.playback" />
+			</property>
+			<property code="pFix" description="true if all AppleScript track indices should be independent of the play order of the owning playlist." name="fixedIndexing" type="boolean" />
+			<property code="pisf" description="is iTunes the frontmost application?" name="frontmost" type="boolean" />
+			<property code="pFSc" description="are visuals displayed using the entire screen?" name="fullScreen" type="boolean" />
+			<property access="r" code="pnam" description="the name of the application" name="name" type="text" />
+			<property code="pMut" description="has the sound output been muted?" name="mute" type="boolean">
+				<access-group access="rw" identifier="com.apple.iTunes.playback" />
+			</property>
+			<property code="pPos" description="the player’s position within the currently playing track in seconds." name="playerPosition" type="real">
+				<access-group access="rw" identifier="com.apple.iTunes.playback" />
+			</property>
+			<property access="r" code="pPlS" description="is iTunes stopped, paused, or playing?" name="playerState" type="ePlS">
+				<access-group access="rw" identifier="com.apple.iTunes.playback" />
+			</property>
+			<property access="r" code="sele" description="the selection visible to the user" name="selection" type="specifier">
+				<access-group access="r" identifier="com.apple.iTunes.user-interface" />
+			</property>
+			<property code="pVol" description="the sound output volume (0 = minimum, 100 = maximum)" name="soundVolume" type="integer">
+				<access-group access="rw" identifier="com.apple.iTunes.playback" />
+			</property>
+			<property access="r" code="vers" description="the version of iTunes" name="version_" type="text" />
+			<property code="pVsE" description="are visuals currently being displayed?" name="visualsEnabled" type="boolean" />
+			<property code="pVSz" description="the size of the displayed visual" name="visualSize" type="eVSz" />
+			<property access="r" code="piAD" description="the iAd identifier" name="iAdIdentifier" type="text" />
+		</class>
+		<value-type code="PICT" hidden="yes" name="picture" />
+		
+		<class code="cArt" description="a piece of art within a track" inherits="item" name="artwork" plural="artworks">
+			<access-group access="r" identifier="com.apple.iTunes.library.read" />
+			<access-group access="rw" identifier="com.apple.iTunes.library.read-write" />
+			<property code="pPCT" description="data for this artwork, in the form of a picture" name="data" type="picture" />
+			<property code="pDes" description="description of artwork as a string" name="description_" type="text" />
+			<property access="r" code="pDlA" description="was this artwork downloaded by iTunes?" name="downloaded" type="boolean" />
+			<property access="r" code="pFmt" description="the data format for this piece of artwork" name="format" type="type" />
+			<property code="pKnd" description="kind or purpose of this piece of artwork" name="kind" type="integer" />
+			<property code="pRaw" description="data for this artwork, in original format" name="rawData" type="raw data" />
+		</class>
+		<class code="cCDP" description="a playlist representing an audio CD" inherits="playlist" name="audioCDPlaylist" plural="audio CD playlists">
+			<access-group access="r" identifier="com.apple.iTunes.library.read" />
+			<access-group access="rw" identifier="com.apple.iTunes.library.read-write" />
+			<element type="audioCDTrack" />
+			<property code="pArt" description="the artist of the CD" name="artist" type="text" />
+			<property code="pAnt" description="is this CD a compilation album?" name="compilation" type="boolean" />
+			<property code="pCmp" description="the composer of the CD" name="composer" type="text" />
+			<property code="pDsC" description="the total number of discs in this CD’s album" name="discCount" type="integer" />
+			<property code="pDsN" description="the index of this CD disc in the source album" name="discNumber" type="integer" />
+			<property code="pGen" description="the genre of the CD" name="genre" type="text" />
+			<property code="pYr " description="the year the album was recorded/released" name="year" type="integer" />
+		</class>
+		<class code="cCDT" description="a track on an audio CD" inherits="track" name="audioCDTrack" plural="audio CD tracks">
+			<property access="r" code="pLoc" description="the location of the file represented by this track" name="location" type="file" />
+		</class>
+		<class code="cBrW" description="the main iTunes window" inherits="window" name="browserWindow" plural="browser windows">
+			<access-group access="rw" identifier="com.apple.iTunes.user-interface" />
+			<property code="pMin" description="is the small player visible?" name="minimized" type="boolean" />
+			<property access="r" code="sele" description="the selected songs" name="selection" type="specifier" />
+			<property code="pPly" description="the playlist currently displayed in the window" name="view" type="playlist">
+				<access-group access="r" identifier="com.apple.iTunes.playback" />
+			</property>
+		</class>
+		<class code="cEnc" description="converts a track to a specific file format" inherits="item" name="encoder" plural="encoders">
+			<property access="r" code="pFmt" description="the data format created by the encoder" name="format" type="text" />
+		</class>
+		<class code="cEQP" description="equalizer preset configuration" inherits="item" name="EQPreset" plural="EQ presets">
+			<access-group access="rw" identifier="com.apple.iTunes.playback" />
+			<property code="pEQ1" description="the equalizer 32 Hz band level (-12.0 dB to +12.0 dB)" name="band1" type="real" />
+			<property code="pEQ2" description="the equalizer 64 Hz band level (-12.0 dB to +12.0 dB)" name="band2" type="real" />
+			<property code="pEQ3" description="the equalizer 125 Hz band level (-12.0 dB to +12.0 dB)" name="band3" type="real" />
+			<property code="pEQ4" description="the equalizer 250 Hz band level (-12.0 dB to +12.0 dB)" name="band4" type="real" />
+			<property code="pEQ5" description="the equalizer 500 Hz band level (-12.0 dB to +12.0 dB)" name="band5" type="real" />
+			<property code="pEQ6" description="the equalizer 1 kHz band level (-12.0 dB to +12.0 dB)" name="band6" type="real" />
+			<property code="pEQ7" description="the equalizer 2 kHz band level (-12.0 dB to +12.0 dB)" name="band7" type="real" />
+			<property code="pEQ8" description="the equalizer 4 kHz band level (-12.0 dB to +12.0 dB)" name="band8" type="real" />
+			<property code="pEQ9" description="the equalizer 8 kHz band level (-12.0 dB to +12.0 dB)" name="band9" type="real" />
+			<property code="pEQ0" description="the equalizer 16 kHz band level (-12.0 dB to +12.0 dB)" name="band10" type="real" />
+			<property access="r" code="pMod" description="can this preset be modified?" name="modifiable" type="boolean" />
+			<property code="pEQA" description="the equalizer preamp level (-12.0 dB to +12.0 dB)" name="preamp" type="real" />
+			<property code="pUTC" description="should tracks which refer to this preset be updated when the preset is renamed or deleted?" name="updateTracks" type="boolean" />
+		</class>
+		<class code="cEQW" description="the iTunes equalizer window" inherits="window" name="EQWindow" plural="EQ windows">
+			<access-group access="rw" identifier="com.apple.iTunes.user-interface" />
+			<property code="pMin" description="is the small EQ window visible?" name="minimized" type="boolean" />
+		</class>
+		<class code="cFlT" description="a track representing an audio file (MP3, AIFF, etc.)" inherits="track" name="fileTrack" plural="file tracks">
+			<property code="pLoc" description="the location of the file represented by this track" name="location" type="file" />
+		</class>
+		<class code="cFoP" description="a folder that contains other playlists" inherits="user playlist" name="folderPlaylist" plural="folder playlists">
+			<access-group access="r" identifier="com.apple.iTunes.library.read" />
+			<access-group access="rw" identifier="com.apple.iTunes.library.read-write" />
+		</class>
+		<class code="cobj" description="an item" name="item" plural="items">
+			<access-group access="r" identifier="com.apple.iTunes.library.read" />
+			<access-group access="rw" identifier="com.apple.iTunes.library.read-write" />
+			<property access="r" code="pcls" description="the class of the item" name="class_" type="type" />
+			<property access="r" code="ctnr" description="the container of the item" name="container" type="specifier" />
+			<property access="r" code="ID  " description="the id of the item" name="id" type="integer" />
+			<property access="r" code="pidx" description="The index of the item in internal application order." name="index" type="integer" />
+			<property code="pnam" description="the name of the item" name="name" type="text">
+				<access-group access="r" identifier="com.apple.iTunes.playback" />
+			</property>
+			<property access="r" code="pPIS" description="the id of the item as a hexadecimal string. This id does not change over time." name="persistentID" type="text" />
+			<property code="pALL" description="every property of the item" name="properties" type="record" />
+		</class>
+		<class code="cLiP" description="the master music library playlist" inherits="playlist" name="libraryPlaylist" plural="library playlists">
+			<access-group access="r" identifier="com.apple.iTunes.library.read" />
+			<access-group access="rw" identifier="com.apple.iTunes.library.read-write" />
+			<element type="fileTrack" />
+			<element type="URLTrack" />
+			<element type="sharedTrack" />
+		</class>
+		<class code="cPly" description="a list of songs/streams" inherits="item" name="playlist" plural="playlists">
+			<access-group access="r" identifier="com.apple.iTunes.library.read" />
+			<access-group access="rw" identifier="com.apple.iTunes.library.read-write" />
+			<element type="track" />
+			<property access="r" code="pDur" description="the total length of all songs (in seconds)" name="duration" type="integer" />
+			<property code="pnam" description="the name of the playlist" name="name" type="text" />
+			<property code="pLov" description="is this plalist loved?" name="loved" type="boolean" />
+			<property access="r" code="pPlP" description="folder which contains this playlist (if any)" name="parent" type="playlist" />
+			<property code="pShf" description="play the songs in this playlist in random order?" name="shuffle" type="boolean">
+				<access-group access="rw" identifier="com.apple.iTunes.playback" />
+			</property>
+			<property access="r" code="pSiz" description="the total size of all songs (in bytes)" name="size" type="integer" />
+			<property code="pRpt" description="playback repeat mode" name="songRepeat" type="eRpt">
+				<access-group access="rw" identifier="com.apple.iTunes.playback" />
+			</property>
+			<property access="r" code="pSpK" description="special playlist kind" name="specialKind" type="eSpK" />
+			<property access="r" code="pTim" description="the length of all songs in MM:SS format" name="time" type="text" />
+			<property access="r" code="pvis" description="is this playlist visible in the Source list?" name="visible" type="boolean" />
+		</class>
+		<class code="cPlW" description="a sub-window showing a single playlist" inherits="window" name="playlistWindow" plural="playlist windows">
+			<access-group access="rw" identifier="com.apple.iTunes.user-interface" />
+			<property access="r" code="sele" description="the selected songs" name="selection" type="specifier" />
+			<property access="r" code="pPly" description="the playlist displayed in the window" name="view" type="playlist" />
+		</class>
+		<class code="cRTP" description="the radio tuner playlist" inherits="playlist" name="radioTunerPlaylist" plural="radio tuner playlists">
+			<access-group access="r" identifier="com.apple.iTunes.library.read" />
+			<access-group access="rw" identifier="com.apple.iTunes.library.read-write" />
+			<element type="URLTrack" />
+		</class>
+		<class code="cShT" description="a track residing in a shared library" inherits="track" name="sharedTrack" plural="shared tracks">
+			<access-group access="r" identifier="com.apple.iTunes.library.read" />
+			<access-group access="rw" identifier="com.apple.iTunes.library.read-write" />
+		</class>
+		<class code="cSrc" description="a music source (music library, CD, device, etc.)" inherits="item" name="source" plural="sources">
+			<access-group access="r" identifier="com.apple.iTunes.library.read" />
+			<access-group access="rw" identifier="com.apple.iTunes.library.read-write" />
+			<element type="audioCDPlaylist" />
+			<element type="libraryPlaylist" />
+			<element type="playlist" />
+			<element type="radioTunerPlaylist" />
+			<element type="userPlaylist" />
+			<property access="r" code="capa" description="the total size of the source if it has a fixed size" name="capacity" type="double integer" />
+			<property access="r" code="frsp" description="the free space on the source if it has a fixed size" name="freeSpace" type="double integer" />
+			<property access="r" code="pKnd" name="kind" type="eSrc" />
+		</class>
+		<class code="cTrk" description="playable audio source" inherits="item" name="track" plural="tracks">
+			<access-group access="r" identifier="com.apple.iTunes.playback" />
+			<access-group access="r" identifier="com.apple.iTunes.library.read" />
+			<access-group access="rw" identifier="com.apple.iTunes.library.read-write" />
+			<element type="artwork" />
+			<property code="pAlb" description="the album name of the track" name="album" type="text" />
+			<property code="pAlA" description="the album artist of the track" name="albumArtist" type="text" />
+			<property code="pALv" description="is the album for this track loved?" name="albumLoved" type="boolean" />
+			<property code="pAlR" description="the rating of the album for this track (0 to 100)" name="albumRating" type="integer" />
+			<property access="r" code="pARk" description="the rating kind of the album rating for this track" name="albumRatingKind" type="eRtK" />
+			<property code="pArt" description="the artist/source of the track" name="artist" type="text" />
+			<property access="r" code="pBRt" description="the bit rate of the track (in kbps)" name="bitRate" type="integer" />
+			<property code="pBkt" description="the bookmark time of the track in seconds" name="bookmark" type="real" />
+			<property code="pBkm" description="is the playback position for this track remembered?" name="bookmarkable" type="boolean" />
+			<property code="pBPM" description="the tempo of this track in beats per minute" name="bpm" type="integer" />
+			<property code="pCat" description="the category of the track" name="category" type="text" />
+			<property code="pCmt" description="freeform notes about the track" name="comment" type="text" />
+			<property code="pAnt" description="is this track from a compilation album?" name="compilation" type="boolean" />
+			<property code="pCmp" description="the composer of the track" name="composer" type="text" />
+			<property access="r" code="pDID" description="the common, unique ID for this track. If two tracks in different playlists have the same database ID, they are sharing the same data." name="databaseID" type="integer" />
+			<property access="r" code="pAdd" description="the date the track was added to the playlist" name="dateAdded" type="date" />
+			<property code="pDes" description="the description of the track" name="description_" type="text" />
+			<property code="pDsC" description="the total number of discs in the source album" name="discCount" type="integer" />
+			<property code="pDsN" description="the index of the disc containing this track on the source album" name="discNumber" type="integer" />
+			<property access="r" code="pDur" description="the length of the track in seconds" name="duration" type="real" />
+			<property code="enbl" description="is this track checked for playback?" name="enabled" type="boolean" />
+			<property code="pEpD" description="the episode ID of the track" name="episodeID" type="text" />
+			<property code="pEpN" description="the episode number of the track" name="episodeNumber" type="integer" />
+			<property code="pEQp" description="the name of the EQ preset of the track" name="EQ" type="text" />
+			<property code="pStp" description="the stop time of the track in seconds" name="finish" type="real" />
+			<property code="pGpl" description="is this track from a gapless album?" name="gapless" type="boolean" />
+			<property code="pGen" description="the music/audio genre (category) of the track" name="genre" type="text" />
+			<property code="pGrp" description="the grouping (piece) of the track. Generally used to denote movements within a classical work." name="grouping" type="text" />
+			<property access="r" code="pTIU" description="is this track an iTunes U episode?" name="iTunesU" type="boolean" />
+			<property access="r" code="pKnd" description="a text description of the track" name="kind" type="text" />
+			<property code="pLds" name="longDescription" type="text" />
+			<property code="pLov" description="is this track loved?" name="loved" type="boolean" />
+			<property code="pLyr" description="the lyrics of the track" name="lyrics" type="text" />
+			<property access="r" code="asmo" description="the modification date of the content of this track" name="modificationDate" type="date" />
+			<property code="pPlC" description="number of times this track has been played" name="playedCount" type="integer" />
+			<property code="pPlD" description="the date and time this track was last played" name="playedDate" type="date" />
+			<property access="r" code="pTPc" description="is this track a podcast episode?" name="podcast" type="boolean" />
+			<property code="pRte" description="the rating of this track (0 to 100)" name="rating" type="integer" />
+			<property access="r" code="pRtk" description="the rating kind of this track" name="ratingKind" type="eRtK" />
+			<property access="r" code="pRlD" description="the release date of this track" name="releaseDate" type="date" />
+			<property access="r" code="pSRt" description="the sample rate of the track (in Hz)" name="sampleRate" type="integer" />
+			<property code="pSeN" description="the season number of the track" name="seasonNumber" type="integer" />
+			<property code="pSfa" description="is this track included when shuffling?" name="shufflable" type="boolean" />
+			<property code="pSkC" description="number of times this track has been skipped" name="skippedCount" type="integer" />
+			<property code="pSkD" description="the date and time this track was last skipped" name="skippedDate" type="date" />
+			<property code="pShw" description="the show name of the track" name="show" type="text" />
+			<property code="pSAl" description="override string to use for the track when sorting by album" name="sortAlbum" type="text" />
+			<property code="pSAr" description="override string to use for the track when sorting by artist" name="sortArtist" type="text" />
+			<property code="pSAA" description="override string to use for the track when sorting by album artist" name="sortAlbumArtist" type="text" />
+			<property code="pSNm" description="override string to use for the track when sorting by name" name="sortName" type="text" />
+			<property code="pSCm" description="override string to use for the track when sorting by composer" name="sortComposer" type="text" />
+			<property code="pSSN" description="override string to use for the track when sorting by show name" name="sortShow" type="text" />
+			<property access="r" code="pSiz" description="the size of the track (in bytes)" name="size" type="double integer" />
+			<property code="pStr" description="the start time of the track in seconds" name="start" type="real" />
+			<property access="r" code="pTim" description="the length of the track in MM:SS format" name="time" type="text" />
+			<property code="pTrC" description="the total number of tracks on the source album" name="trackCount" type="integer" />
+			<property code="pTrN" description="the index of the track on the source album" name="trackNumber" type="integer" />
+			<property code="pUnp" description="is this track unplayed?" name="unplayed" type="boolean" />
+			<property code="pVdK" description="kind of video track" name="videoKind" type="eVdK" />
+			<property code="pAdj" description="relative volume adjustment of the track (-100% to 100%)" name="volumeAdjustment" type="integer" />
+			<property code="pYr " description="the year the track was recorded/released" name="year" type="integer" />
+		
+		</class>
+		<class code="cURT" description="a track representing a network stream" inherits="track" name="URLTrack" plural="URL tracks">
+			<access-group access="r" identifier="com.apple.iTunes.library.read" />
+			<access-group access="rw" identifier="com.apple.iTunes.library.read-write" />
+			<property code="pURL" description="the URL for this track" name="address" type="text" />
+		</class>
+		<class code="cUsP" description="custom playlists created by the user" inherits="playlist" name="userPlaylist" plural="user playlists">
+			<access-group access="r" identifier="com.apple.iTunes.library.read" />
+			<access-group access="rw" identifier="com.apple.iTunes.library.read-write" />
+			<element type="fileTrack" />
+			<element type="URLTrack" />
+			<element type="sharedTrack" />
+			<property code="pShr" description="is this playlist shared?" name="shared" type="boolean" />
+			<property access="r" code="pSmt" description="is this a Smart Playlist?" name="smart" type="boolean" />
+		</class>
+		<class code="cVis" description="a visual plug-in" inherits="item" name="visual" plural="visuals" />
+		<class code="cwin" description="any window" inherits="item" name="window" plural="windows">
+			<access-group access="rw" identifier="com.apple.iTunes.user-interface" />
+			<property code="pbnd" description="the boundary rectangle for the window" name="bounds" type="rectangle" />
+			<property access="r" code="hclb" description="does the window have a close box?" name="closeable" type="boolean" />
+			<property access="r" code="pWSh" description="does the window have a collapse (windowshade) box?" name="collapseable" type="boolean" />
+			<property code="wshd" description="is the window collapsed?" name="collapsed" type="boolean" />
+			<property code="ppos" description="the upper left position of the window" name="position" type="point" />
+			<property access="r" code="prsz" description="is the window resizable?" name="resizable" type="boolean" />
+			<property code="pvis" description="is the window visible?" name="visible" type="boolean" />
+			<property access="r" code="iszm" description="is the window zoomable?" name="zoomable" type="boolean" />
+			<property code="pzum" description="is the window zoomed?" name="zoomed" type="boolean" />
+		</class>
+		<enumeration code="ePlS" name="ePlS">
+			<enumerator code="kPSS" name="ITU.stopped" />
+			<enumerator code="kPSP" name="ITU.playing" />
+			<enumerator code="kPSp" name="ITU.paused" />
+			<enumerator code="kPSF" name="ITU.fastForwarding" />
+			<enumerator code="kPSR" name="ITU.rewinding" />
+		</enumeration>
+		<enumeration code="eRpt" name="eRpt">
+			<enumerator code="kRpO" name="ITU.off" />
+			<enumerator code="kRp1" name="ITU.one" />
+			<enumerator code="kAll" name="ITU.all" />
+		</enumeration>
+		<enumeration code="eVSz" name="eVSz">
+			<enumerator code="kVSS" name="ITU.small" />
+			<enumerator code="kVSM" name="ITU.medium" />
+			<enumerator code="kVSL" name="ITU.large" />
+		</enumeration>
+		<enumeration code="eSrc" name="eSrc">
+			<enumerator code="kLib" name="ITU.library" />
+			<enumerator code="kPod" name="ITU.iPod" />
+			<enumerator code="kACD" name="ITU.audioCD" />
+			<enumerator code="kMCD" name="ITU.MP3CD" />
+			<enumerator code="kTun" name="ITU.radioTuner" />
+			<enumerator code="kShd" name="ITU.sharedLibrary" />
+			<enumerator code="kUnk" name="ITU.unknown" />
+		</enumeration>
+		<enumeration code="eSrA" name="eSrA">
+			<enumerator code="kSrL" description="albums only" name="ITU.albums" />
+			<enumerator code="kAll" description="all text fields" name="ITU.all" />
+			<enumerator code="kSrR" description="artists only" name="ITU.artists" />
+			<enumerator code="kSrC" description="composers only" name="ITU.composers" />
+			<enumerator code="kSrV" description="visible text fields" name="ITU.displayed" />
+			<enumerator code="kSrS" description="song names only" name="ITU.songs" />
+		</enumeration>
+		<enumeration code="eSpK" name="eSpK">
+			<enumerator code="kNon" name="ITU.none_" />
+			<enumerator code="kSpA" name="ITU.Books" />
+			<enumerator code="kSpF" name="ITU.folder" />
+			<enumerator code="kSpG" name="ITU.Genius" />
+			<enumerator code="kSpU" name="ITU.iTunesU" />
+			<enumerator code="kSpL" name="ITU.Library" />
+			<enumerator code="kSpI" name="ITU.Movies" />
+			<enumerator code="kSpZ" name="ITU.Music" />
+			<enumerator code="kSpP" name="ITU.Podcasts" />
+			<enumerator code="kSpM" name="ITU.PurchasedMusic" />
+			<enumerator code="kSpT" name="ITU.TVShows" />
+		</enumeration>
+		<enumeration code="eVdK" name="eVdK">
+			<enumerator code="kNon" description="not a video or unknown video kind" name="ITU.none_" />
+			<enumerator code="kVdH" description="home video track" name="ITU.homeVideo" />
+			<enumerator code="kVdM" description="movie track" name="ITU.movie" />
+			<enumerator code="kVdV" description="music video track" name="ITU.musicVideo" />
+			<enumerator code="kVdT" description="TV show track" name="ITU.TVShow" />
+		</enumeration>
+		<enumeration code="eRtK" name="eRtK">
+			<enumerator code="kRtU" description="user-specified rating" name="ITU.user" />
+			<enumerator code="kRtC" description="iTunes-computed rating" name="ITU.computed" />
+		</enumeration>
+		<enumeration code="eAPD" name="eAPD">
+			<enumerator code="kAPC" name="ITU.computer" />
+			<enumerator code="kAPX" name="ITU.AirPortExpress" />
+			<enumerator code="kAPT" name="ITU.AppleTV" />
+			<enumerator code="kAPO" name="ITU.AirPlayDevice" />
+			<enumerator code="kAPU" name="ITU.unknown" />
+		</enumeration>
+	</suite>
+	<suite code="gurl" description="Standard terms for Internet scripting" name="Internet suite">
+		<command code="GURLGURL" description="Opens a Music Store or audio stream URL" name="openLocation">
+			<direct-parameter description="the URL to open" optional="yes" type="text" />
+		</command>
+	</suite>
+</dictionary>

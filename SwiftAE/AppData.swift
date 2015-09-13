@@ -9,6 +9,12 @@ import Foundation
 import AppKit
 
 
+// TO DO: should be possible to make Selector.appData non-optional now (which should in turn get rid of some crud)
+
+
+// TO DO: arrays and dicts aren't packing/unpacking properly; need to figure out how swift prioritizes generic vs non-generic overloads
+
+
 // TO DO: when unpacking specifiers, may want to use Application instance, not generic AppRoot, as their app root (while ObjSpec, etc. instances contain AppData, AppRoot does not, so won't display itself as Application and can't be extracted and used as-is); this will require Application to pass itself as weak-ref to AppData's init
 
 
@@ -18,48 +24,61 @@ import AppKit
 
 // TO DO: how to support sum types? (suspect this will require better type introspection support in Swift); for now, client code will have to use `Any` and switch on type itself
 
-
-typealias KeywordParameters = [(name: String?, code: OSType, value: Any)]
-
+// TO DO: option for caller to pass their own 'customUnpack' func via command, to be called when standard unpack fails (either due to unrecognized AE type or inability to coerce to specified Swift type)
 
 
-public struct GlueTypes {
-    // Glue-defined specifier classes
+public typealias KeywordParameters = [(name: String?, code: OSType, value: Any)]
+
+public typealias RootObjects = (app: RootSpecifier, con: RootSpecifier, its: RootSpecifier)
+
+
+public struct GlueInfo { // Glue-defined specifier, symbol, and formatter classes; used in (e.g.) AppData.unpack()
     let insertionSpecifierType: InsertionSpecifier.Type
     let objectSpecifierType: ObjectSpecifier.Type
-    let elementsSpecifierType: ElementsSpecifier.Type
+    let elementsSpecifierType: ObjectSpecifier.Type
     let rootSpecifierType: RootSpecifier.Type
-    // Glue-defined symbol class
     let symbolType: Symbol.Type
-    // Glue-defined specifier roots
-    let appRoot: RootSpecifier
-    let conRoot: RootSpecifier
-    let itsRoot: RootSpecifier
+    let formatter: SpecifierFormatter
 }
 
 
 
-public class AppData: CustomStringConvertible {
+public class AppData {
     
-    public var description: String { // for debugging purposes
-        return "AppData(target:.\(self.target))"
-    }
-    
-    // pretty printer will use these
+    // note: SpecifierFormatter can use the following when rendering app roots
     public let target: TargetApplication
     public let launchOptions: LaunchOptions
     public let relaunchMode: RelaunchMode
     
     private var _targetDescriptor: NSAppleEventDescriptor? = nil // targetDescriptor() creates an AEAddressDesc for the target process when dispatching first Apple event, caching it here for subsequent reuse; do not access directly
     
-    private let glueTypes: GlueTypes // glue-defined specifier and symbol classes, and standard root objects
+    private let glueInfo: GlueInfo // glue-defined specifier and symbol classes, and standard root objects
     
-    public init(target: TargetApplication, launchOptions: LaunchOptions, relaunchMode: RelaunchMode, glueTypes: GlueTypes) {
+    var formatter: SpecifierFormatter { return self.glueInfo.formatter }
+    
+    public private(set) var rootObjects: RootObjects!
+    
+    public required init(target: TargetApplication,
+                         launchOptions: LaunchOptions, relaunchMode: RelaunchMode, glueInfo: GlueInfo, rootObjects: RootObjects?) { // should be private, but targetCopy requires it to be required, which in turn requires it to be public
         self.target = target
         self.launchOptions = launchOptions
         self.relaunchMode = relaunchMode
-        self.glueTypes = glueTypes
+        self.glueInfo = glueInfo
+        self.rootObjects = rootObjects ?? (app: glueInfo.rootSpecifierType.init(rootObject: AppRootDesc, appData: self),
+                                           con: glueInfo.rootSpecifierType.init(rootObject: ConRootDesc, appData: self),
+                                           its: glueInfo.rootSpecifierType.init(rootObject: ItsRootDesc, appData: self))
     }
+    
+    public convenience init(glueInfo: GlueInfo) { // create an untargeted AppData instance
+        self.init(target: .None, launchOptions: DefaultLaunchOptions, relaunchMode: .Never, glueInfo: glueInfo, rootObjects: nil)
+    }
+    
+    public func targetCopy(target: TargetApplication, launchOptions: LaunchOptions, relaunchMode: RelaunchMode) -> Self { // create a targeted copy of a [typically untargeted] AppData instance
+        return self.dynamicType.init(target: target,
+                                     launchOptions: launchOptions, relaunchMode: relaunchMode,
+                                     glueInfo: self.glueInfo, rootObjects: self.rootObjects)
+    }
+    
     
     /******************************************************************************/
     // Convert a Swift value to an Apple event descriptor
@@ -67,6 +86,9 @@ public class AppData: CustomStringConvertible {
     let MissingValueDesc = NSAppleEventDescriptor(typeCode: cMissingValue)
     
     // TO DO: using AnyObject causes Bool to become NSNumber, losing correct type
+    
+    // TO DO: what if object is nil?
+    
     public func pack(object: Any) throws -> NSAppleEventDescriptor { // TO DO: optional allowedRoots:Set<RootSpecifier> arg? (also, should fully qualified root be an option?)
 //        print("PACKING: \(object) \(object.dynamicType)")
         switch object {
@@ -107,39 +129,31 @@ public class AppData: CustomStringConvertible {
     }
     
     /******************************************************************************/
-    // Hook methods for unpacking Apple event descriptors as application-specific (i.e. glue-defined) Swift types
-    
-    // TO DO: how best to provide hooks for glue-defined Specifier (ObjectSpecifier, ElementsSpecifier, etc) and Symbol subclasses? (note: Swift demands use of required initializer if dynamicType is used, meaning every app-specific subclass would have to implement it as well, so parameterizing class object itself is impractical; other options would be for glues to supply closures that construct symbol, specifier, etc subclasses, but that doesn't provide any obvious benefit over subclassing and overridding unpackSymbol, etc methods)
-    
-    
-    // TO DO: arrays and dicts aren't packing/unpacking properly; need to figure out how swift prioritizes generic vs non-generic overloads
-    
-    
-    // unpacking hooks
+    // Supporting methods for unpacking symbols and specifiers
 
-    public func unpackSymbol(desc: NSAppleEventDescriptor) -> Symbol { 
-        return self.glueTypes.symbolType.symbol(desc)
+    func unpackSymbol(desc: NSAppleEventDescriptor) -> Symbol {
+        return self.glueInfo.symbolType.symbol(desc.typeCodeValue, type: desc.descriptorType, descriptor: desc)
     }
     
-    public func unpackAEProperty(code: OSType) -> Symbol { // used to unpack AERecord keys as dict keys
-        return self.glueTypes.symbolType.symbol(code, type: typeProperty)
+    func unpackAEProperty(code: OSType) -> Symbol { // used to unpack AERecord keys as Dictionary keys
+        return self.glueInfo.symbolType.symbol(code, type: typeProperty, descriptor: nil) // TO DO: use typeType? (TBH, am tempted to use it throughout, leaving AEM to coerce as necessary, as it'd simplify implementation a bit; also, note that type and property names can often overlap, e.g. `TED.document` may be either)
     }
     
-    public func unpackInsertionLoc(desc: NSAppleEventDescriptor) throws -> Specifier {
+    func unpackInsertionLoc(desc: NSAppleEventDescriptor) throws -> Specifier {
         guard let _ = desc.descriptorForKeyword(keyAEObject), // only used to check InsertionLoc record is correctly formed // TO DO: in unlikely event of receiving a malformed record, would be simpler for unpackParentSpecifiers to use a RootSpecifier that throws error on use, avoiding need for extra check here
                 insertionLocation = desc.descriptorForKeyword(keyAEPosition) else {
-            throw UnpackError(appData: self, descriptor: desc, type: self.glueTypes.insertionSpecifierType,
+            throw UnpackError(appData: self, descriptor: desc, type: self.glueInfo.insertionSpecifierType,
                                 message: "Can't unpack malformed insertion specifier.")
         }
-        return self.glueTypes.insertionSpecifierType.init(insertionLocation: insertionLocation, parentSpecifier: nil, appData: self, cachedDesc: desc)
+        return self.glueInfo.insertionSpecifierType.init(insertionLocation: insertionLocation, parentSelector: nil, appData: self, cachedDesc: desc)
     }
     
-    public func unpackObjectSpecifier(desc: NSAppleEventDescriptor) throws -> Specifier {
+    func unpackObjectSpecifier(desc: NSAppleEventDescriptor) throws -> Specifier {
         guard let _ = desc.descriptorForKeyword(keyAEContainer), // container desc is only used in unpackParentSpecifiers, but confirm its existence
                 wantType = desc.descriptorForKeyword(keyAEDesiredClass),
                 selectorForm = desc.descriptorForKeyword(keyAEKeyForm),
                 selectorDesc = desc.descriptorForKeyword(keyAEKeyData) else {
-            throw UnpackError(appData: self, descriptor: desc, type: self.glueTypes.objectSpecifierType,
+            throw UnpackError(appData: self, descriptor: desc, type: self.glueInfo.objectSpecifierType,
                                message: "Can't unpack malformed object specifier.")
         }
         do {
@@ -149,16 +163,16 @@ public class AppData: CustomStringConvertible {
                                 || (formCode == formAbsolutePosition && selectorDesc.descriptorType == typeEnumerated
                                     && [kAEFirst, kAEMiddle, kAELast, kAEAny, kAEAll].contains(selectorDesc.enumCodeValue)))
                                ? selectorDesc : try self.unpack(selectorDesc)
-            // TO DO: following class constructors need to be glue-customizable hooks
+            // TO DO: need 'strict AS emulation' option to fully unpack and repack specifiers, re-setting cachedDesc (TBH, only app that ever had this problem was iView Media Pro, since it takes a double whammy of app bugs to cause an app to puke on receiving objspecs it previously created itself)
             if formCode == formRange || formCode == formTest || (formCode == formAbsolutePosition && selectorDesc.enumCodeValue == kAEAll) {
-                return self.glueTypes.elementsSpecifierType.init(wantType: wantType, selectorForm: selectorForm, selectorData: selectorData,
-                                                                 parentSpecifier: nil, appData: self, cachedDesc: desc)
+                return self.glueInfo.elementsSpecifierType.init(wantType: wantType, selectorForm: selectorForm, selectorData: selectorData,
+                                                                 parentSelector: nil, appData: self, cachedDesc: desc)
             } else {
-                return self.glueTypes.objectSpecifierType.init(wantType: wantType, selectorForm: selectorForm, selectorData: selectorData,
-                                                               parentSpecifier: nil, appData: self, cachedDesc: desc)
+                return self.glueInfo.objectSpecifierType.init(wantType: wantType, selectorForm: selectorForm, selectorData: selectorData,
+                                                               parentSelector: nil, appData: self, cachedDesc: desc)
             }
         } catch {
-            throw UnpackError(appData: self, descriptor: desc, type: self.glueTypes.objectSpecifierType,
+            throw UnpackError(appData: self, descriptor: desc, type: self.glueInfo.objectSpecifierType,
                               message: "Can't unpack object specifier's selector data.") // TO DO: need to chain errors
         }
     }
@@ -167,7 +181,7 @@ public class AppData: CustomStringConvertible {
         return try RangeSelector(appData: self, desc: desc)
     }
     
-    public func unpackCompDescriptor(desc: NSAppleEventDescriptor) throws -> TestClause {
+    func unpackCompDescriptor(desc: NSAppleEventDescriptor) throws -> TestClause {
         if let operatorType = desc.descriptorForKeyword(keyAECompOperator),
                 operand1Desc = desc.descriptorForKeyword(keyAEObject1),
                 operand2Desc = desc.descriptorForKeyword(keyAEObject2) {
@@ -175,7 +189,7 @@ public class AppData: CustomStringConvertible {
             let operand1 = try self.unpack(operand1Desc), operand2 = try self.unpack(operand2Desc) // TO DO: catch and rethrow with additional details
             if operatorType.typeCodeValue == kAEContains && !(operand1 is ObjectSpecifier) {
                 if let op2 = operand2 as? ObjectSpecifier {
-                    return ComparisonTest(operatorType: _IsIn, operand1: op2, operand2: operand1, appData: self, cachedDesc: desc)
+                    return ComparisonTest(operatorType: gIsIn, operand1: op2, operand2: operand1, appData: self, cachedDesc: desc)
                 }
             } else if let op1 = operand1 as? ObjectSpecifier {
                 return ComparisonTest(operatorType: operatorType, operand1: op1, operand2: operand2, appData: self, cachedDesc: desc)
@@ -185,7 +199,7 @@ public class AppData: CustomStringConvertible {
 
     }
     
-    public func unpackLogicalDescriptor(desc: NSAppleEventDescriptor) throws -> TestClause {
+    func unpackLogicalDescriptor(desc: NSAppleEventDescriptor) throws -> TestClause {
         if let operatorType = desc.descriptorForKeyword(keyAELogicalOperator),
                 operandsDesc = desc.descriptorForKeyword(keyAEObject) {
             // TO DO: also check operatorType is valid?
@@ -287,7 +301,7 @@ public class AppData: CustomStringConvertible {
             }
         } else if T.self is Symbol.Type {
             if desc.coerceToDescriptorType(typeType) != nil { // AEM happily coerces between typeType, typeEnum, typeProperty, etc., so use that to check suitability rather than check for specific hardcoded descriptorTypes
-                return Symbol.symbol(desc) as! T
+                return self.unpackSymbol(desc) as! T
             }
         } else if T.self == NSDate.self {
              if let result = desc.dateValue {
@@ -339,11 +353,11 @@ public class AppData: CustomStringConvertible {
             return try self.unpackRangeDescriptor(desc)
         case typeNull: // null descriptor indicates object specifier root
  //           print("UNPACK NULLDESC")
-            return self.glueTypes.appRoot // TO DO: use original Application instance? (main problem is that this would create cyclic reference, with no obvious way to weakref it; one solution would be for AppData to store a _copy_ of the original Application instance; still need to think this through)
+            return self.rootObjects.app // TO DO: use original Application instance? (main problem is that this would create cyclic reference, with no obvious way to weakref it; one solution would be for AppData to store a _copy_ of the original Application instance (but that copy then requires a ref to appData); still need to think this through)
         case typeCurrentContainer:
-            return self.glueTypes.conRoot
+            return self.rootObjects.con
         case typeObjectBeingExamined:
-            return self.glueTypes.itsRoot
+            return self.rootObjects.its
         case typeCompDescriptor:
             return try self.unpackCompDescriptor(desc)
         case typeLogicalDescriptor:
@@ -404,6 +418,8 @@ public class AppData: CustomStringConvertible {
                 self._targetDescriptor = NSAppleEventDescriptor(processIdentifier: pid)
             case .Descriptor(let desc):
                 self._targetDescriptor = desc
+            case .None:
+                throw UntargetedCommandError()
             }
         }
         return self._targetDescriptor!
@@ -474,7 +490,7 @@ public class AppData: CustomStringConvertible {
         var subjectDesc = AppRootDesc
         // ... but if the command was called on a Specifier, decide if that specifier should be packed as event's subject
         // or, as a special case, used as event's keyDirectObject/keyAEInsertHere parameter for user's convenience
-        if !(parentSpecifier is Application) {
+        if !(parentSpecifier is RootSpecifier) { // technically Application, but there isn't an explicit class for that
             if eventClass == kAECoreSuite && eventID == kAECreateElement { // for user's convenience, `make` command is treated as a special case
                 // if `make` command is called on a specifier, use that specifier as event's `at` parameter if not already given
                 if event.paramDescriptorForKeyword(keyAEInsertHere) != nil { // an `at` parameter was already given, so pack parent specifier as event's subject attribute
@@ -535,7 +551,7 @@ public class AppData: CustomStringConvertible {
             }
         }
         if sendMode.contains(.WaitForReply) {
-            // if return type is NSAppleEventDescriptor, return the entire reply event
+            // if return type is NSAppleEventDescriptor, return the entire reply event // TO DO: think this is a bad choice; would be better to define 'ReplyAppleEventDescriptor' subtype specifically for this purpose, and
             if T.self is NSAppleEventDescriptor.Type {
                 return replyEvent as! T
             }

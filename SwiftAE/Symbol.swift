@@ -12,25 +12,30 @@ import Foundation
 
 public class Symbol: Hashable, Equatable, CustomStringConvertible, SelfPacking {
     
-    var cachedDesc: NSAppleEventDescriptor?
-    public let name: String, code: OSType, type: OSType
+    private var cachedDesc: NSAppleEventDescriptor?
+    public let name: String?, code: OSType, type: OSType
     
-    public required init(name: String, code: OSType, type: OSType = typeType, cachedDesc: NSAppleEventDescriptor? = nil) { // TO DO: optional prefix? or is that something for glue subclasses to do? TO DO: name should also be optional, to allow raw codes; Q. should code be optional, to allow Symbol class to be used as-is in dynamic bridges? (problem here would be that initializer requires one or both; if neither given, an error must be raised; might be safest to provide separate convenience initializers for this, or poss. use a subclass that overrides packSelf for dynamic use; also see TODO on descriptor var below - suggest dynamic bridging is best ignored until it's time to cross it)
+    var typeAliasName: String {return "Symbol"}
+    
+    public required init(name: String?, code: OSType, type: OSType = typeType, cachedDesc: NSAppleEventDescriptor? = nil) { // TO DO: optional prefix? or is that something for glue subclasses to do? TO DO: name should also be optional, to allow raw codes; Q. should code be optional, to allow Symbol class to be used as-is in dynamic bridges? (problem here would be that initializer requires one or both; if neither given, an error must be raised; might be safest to provide separate convenience initializers for this, or poss. use a subclass that overrides packSelf for dynamic use; also see TODO on descriptor var below - suggest dynamic bridging is best ignored until it's time to cross it)
         self.name = name
         self.code = code
         self.type = type
         self.cachedDesc = cachedDesc
     }
     
-    // these are called by AppData when unpacking typeType, typeEnumerated, etc; glue-defined symbol subclasses should override to return glue-defined symbols
-    public class func symbol(code: OSType, type: OSType = typeType) -> Symbol {
-        return self.init(name: "UNKNOWN", code: code, type: type, cachedDesc: nil) // TO DO: what to use as name if only four-char code is available?
-    }
-    public class func symbol(desc: NSAppleEventDescriptor) -> Symbol {
-        return self.init(name: "UNKNOWN", code: desc.typeCodeValue, type: desc.descriptorType, cachedDesc: desc) // TO DO: ditto
+    // this is called by AppData when unpacking typeType, typeEnumerated, etc; glue-defined symbol subclasses should override to return glue-defined symbols where available
+    public class func symbol(code: OSType, type: OSType = typeType, descriptor: NSAppleEventDescriptor? = nil) -> Symbol {
+        return self.init(name: nil, code: code, type: type, cachedDesc: descriptor) // TO DO: what to use as name if only four-char code is available?
     }
     
-    public var description: String {return "Symbol(name: \"\(name)\", code: \(code), type: \(type))"}
+    public var description: String {
+        if let name = self.name {
+            return "\(self.typeAliasName).\(name)"
+        } else {
+            return "\(self.dynamicType).symbol(code: \(self.code), type: \(self.type))"
+        }
+    }
     
     // TO DO: implement overrideable class method for unpacking descs as glue-defined (and/or standard) Symbols
     

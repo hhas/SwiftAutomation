@@ -7,6 +7,11 @@ import Foundation
 import AppKit
 
 
+// Used in ApplicationExtension initializers
+
+public let DefaultLaunchOptions: LaunchOptions = .WithoutActivation
+public let DefaultRelaunchMode: RelaunchMode = .Limited
+
 // Indicates omitted command parameter
 
 public class _NoParameter {}
@@ -30,6 +35,7 @@ public enum TargetApplication {
     case BundleIdentifier(String)
     case ProcessIdentifier(pid_t)
     case Descriptor(NSAppleEventDescriptor) // AEAddressDesc
+    case None // used in untargeted AppData instances; sendAppleEvent() will raise UntargetedCommandError if called
     
     var isRelaunchable: Bool {
         switch self {

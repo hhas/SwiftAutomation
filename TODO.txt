@@ -12,11 +12,11 @@ TO DO:
 
 
 
-- rename `asType:` to `type:`? (what's shortest possible? would unnamed trailing arg be practical?); any way to avoid 'asType:' parameter and match on return type only? (problem is that compilation fails unless type is already inferrable)
+- need to check app commands will reliably match on return type (e.g. one potential problem is that swiftc complains unless type is already inferrable)
 
 
 
-- 'class' property support for Dictionary-AERecord mapping
+- 'class' property support for Dictionary-AERecord mapping (i.e. AERecords with custom descriptorType need to unpack that type as dict's' 'Symbol.class_' key, and vice-versa when packing); also, support glue option for unpacking as structs based on dictionary '[record] class' definitions (this will be unreliable since app terminology is often flaky/incomplete/incorrect, so unpacking records as dicts would remain the default behavior, but on occasions where it does work would be convenient for users; '[PREFIX][CLASSNAME]' struct types would need to implement their own 'unpack-self' initializer and be passed via glue info, probably also define a 'Record' protocol)
 
 
 
@@ -29,13 +29,11 @@ TO DO:
 
 
 
-- glue-specific subclasses should keep classnames short, e.g. TEDObject, TEDElements, TEDInsertion, TEDApplication
-
 
 - option to disable desc caching in specifiers (i.e. emulate exactly how AS does it)? (actually, it's not caching that's the issue so much as unpacking; it would be sufficient to do a full unpack, then repack as cachedDesc - a little inefficent if the objspec won't be re-sent to app, but since it's an extremely rare problem case this won't matter); option to enable 64-bit integer pack/unpack
 
 
-- by-test selector currently doesn't confirm ITS-based root before packing test clause; similarly, by-range selector doesn't confirm APP/CON-based roots for start+stop specifiers; implementing this either means extra mixin subclasses (so type system can enforce it) or pack-time checking (so it can be reported as a command error) - though whether it's worth doing has yet to be decided
+- by-test selector currently doesn't confirm ITS-based root before packing test clause; similarly, by-range selector doesn't confirm APP/CON-based roots for start+stop specifiers; implementing this either means extra mixin subclasses (so type system can enforce it) or pack-time checking (so it can be reported as a command error) - though whether it's worth doing has yet to be decided (having a complete set of specifier variants just for constructing `its` based specifiers will add code complexity and would be problematic for unpacking since objspecs need to be fully unpacked to determine root type but standard behavior is to shallow unpack objspecs for efficiency and only fully unpack when necessary)
 
 
 
