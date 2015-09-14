@@ -25,10 +25,8 @@ do {
 
     //*
     
-    let result1 = try te.make(new: TED.document) //, withProperties: [TED.text: "Hello World!"]) // TO DO: array and dict packing is currently busted so can't currently be used as command parameters
-    
-    if let objspec = result1 as? TEDObject { try objspec.text.set(to: "Hello!") } // temp kludge around for above
-    
+    let result1 = try te.make(new: TED.document, withProperties: [TED.text: "Hello World!"])
+        
     print(result1) // TO DO: resulting specifier shows a 'TEDApp' root but needs to show 'TextEdit()' root; see TODO in SpecifierFormatter
     
     print(try (result1 as! TEDObject).text.get())

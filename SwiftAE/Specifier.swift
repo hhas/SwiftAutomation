@@ -37,15 +37,15 @@ public class Selector: CustomStringConvertible, SelfPacking { // TO DO: Equatabl
         return self.cachedDesc!
     }
     
-    private func packSelf() throws -> NSAppleEventDescriptor { // subclasses must override this to pack themselves
+    private func packSelf() throws -> NSAppleEventDescriptor { // this implementation should never be called; subclasses must override this to pack themselves
         throw NotImplementedError()
     }
     
     // misc
     
-    var parentSelector: Selector { return self } // janky; subclasses must override this
+    var parentSelector: Selector { return self } // this implementation should never be called; subclasses must override this
     
-    public var rootSpecifier: RootSpecifier { return gNullAppData.rootObjects.app } // janky; subclasses must override this
+    public var rootSpecifier: RootSpecifier { return gNullAppData.rootObjects.app } // this implementation should never be called; subclasses must override this
     
     public var description: String { return self.appData.formatter.format(self) }
 }
@@ -203,13 +203,9 @@ public class ObjectSpecifier: Specifier, ObjectSpecifierProtocol { // represents
         desc.setDescriptor(try self.appData.pack(self.selectorData), forKeyword: keyAEKeyData)
         return desc
     }
-    
-    // note: vars and methods that return new specifier instances must be defined by protocol extension in order to return glue-defined types
-    
+        
     // Containment test constructors
     // TO DO: ideally the following should only appear on objects constructed from an Its root; however, this will make the class/protocol hierarchy more complicated, so may be more hassle than it's worth - maybe explore this later, once the current implementation is fully working
-    
-    // TO DO: following should prob. use self.appData; when constructed from Its root, this will pass nullAppData
     
     func beginsWith(value: Any) -> TestClause {
         return ComparisonTest(operatorType: gBeginsWith, operand1: self, operand2: value, appData: self.appData, cachedDesc: nil)

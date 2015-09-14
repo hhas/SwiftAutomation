@@ -9,13 +9,10 @@ import Foundation
 import AppKit
 
 
-// TO DO: create Formatter protocol, allowing formatter class to be completely replaced?
-
-// TO DO: when formatting specifiers, what info is needed? appData, isNestedSpecifier; anything else? (note, this data ought to be available throughout; e.g. given a list of specifiers, current nesting flag should be carried over; there is also the question of when to adopt specifier's own appData vs use the one already provided to formatter; furthermore, it might be argued that AppData should do the formatting itself [although that leaves the flag problem])
+// TO DO: when formatting specifiers, what info is needed? appData?, isNestedSpecifier; anything else? (note, this data ought to be available throughout; e.g. given a list of specifiers, current nesting flag should be carried over; there is also the question of when to adopt specifier's own appData vs use the one already provided to formatter; furthermore, it might be argued that AppData should do the formatting itself [although that leaves the flag problem])
 
 // TO DO: how to display nested App root as shorthand? (really need separate description(nested:Bool) func, or else use visitor API - note that a simplified api only need replicate constructor calls, not individual specifier+selector method calls; it also gives cleaner approach to glue-specific hooks and dynamic use, and encapsulating general Swift type formatting)
 
-        // problem: static glues need terms for generic specifiers, which don't have AppData, so formatter can't go on AppData - it has to go on Specifier, as per-glue static constant
 
 /******************************************************************************/
 // Formatter
@@ -23,7 +20,7 @@ import AppKit
 // used by a Specifier's description property to render Swift literal representation of itself;
 // static glues extend this with application-specific code->name translation tables
 
-class SpecifierFormatter { // TO DO: public
+public class SpecifierFormatter {
     
     // caution: if sending events to self, processes _must_ useSDEF=true or call this function on a background thread, otherwise SwiftAETranslateAppleEvent will deadlock the main loop when it tries to fetch host app's AETE via ascr/gdte event
     
@@ -31,12 +28,14 @@ class SpecifierFormatter { // TO DO: public
 //        return try SwiftAETranslateAppleEvent(event, useSDEF: useSDEF)
 //    }
     
+    
+    // TO DO: add optional 'commandNames' arg for use by formatAppleEvent()? need to decide how best to design API for formatting AEs (for efficiency, it would make sense to put all terms in a SpecifierFormatter instance, allowing it to be created once and cached for reuse; might make sense for formatAppleEvent to create and manage static cache itself, perhaps with a maxsize limit to prevent cache growing too large, or a flushCache method for explicitly clearing it out?)
         
     
     let applicationClassName: String, classNamePrefix: String // used to render specifier roots (Application, App, Con, Its)
     let propertyNames: [OSType:String], elementsNames: [OSType:String] // note: dicts should also used in dynamic appdata to translate attribute names to ostypes
     
-    required init(applicationClassName: String = "Application", classNamePrefix: String = "",
+    public required init(applicationClassName: String = "Application", classNamePrefix: String = "",
                   propertyNames: [OSType:String] = [:], elementsNames: [OSType:String] = [:]) {
         self.applicationClassName = applicationClassName
         self.classNamePrefix = classNamePrefix
@@ -45,7 +44,7 @@ class SpecifierFormatter { // TO DO: public
     }
     
     
-    func format(object: Any) -> String {
+    public func format(object: Any) -> String {
         // formats Specifier, Symbol as literals
         switch object {
             // TO DO: this isn't right yet: specifiers with different formatter should use that formatter (think we're getting tied in knots here regarding static vs dynamic - and since dynamic requires a completely different appdata+formatter it's kinda academic)
@@ -225,12 +224,12 @@ class SpecifierFormatter { // TO DO: public
 
 
 
-func formatValue(object: Any) -> String {
+func formatValue(value: Any) -> String { // TO DO: while this function can be used standalone, might be cleanest just to make it a member of SpecifierFormatter
     // formats AE-bridged Swift types as literal syntax; other Swift types will show their default description
-    switch object {
-    case let obj as [Any]:
+    switch value {
+    case let obj as NSArray: // HACK; see also AppData.pack()
         return "[" + obj.map({formatValue($0)}).joinWithSeparator(", ") + "]"
-    case let obj as NSDictionary: // kluge as Swift can't express [AnyHashable:AnyObject]
+    case let obj as NSDictionary: // HACK; see also AppData.pack()
         return "[" + obj.map({"\(formatValue($0)): \(formatValue($1))"}).joinWithSeparator(", ") + "]"
     case let obj as String:
         let tmp = NSMutableString(string: obj)
@@ -239,7 +238,7 @@ func formatValue(object: Any) -> String {
         }
         return "\"\(tmp)\""
     case let obj as NSDate:
-        return "NSDate(string:\(formatValue(obj.description)))" // TO DO: fix this representation
+        return "NSDate(string:\(formatValue(obj.description)))" // TO DO: fix this representation (not sure what's best; maybe include human-readable date string as inline comment?)
     case let obj as NSURL:
         return "NSURL(string:\(formatValue(obj.absoluteString)))"
     case let obj as NSNumber:
@@ -248,10 +247,10 @@ func formatValue(object: Any) -> String {
         if CFBooleanGetTypeID() == CFGetTypeID(obj) { // voodoo: NSNumber class cluster uses __NSCFBoolean
             return obj == 0 ? "false" : "true"
         } else {
-            return "\(object)"
+            return "\(value)"
         }
     default:
-        return "\(object)" // SwiftAE objects (specifiers, symbols) are self-formatting; any other Swift object will use its default description (which may or may not be the same as its literal representation, but that's Swift's problem, not ours)
+        return "\(value)" // SwiftAE objects (specifiers, symbols) are self-formatting; any other Swift object will use its own default description (which may or may not be the same as its literal representation, but that's Swift's problem, not ours)
     }
 }
 

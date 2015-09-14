@@ -9,10 +9,19 @@ import Foundation
 import AppKit
 
 
-// TO DO: should be possible to make Selector.appData non-optional now (which should in turn get rid of some crud)
+// TO DO: rename nullAppData (untargetedAppData? defaultAppData?)
 
 
-// TO DO: arrays and dicts aren't packing/unpacking properly; need to figure out how swift prioritizes generic vs non-generic overloads
+// TO DO: fix packing of Arrays and Dictionarys; currently pack() casts to NSArray/NSDictionary, but this fails when object's dynamicType is (e.g.) [Any] (only [AnyObject] is allowed), and screws up type information on Bool, Int, Double values (since Swift's NSNumber bridging is dreadful)
+
+
+// TO DO: split into untargeted and targeted classes? or is current arrangement good enough? (mostly it's about returning appropriate app root in unpack)
+
+
+// TO DO: how to allow mixed Symbol/String keys in Dictionarys? (simplest would be for Symbol to represent both, e.g. with [Code]Symbol and UserSymbol subclasses, although that's not entirely elegant)
+
+
+// TO DO: arrays and dicts aren't unpacking properly when asType: is given; need to figure out how swift prioritizes generic vs non-generic overloads
 
 
 // TO DO: when unpacking specifiers, may want to use Application instance, not generic AppRoot, as their app root (while ObjSpec, etc. instances contain AppData, AppRoot does not, so won't display itself as Application and can't be extracted and used as-is); this will require Application to pass itself as weak-ref to AppData's init
@@ -56,7 +65,7 @@ public class AppData {
     
     var formatter: SpecifierFormatter { return self.glueInfo.formatter }
     
-    public private(set) var rootObjects: RootObjects!
+    public private(set) var rootObjects: RootObjects! // note: this will be set by main initializer, but needs to be [implicitly] optional var otherwise compiler will complain about self being used before it's fully initialized
     
     public required init(target: TargetApplication,
                          launchOptions: LaunchOptions, relaunchMode: RelaunchMode, glueInfo: GlueInfo, rootObjects: RootObjects?) { // should be private, but targetCopy requires it to be required, which in turn requires it to be public
@@ -64,23 +73,24 @@ public class AppData {
         self.launchOptions = launchOptions
         self.relaunchMode = relaunchMode
         self.glueInfo = glueInfo
+        // Create untargeted App/Con/Its root specifiers (note that storing these RootSpecifier instances in this AppData instance this creates an uncollectable refcycle between them, but since these objects are only created once per glue and used as global constants, it isn't an issue in practice)
         self.rootObjects = rootObjects ?? (app: glueInfo.rootSpecifierType.init(rootObject: AppRootDesc, appData: self),
                                            con: glueInfo.rootSpecifierType.init(rootObject: ConRootDesc, appData: self),
                                            its: glueInfo.rootSpecifierType.init(rootObject: ItsRootDesc, appData: self))
     }
     
-    public convenience init() {
+    public convenience init() { // for test purposes only (note: this will leak memory each time it's used, and returned Specifiers will be minimally functional; for general programming tasks, use AEApplication.nullAppData)
         self.init(glueInfo: GlueInfo(insertionSpecifierType: InsertionSpecifier.self, objectSpecifierType: ObjectSpecifier.self,
                                      elementsSpecifierType: ObjectSpecifier.self, rootSpecifierType: RootSpecifier.self,
                                      symbolType: Symbol.self, formatter: SpecifierFormatter()))
     }
     
-    // create an untargeted AppData instance
+    // create an untargeted AppData instance for a glue file's private gNullAppData constant (note: this will leak memory each time it's used so is not for general use; for general programming tasks, use AEApplication.nullAppData)
     public convenience init(glueInfo: GlueInfo) {
         self.init(target: .None, launchOptions: DefaultLaunchOptions, relaunchMode: .Never, glueInfo: glueInfo, rootObjects: nil)
     }
     
-    // create a targeted copy of a [typically untargeted] AppData instance
+    // create a targeted copy of a [typically untargeted] AppData instance; Application inits should always use this to create targeted AppData instances
     public func targetCopy(target: TargetApplication, launchOptions: LaunchOptions, relaunchMode: RelaunchMode) -> Self {
         return self.dynamicType.init(target: target, launchOptions: launchOptions, relaunchMode: relaunchMode,
                                                         glueInfo: self.glueInfo, rootObjects: self.rootObjects)
@@ -96,42 +106,48 @@ public class AppData {
     
     // TO DO: what if object is nil?
     
-    public func pack(object: Any) throws -> NSAppleEventDescriptor { // TO DO: optional allowedRoots:Set<RootSpecifier> arg? (also, should fully qualified root be an option?)
+    public func pack(value: Any) throws -> NSAppleEventDescriptor { // TO DO: optional allowedRoots:Set<RootSpecifier> arg? (that wouldn't really help, since cachedDescs would need to be pulled apart to check); also, should packing specifiers with fully qualified root be an option? (inclined to say no, since only Automator uses those, and Automator is moribund junk; plus, again, cachedDescs would need to be pulled apart and rebuilt)
 //        print("PACKING: \(object) \(object.dynamicType)")
-        switch object {
+        switch value {
         // what to use for date, file? NSDate, NSURL/SwiftAEURL?
         // what to use for typeNull? (don't want to use nil; NSNull?)
         // what about cMissingValue? (currently Symbol)
-        case let obj as SelfPacking:
-            return try obj.packSelf(self)
         case let obj as NSAppleEventDescriptor:
             return obj
-        case let obj as Bool: // TO DO: this is not reliable; ObjC bridge tends to convert Bools, Ints, Doubles to NSNumbers, requiring specific tests; see AEB implementation for details
-            return NSAppleEventDescriptor(boolean: obj)
-        case let obj as Int: // TO DO: Int8, etc (e.g. convert toIntMax)
-            if Int(Int32.min) <= obj && obj <= Int(Int32.max) {
+        case let val as SelfPacking:
+            return try val.packSelf(self)
+        case let val as Bool: // TO DO: this is not reliable; ObjC bridge tends to convert Bools, Ints, Doubles to NSNumbers, requiring specific tests; see AEB implementation for details
+            return NSAppleEventDescriptor(boolean: val)
+        case let val as Int: // TO DO: Int8, etc (e.g. convert toIntMax)
+            if Int(Int32.min) <= val && val <= Int(Int32.max) {
                 return NSAppleEventDescriptor(int32: 0 as Int32)
             } else {
-                return NSAppleEventDescriptor(double: Double(obj)) // TO DO: 64-bit compatibility option
+                return NSAppleEventDescriptor(double: Double(val)) // TO DO: 64-bit compatibility option
             }
-        case let obj as Double:
-            return NSAppleEventDescriptor(double: obj)
-        case let obj as String:
-            return NSAppleEventDescriptor(string: obj)
+        case let val as Double:
+            return NSAppleEventDescriptor(double: val)
+        case let val as String:
+            return NSAppleEventDescriptor(string: val)
         case let obj as NSDate:
           return NSAppleEventDescriptor(date: obj)
         case let obj as NSURL:
           return NSAppleEventDescriptor(fileURL: obj)
-        case let obj as NSArray: // TO DO: 'let obj as [Any]' doesn't work (Swift refuses to cast from Any to [Any] for some reason)
+        case let obj as NSArray: // HACK; TO DO: 'let obj as [Any]' doesn't work (Swift refuses to cast from Any to [Any] for some reason); note: casting to NSArray/NSDictionary will screw up Bool/Int/Double representations (which get bridged to NSNumber), and will fail to match if object's dynamic type is `[Any]` (since non-objects can't cross Swift-ObjC bridge), so this isn't a permanent solution
             let desc = NSAppleEventDescriptor.listDescriptor()
             for item in obj { desc.insertDescriptor(try self.pack(item), atIndex: 0) }
             return desc
-        case let obj as [Symbol:Any]: // TO DO: suspect this won't work either; TO DO: how to allow mixed Symbol/String keys? (simplest would be for Symbol to represent both, e.g. with CodeSymbol and UserSymbol subclasses)
+        case let obj as NSDictionary: // HACK; TO DO: `let obj as [Symbol:Any]` doesn't won't work either
             let desc = NSAppleEventDescriptor.recordDescriptor()
-            for (key, item) in obj { desc.setDescriptor(try self.pack(item), forKeyword: key.code) }
+            for (key, value) in obj {
+                if let keySymbol = key as? Symbol {
+                    desc.setDescriptor(try self.pack(value), forKeyword: keySymbol.code)
+                } else {
+                    throw NotImplementedError() // for now, only Symbol keys are supported (still to decide how string keys should be dealt with)
+                }
+            }
             return desc
         default:
-            throw PackError(object: object)
+            throw PackError(object: value)
         }
     }
     
@@ -145,6 +161,8 @@ public class AppData {
     func unpackAEProperty(code: OSType) -> Symbol { // used to unpack AERecord keys as Dictionary keys
         return self.glueInfo.symbolType.symbol(code, type: typeProperty, descriptor: nil) // TO DO: use typeType? (TBH, am tempted to use it throughout, leaving AEM to coerce as necessary, as it'd simplify implementation a bit; also, note that type and property names can often overlap, e.g. `TED.document` may be either)
     }
+    
+    var appRoot: RootSpecifier { return self.rootObjects.app } // TO DO: use original Application instance? when unpacking an objspec chain, it would be best if targeted AppData unpacks its main root as Application, and any nested objspecs' roots as App. Main problem is that storing Application instance inside AppData would create cyclic reference, with no obvious way to weakref it. Alternatively, since chain is lazily unpacked, it'd be possible for unpackParentSpecifiers() to instantiate a new Application object at the time (this would mean changing the way that unpackParentSpecifiers works). For now, might be simplest just to instantiate a new Application instance here each time - although that's not ideal for unpacking sub-specifiers (but they might be better unpacked using nullAppData); poss. just add an optional arg to unpack() that allows callers to specify which root to use, but picking the right AppData class with which to unpack a nested desc would be cleaner)
     
     func unpackInsertionLoc(desc: NSAppleEventDescriptor) throws -> Specifier {
         guard let _ = desc.descriptorForKeyword(keyAEObject), // only used to check InsertionLoc record is correctly formed // TO DO: in unlikely event of receiving a malformed record, would be simpler for unpackParentSpecifiers to use a RootSpecifier that throws error on use, avoiding need for extra check here
@@ -352,15 +370,13 @@ public class AppData {
             return self.unpackSymbol(desc)
             // object specifiers
         case typeObjectSpecifier:
-//            print("UNPACK OBJSPEC: \(desc)")
             return try self.unpackObjectSpecifier(desc)
         case typeInsertionLoc:
             return try self.unpackInsertionLoc(desc)
         case typeRangeDescriptor:
             return try self.unpackRangeDescriptor(desc)
         case typeNull: // null descriptor indicates object specifier root
- //           print("UNPACK NULLDESC")
-            return self.rootObjects.app // TO DO: use original Application instance? (main problem is that this would create cyclic reference, with no obvious way to weakref it; one solution would be for AppData to store a _copy_ of the original Application instance (but that copy then requires a ref to appData); still need to think this through)
+            return self.appRoot
         case typeCurrentContainer:
             return self.rootObjects.con
         case typeObjectBeingExamined:
