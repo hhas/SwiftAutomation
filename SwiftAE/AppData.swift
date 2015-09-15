@@ -79,13 +79,13 @@ public class AppData {
                                            its: glueInfo.rootSpecifierType.init(rootObject: ItsRootDesc, appData: self))
     }
     
-    public convenience init() { // for test purposes only (note: this will leak memory each time it's used, and returned Specifiers will be minimally functional; for general programming tasks, use AEApplication.nullAppData)
+    public convenience init() { // used in Specifier file to keep compiler happy (note: this will leak memory each time it's used, and returned Specifiers will be minimally functional; for general programming tasks, use AEApplication.nullAppData instead)
         self.init(glueInfo: GlueInfo(insertionSpecifierType: InsertionSpecifier.self, objectSpecifierType: ObjectSpecifier.self,
                                      elementsSpecifierType: ObjectSpecifier.self, rootSpecifierType: RootSpecifier.self,
                                      symbolType: Symbol.self, formatter: SpecifierFormatter()))
     }
     
-    // create an untargeted AppData instance for a glue file's private gNullAppData constant (note: this will leak memory each time it's used so is not for general use; for general programming tasks, use AEApplication.nullAppData)
+    // create a new untargeted AppData instance for a glue file's private gNullAppData constant (note: this will leak memory each time it's used so users should not call it themselves; instead, use AEApplication.nullAppData to return an already-created instance suitable for general programming tasks)
     public convenience init(glueInfo: GlueInfo) {
         self.init(target: .None, launchOptions: DefaultLaunchOptions, relaunchMode: .Never, glueInfo: glueInfo, rootObjects: nil)
     }
@@ -110,13 +110,13 @@ public class AppData {
 //        print("PACKING: \(object) \(object.dynamicType)")
         switch value {
         // what to use for date, file? NSDate, NSURL/SwiftAEURL?
-        // what to use for typeNull? (don't want to use nil; NSNull?)
-        // what about cMissingValue? (currently Symbol)
+        // what to use for typeNull? (don't want to use nil; NSNull?) Q. is there any use case where passing AEApp (which always packs itself as typeNull and should always be included in SwiftAE) wouldn't be sufficient?
+        // what about cMissingValue? (currently Symbol) (TBH, deciding optimal representation for 'missing value' is a somewhat intractable problem since app commands that return Any? will be much more annoying than if they return Any - which is already annoying enough)
         case let obj as NSAppleEventDescriptor:
             return obj
         case let val as SelfPacking:
             return try val.packSelf(self)
-        case let val as Bool: // TO DO: this is not reliable; ObjC bridge tends to convert Bools, Ints, Doubles to NSNumbers, requiring specific tests; see AEB implementation for details
+        case let val as Bool: // TO DO: this is not reliable; ObjC bridge tends to convert Bools, Ints, Doubles to NSNumbers, requiring specific tests; see AppleEventBridge implementation for details
             return NSAppleEventDescriptor(boolean: val)
         case let val as Int: // TO DO: Int8, etc (e.g. convert toIntMax)
             if Int(Int32.min) <= val && val <= Int(Int32.max) {
@@ -333,7 +333,7 @@ public class AppData {
                  return result as! T
              }
         } else if T.self == NSURL.self {
-             if let result = desc.fileURLValue { // TO DO: roundtripping of typeAlias, typeBookmarkData, etc? (as in AEB, this'd require a custom NSURL subclass to cache the original descriptor and return it again when repacked)
+             if let result = desc.fileURLValue { // TO DO: roundtripping of typeAlias, typeBookmarkData, etc? (as in AppleEventBridge, this'd require a custom NSURL subclass to cache the original descriptor and return it again when repacked)
                  return result as! T
              }
         } else {

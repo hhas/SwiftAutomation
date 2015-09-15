@@ -7,17 +7,19 @@
 import Foundation
 import AppKit
 
+// TO DO: underscore-prefix private/internal properties and methods to reduce risk of terminology clashes
+
 
 /******************************************************************************/
 // abstract base class for _all_ specifier and test clause subclasses
 
-private let gNullAppData = AppData() // dummy instance; glues will provide their own untargeted AppData instances
+private let gNullAppData = AppData() // dummy instance to keep compiler happy; glues will define their own private gNullAppData constants containing an untargeted AppData instance
 
 
 public class Selector: CustomStringConvertible, SelfPacking { // TO DO: Equatable?
     
     public let appData: AppData
-    var cachedDesc: NSAppleEventDescriptor?
+    internal private(set) var cachedDesc: NSAppleEventDescriptor?
     
     init(appData: AppData, cachedDesc: NSAppleEventDescriptor?) { // cachedDesc is supplied on unpacking
         self.appData = appData

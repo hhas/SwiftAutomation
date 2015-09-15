@@ -1,0 +1,40 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+        <title>SwiftAE | Introduction</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <style type="text/css" media="all"><!--@import url(full.css);--></style>
+    </head>
+    <body>
+        <div id="wrap">
+            <div id="main">
+                <h1>Introduction</h1>
+                <div class="navbar"><a href="index.html">index</a> | <a href="understanding-apple-events.html">next</a></div>
+                <h2>What is SwiftAE?</h2>
+
+<p>SwiftAE allows you to control Apple event-aware ("AppleScriptable") Mac OS X applications from Swift programs.</p>
+
+<p>For example, to get the value of the first paragraph of the topmost document in TextEdit:</p>
+
+<pre><code>  let result = try TextEdit().documents[1].paragraphs[1].get() as! String
+</code></pre>
+
+<p>This is equivalent to the AppleScript statement:</p>
+
+<pre><code>  tell application id "com.apple.TextEdit" to get paragraph 1 of document 1
+</code></pre>
+
+<h2>"Hello World!" example</h2>
+
+<p>The following example uses SwiftAE to create a new "Hello World!" document in TextEdit:</p>
+
+<pre><code>  let textedit = TextEdit()
+
+  try textedit.make(new: TED.document, withProperties: [TED.text: "Hello World!"])
+</code></pre>
+
+            </div>
+        </div>
+        <div id="footer"><div class="navbar"><a href="index.html">index</a> | <a href="understanding-apple-events.html">next</a></div></div>
+    </body>
+</html>

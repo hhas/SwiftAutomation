@@ -38,15 +38,53 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		4F0E39001BA76CB600FF2A96 /* mkdoc */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = mkdoc; sourceTree = "<group>"; };
+		4F0E391F1BA76D8400FF2A96 /* 1 introduction.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "1 introduction.md"; path = "doc-source/1 introduction.md"; sourceTree = "<group>"; };
+		4F0E39201BA76D8400FF2A96 /* 2 understanding-apple-events.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "2 understanding-apple-events.md"; path = "doc-source/2 understanding-apple-events.md"; sourceTree = "<group>"; };
+		4F0E39211BA76D8400FF2A96 /* 3 a-quick-tutorial.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "3 a-quick-tutorial.md"; path = "doc-source/3 a-quick-tutorial.md"; sourceTree = "<group>"; };
+		4F0E39221BA76D8400FF2A96 /* 4 creating-and-using-static-glues.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "4 creating-and-using-static-glues.md"; path = "doc-source/4 creating-and-using-static-glues.md"; sourceTree = "<group>"; };
+		4F0E39231BA76D8400FF2A96 /* 5 ae-type-mappings.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "5 ae-type-mappings.md"; path = "doc-source/5 ae-type-mappings.md"; sourceTree = "<group>"; };
+		4F0E39241BA76D8400FF2A96 /* 6 application-objects.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "6 application-objects.md"; path = "doc-source/6 application-objects.md"; sourceTree = "<group>"; };
+		4F0E39251BA76D8400FF2A96 /* 7 object-specifiers.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "7 object-specifiers.md"; path = "doc-source/7 object-specifiers.md"; sourceTree = "<group>"; };
+		4F0E39261BA76D8400FF2A96 /* 8 commands.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "8 commands.md"; path = "doc-source/8 commands.md"; sourceTree = "<group>"; };
+		4F0E39271BA76D8400FF2A96 /* 9 examples.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "9 examples.md"; path = "doc-source/9 examples.md"; sourceTree = "<group>"; };
+		4F0E39281BA76D8400FF2A96 /* 10 optimizing-performance.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "10 optimizing-performance.md"; path = "doc-source/10 optimizing-performance.md"; sourceTree = "<group>"; };
+		4F0E39291BA76D8400FF2A96 /* 11 low-level-apis.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "11 low-level-apis.md"; path = "doc-source/11 low-level-apis.md"; sourceTree = "<group>"; };
+		4F0E392A1BA76D8400FF2A96 /* 12 notes.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "12 notes.md"; path = "doc-source/12 notes.md"; sourceTree = "<group>"; };
+		4F0E392B1BA76D8400FF2A96 /* application_architecture.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = application_architecture.gif; path = "doc-source/application_architecture.gif"; sourceTree = "<group>"; };
+		4F0E392C1BA76D8400FF2A96 /* application_architecture2.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = application_architecture2.gif; path = "doc-source/application_architecture2.gif"; sourceTree = "<group>"; };
+		4F0E392D1BA76D8400FF2A96 /* client_app_to_itunes_event.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = client_app_to_itunes_event.gif; path = "doc-source/client_app_to_itunes_event.gif"; sourceTree = "<group>"; };
+		4F0E392E1BA76D8400FF2A96 /* finder_to_textedit_event.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = finder_to_textedit_event.gif; path = "doc-source/finder_to_textedit_event.gif"; sourceTree = "<group>"; };
+		4F0E392F1BA76D8400FF2A96 /* full.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; name = full.css; path = "doc-source/full.css"; sourceTree = "<group>"; };
+		4F0E39301BA76D8400FF2A96 /* relationships_example.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = relationships_example.gif; path = "doc-source/relationships_example.gif"; sourceTree = "<group>"; };
+		4F0E39321BA864A400FF2A96 /* a-quick-tutorial.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = "a-quick-tutorial.html"; sourceTree = "<group>"; };
+		4F0E39331BA864A400FF2A96 /* ae-type-mappings.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = "ae-type-mappings.html"; sourceTree = "<group>"; };
+		4F0E39341BA864A400FF2A96 /* application-objects.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = "application-objects.html"; sourceTree = "<group>"; };
+		4F0E39351BA864A400FF2A96 /* application_architecture.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = application_architecture.gif; sourceTree = "<group>"; };
+		4F0E39361BA864A400FF2A96 /* application_architecture2.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = application_architecture2.gif; sourceTree = "<group>"; };
+		4F0E39371BA864A400FF2A96 /* client_app_to_itunes_event.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = client_app_to_itunes_event.gif; sourceTree = "<group>"; };
+		4F0E39381BA864A400FF2A96 /* commands.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = commands.html; sourceTree = "<group>"; };
+		4F0E39391BA864A400FF2A96 /* creating-and-using-static-glues.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = "creating-and-using-static-glues.html"; sourceTree = "<group>"; };
+		4F0E393A1BA864A400FF2A96 /* examples.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = examples.html; sourceTree = "<group>"; };
+		4F0E393B1BA864A400FF2A96 /* finder_to_textedit_event.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = finder_to_textedit_event.gif; sourceTree = "<group>"; };
+		4F0E393C1BA864A400FF2A96 /* full.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = full.css; sourceTree = "<group>"; };
+		4F0E393D1BA864A400FF2A96 /* index.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = index.html; sourceTree = "<group>"; };
+		4F0E393E1BA864A400FF2A96 /* introduction.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = introduction.html; sourceTree = "<group>"; };
+		4F0E393F1BA864A400FF2A96 /* low-level-apis.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = "low-level-apis.html"; sourceTree = "<group>"; };
+		4F0E39401BA864A400FF2A96 /* notes.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = notes.html; sourceTree = "<group>"; };
+		4F0E39411BA864A400FF2A96 /* object-specifiers.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = "object-specifiers.html"; sourceTree = "<group>"; };
+		4F0E39421BA864A400FF2A96 /* optimizing-performance.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = "optimizing-performance.html"; sourceTree = "<group>"; };
+		4F0E39431BA864A400FF2A96 /* relationships_example.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = relationships_example.gif; sourceTree = "<group>"; };
+		4F0E39441BA864A400FF2A96 /* understanding-apple-events.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = "understanding-apple-events.html"; sourceTree = "<group>"; };
 		4F1D12401BA3042600875F74 /* SpecifierExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpecifierExtensions.swift; sourceTree = "<group>"; };
 		4F2645A41BA37C5000256402 /* SwiftAEGlueTemplate.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = SwiftAEGlueTemplate.txt; sourceTree = "<group>"; };
 		4F2645A51BA3F1F900256402 /* aeglue */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = aeglue; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.python; };
 		4F2645A71BA4243E00256402 /* TextEditGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextEditGlue.swift; sourceTree = "<group>"; };
-		4F2645A91BA424FC00256402 /* TextEditGlue-swift.sdef */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "TextEditGlue-swift.sdef"; sourceTree = "<group>"; };
+		4F2645A91BA424FC00256402 /* TextEditGlue.swift.sdef */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = TextEditGlue.swift.sdef; sourceTree = "<group>"; };
 		4F2645AB1BA4F27700256402 /* AEApplicationGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AEApplicationGlue.swift; sourceTree = "<group>"; };
-		4F2645AD1BA59A0E00256402 /* FinderGlue-swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "FinderGlue-swift.sdef"; sourceTree = "<group>"; };
+		4F2645AD1BA59A0E00256402 /* FinderGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = FinderGlue.swift.sdef; sourceTree = "<group>"; };
 		4F2645AE1BA59A0E00256402 /* FinderGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FinderGlue.swift; sourceTree = "<group>"; };
-		4F2645AF1BA59A0E00256402 /* ITunesGlue-swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "ITunesGlue-swift.sdef"; sourceTree = "<group>"; };
+		4F2645AF1BA59A0E00256402 /* ITunesGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = ITunesGlue.swift.sdef; sourceTree = "<group>"; };
 		4F2645B01BA59A0E00256402 /* ITunesGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ITunesGlue.swift; sourceTree = "<group>"; };
 		4F53812A1BA62541001F24A9 /* README */ = {isa = PBXFileReference; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
 		4F63C4241B7CF06E000D74EE /* SwiftAE */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SwiftAE; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -78,6 +116,57 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4F0E38FF1BA76C8300FF2A96 /* doc-source */ = {
+			isa = PBXGroup;
+			children = (
+				4F0E391F1BA76D8400FF2A96 /* 1 introduction.md */,
+				4F0E39201BA76D8400FF2A96 /* 2 understanding-apple-events.md */,
+				4F0E39211BA76D8400FF2A96 /* 3 a-quick-tutorial.md */,
+				4F0E39221BA76D8400FF2A96 /* 4 creating-and-using-static-glues.md */,
+				4F0E39231BA76D8400FF2A96 /* 5 ae-type-mappings.md */,
+				4F0E39241BA76D8400FF2A96 /* 6 application-objects.md */,
+				4F0E39251BA76D8400FF2A96 /* 7 object-specifiers.md */,
+				4F0E39261BA76D8400FF2A96 /* 8 commands.md */,
+				4F0E39271BA76D8400FF2A96 /* 9 examples.md */,
+				4F0E39281BA76D8400FF2A96 /* 10 optimizing-performance.md */,
+				4F0E39291BA76D8400FF2A96 /* 11 low-level-apis.md */,
+				4F0E392A1BA76D8400FF2A96 /* 12 notes.md */,
+				4F0E392B1BA76D8400FF2A96 /* application_architecture.gif */,
+				4F0E392C1BA76D8400FF2A96 /* application_architecture2.gif */,
+				4F0E392D1BA76D8400FF2A96 /* client_app_to_itunes_event.gif */,
+				4F0E392E1BA76D8400FF2A96 /* finder_to_textedit_event.gif */,
+				4F0E392F1BA76D8400FF2A96 /* full.css */,
+				4F0E39301BA76D8400FF2A96 /* relationships_example.gif */,
+			);
+			name = "doc-source";
+			sourceTree = "<group>";
+		};
+		4F0E39311BA864A400FF2A96 /* swiftae-manual */ = {
+			isa = PBXGroup;
+			children = (
+				4F0E39321BA864A400FF2A96 /* a-quick-tutorial.html */,
+				4F0E39331BA864A400FF2A96 /* ae-type-mappings.html */,
+				4F0E39341BA864A400FF2A96 /* application-objects.html */,
+				4F0E39351BA864A400FF2A96 /* application_architecture.gif */,
+				4F0E39361BA864A400FF2A96 /* application_architecture2.gif */,
+				4F0E39371BA864A400FF2A96 /* client_app_to_itunes_event.gif */,
+				4F0E39381BA864A400FF2A96 /* commands.html */,
+				4F0E39391BA864A400FF2A96 /* creating-and-using-static-glues.html */,
+				4F0E393A1BA864A400FF2A96 /* examples.html */,
+				4F0E393B1BA864A400FF2A96 /* finder_to_textedit_event.gif */,
+				4F0E393C1BA864A400FF2A96 /* full.css */,
+				4F0E393D1BA864A400FF2A96 /* index.html */,
+				4F0E393E1BA864A400FF2A96 /* introduction.html */,
+				4F0E393F1BA864A400FF2A96 /* low-level-apis.html */,
+				4F0E39401BA864A400FF2A96 /* notes.html */,
+				4F0E39411BA864A400FF2A96 /* object-specifiers.html */,
+				4F0E39421BA864A400FF2A96 /* optimizing-performance.html */,
+				4F0E39431BA864A400FF2A96 /* relationships_example.gif */,
+				4F0E39441BA864A400FF2A96 /* understanding-apple-events.html */,
+			);
+			path = "swiftae-manual";
+			sourceTree = "<group>";
+		};
 		4F2645A31BA37C2B00256402 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -91,6 +180,7 @@
 		4F2645A61BA3F58F00256402 /* bin */ = {
 			isa = PBXGroup;
 			children = (
+				4F0E39001BA76CB600FF2A96 /* mkdoc */,
 				4F2645A51BA3F1F900256402 /* aeglue */,
 			);
 			name = bin;
@@ -99,12 +189,12 @@
 		4F2645B31BA59A2000256402 /* sample glues */ = {
 			isa = PBXGroup;
 			children = (
-				4F2645A91BA424FC00256402 /* TextEditGlue-swift.sdef */,
 				4F2645A71BA4243E00256402 /* TextEditGlue.swift */,
-				4F2645AD1BA59A0E00256402 /* FinderGlue-swift.sdef */,
+				4F2645A91BA424FC00256402 /* TextEditGlue.swift.sdef */,
 				4F2645AE1BA59A0E00256402 /* FinderGlue.swift */,
-				4F2645AF1BA59A0E00256402 /* ITunesGlue-swift.sdef */,
+				4F2645AD1BA59A0E00256402 /* FinderGlue.swift.sdef */,
 				4F2645B01BA59A0E00256402 /* ITunesGlue.swift */,
+				4F2645AF1BA59A0E00256402 /* ITunesGlue.swift.sdef */,
 			);
 			name = "sample glues";
 			sourceTree = "<group>";
@@ -114,6 +204,8 @@
 			children = (
 				4FEFCF1C1B93A31E0013FFC8 /* TODO.txt */,
 				4F53812A1BA62541001F24A9 /* README */,
+				4F0E38FF1BA76C8300FF2A96 /* doc-source */,
+				4F0E39311BA864A400FF2A96 /* swiftae-manual */,
 				4F2645A61BA3F58F00256402 /* bin */,
 				4F63C4261B7CF06E000D74EE /* SwiftAE */,
 				4F63C4321B7CF13E000D74EE /* test */,

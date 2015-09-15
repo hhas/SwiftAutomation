@@ -263,9 +263,8 @@ class AppInfo:
     def makeglue(self, outdir, allowoverwrite, shellcmd):
         terms = self.terminology()
         renderglue(readtemplate('SwiftAEGlueTemplate'), outdir, self.gluename+'.swift', self, terms, allowoverwrite, shellcmd)
-        sdeffilenamesuffix = 'swift.sdef'
         if self.appurl:
-            exportsdef(self.appurl, os.path.join(outdir, '%s-%s' % (self.gluename, sdeffilenamesuffix)),
+            exportsdef(self.appurl, os.path.join(outdir, '%s.swift.sdef' % self.gluename),
                        self.keywordconverter, self.prefix, allowoverwrite)
 
 

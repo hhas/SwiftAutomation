@@ -79,7 +79,7 @@ public class SpecifierFormatter {
         if let name = self.propertyNames[code] ?? self.elementsNames[code] {
             return ".\(name)"
         } else { // no code->name translation available
-            return ".property(\(self.format(UTCreateStringForOSType(code).takeRetainedValue())))"
+            return ".property(\(formatFourCharCodeString(code)))"
         }
     }
     
@@ -87,7 +87,7 @@ public class SpecifierFormatter {
         if let name = self.elementsNames[code] ?? self.propertyNames[code] {
             return ".\(name)"
         } else { // no code->name translation available
-            return ".elements(\(self.format(UTCreateStringForOSType(code).takeRetainedValue())))"
+            return ".elements(\(formatFourCharCodeString(code)))"
         }
     }
     
@@ -253,5 +253,18 @@ func formatValue(value: Any) -> String { // TO DO: while this function can be us
         return "\(value)" // SwiftAE objects (specifiers, symbols) are self-formatting; any other Swift object will use its own default description (which may or may not be the same as its literal representation, but that's Swift's problem, not ours)
     }
 }
+
+
+
+
+func FourCharCodeString(code: OSType) -> String {
+    return UTCreateStringForOSType(code).takeRetainedValue() as String
+}
+
+func formatFourCharCodeString(code: OSType) -> String {
+    return "\"\(FourCharCodeString(code))\"" // TO DO: unfinished; non-alphanumeric chars should appear as \x00 codes
+}
+
+
 
 

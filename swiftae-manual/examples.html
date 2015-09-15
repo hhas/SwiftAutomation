@@ -1,0 +1,211 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+        <title>SwiftAE | Examples</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <style type="text/css" media="all"><!--@import url(full.css);--></style>
+    </head>
+    <body>
+        <div id="wrap">
+            <div id="main">
+                <h1>Examples</h1>
+                <div class="navbar"><a href="commands.html">back</a> | <a href="index.html">index</a> | <a href="optimizing-performance.html">next</a></div>
+                <p>// TO DO: include corresponding aeglue commands as comments</p>
+
+<h2>Application objects</h2>
+
+<pre><code>  // application id "com.apple.Finder"
+
+  let finder = Finder() // (use the glue's default bundle ID)
+
+  let finder = Finder(bundleIdentifier: "com.apple.finder")
+
+  // application "Adobe InDesign CS6"
+
+  let indesign = AdobeInDesign(name: "Adobe InDesign CS6")
+
+  // application "Macintosh HD:Applications:TextEdit.app:"
+
+  let textedit = TextEdit(name: "/Applications/TextEdit.app")
+
+  // application "iTunes" of machine "eppc://jsmith@media-mac.local"
+
+  let itunes = ITunes(url: NSURL(string: "eppc://jsmith@media-mac.local/iTunes"))
+</code></pre>
+
+<h2>Property references</h2>
+
+<pre><code>  // a reference to startup disk of application "Finder"
+  finder.startupDisk
+
+  // a reference to name of folder 1 of home of application "Finder"
+  finder.home.folders[1].name
+
+  // a reference to name of every item of home of application "Finder"
+  finder.home.items.name
+
+  // a reference to text of every document of application "TextEdit"
+  textedit.documents.text
+
+  // a reference to color of character 1 of every paragraph of text ¬
+  //     of document 1 of application "TextEdit"
+  textedit.documents[1].text.paragraphs.characters[1].color
+</code></pre>
+
+<h2>All elements references</h2>
+
+<pre><code>  // a reference to disks of application "Finder"
+  finder.disks
+
+  // a reference to every word of every paragraph ¬
+  //     of text of every document of application "TextEdit"
+  textedit.documents.text.paragraphs.words
+</code></pre>
+
+<h2>Single element references</h2>
+
+<pre><code>  // a reference to disk 1 of application "Finder"
+  finder.disks[1]
+
+  // a reference to file "ReadMe.txt" of folder "Documents" of home of application "Finder"
+  finder.home.folders["Documents"].files["ReadMe.txt"]
+
+  // a reference to paragraph -1 of text of document 1 of application "TextEdit"
+  textedit.documents[1].text.paragraphs[-1]
+
+  // a reference to middle paragraph of text of last document of application "TextEdit"
+  textedit.documents.last.text.paragraphs.middle
+
+  // a reference to any file of home of application "Finder"
+  finder.home.files.any
+</code></pre>
+
+<h2>Relative references</h2>
+
+<pre><code>  // a reference to paragraph before paragraph 6 of text of document 1 of application "TextEdit"
+  textedit.documents[1].text.paragraphs[6].previous(TED.paragraph)
+
+  // a reference to paragraph after character 30 of document 1 of application "Tex-Edit Plus"
+  texeditplus.documents[1].characters[30].next(TEP.paragraph)
+</code></pre>
+
+<h2>Element range references</h2>
+
+<pre><code>  // a reference to words 1 thru 4 of text of document 1 of application "TextEdit"
+  textedit.documents[1].text.words[1, 4]
+
+
+  // a reference to paragraphs 2 thru -1 of text of document 1 of application "TextEdit"
+  textedit.documents[1].text.paragraphs[2, -1]
+
+  // a reference to folders "Documents" thru "Music" of home of application "Finder"
+  finder.home.folders["Documents", "Music"]
+
+  // a reference to text (word 3) thru (paragraph 7) of document 1 of application "Tex-Edit Plus"
+  texeditplus.documents[1].text[TEPCon.words[3], TEPCon.paragraphs[7]]
+</code></pre>
+
+<h2>Test references</h2>
+
+<pre><code>  // a reference to every document of application "TextEdit" whose text is "\n"
+  textedit.documents[TEDIts.text == "\n"]
+
+  // a reference to every paragraph of document 1 of application "Tex-Edit Plus" ¬
+  //      whose first character is last character
+  texeditplus.documents[1].paragraphs[TEPIts.characters.first == TEPIts.characters.last]
+
+  // a reference to every file of folder "Documents" of home of application "Finder" ¬
+  //      whose name extension is "txt" and size &lt; 10240
+  finder.home.folders["Documents"].files[FINIts.nameExtension == "txt" &amp;&amp; FINIts.size &lt; 10240]
+</code></pre>
+
+<h2>Insertion location references</h2>
+
+<pre><code>  // a reference to end of documents of application "TextEdit"
+  textedit.documents.end
+
+  // a reference to before paragraph 1 of text of document 1 of application "TextEdit"
+  textedit.documents[1].text.paragraphs[1].before
+</code></pre>
+
+<h2><code>get</code> command</h2>
+
+<p>Get the name of every folder in the user's home folder:</p>
+
+<pre><code>  // tell application "Finder" to get name of every folder of home
+  try finder.get(FINApp.home.folders.name)
+</code></pre>
+
+<p>Note that if the direct parameter is omitted from the argument list, the reference that the command is invoked on is used instead. For example, the above example would normally be written as:</p>
+
+<pre><code>  try finder.home.folders.name.get()
+</code></pre>
+
+<h2><code>set</code> command</h2>
+
+<p>Set the content of a TextEdit document:</p>
+
+<pre><code>  // tell application "TextEdit" to set text of document 1 to "Hello World"
+  try textedit.documents[1].text.set(to: "Hello World")
+</code></pre>
+
+<h2><code>count</code> command</h2>
+
+<p>Count the words in a TextEdit document:</p>
+
+<pre><code>  // tell application "TextEdit" to count words of document 1
+  try textedit.documents[1].words.count()
+</code></pre>
+
+<p>Count the items in the current user's home folder:</p>
+
+<pre><code>  // tell application "Finder" to count items of home
+  try finder.home.count(each: FIN.item)
+</code></pre>
+
+<p>(Note that Finder and many other Carbon applications require the <code>count</code> command's <code>each</code> parameter to be given. Cocoa-based apps should always accept either form.)</p>
+
+<h2><code>make</code> command</h2>
+
+<p>Create a new TextEdit document:</p>
+
+<pre><code>  // tell application "TextEdit" to make new document ¬
+  //     with properties {text:"Hello World\n"}
+  try textedit.make(new: TED.document, withProperties: [TED.text: "Hello World\n"])
+</code></pre>
+
+<p>Append text to a TextEdit document:</p>
+
+<pre><code>  // tell application "TextEdit" to make new paragraph ¬
+  //     at end of text of document 1 ¬
+  //     with properties {text:"Yesterday\nToday\nTomorrow\n"}
+  try textedit.make(new: TED.paragraph, 
+                     at: TEDApp.documents[1].text.end,
+               withData: "Yesterday\nToday\nTomorrow\n")
+</code></pre>
+
+<h2><code>duplicate</code> command</h2>
+
+<p>Duplicate a folder to a disk, replacing an existing item if one exists:</p>
+
+<pre><code>  // tell application "Finder"
+  //     duplicate folder "Projects" of home to disk "Work" with replacing
+  // end tell
+  try finder.home.folders["Projects"].duplicate(to: FINApp.disks["Backup"], replacing: true)
+</code></pre>
+
+<h2><code>add</code> command</h2>
+
+<p>Add every person with a known birthday to a group named "Birthdays": </p>
+
+<pre><code>  // tell application "Contacts"
+  //     add every person whose birth date is not missing value to group "Birthdays"
+  // end tell
+  try contacts.people[CONIts.birthDate != CON.missingValue].add(to: CONApp.groups["Birthdays"])
+</code></pre>
+
+            </div>
+        </div>
+        <div id="footer"><div class="navbar"><a href="commands.html">back</a> | <a href="index.html">index</a> | <a href="optimizing-performance.html">next</a></div></div>
+    </body>
+</html>

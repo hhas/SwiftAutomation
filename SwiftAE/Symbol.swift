@@ -24,16 +24,26 @@ public class Symbol: Hashable, Equatable, CustomStringConvertible, SelfPacking {
         self.cachedDesc = cachedDesc
     }
     
+    // convenience constructors for creating Symbols using raw four-char codes
+    
+    public convenience init(code: String, type: String = "type") {
+        self.init(name: nil, code: UTGetOSTypeFromString(code), type: UTGetOSTypeFromString(type))
+    }
+    
+    public convenience init(code: OSType, type: OSType = typeType) {
+        self.init(name: nil, code: code, type: type)
+    }
+    
     // this is called by AppData when unpacking typeType, typeEnumerated, etc; glue-defined symbol subclasses should override to return glue-defined symbols where available
     public class func symbol(code: OSType, type: OSType = typeType, descriptor: NSAppleEventDescriptor? = nil) -> Symbol {
-        return self.init(name: nil, code: code, type: type, cachedDesc: descriptor) // TO DO: what to use as name if only four-char code is available?
+        return self.init(name: nil, code: code, type: type, cachedDesc: descriptor)
     }
     
     public var description: String {
         if let name = self.name {
             return "\(self.typeAliasName).\(name)"
         } else {
-            return "\(self.dynamicType).symbol(code: \(self.code), type: \(self.type))"
+            return "\(self.dynamicType)(code: \"\(formatFourCharCodeString(self.code))\", type: \"\(formatFourCharCodeString(self.type))\")"
         }
     }
     

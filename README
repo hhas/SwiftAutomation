@@ -32,8 +32,8 @@ currently cannot be used in application commands, and command methods
 always return Any (specializing return types via generics is proving
 tricky to implement reliably).
 
-Documentation is not yet included; for now, see the documentation for the
-prototype Swift-AE bridge in the AppleEventBridge project.
+A rough draft of the SwiftAE documentation (ported from AppleEventBridge)
+is included. Expect errors, omissions, etc.
 
 
 ## Get it

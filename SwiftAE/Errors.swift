@@ -218,7 +218,7 @@ public class CommandError: SwiftAEError {
     }
 
 
-    /* TO DO: incorporate this error message construction code
+    /* TO DO: update and incorporate this error message construction code (taken from AppleEventBridge)
 
     let aemError = error as NSError // an AEBCommand-supplied NSError containing (none/some/all?) standard AE error keys in its userInfo dict; these should be replaced by public constants (note that the 'expectedType' value is a typeType descriptor supplied by the application where appropriate, and not to be confused with the Swift Type supplied by the caller via the asType: argument nor the typeType descriptor supplied via the requestedType: arg)
     

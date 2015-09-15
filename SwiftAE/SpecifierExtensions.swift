@@ -16,6 +16,10 @@
 import Foundation
 
 
+// TO DO: would be useful if Application classes could provide information on the current targeted process (full path, PID), esp for troubleshooting (note: it might be sufficient to put these properties on AppData and let users dig it out from there; this would also minimize namespace pollution and reduce the likelihood of conflicts with dictionary-defined vars/funcs added by glue generator)
+
+
+
 /******************************************************************************/
 // Property/single-element specifier; identifies an attribute/describes a one-to-one relationship between nodes in the app's AEOM graph
 
@@ -161,7 +165,7 @@ public protocol ApplicationExtension: RootSpecifierExtension {}
 
 extension ApplicationExtension {
     
-    public var targetApplication: TargetApplication {return self.appData.target} // TO DO: include this? (might be useful to user for troubleshooting); what about processID (if local)?
+//    public var targetApplication: TargetApplication {return self.appData.target} // TO DO: include this? (might be useful to user for troubleshooting); what about processID (if local)?
     
     private init(target: TargetApplication, launchOptions: LaunchOptions, relaunchMode: RelaunchMode) {
         let appData = Self.nullAppData.targetCopy(target, launchOptions: launchOptions, relaunchMode: relaunchMode)
