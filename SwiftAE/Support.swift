@@ -135,3 +135,17 @@ func processDescriptorForLocalApplication(url: NSURL, launchOptions: LaunchOptio
 }
 
 
+
+func OSTypeFromString(code: NSString) throws -> OSType { // note: use this instead of UTGetOSTypeFromString to get better error reporting
+    if (code.length != 4) {
+        throw SwiftAEError(code: 1, message: "Invalid four-char code (wrong length): \(formatValue(code))")
+    }
+    guard let data = code.dataUsingEncoding(NSMacOSRomanStringEncoding) else {
+        throw SwiftAEError(code: 1, message: "Invalid four-char code (bad encoding): \(formatValue(code))")
+    }
+    var tmp: UInt32 = 0
+    data.getBytes(&tmp, length: 4)
+    return CFSwapInt32HostToBig(tmp)
+}
+
+
