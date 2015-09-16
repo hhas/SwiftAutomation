@@ -9,7 +9,33 @@
 
 import Foundation
 
-//*
+/*
+let p = SDEFParser()
+do {
+    try p.parse(try GetSDEF(NSURL(fileURLWithPath: "/Applications/TextEdit.app")))
+    print(p.types)
+    print(p.enumerators)
+    print(p.properties)
+    print(p.elements)
+    print(p.commands)
+} catch {
+    print(error)
+}
+*/
+
+
+do {
+    let p = try AEApplication(name:"TextEdit").parseAETE()
+    print(p.types)
+    print(p.enumerators)
+    print(p.properties)
+    print(p.elements)
+    print(p.commands)
+} catch {
+    print(error)
+}
+
+/*
 
 do {
     
@@ -175,6 +201,7 @@ do {
 } catch {
     print("\n\nERROR6: \(error)")
 }
+
 */
 
-
+*/*/*/*/

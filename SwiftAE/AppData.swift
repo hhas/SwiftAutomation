@@ -15,6 +15,9 @@ import AppKit
 // TO DO: fix packing of Arrays and Dictionarys; currently pack() casts to NSArray/NSDictionary, but this fails when object's dynamicType is (e.g.) [Any] (only [AnyObject] is allowed), and screws up type information on Bool, Int, Double values (since Swift's NSNumber bridging is dreadful)
 
 
+// TO DO: explicit 'as' parameter? (suspect it can't always be inferred from return type, plus it should prob. only be passed when user explicitly states it)
+
+
 // TO DO: split into untargeted and targeted classes? or is current arrangement good enough? (mostly it's about returning appropriate app root in unpack)
 
 
@@ -50,6 +53,8 @@ public struct GlueInfo { // Glue-defined specifier, symbol, and formatter classe
     let formatter: SpecifierFormatter
 }
 
+
+/******************************************************************************/
 
 
 public class AppData {
@@ -336,6 +341,8 @@ public class AppData {
              if let result = desc.fileURLValue { // TO DO: roundtripping of typeAlias, typeBookmarkData, etc? (as in AppleEventBridge, this'd require a custom NSURL subclass to cache the original descriptor and return it again when repacked)
                  return result as! T
              }
+        } else if T.self == NSAppleEventDescriptor.self {
+            return desc as! T
         } else {
 //            print(T.self)
             throw UnpackError(appData: self, descriptor: desc, type: T.self, message: "SwiftAE doesn't recognize this Swift type.")
@@ -403,47 +410,11 @@ public class AppData {
     
     
     /******************************************************************************/
-    // Get AEAddressDesc for target application
+    // get AEAddressDesc for target application
     
     public func targetDescriptor() throws -> NSAppleEventDescriptor? {
         if self._targetDescriptor == nil {
-            switch self.target {
-            case .Current:
-                return nil
-            case .Name(let name): // app name or full path
-                var url: NSURL
-                if name.hasPrefix("/") { // full path (note: path must include .app suffix)
-                    url = NSURL(fileURLWithPath: name)
-                } else { // if name is not full path, look up by name (.app suffix is optional)
-                    let workspace = NSWorkspace.sharedWorkspace()
-                    if let path = workspace.fullPathForApplication(name) ?? workspace.fullPathForApplication("\(name).app") {
-                        url = NSURL(fileURLWithPath: path)
-                    } else {
-                        throw ConnectionError(target: self.target, message: "Application not found.")
-                    }
-                }
-                self._targetDescriptor = try processDescriptorForLocalApplication(url, launchOptions: self.launchOptions)
-            case .URL(let url): // file/eppc URL
-                if url.fileURL {
-                    
-                } else if url.scheme == "eppc" {
-                    self._targetDescriptor = NSAppleEventDescriptor(applicationURL: url)
-                } else {
-                    throw ConnectionError(target: self.target, message: "Invalid URL scheme (not file/eppc).")
-                }
-            case .BundleIdentifier(let bundleIdentifier, _):
-                if let url = NSWorkspace.sharedWorkspace().URLForApplicationWithBundleIdentifier(bundleIdentifier) {
-                    self._targetDescriptor = try processDescriptorForLocalApplication(url, launchOptions: self.launchOptions)
-                } else {
-                    throw ConnectionError(target: self.target, message: "Application not found.")
-                }
-            case .ProcessIdentifier(let pid):
-                self._targetDescriptor = NSAppleEventDescriptor(processIdentifier: pid)
-            case .Descriptor(let desc):
-                self._targetDescriptor = desc
-            case .None:
-                throw UntargetedCommandError()
-            }
+            self._targetDescriptor = try self.target.descriptor(self.launchOptions)
         }
         return self._targetDescriptor!
     }
@@ -574,10 +545,9 @@ public class AppData {
             }
         }
         if sendMode.contains(.WaitForReply) {
-            // if return type is NSAppleEventDescriptor, return the entire reply event // TO DO: think this is a bad choice; would be better to define 'ReplyAppleEventDescriptor' subtype specifically for this purpose, and
-            if T.self is NSAppleEventDescriptor.Type {
-                return replyEvent as! T
-            }
+            // if rawReply && (T.self is NSAppleEventDescriptor.Type || T.self is Any.Type) { // TO DO: need explicit 'rawReply' arg/flag
+            //    return replyEvent as! T
+            // }
             if replyEvent.paramDescriptorForKeyword(keyErrorNumber) ?? 0 != 0 { // check if an application error occurred
                 throw CommandError(appData: self, event: event, replyEvent: replyEvent)
             } else if let resultDesc = replyEvent.paramDescriptorForKeyword(keyDirectObject) {
@@ -609,5 +579,35 @@ public class AppData {
             sendOptions: sendOptions, withTimeout: withTimeout, considering: considering, asType: T.self)
     }
 
+}
+
+
+
+/******************************************************************************/
+// used by AppData.sendAppleEvent() to pack ConsideringOptions as enumConsiderations (old-style) and enumConsidsAndIgnores (new-style) attributes // TO DO: move to AppData?
+
+private let considerationsTable: [(Considerations, NSAppleEventDescriptor, UInt32, UInt32)] = [
+    // note: Swift mistranslates considering/ignoring mask constants as Int, not UInt32, so redefine them here
+    (.Case,             NSAppleEventDescriptor(enumCode: kAECase),              0x00000001, 0x00010000),
+    (.Diacritic,        NSAppleEventDescriptor(enumCode: kAEDiacritic),         0x00000002, 0x00020000),
+    (.WhiteSpace,       NSAppleEventDescriptor(enumCode: kAEWhiteSpace),        0x00000004, 0x00040000),
+    (.Hyphens,          NSAppleEventDescriptor(enumCode: kAEHyphens),           0x00000008, 0x00080000),
+    (.Expansion,        NSAppleEventDescriptor(enumCode: kAEExpansion),         0x00000010, 0x00100000),
+    (.Punctuation,      NSAppleEventDescriptor(enumCode: kAEPunctuation),       0x00000020, 0x00200000),
+    (.NumericStrings,   NSAppleEventDescriptor(enumCode: kASNumericStrings),    0x00000080, 0x00800000),
+]
+
+private func packConsideringAndIgnoringFlags(considerations: ConsideringOptions) -> (NSAppleEventDescriptor, NSAppleEventDescriptor) {
+    let considerationsListDesc = NSAppleEventDescriptor.listDescriptor()
+    var consideringIgnoringFlags: UInt32 = 0
+    for (consideration, considerationDesc, consideringMask, ignoringMask) in considerationsTable {
+        if considerations.contains(consideration) {
+            consideringIgnoringFlags |= consideringMask
+            considerationsListDesc.insertDescriptor(considerationDesc, atIndex: 0)
+        } else {
+            consideringIgnoringFlags |= ignoringMask
+        }
+    }
+    return (considerationsListDesc, UInt32Descriptor(consideringIgnoringFlags)) // old-style flags (list of enums), new-style flags (bitmask)
 }
 

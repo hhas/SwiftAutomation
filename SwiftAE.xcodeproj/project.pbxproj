@@ -7,8 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		4F0E39461BA86B5F00FF2A96 /* Terminology.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39451BA86B5F00FF2A96 /* Terminology.swift */; settings = {ASSET_TAGS = (); }; };
+		4F0E39461BA86B5F00FF2A96 /* TermTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39451BA86B5F00FF2A96 /* TermTypes.swift */; settings = {ASSET_TAGS = (); }; };
 		4F0E39491BA8717D00FF2A96 /* SDEFParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39481BA8717D00FF2A96 /* SDEFParser.swift */; settings = {ASSET_TAGS = (); }; };
+		4F0E394D1BA8C16300FF2A96 /* KeywordConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E394C1BA8C16300FF2A96 /* KeywordConverter.swift */; settings = {ASSET_TAGS = (); }; };
+		4F0E394F1BA8D2F600FF2A96 /* AETEParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E394E1BA8D2F600FF2A96 /* AETEParser.swift */; settings = {ASSET_TAGS = (); }; };
+		4F0E39511BA9A7EA00FF2A96 /* GlueBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39501BA9A7EA00FF2A96 /* GlueBuilder.swift */; settings = {ASSET_TAGS = (); }; };
+		4F0E39531BA9C6C700FF2A96 /* DefaultTerminology.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39521BA9C6C700FF2A96 /* DefaultTerminology.swift */; settings = {ASSET_TAGS = (); }; };
 		4F1D12411BA3042600875F74 /* SpecifierExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1D12401BA3042600875F74 /* SpecifierExtensions.swift */; settings = {ASSET_TAGS = (); }; };
 		4F2645A81BA4243E00256402 /* TextEditGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F2645A71BA4243E00256402 /* TextEditGlue.swift */; settings = {ASSET_TAGS = (); }; };
 		4F2645AC1BA4F27700256402 /* AEApplicationGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F2645AB1BA4F27700256402 /* AEApplicationGlue.swift */; settings = {ASSET_TAGS = (); }; };
@@ -78,9 +82,13 @@
 		4F0E39421BA864A400FF2A96 /* optimizing-performance.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = "optimizing-performance.html"; sourceTree = "<group>"; };
 		4F0E39431BA864A400FF2A96 /* relationships_example.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = relationships_example.gif; sourceTree = "<group>"; };
 		4F0E39441BA864A400FF2A96 /* understanding-apple-events.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = "understanding-apple-events.html"; sourceTree = "<group>"; };
-		4F0E39451BA86B5F00FF2A96 /* Terminology.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Terminology.swift; sourceTree = "<group>"; };
+		4F0E39451BA86B5F00FF2A96 /* TermTypes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TermTypes.swift; sourceTree = "<group>"; };
 		4F0E39481BA8717D00FF2A96 /* SDEFParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDEFParser.swift; sourceTree = "<group>"; };
 		4F0E394A1BA8719400FF2A96 /* OSAKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OSAKit.framework; path = System/Library/Frameworks/OSAKit.framework; sourceTree = SDKROOT; };
+		4F0E394C1BA8C16300FF2A96 /* KeywordConverter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeywordConverter.swift; sourceTree = "<group>"; };
+		4F0E394E1BA8D2F600FF2A96 /* AETEParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AETEParser.swift; sourceTree = "<group>"; };
+		4F0E39501BA9A7EA00FF2A96 /* GlueBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GlueBuilder.swift; sourceTree = "<group>"; };
+		4F0E39521BA9C6C700FF2A96 /* DefaultTerminology.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DefaultTerminology.swift; sourceTree = "<group>"; };
 		4F1D12401BA3042600875F74 /* SpecifierExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpecifierExtensions.swift; sourceTree = "<group>"; };
 		4F2645A41BA37C5000256402 /* SwiftAEGlueTemplate.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = SwiftAEGlueTemplate.txt; sourceTree = "<group>"; };
 		4F2645A51BA3F1F900256402 /* aeglue */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = aeglue; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.python; };
@@ -175,8 +183,12 @@
 		4F0E39471BA86B6800FF2A96 /* Terminology */ = {
 			isa = PBXGroup;
 			children = (
-				4F0E39451BA86B5F00FF2A96 /* Terminology.swift */,
+				4F0E39451BA86B5F00FF2A96 /* TermTypes.swift */,
+				4F0E39521BA9C6C700FF2A96 /* DefaultTerminology.swift */,
+				4F0E394C1BA8C16300FF2A96 /* KeywordConverter.swift */,
+				4F0E394E1BA8D2F600FF2A96 /* AETEParser.swift */,
 				4F0E39481BA8717D00FF2A96 /* SDEFParser.swift */,
+				4F0E39501BA9A7EA00FF2A96 /* GlueBuilder.swift */,
 			);
 			name = Terminology;
 			sourceTree = "<group>";
@@ -321,6 +333,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4F0E39511BA9A7EA00FF2A96 /* GlueBuilder.swift in Sources */,
 				4F2645B11BA59A0E00256402 /* FinderGlue.swift in Sources */,
 				4FDD30FE1B932C29002BA20F /* SpecifierFormatter.swift in Sources */,
 				4F0E39491BA8717D00FF2A96 /* SDEFParser.swift in Sources */,
@@ -329,12 +342,15 @@
 				4F63C4281B7CF06E000D74EE /* main.swift in Sources */,
 				4F63C4431B87AC88000D74EE /* Symbol.swift in Sources */,
 				4F63C4301B7CF133000D74EE /* AEConstants.swift in Sources */,
-				4F0E39461BA86B5F00FF2A96 /* Terminology.swift in Sources */,
+				4F0E39461BA86B5F00FF2A96 /* TermTypes.swift in Sources */,
 				4F63C4311B7CF133000D74EE /* Specifier.swift in Sources */,
 				4F63C4411B86A335000D74EE /* AppData.swift in Sources */,
 				4F63C4451B8A4DFC000D74EE /* Errors.swift in Sources */,
 				4F2645AC1BA4F27700256402 /* AEApplicationGlue.swift in Sources */,
+				4F0E39531BA9C6C700FF2A96 /* DefaultTerminology.swift in Sources */,
 				4F2645B21BA59A0E00256402 /* ITunesGlue.swift in Sources */,
+				4F0E394F1BA8D2F600FF2A96 /* AETEParser.swift in Sources */,
+				4F0E394D1BA8C16300FF2A96 /* KeywordConverter.swift in Sources */,
 				4F1D12411BA3042600875F74 /* SpecifierExtensions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

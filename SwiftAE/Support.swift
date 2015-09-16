@@ -12,6 +12,7 @@ import AppKit
 public let DefaultLaunchOptions: LaunchOptions = .WithoutActivation
 public let DefaultRelaunchMode: RelaunchMode = .Limited
 
+
 // Indicates omitted command parameter
 
 public class _NoParameter {}
@@ -35,9 +36,9 @@ public enum TargetApplication {
     case BundleIdentifier(String, Bool) // bundleID, isDefault
     case ProcessIdentifier(pid_t)
     case Descriptor(NSAppleEventDescriptor) // AEAddressDesc
-    case None // used in untargeted AppData instances; sendAppleEvent() will raise UntargetedCommandError if called
+    case None // used in untargeted AppData instances; sendAppleEvent() will raise ConnectionError if called
     
-    var isRelaunchable: Bool {
+    public var isRelaunchable: Bool {
         switch self {
         case .Name, .BundleIdentifier:
             return true
@@ -46,6 +47,55 @@ public enum TargetApplication {
         default:
             return false
         }
+    }
+    
+    // get AEAddressDesc for target application (for local processes specified by name, url, bundleID, or PID, this is typeKernelProcessID)
+    public func descriptor(launchOptions: LaunchOptions = DefaultLaunchOptions) throws -> NSAppleEventDescriptor? {
+        switch self {
+        case .Current:
+            return nil
+        case .Name(let name): // app name or full path
+            var url: NSURL
+            if name.hasPrefix("/") { // full path (note: path must include .app suffix)
+                url = NSURL(fileURLWithPath: name)
+            } else { // if name is not full path, look up by name (.app suffix is optional)
+                let workspace = NSWorkspace.sharedWorkspace()
+                if let path = workspace.fullPathForApplication(name) ?? workspace.fullPathForApplication("\(name).app") {
+                    url = NSURL(fileURLWithPath: path)
+                } else {
+                    throw ConnectionError(target: self, message: "Application not found.")
+                }
+            }
+            return try self.processDescriptorForLocalApplication(url, launchOptions: launchOptions)
+        case .URL(let url): // file/eppc URL
+            if url.fileURL {
+                return try self.processDescriptorForLocalApplication(url, launchOptions: launchOptions)
+            } else if url.scheme == "eppc" {
+                return NSAppleEventDescriptor(applicationURL: url)
+            } else {
+                throw ConnectionError(target: self, message: "Invalid URL scheme (not file/eppc).")
+            }
+        case .BundleIdentifier(let bundleIdentifier, _):
+            if let url = NSWorkspace.sharedWorkspace().URLForApplicationWithBundleIdentifier(bundleIdentifier) {
+                return try self.processDescriptorForLocalApplication(url, launchOptions: launchOptions)
+            } else {
+                throw ConnectionError(target: self, message: "Application not found.")
+            }
+        case .ProcessIdentifier(let pid):
+            return NSAppleEventDescriptor(processIdentifier: pid)
+        case .Descriptor(let desc):
+            return desc
+        case .None:
+            throw ConnectionError(target: .None, message: "Untargeted specifiers can't send Apple events.")
+        }
+    }
+    
+    // support function for above
+    public func processDescriptorForLocalApplication(url: NSURL, launchOptions: LaunchOptions) throws -> NSAppleEventDescriptor {
+        // get a typeKernelProcessID-based AEAddressDesc for the target app, finding and launch it first if not already running;
+        // if app can't be found/launched, throws an NSError instead
+        let runningProcess = try NSWorkspace.sharedWorkspace().launchApplicationAtURL(url, options: launchOptions, configuration: [:])
+        return NSAppleEventDescriptor(processIdentifier: runningProcess.processIdentifier)
     }
 }
 
@@ -94,45 +144,6 @@ public enum Considerations {
 }
 
 public typealias ConsideringOptions = Set<Considerations>
-
-
-// used by AppData.sendAppleEvent() to pack ConsideringOptions as enumConsiderations (old-style) and enumConsidsAndIgnores (new-style) attributes
-
-private let ConsiderationsTable: [(Considerations, NSAppleEventDescriptor, UInt32, UInt32)] = [
-    // note: Swift mistranslates considering/ignoring mask constants as Int, not UInt32, so redefine them here
-    (.Case,             NSAppleEventDescriptor(enumCode: kAECase),              0x00000001, 0x00010000),
-    (.Diacritic,        NSAppleEventDescriptor(enumCode: kAEDiacritic),         0x00000002, 0x00020000),
-    (.WhiteSpace,       NSAppleEventDescriptor(enumCode: kAEWhiteSpace),        0x00000004, 0x00040000),
-    (.Hyphens,          NSAppleEventDescriptor(enumCode: kAEHyphens),           0x00000008, 0x00080000),
-    (.Expansion,        NSAppleEventDescriptor(enumCode: kAEExpansion),         0x00000010, 0x00100000),
-    (.Punctuation,      NSAppleEventDescriptor(enumCode: kAEPunctuation),       0x00000020, 0x00200000),
-    (.NumericStrings,   NSAppleEventDescriptor(enumCode: kASNumericStrings),    0x00000080, 0x00800000),
-]
-
-func packConsideringAndIgnoringFlags(considerations: ConsideringOptions) -> (NSAppleEventDescriptor, NSAppleEventDescriptor) {
-    let considerationsListDesc = NSAppleEventDescriptor.listDescriptor()
-    var consideringIgnoringFlags: UInt32 = 0
-    for (consideration, considerationDesc, consideringMask, ignoringMask) in ConsiderationsTable {
-        if considerations.contains(consideration) {
-            consideringIgnoringFlags |= consideringMask
-            considerationsListDesc.insertDescriptor(considerationDesc, atIndex: 0)
-        } else {
-            consideringIgnoringFlags |= ignoringMask
-        }
-    }
-    return (considerationsListDesc, UInt32Descriptor(consideringIgnoringFlags)) // old-style flags (list of enums), new-style flags (bitmask)
-}
-
-
-
-let DefaultLaunchConfiguration = [String:AnyObject]()
-
-func processDescriptorForLocalApplication(url: NSURL, launchOptions: LaunchOptions) throws -> NSAppleEventDescriptor {
-    // get a typeKernelProcessID-based AEAddressDesc for the target app, finding and launch it first if not already running;
-    // if app can't be found/launched, throws an NSError instead
-    let runningProcess = try NSWorkspace.sharedWorkspace().launchApplicationAtURL(url, options: launchOptions, configuration: DefaultLaunchConfiguration)
-    return NSAppleEventDescriptor(processIdentifier: runningProcess.processIdentifier)
-}
 
 
 

@@ -7,81 +7,51 @@
 import Foundation
 import Carbon
 
-
-public class SDEFError: SwiftAEError {
-    init(_ message: String) {
-        super.init(code: 1, message: message)
-    }
-}
+// TO DO: neither parser has been thoroughly tested to ensure correct results when multiple terminologies are given (e.g. if app also has scriptable plugins)
 
 
+public class SDEFParser: NSObject, NSXMLParserDelegate, ApplicationTerminology {
 
-public class SDEFParser: NSObject, NSXMLParserDelegate {
-
-    public var types: [KeywordTerm]
-    public var enumerators: [KeywordTerm]
-    public var properties: [KeywordTerm]
-    public var elements: [KeywordTerm]
-    private var commandsDict: [String:CommandTerm]
+    public private(set) var types: KeywordTerms = []
+    public private(set) var enumerators: KeywordTerms = []
+    public private(set) var properties: KeywordTerms = []
+    public private(set) var elements: KeywordTerms = []
+    public var commands: CommandTerms { return Array(self.commandsDict.values) }
+    
+    private var commandsDict = [String:CommandTerm]()
     private var currentCommand: CommandTerm?
-
-    public var commands: [CommandTerm] { return self.commandsDict.map({$1}) }
-
-    public func parseURL(url: NSURL) throws {
-        var sdef: Unmanaged<CFData>?
-        let err = OSACopyScriptingDefinitionFromURL(url, 0, &sdef)
-        if err != 0 {
-            throw SwiftAEError(code: Int(err), message: "Can't retrieve SDEF.")
-        }
-        return try self.parse(sdef!.takeRetainedValue())
+    private let keywordConverter: KeywordConverterProtocol
+    
+    init(keywordConverter: KeywordConverterProtocol = gSwiftAEKeywordConverter) {
+        self.keywordConverter = keywordConverter
+        super.init()
     }
     
     public func parse(sdef: NSData) throws {
         let parser = NSXMLParser(data: sdef)
         parser.delegate = self
         if !parser.parse() {
-            throw parser.parserError ?? SwiftAEError(code: 1) // TO DO
+            throw TerminologyError("An error occurred while parsing SDEF. \(parser.parserError)")
         }
-    }
-    
-    
-    override init() {
-        self.types = [KeywordTerm]()
-        self.enumerators = [KeywordTerm]()
-        self.properties = [KeywordTerm]()
-        self.elements = [KeywordTerm]()
-        self.commandsDict = [String:CommandTerm]()
-        super.init()
-    }
-    
-    // keyword converter // TO DO: this should stay as separate class (terminology parser should be reusable for dynamic bridges too)
-
-    func varName(name: String) -> String {
-        return name as String // TO DO
-    }
-    func funcName(name: String) -> String {
-        return self.varName(name)
-    }
-    func argName(name: String) -> String {
-        return name as String // TO DO
     }
     
     // XML parser callback
     
     func parseKeywordTerm(tagName: String, attributes: [String:String]) throws -> (String, OSType) {
         guard let name = attributes["name"], codeString = attributes["code"] else {
-            throw SDEFError("Malformed \(tagName) in SDEF: missing 'name' or 'code' attribute.")
+            throw TerminologyError("Malformed \(tagName) in SDEF: missing 'name' or 'code' attribute.")
         }
         if name == "" {
-            throw SDEFError("Malformed \(tagName) in SDEF: empty 'name' attribute.")
+            throw TerminologyError("Malformed \(tagName) in SDEF: empty 'name' attribute.")
         }
         do {
             return (name, try OSTypeFromString(codeString))
         } catch {
-            throw SDEFError("Malformed \(tagName) in SDEF: invalid 'code' attribute (\(error)).")
+            throw TerminologyError("Malformed \(tagName) in SDEF: invalid 'code' attribute (\(error)).")
         }
     }
     
+    // NSXMLParser callback
     
     public func parser(parser: NSXMLParser, didStartElement tagName: String,
                                                        namespaceURI: String?,
@@ -92,33 +62,33 @@ public class SDEFParser: NSObject, NSXMLParserDelegate {
             switch tagName {
             case "class", "record-type", "value-type":
                 let (name, code) = try self.parseKeywordTerm(tagName, attributes: attributes)
-                self.types.append(KeywordTerm(name: self.varName(name), kind: .Type, code: code))
-                if tagName == "class" { // use plural class name as elements name (if not given, append "s" to singular name)
+                self.types.append(KeywordTerm(name: self.keywordConverter.convertSpecifierName(name), kind: .Type, code: code))
+                if tagName == "class" { // use plural class name as elements name (if not given, append "s" to singular name) // TO DO: check SIG/SDEF spec, as appending 's' doesn't work so well for names already ending in 's' (e.g. 'print settings')
                     let plural = attributes["plural"] ?? ""
-                    self.elements.append(KeywordTerm(name: self.varName(plural == "" ? "\(name)s" : plural), kind: .Type, code: code))
+                    self.elements.append(KeywordTerm(name: self.keywordConverter.convertSpecifierName(plural == "" ? "\(name)s" : plural), kind: .Type, code: code))
                 }
             case "property":
                 let (name, code) = try self.parseKeywordTerm(tagName, attributes: attributes)
-                self.properties.append(KeywordTerm(name: self.varName(name), kind: .Property, code: code))
+                self.properties.append(KeywordTerm(name: self.keywordConverter.convertSpecifierName(name), kind: .Property, code: code))
             case "enumerator":
                 let (name, code) = try self.parseKeywordTerm(tagName, attributes: attributes)
-                self.enumerators.append(KeywordTerm(name: self.varName(name), kind: .Enumerator, code: code))
+                self.enumerators.append(KeywordTerm(name: self.keywordConverter.convertSpecifierName(name), kind: .Enumerator, code: code))
             case "command":
                 guard let name = attributes["name"], codeString: NSString = attributes["code"] else {
-                    throw SDEFError("Malformed \(tagName) in SDEF: missing 'name' or 'code' attribute.")
+                    throw TerminologyError("Malformed \(tagName) in SDEF: missing 'name' or 'code' attribute.")
                 }
                 if name == "" {
-                    throw SDEFError("Malformed \(tagName) in SDEF: empty 'name' attribute.")
+                    throw TerminologyError("Malformed \(tagName) in SDEF: empty 'name' attribute.")
                 }
                 if codeString.length != 8 {
-                    throw SDEFError("Malformed \(tagName) in SDEF: invalid 'code' attribute (wrong length).")
+                    throw TerminologyError("Malformed \(tagName) in SDEF: invalid 'code' attribute (wrong length).")
                 }
                 var eventClass: OSType, eventID: OSType
                 do {
                     eventClass = try OSTypeFromString(codeString.substringToIndex(4))
                     eventID = try OSTypeFromString(codeString.substringFromIndex(4))
                 } catch {
-                    throw SDEFError("Malformed \(tagName) in SDEF: invalid 'code' attribute (\(error)).")
+                    throw TerminologyError("Malformed \(tagName) in SDEF: invalid 'code' attribute (\(error)).")
                 }
                 // Note: overlapping command definitions (e.g. 'path to') should be processed as follows:
                 // - If their names and codes are the same, only the last definition is used; other definitions are ignored
@@ -127,14 +97,16 @@ public class SDEFParser: NSObject, NSXMLParserDelegate {
                 //   definitions are ignored and will not compile.
                 let previousDef = commandsDict[name]
                 if previousDef == nil || (previousDef!.eventClass == eventClass && previousDef!.eventID == eventID) {
-                    currentCommand = CommandTerm(name: self.funcName(name), eventClass: eventClass, eventID: eventID)
+                    currentCommand = CommandTerm(name: self.keywordConverter.convertSpecifierName(name), eventClass: eventClass, eventID: eventID)
                     commandsDict[name] = currentCommand
                 } else {
                     currentCommand = nil
                 }
             case "parameter":
-                let (name, code) = try self.parseKeywordTerm(tagName, attributes: attributes)
-                self.currentCommand?.addParameter(self.argName(name), code: code)
+                if let command = self.currentCommand {
+                    let (name, code) = try self.parseKeywordTerm(tagName, attributes: attributes)
+                    command.addParameter(self.keywordConverter.convertParameterName(name), code: code)
+                }
             default:
                 ()
             }
@@ -142,6 +114,17 @@ public class SDEFParser: NSObject, NSXMLParserDelegate {
              print(error)
         }
     }
+}
+
+
+
+public func GetSDEF(url: NSURL) throws -> NSData {
+    var sdef: Unmanaged<CFData>?
+    let err = OSACopyScriptingDefinitionFromURL(url, 0, &sdef)
+    if err != 0 {
+        throw SwiftAEError(code: Int(err), message: "Can't retrieve SDEF.")
+    }
+    return sdef!.takeRetainedValue()
 }
 
 
