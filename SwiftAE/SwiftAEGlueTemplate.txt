@@ -23,40 +23,32 @@ private let gNullAppData = AppData(glueInfo: GlueInfo(insertionSpecifierType: «
 private let gSpecifierFormatter = SpecifierFormatter(applicationClassName: "«APPLICATION_CLASS_NAME»",
                                                      classNamePrefix: "«PREFIX»",
                                                      propertyNames: [«+PROPERTY_FORMATTER»
-                                                                     «CODE»: "«NAME»", // «CODE_STR»
-                                                     «-PROPERTY_FORMATTER»
+                                                                     «CODE»: "«NAME»", // «CODE_STR»«-PROPERTY_FORMATTER»
                                                      ],
                                                      elementsNames: [«+ELEMENTS_FORMATTER»
-                                                                     «CODE»: "«NAME»", // «CODE_STR»
-                                                     «-ELEMENTS_FORMATTER»
+                                                                     «CODE»: "«NAME»", // «CODE_STR»«-ELEMENTS_FORMATTER»
                                                      ])
 
 
 /******************************************************************************/
-// Symbol subclass defines static type/enum/property constants based on «APPLICATION_NAME»'s terminology
+// Symbol subclass defines static type/enum/property constants based on «APPLICATION_NAME» terminology
 
 public class «PREFIX»Symbol: Symbol {
 
     override var typeAliasName: String {return "«PREFIX»"}
 
     public override class func symbol(code: OSType, type: OSType = typeType, descriptor: NSAppleEventDescriptor? = nil) -> «PREFIX»Symbol {
-        switch (code) { // TO DO: replace with dictionary? (downside is that dictionary would initialize all static lets, whether needed or not)
-«+SYMBOL_SWITCH»
-        case «CODE»: return self.«NAME» // «CODE_STR»
-«-SYMBOL_SWITCH»
+        switch (code) { // TO DO: replace with dictionary? (downside is that dictionary would initialize all static lets, whether needed or not)«+SYMBOL_SWITCH»
+        case «CODE»: return self.«NAME» // «CODE_STR»«-SYMBOL_SWITCH»
         default: return super.symbol(code, type: type, descriptor: descriptor) as! «PREFIX»Symbol
         }
     }
 
-    // Types/properties
-«+TYPE_SYMBOL»
-    public static let «NAME» = «PREFIX»Symbol(name: "«NAME»", code: «CODE», type: typeType) // «CODE_STR»
-«-TYPE_SYMBOL»
+    // Types/properties«+TYPE_SYMBOL»
+    public static let «NAME» = «PREFIX»Symbol(name: "«NAME»", code: «CODE», type: typeType) // «CODE_STR»«-TYPE_SYMBOL»
 
-    // Enumerators
-«+ENUM_SYMBOL»
-    public static let «NAME» = «PREFIX»Symbol(name: "«NAME»", code: «CODE», type: typeEnumerated) // «CODE_STR»
-«-ENUM_SYMBOL»
+    // Enumerators«+ENUM_SYMBOL»
+    public static let «NAME» = «PREFIX»Symbol(name: "«NAME»", code: «CODE», type: typeEnumerated) // «CODE_STR»«-ENUM_SYMBOL»
 }
 
 public typealias «PREFIX» = «PREFIX»Symbol // allows symbols to be written as (e.g.) «PREFIX».name instead of «PREFIX»Symbol.name
@@ -64,27 +56,20 @@ public typealias «PREFIX» = «PREFIX»Symbol // allows symbols to be written a
 
 
 /******************************************************************************/
-// Specifier extensions; these add command methods and property/elements getters based on «APPLICATION_NAME»'s terminology
+// Specifier extensions; these add command methods and property/elements getters based on «APPLICATION_NAME» terminology
 
 public protocol «PREFIX»Command: SpecifierProtocol {} // provides AE dispatch methods
 
-extension «PREFIX»Command {
-
-«+COMMAND»
-    public func «COMMAND_NAME»(directParameter: Any = NoParameter,
-«+PARAMETER»
-            «NAME»: Any = NoParameter,
-«-PARAMETER»
+extension «PREFIX»Command {«+COMMAND»
+    public func «COMMAND_NAME»(directParameter: Any = NoParameter,«+PARAMETER»
+            «NAME»: Any = NoParameter,«-PARAMETER»
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("«COMMAND_NAME»", eventClass: «EVENT_CLASS», eventID: «EVENT_ID», // '«EVENT_CLASS_STR»«EVENT_ID_STR»'
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
-«+PARAMETER»
-                    ("«NAME»", «CODE», «NAME»), // «CODE_STR»
-«-PARAMETER»
+                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [«+PARAMETER»
+                    ("«NAME»", «CODE», «NAME»), // «CODE_STR»«-PARAMETER»
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, asType: Any.self)
-    }
-«-COMMAND»
+    }«-COMMAND»
 }
 
 
@@ -92,15 +77,11 @@ public protocol «PREFIX»Query: ObjectSpecifierExtension, «PREFIX»Command {} 
 
 extension «PREFIX»Query {
     
-    // Properties
-«+PROPERTY_SPECIFIER»
-    public var «NAME»: «PREFIX»Object {return self.property(«CODE») as! «PREFIX»Object} // «CODE_STR»
-«-PROPERTY_SPECIFIER»
+    // Properties«+PROPERTY_SPECIFIER»
+    public var «NAME»: «PREFIX»Object {return self.property(«CODE») as! «PREFIX»Object} // «CODE_STR»«-PROPERTY_SPECIFIER»
 
-    // Elements
-«+ELEMENTS_SPECIFIER»
-    public var «NAME»: «PREFIX»Elements {return self.elements(«CODE») as! «PREFIX»Elements} // «CODE_STR»
-«-ELEMENTS_SPECIFIER»
+    // Elements«+ELEMENTS_SPECIFIER»
+    public var «NAME»: «PREFIX»Elements {return self.elements(«CODE») as! «PREFIX»Elements} // «CODE_STR»«-ELEMENTS_SPECIFIER»
 }
 
 
@@ -124,15 +105,12 @@ public class «PREFIX»Root: RootSpecifier, «PREFIX»Query, RootSpecifierExtens
     public override class var nullAppData: AppData { return gNullAppData }
 }
 
-public class «APPLICATION_CLASS_NAME»: «PREFIX»Root, ApplicationExtension {
-«+DEFAULT_INIT»
-
+public class «APPLICATION_CLASS_NAME»: «PREFIX»Root, ApplicationExtension {«+DEFAULT_INIT»
     public convenience init(launchOptions: LaunchOptions = DefaultLaunchOptions, relaunchMode: RelaunchMode = DefaultRelaunchMode) {
         self.init(rootObject: AppRootDesc, appData: self.dynamicType.nullAppData.targetCopy(
                                 .BundleIdentifier("«BUNDLE_IDENTIFIER»", true), launchOptions: launchOptions, relaunchMode: relaunchMode))
     }
-«-DEFAULT_INIT»
-}
+«-DEFAULT_INIT»}
 
 // App/Con/Its root objects used to construct untargeted specifiers; these can be used to construct specifiers for use in commands, though cannot send commands themselves
 

@@ -35,10 +35,10 @@ do {
 }
 */
 
+//let t = try renderStaticGlueTemplate(StaticGlueSpec(), extraTags: ["AEGLUE_COMMAND": "aeglue -d","GLUE_NAME": "AEApplicationGlue.swift"])
+//let t = try renderStaticGlueTemplate(StaticGlueSpec(applicationURL: NSURL(fileURLWithPath: "/Applications/TextEdit.app")), extraTags: ["AEGLUE_COMMAND": "aeglue TextEdit","GLUE_NAME": "TextEditGlue.swift"])
+//print(t)
 
-let t = try renderStaticGlueTemplate(StaticGlueSpec(), extraTags: ["AEGLUE_COMMAND": "aeglue -d","GLUE_NAME": "AEApplicationGlue.swift"])
-print(t)
-/*
 
 do {
     
@@ -100,7 +100,6 @@ do {
     print(error)
 }
 
-//*/
 
 
 
@@ -207,4 +206,4 @@ do {
 
 */
 
-*/*/*/*/
+

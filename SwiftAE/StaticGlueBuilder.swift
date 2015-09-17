@@ -13,7 +13,9 @@ public class StaticGlueSpec {
     public let classNamesPrefix: String
     public let applicationClassName: String
     public let useSDEF: Bool
-    public let bundleInfo: [String:Any]
+    public let bundleInfo: BundleInfoType
+    
+    public typealias BundleInfoType = [String:AnyObject]
     
     public var applicationFileName: String? { return self.applicationURL?.lastPathComponent }
     public var applicationName: String? { return self.bundleInfo["CFBundleName"] as? String }
@@ -34,12 +36,12 @@ public class StaticGlueSpec {
     }
     
     // create StaticGlueSpec for specified application (applicationURL is typically a file:// URL)
-    public init(applicationURL: NSURL, keywordConverter: KeywordConverterProtocol,
+    public init(applicationURL: NSURL, keywordConverter: KeywordConverterProtocol = gSwiftAEKeywordConverter,
                 classNamesPrefix: String? = nil, applicationClassName: String? = nil, useSDEF: Bool = false) {
         self.applicationURL = applicationURL
         self.keywordConverter = keywordConverter
         self.useSDEF = useSDEF
-        let bundleInfo = NSBundle(URL: applicationURL)?.infoDictionary ?? [:] // TO DO: log warning if empty/not found?
+        let bundleInfo: BundleInfoType = NSBundle(URL: applicationURL)?.infoDictionary ?? [:] // TO DO: log warning if empty/not found?
         self.bundleInfo = bundleInfo
         let prefix = keywordConverter.prefixForAppName(classNamesPrefix ?? (bundleInfo["CFBundleName"] as? String) ?? "PREFIX")
         self.classNamesPrefix = prefix
@@ -92,12 +94,11 @@ public class StaticGlueTemplate {
     
     public func insertOSType(name: String, _ code: OSType) { // insert OSType as numeric and/or string literal representations (tag for the latter is name+"_STR")
         self.insert(name, NSString(format: "0x%08x", code) as String)
-        self.insert("\(name)_STR", FourCharCodeString(code))
+        self.insert("\(name)_STR", formatFourCharCodeString(code))
     }
     
     public func iterate<T>(name: String, _ newContents: [T], emptyContent: String = "", renderer: (StaticGlueTemplate, T) -> ()) {
-        var index: Int = 0
-        let tagLength = ("(?s)«\\+\(name)»" as NSString).length
+        let tagLength = ("«+\(name)»" as NSString).length
         while true {
             let range = self.tmp.rangeOfString("(?s)«\\+\(name)».*?«-\(name)»",
                                            options: .RegularExpressionSearch, range: NSMakeRange(0, self.tmp.length))
@@ -115,7 +116,6 @@ public class StaticGlueTemplate {
                 result = emptyContent // e.g. empty dictionary literals require ':'
             }
             self.tmp.insertString(result, atIndex: range.location)
-            index = range.location + (result as NSString).length
         }
     }
     
@@ -160,7 +160,7 @@ func renderStaticGlueTemplate(glueSpec: StaticGlueSpec, extraTags: [String:Strin
     template.insert("FRAMEWORK_NAME", glueSpec.frameworkName)
     template.insert("FRAMEWORK_VERSION", glueSpec.frameworkVersion)
     // include application info, if relevant
-    template.insert("APPLICATION_NAME", glueSpec.applicationFileName ?? "")
+    template.insert("APPLICATION_NAME", glueSpec.applicationFileName ?? "built-in")
     template.insert("APPLICATION_VERSION", glueSpec.applicationVersion ?? "")
     template.insert("BUNDLE_IDENTIFIER", glueSpec.bundleIdentifier ?? "")
     template.omit("DEFAULT_INIT", deleteContent: glueSpec.bundleIdentifier == nil)
