@@ -44,7 +44,7 @@ public extension ObjectSpecifierExtension {
     }
     
     public func property(code: String) -> ObjectSpecifierType { // caution: string must be valid four-char code; if not, 0x00000000 is used
-		return self.property(UTGetOSTypeFromString(code))
+		return self.property(FourCharCodeUnsafe(code))
     }
     
     public func elements(code: OSType) -> ElementsSpecifierType {
@@ -54,7 +54,7 @@ public extension ObjectSpecifierExtension {
     }
     
     public func elements(code: String) -> ElementsSpecifierType { // caution: string must be valid four-char code; if not, 0x00000000 is used
-        return self.elements(UTGetOSTypeFromString(code))
+        return self.elements(FourCharCodeUnsafe(code))
     }
 
     

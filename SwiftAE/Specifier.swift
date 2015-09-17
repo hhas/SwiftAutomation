@@ -120,8 +120,8 @@ public class Specifier: Selector, SpecifierProtocol {
                            waitReply: Bool = true, sendOptions: NSAppleEventSendOptions? = nil,
                             withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
         var params = [OSType:Any]()
-        for (k, v) in parameters { params[UTGetOSTypeFromString(k)] = v }
-        return try self.appData.sendAppleEvent(UTGetOSTypeFromString(eventClass), eventID: UTGetOSTypeFromString(eventID), parentSpecifier: self,
+        for (k, v) in parameters { params[FourCharCodeUnsafe(k)] = v }
+        return try self.appData.sendAppleEvent(FourCharCodeUnsafe(eventClass), eventID: FourCharCodeUnsafe(eventID), parentSpecifier: self,
                                           parameters: params, waitReply: waitReply, sendOptions: sendOptions,
                                           withTimeout: withTimeout, considering: considering, asType: T.self)
     }
@@ -139,8 +139,8 @@ public class Specifier: Selector, SpecifierProtocol {
                         waitReply: Bool = true, sendOptions: NSAppleEventSendOptions? = nil,
                         withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         var params = [OSType:Any]()
-        for (k, v) in parameters { params[UTGetOSTypeFromString(k)] = v }
-        return try self.appData.sendAppleEvent(UTGetOSTypeFromString(eventClass), eventID: UTGetOSTypeFromString(eventID), parentSpecifier: self,
+        for (k, v) in parameters { params[FourCharCodeUnsafe(k)] = v }
+        return try self.appData.sendAppleEvent(FourCharCodeUnsafe(eventClass), eventID: FourCharCodeUnsafe(eventID), parentSpecifier: self,
                                           parameters: params, waitReply: waitReply, sendOptions: sendOptions,
                                           withTimeout: withTimeout, considering: considering, asType: Any.self)
     }

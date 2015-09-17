@@ -222,7 +222,7 @@ public class SpecifierFormatter {
 
 
 
-
+// general formatting functions
 
 func formatValue(value: Any) -> String { // TO DO: while this function can be used standalone, might be cleanest just to make it a member of SpecifierFormatter
     // formats AE-bridged Swift types as literal syntax; other Swift types will show their default description
@@ -254,12 +254,6 @@ func formatValue(value: Any) -> String { // TO DO: while this function can be us
     }
 }
 
-
-
-
-func FourCharCodeString(code: OSType) -> String {
-    return UTCreateStringForOSType(code).takeRetainedValue() as String
-}
 
 func formatFourCharCodeString(code: OSType) -> String {
     return "\"\(FourCharCodeString(code))\"" // TO DO: unfinished; non-alphanumeric chars should appear as \x00 codes

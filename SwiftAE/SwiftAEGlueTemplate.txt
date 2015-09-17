@@ -23,11 +23,11 @@ private let gNullAppData = AppData(glueInfo: GlueInfo(insertionSpecifierType: «
 private let gSpecifierFormatter = SpecifierFormatter(applicationClassName: "«APPLICATION_CLASS_NAME»",
                                                      classNamePrefix: "«PREFIX»",
                                                      propertyNames: [«+PROPERTY_FORMATTER»
-                                                                     «CODE»: "«NAME»", // '«CODE_STR»'
+                                                                     «CODE»: "«NAME»", // «CODE_STR»
                                                      «-PROPERTY_FORMATTER»
                                                      ],
                                                      elementsNames: [«+ELEMENTS_FORMATTER»
-                                                                     «CODE»: "«NAME»", // '«CODE_STR»'
+                                                                     «CODE»: "«NAME»", // «CODE_STR»
                                                      «-ELEMENTS_FORMATTER»
                                                      ])
 
@@ -40,9 +40,9 @@ public class «PREFIX»Symbol: Symbol {
     override var typeAliasName: String {return "«PREFIX»"}
 
     public override class func symbol(code: OSType, type: OSType = typeType, descriptor: NSAppleEventDescriptor? = nil) -> «PREFIX»Symbol {
-        switch (code) {
+        switch (code) { // TO DO: replace with dictionary? (downside is that dictionary would initialize all static lets, whether needed or not)
 «+SYMBOL_SWITCH»
-        case «CODE»: return self.«NAME» // '«CODE_STR»'
+        case «CODE»: return self.«NAME» // «CODE_STR»
 «-SYMBOL_SWITCH»
         default: return super.symbol(code, type: type, descriptor: descriptor) as! «PREFIX»Symbol
         }
@@ -50,12 +50,12 @@ public class «PREFIX»Symbol: Symbol {
 
     // Types/properties
 «+TYPE_SYMBOL»
-    public static let «NAME» = «PREFIX»Symbol(name: "«NAME»", code: «CODE», type: typeType) // '«CODE_STR»'
+    public static let «NAME» = «PREFIX»Symbol(name: "«NAME»", code: «CODE», type: typeType) // «CODE_STR»
 «-TYPE_SYMBOL»
 
     // Enumerators
 «+ENUM_SYMBOL»
-    public static let «NAME» = «PREFIX»Symbol(name: "«NAME»", code: «CODE», type: typeEnumerated) // '«CODE_STR»'
+    public static let «NAME» = «PREFIX»Symbol(name: "«NAME»", code: «CODE», type: typeEnumerated) // «CODE_STR»
 «-ENUM_SYMBOL»
 }
 
@@ -79,7 +79,7 @@ extension «PREFIX»Command {
         return try self.appData.sendAppleEvent("«COMMAND_NAME»", eventClass: «EVENT_CLASS», eventID: «EVENT_ID», // '«EVENT_CLASS_STR»«EVENT_ID_STR»'
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
 «+PARAMETER»
-                    ("«NAME»", «CODE», «NAME»), // '«CODE_STR»'
+                    ("«NAME»", «CODE», «NAME»), // «CODE_STR»
 «-PARAMETER»
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, asType: Any.self)
@@ -94,12 +94,12 @@ extension «PREFIX»Query {
     
     // Properties
 «+PROPERTY_SPECIFIER»
-    public var «NAME»: «PREFIX»Object {return self.property(«CODE») as! «PREFIX»Object} // '«CODE_STR»'
+    public var «NAME»: «PREFIX»Object {return self.property(«CODE») as! «PREFIX»Object} // «CODE_STR»
 «-PROPERTY_SPECIFIER»
 
     // Elements
 «+ELEMENTS_SPECIFIER»
-    public var «NAME»: «PREFIX»Elements {return self.elements(«CODE») as! «PREFIX»Elements} // '«CODE_STR»'
+    public var «NAME»: «PREFIX»Elements {return self.elements(«CODE») as! «PREFIX»Elements} // «CODE_STR»
 «-ELEMENTS_SPECIFIER»
 }
 

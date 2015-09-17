@@ -98,6 +98,8 @@ public let kWordSeparators = NSCharacterSet(charactersInString: " -/")
 
 public protocol KeywordConverterProtocol {
     
+    var defaultTerminology: ApplicationTerminology {get}
+    
     func convertSpecifierName(s: String) -> String
     func convertParameterName(s: String) -> String
     func identifierForAppName(appName: String ) -> String
@@ -108,11 +110,11 @@ public protocol KeywordConverterProtocol {
 
 public class KeywordConverter {
     
-    private var cache = [String:String]() // cache previously translated keywords for efficiency
+    private var cache = [String:String]() // cache previously translated keywords for efficiency; TO DO: max size?
 
     public init() {}
     
-    public func convertName(var s: String, reservedWords: Set<String>) -> String { // Convert string to identifier
+    func convertName(var s: String, reservedWords: Set<String>) -> String { // Convert string to identifier
         var result: String! = cache[s]
         if result == nil {
             s = s.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet())
@@ -148,7 +150,7 @@ public class KeywordConverter {
         return result!
     }
     
-    public func identifierForAppName(appName: String, reservedWords: Set<String>) -> String {
+    func identifierForAppName(appName: String, reservedWords: Set<String>) -> String {
         // TO DO: see how well this does in practice
         // TO DO: decide if first letter should always be capitalized (currently it is, e.g. iTunes->ITunes, which is consistent with standard class naming practices, though less visually appealing)
         let tmp = NSMutableString(string: self.convertName(appName, reservedWords: reservedWords))
@@ -157,7 +159,7 @@ public class KeywordConverter {
         return reservedWords.contains(result) ? self.escapeName(result) : result
     }
         
-    public func prefixForAppName(appName: String, reservedWords: Set<String>) -> String {
+    func prefixForAppName(appName: String, reservedWords: Set<String>) -> String {
         // Auto-generate a reasonable default classname prefix from an application name.
         // Only A-Z/a-z characters are used, so is most effective when app's name is mostly composed of those characters.
         // Split name into 'words' based on existing word separator characters (space, underscore, hyphen) and intercaps, if any
@@ -193,7 +195,7 @@ public class KeywordConverter {
     }
         
     public func escapeName(s: String) -> String {
-        return s.stringByAppendingString("_")
+        return "\(s)_"
     }
 }
 
@@ -203,10 +205,18 @@ public class KeywordConverter {
 
 public class SwiftKeywordConverter: KeywordConverter, KeywordConverterProtocol {
     
+    private static var _defaultTerminology: ApplicationTerminology?
+    
+    public var defaultTerminology: ApplicationTerminology { // initialized on first use
+        if self.dynamicType._defaultTerminology == nil {
+            self.dynamicType._defaultTerminology = DefaultTerminology(keywordConverter: self)
+        }
+        return self.dynamicType._defaultTerminology!
+    }
+    
     private let reservedSpecifierWords = kSwiftKeywords.union(kSwiftAESpecifierMethods)
     private let reservedParameterWords = kSwiftKeywords.union(kSwiftAEParameterNames)
     private let reservedPrefixes = kSwiftKeywords.union(kReservedPrefixes)
-    
     
     public func convertSpecifierName(s: String) -> String {
         return self.convertName(s, reservedWords: self.reservedSpecifierWords)
@@ -216,7 +226,7 @@ public class SwiftKeywordConverter: KeywordConverter, KeywordConverterProtocol {
         return self.convertName(s, reservedWords: self.reservedParameterWords)
     }
         
-    public func identifierForAppName(appName: String ) -> String {
+    public func identifierForAppName(appName: String) -> String {
         return self.identifierForAppName(appName, reservedWords: kSwiftKeywords)
     }
     

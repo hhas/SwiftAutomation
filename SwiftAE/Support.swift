@@ -7,6 +7,30 @@ import Foundation
 import AppKit
 
 
+
+// convert between 4-character strings and OSTypes (use these instead of calling UTGetOSTypeFromString/UTCopyStringFromOSType directly)
+
+func FourCharCodeUnsafe(string: String) -> OSType { // note: silently returns 0 if string is invalid; where practical, use throwing version below
+    return UTGetOSTypeFromString(string)
+}
+
+func FourCharCode(string: NSString) throws -> OSType { // note: use this instead of FourCharCode to get better error reporting
+    guard let data = string.dataUsingEncoding(NSMacOSRomanStringEncoding) else {
+        throw SwiftAEError(code: 1, message: "Invalid four-char code (bad encoding): \(formatValue(string))") // TO DO: what error?
+    }
+    if (data.length != 4) {
+        throw SwiftAEError(code: 1, message: "Invalid four-char code (wrong length): \(formatValue(string))")
+    }
+    var tmp: UInt32 = 0
+    data.getBytes(&tmp, length: 4)
+    return CFSwapInt32HostToBig(tmp)
+}
+
+func FourCharCodeString(code: OSType) -> String {
+    return UTCreateStringForOSType(code).takeRetainedValue() as String
+}
+
+
 // Used in ApplicationExtension initializers
 
 public let DefaultLaunchOptions: LaunchOptions = .WithoutActivation
@@ -145,18 +169,5 @@ public enum Considerations {
 
 public typealias ConsideringOptions = Set<Considerations>
 
-
-
-func OSTypeFromString(code: NSString) throws -> OSType { // note: use this instead of UTGetOSTypeFromString to get better error reporting
-    if (code.length != 4) {
-        throw SwiftAEError(code: 1, message: "Invalid four-char code (wrong length): \(formatValue(code))")
-    }
-    guard let data = code.dataUsingEncoding(NSMacOSRomanStringEncoding) else {
-        throw SwiftAEError(code: 1, message: "Invalid four-char code (bad encoding): \(formatValue(code))")
-    }
-    var tmp: UInt32 = 0
-    data.getBytes(&tmp, length: 4)
-    return CFSwapInt32HostToBig(tmp)
-}
 
 

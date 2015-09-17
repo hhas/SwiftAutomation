@@ -7,15 +7,14 @@
 
 import Foundation
 
-// note: this uses AS-style names and converts them on instantiation (i.e. each language creates its own DefaultTerminology instance, passing its own keyword converter to init, then passes the result to terminology table builder every time it gets an apps' terms)
-
 // TO DO: Would make life easier for users if less useful types aren't listed in introspection APIs, so add a 'legacy' arg to KeywordTerm's init method and flag below so they can be filtered out.
 
 // TO DO: check for any missing terms (e.g. ctxt)
 
 
-
 public class DefaultTerminology: ApplicationTerminology {
+    
+    // note: each client language should create its own DefaultTerminology instance, passing its own keyword converter to init, then pass the resulting DefaultTerminology instance to GlueData constructor // TO DO: would probably be cleaner if KeywordConverter base class automatically created and cached DefaultTerminology instances
     
     public let types: KeywordTerms
     public let enumerators: KeywordTerms
@@ -24,10 +23,10 @@ public class DefaultTerminology: ApplicationTerminology {
     public let commands: CommandTerms
 
     init(keywordConverter: KeywordConverterProtocol) {
-        self.types = self._types.map({KeywordTerm(name: keywordConverter.convertSpecifierName($0), kind: .Type, code: $1)})
+        self.types = self._types.map({KeywordTerm(name: keywordConverter.convertSpecifierName($0), kind: .ElementOrType, code: $1)})
         self.enumerators = self._enumerators.map({KeywordTerm(name: keywordConverter.convertSpecifierName($0), kind: .Enumerator, code: $1)})
         self.properties = self._properties.map({KeywordTerm(name: keywordConverter.convertSpecifierName($0), kind: .Property, code: $1)})
-        self.elements = self._elements.map({KeywordTerm(name: keywordConverter.convertSpecifierName($0), kind: .Type, code: $1)})
+        self.elements = self._elements.map({KeywordTerm(name: keywordConverter.convertSpecifierName($0), kind: .ElementOrType, code: $1)})
         self.commands = self._commands.map({
             let term = CommandTerm(name: keywordConverter.convertSpecifierName($0), eventClass: $1, eventID: $2)
             for (name, code) in $3 { term.addParameter(keywordConverter.convertParameterName(name), code: code) }
@@ -37,6 +36,8 @@ public class DefaultTerminology: ApplicationTerminology {
     
     private typealias Keywords = [(String, OSType)]
     private typealias Commands = [(String, OSType, OSType, [(String, OSType)])]
+
+    // note: AppleScript-style keyword names are automatically converted to the required format using the given keyword converter
 
     private let _types: Keywords = [("anything", typeWildCard),
                                     ("boolean", typeBoolean),
@@ -186,13 +187,12 @@ public class DefaultTerminology: ApplicationTerminology {
                                        ("reopen", kCoreEventClass, kAEReopenApplication, []),
                                        ("launch", kASAppleScriptSuite, kASLaunchEvent, []),
                                        ("activate", kAEMiscStandards, kAEActivate, []),
-                                       ("open location", UTGetOSTypeFromString("GURL"), UTGetOSTypeFromString("GURL"),
-                                                                                        [("window", UTGetOSTypeFromString("WIND"))]),
+                                       ("open location", _GURL, _GURL, [("window", _WIND)]),
                                        ("get", kAECoreSuite, kAEGetData, []),
                                        ("set", kAECoreSuite, kAESetData, [("to", keyAEData)]),
     ]
+    
+    private static let _GURL = try! FourCharCode("GURL")
+    private static let _WIND = try! FourCharCode("WIND")
 }
-
-
-public let gSwiftAEDefaultTerminology = DefaultTerminology(keywordConverter: gSwiftAEKeywordConverter)
 

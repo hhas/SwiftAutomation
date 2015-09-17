@@ -30,7 +30,7 @@ public protocol ApplicationTerminology {
 
 
 public enum TermType {
-    case Type // type or element name
+    case ElementOrType
     case Enumerator
     case Property
     case Command

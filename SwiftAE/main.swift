@@ -12,7 +12,19 @@ import Foundation
 /*
 let p = SDEFParser()
 do {
-    try p.parse(try GetSDEF(NSURL(fileURLWithPath: "/Applications/TextEdit.app")))
+    try p.parse(try GetScriptingDefinition(NSURL(fileURLWithPath: "/Applications/TextEdit.app")))
+    print(p.types)
+    print(p.enumerators)
+    print(p.properties)
+    print(p.elements)
+    print(p.commands)
+} catch {
+    print(error)
+}
+*/
+/*
+do {
+    let p = try AEApplication(name:"TextEdit").parseAETE()
     print(p.types)
     print(p.enumerators)
     print(p.properties)
@@ -24,17 +36,8 @@ do {
 */
 
 
-do {
-    let p = try AEApplication(name:"TextEdit").parseAETE()
-    print(p.types)
-    print(p.enumerators)
-    print(p.properties)
-    print(p.elements)
-    print(p.commands)
-} catch {
-    print(error)
-}
-
+let t = try renderStaticGlueTemplate(StaticGlueSpec(), extraTags: ["AEGLUE_COMMAND": "aeglue -d","GLUE_NAME": "AEApplicationGlue.swift"])
+print(t)
 /*
 
 do {

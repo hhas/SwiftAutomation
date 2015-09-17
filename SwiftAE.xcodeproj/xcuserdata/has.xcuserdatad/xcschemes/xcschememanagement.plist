@@ -9,9 +9,24 @@
 			<key>orderHint</key>
 			<integer>0</integer>
 		</dict>
+		<key>aeglue.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>1</integer>
+		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
+		<key>4F0E39571BAA97D400FF2A96</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>4F0E39641BAA98A900FF2A96</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>4F63C4231B7CF06E000D74EE</key>
 		<dict>
 			<key>primary</key>

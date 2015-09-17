@@ -8,7 +8,7 @@ import Foundation
 
 
 // kAEInheritedProperties isn't defined in OpenScripting.h for some reason
-let kSwiftAEInheritedProperties = UTGetOSTypeFromString("c@#^")
+let kSwiftAEInheritedProperties = try! FourCharCode("c@#^")
 
 
 /**********************************************************************/
@@ -37,6 +37,52 @@ public class AETEParser: ApplicationTerminology {
     public init(keywordConverter: KeywordConverterProtocol = gSwiftAEKeywordConverter) {
         self.keywordConverter = keywordConverter
     }
+    
+    public func parse(descriptor: NSAppleEventDescriptor) throws { // accepts AETE/AEUT or AEList of AETE/AEUTs
+        switch descriptor.descriptorType {
+        case typeAETE, typeAEUT:
+            self.aeteData = descriptor.data
+            self.cursor = 6 // skip version, language, script integers
+            let n = self.short()
+            do {
+                for _ in 0..<n {
+                    try self.parseSuite()
+                }
+                /* singular names are normally used in the classes table and plural names in the elements table. However, if an aete defines a singular name but not a plural name then the missing plural name is substituted with the singular name; and vice-versa if there's no singular equivalent for a plural name.
+                */
+                for code in self.foundClassCodes {
+                    if !self.foundElementCodes.contains(code) {
+                        self.elements.append(self.classAndElementDefsByCode[code]!)
+                    }
+                }
+                for code in self.foundElementCodes {
+                    if !self.foundClassCodes.contains(code) {
+                        self.types.append(self.classAndElementDefsByCode[code]!)
+                    }
+                }
+                self.classAndElementDefsByCode.removeAll()
+                self.foundClassCodes.removeAll()
+                self.foundElementCodes.removeAll()
+                
+            } catch {
+                throw TerminologyError("An error occurred while parsing AETE. \(error)")
+            }
+        case typeAEList:
+            for i in 1...descriptor.numberOfItems {
+                try self.parse(descriptor.descriptorAtIndex(i)!)
+            }
+        default:
+            throw TerminologyError("An error occurred while parsing AETE. Unsupported descriptor type: \(formatFourCharCodeString(descriptor.descriptorType))")
+        }
+    }
+    
+    public func parse(descriptors: [NSAppleEventDescriptor]) throws {
+        for descriptor in descriptors {
+            try self.parse(descriptor)
+        }
+    }
+    
+    // internal callbacks
     
     // read data methods // TO DO: AEB implementation was simple and lightweight (C pointer arithmetic) - how does this compare? how would ManagedBuffer compare?
     
@@ -173,7 +219,7 @@ public class AETEParser: ApplicationTerminology {
             try self.checkCursor()
         }
         // add either singular (class) or plural (element) name definition
-        let classDef = KeywordTerm(name: className, kind: .Type, code: classCode)
+        let classDef = KeywordTerm(name: className, kind: .ElementOrType, code: classCode)
         if isPlural {
             if !self.elements.contains(classDef) {
                 self.elements.append(classDef)
@@ -241,50 +287,6 @@ public class AETEParser: ApplicationTerminology {
             try self.checkCursor()
         }
     }
-    
-    func parse(descriptor: NSAppleEventDescriptor) throws { // accepts AETE/AEUT or AEList of AETE/AEUTs
-        switch descriptor.descriptorType {
-        case typeAETE, typeAEUT:
-            self.aeteData = descriptor.data
-            self.cursor = 6 // skip version, language, script integers
-            let n = self.short()
-            do {
-                for _ in 0..<n {
-                    try self.parseSuite()
-                }
-                /* singular names are normally used in the classes table and plural names in the elements table. However, if an aete defines a singular name but not a plural name then the missing plural name is substituted with the singular name; and vice-versa if there's no singular equivalent for a plural name.
-                */
-                for code in self.foundClassCodes {
-                    if !self.foundElementCodes.contains(code) {
-                        self.elements.append(self.classAndElementDefsByCode[code]!)
-                    }
-                }
-                for code in self.foundElementCodes {
-                    if !self.foundClassCodes.contains(code) {
-                        self.types.append(self.classAndElementDefsByCode[code]!)
-                    }
-                }
-                self.classAndElementDefsByCode.removeAll()
-                self.foundClassCodes.removeAll()
-                self.foundElementCodes.removeAll()
-
-            } catch {
-                throw TerminologyError("An error occurred while parsing AETE. \(error)")
-            }
-        case typeAEList:
-            for i in 1...descriptor.numberOfItems {
-                try self.parse(descriptor.descriptorAtIndex(i)!)
-            }
-        default:
-            throw TerminologyError("An error occurred while parsing AETE. Invalid descriptor type.")
-        }
-    }
-    
-    func parse(descriptors: [NSAppleEventDescriptor]) throws {
-        for descriptor in descriptors {
-            try self.parse(descriptor)
-        }
-    }
 }
 
 
@@ -295,8 +297,8 @@ extension AEApplication { // TO DO: extend AppData first, with convenience metho
         return try self.sendAppleEvent(kASAppleScriptSuite, kGetAETE, [keyDirectObject:0]) as NSAppleEventDescriptor
     }
     
-    public func parseAETE() throws -> AETEParser {
-        let p = AETEParser()
+    public func parseAETE(keywordConverter: KeywordConverterProtocol = gSwiftAEKeywordConverter) throws -> AETEParser {
+        let p = AETEParser(keywordConverter: keywordConverter)
         try p.parse(try self.getAETE())
         return p
     }

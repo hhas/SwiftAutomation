@@ -1,29 +1,31 @@
 //
-//  GlueBuilder.swift
+//  GlueTable.swift
 //  SwiftAE
 //
+//  Combines default and application-specific terminology into lookup tables.
+//  The `aeglue` tool uses these tables to add properties and methods to a glue's
+//  Symbol subclass and Query and Command protocol extensions; formatAppleEvent()
+//  them to translate typeAppleEvent descriptors to SwiftAE syntax.
+//
+//  May also be used by dynamic AE bridges.
 //
 
 import Foundation
 
 
-
-// TO DO: port aeglue classes (replace aeglue with a minimal executable)
-
-
-
-public func CommandTermKey(eventClass: OSType, _ eventID: OSType) -> UInt64 { // creates keys for use in commandsByCode table
+// helper function; used to construct keys for commandsByCode dictionary
+public func CommandTermKey(eventClass: OSType, _ eventID: OSType) -> UInt64 {
     return UInt64(eventClass) << 32 | UInt64(eventID)
 }
 
 
-public class GlueTables { // used by aeglue and SwiftFormatter.formatAppleEvent()
+public class GlueTable { // used by aeglue and SwiftFormatter.formatAppleEvent()
 
     // lookup tables used by language-specific bridges to pack/unpack/format keywords and object specifiers
     
     // note: when looking up Specifier members, always search tables in order: elementsByName, propertiesByName, commandsByName
     
-    // TO DO: should values always be Terms? (the current arrangement is optimized for dynamic bridges)
+    // TO DO: should values always be Terms? (the current arrangement is optimized for dynamic bridges); maybe add lazy `descriptor` getter via extension?
     public private(set) var typesByName:      [String:NSAppleEventDescriptor] = [:] // Symbol members (properties, types, and enums)
     public private(set) var typesByCode:      [OSType:String]      = [:]
     
@@ -42,19 +44,17 @@ public class GlueTables { // used by aeglue and SwiftFormatter.formatAppleEvent(
     private var defaultCommandsByName: [String:CommandTerm] = [:]
     
     private let keywordConverter: KeywordConverterProtocol
-
     
-    public init(keywordConverter: KeywordConverterProtocol = gSwiftAEKeywordConverter,
-                defaultTerminology: ApplicationTerminology = gSwiftAEDefaultTerminology) {
+    public init(keywordConverter: KeywordConverterProtocol = gSwiftAEKeywordConverter) {
         self.keywordConverter = keywordConverter
+        self.addApplicationTerminology(keywordConverter.defaultTerminology)
         // retain copies of default type and command terms; these will be used to disambiguate
         // any conflicting application-defined terms added later
-        self.addApplicationTerminology(defaultTerminology)
         self.defaultTypesByName = self.typesByName
         self.defaultCommandsByName = self.commandsByName
     }
 
-    private func addTypes(keywords: KeywordTerms, descriptorType: OSType) { // descriptor type is used to create AEDescs for typesByName
+    private func addTypes(keywords: KeywordTerms, descriptorType: OSType) {
         let len = keywords.count
         for i in 0..<len {
             // add a definition to typeByCode table
@@ -136,6 +136,7 @@ public class GlueTables { // used by aeglue and SwiftFormatter.formatAppleEvent(
     }
 
     // add data from AETEParser, SDEFParser or equivalent
+    // (note: default terminology is added automatically when GlueTable is instantiated; users should not add it themselves)
     public func addApplicationTerminology(terms: ApplicationTerminology) {
         // build type tables
         self.addTypes(terms.properties, descriptorType: typeType) // technically typeProperty, but typeType is prob. safest
@@ -150,8 +151,9 @@ public class GlueTables { // used by aeglue and SwiftFormatter.formatAppleEvent(
         // (AppleScript always packs 'text of...' as an all-elements specifier, not a property specifier)
         // TO DO: should check if this rule only applies to 'text', or other ambiguous property/element names too
         if let specialTerm = self.propertiesByName["text"] {
-            self.elementsByName["text"] = KeywordTerm(name: specialTerm.name, kind: .Type, code: specialTerm.code)
+            self.elementsByName["text"] = KeywordTerm(name: specialTerm.name, kind: .ElementOrType, code: specialTerm.code)
             self.propertiesByName.removeValueForKey("text")
         }
     }
 }
+
