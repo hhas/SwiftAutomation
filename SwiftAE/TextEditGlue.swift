@@ -2,7 +2,7 @@
 //  TextEditGlue.swift
 //  TextEdit.app 1.11
 //  SwiftAE 0.1.0
-//  `aeglue TextEdit`
+//  `aeglue -r TextEdit`
 //
 
 
@@ -13,77 +13,78 @@ import Foundation
 // Untargeted AppData instance used in App, Con, Its roots; also used by Application constructors to create their own targeted AppData instances
 
 private let gNullAppData = AppData(glueInfo: GlueInfo(insertionSpecifierType: TEDInsertion.self, objectSpecifierType: TEDObject.self,
-    elementsSpecifierType: TEDElements.self, rootSpecifierType: TEDRoot.self,
-    symbolType: Symbol.self, formatter: gSpecifierFormatter))
+                                                      elementsSpecifierType: TEDElements.self, rootSpecifierType: TEDRoot.self,
+                                                      symbolType: Symbol.self, formatter: gSpecifierFormatter))
 
 
 /******************************************************************************/
 // Specifier formatter
 
 private let gSpecifierFormatter = SpecifierFormatter(applicationClassName: "TextEdit",
-    classNamePrefix: "TED",
-    propertyNames: [
-        0x70626e64: "bounds", // "pbnd"
-        0x70636c73: "class_", // "pcls"
-        0x68636c62: "closeable", // "hclb"
-        0x6c77636c: "collating", // "lwcl"
-        0x636f6c72: "color", // "colr"
-        0x6c776370: "copies", // "lwcp"
-        0x646f6375: "document", // "docu"
-        0x6c776c70: "endingPage", // "lwlp"
-        0x6c776568: "errorHandling", // "lweh"
-        0x6661786e: "faxNumber", // "faxn"
-        0x6174666e: "fileName", // "atfn"
-        0x6973666c: "floating", // "isfl"
-        0x666f6e74: "font", // "font"
-        0x70697366: "frontmost", // "pisf"
-        0x49442020: "id", // "ID  "
-        0x70696478: "index", // "pidx"
-        0x69736d6e: "miniaturizable", // "ismn"
-        0x706d6e64: "miniaturized", // "pmnd"
-        0x706d6f64: "modal", // "pmod"
-        0x696d6f64: "modified", // "imod"
-        0x706e616d: "name", // "pnam"
-        0x6c776c61: "pagesAcross", // "lwla"
-        0x6c776c64: "pagesDown", // "lwld"
-        0x70707468: "path", // "ppth"
-        0x70414c4c: "properties", // "pALL"
-        0x6c777174: "requestedPrintTime", // "lwqt"
-        0x7072737a: "resizable", // "prsz"
-        0x7074737a: "size", // "ptsz"
-        0x6c776670: "startingPage", // "lwfp"
-        0x74727072: "targetPrinter", // "trpr"
-        0x70746974: "titled", // "ptit"
-        0x76657273: "version", // "vers"
-        0x70766973: "visible", // "pvis"
-        0x69737a6d: "zoomable", // "iszm"
-        0x707a756d: "zoomed", // "pzum"
-    ],
-    elementsNames: [
-        0x63617070: "applications", // "capp"
-        0x61747473: "attachment", // "atts"
-        0x63617472: "attributeRuns", // "catr"
-        0x63686120: "characters", // "cha "
-        0x636f6c72: "colors", // "colr"
-        0x646f6375: "documents", // "docu"
-        0x636f626a: "items", // "cobj"
-        0x63706172: "paragraphs", // "cpar"
-        0x70736574: "printSettings", // "pset"
-        0x63747874: "text", // "ctxt"
-        0x6377696e: "windows", // "cwin"
-        0x63776f72: "words", // "cwor"
-    ])
+                                                     classNamePrefix: "TED",
+                                                     propertyNames: [
+                                                                     0x70626e64: "bounds", // "pbnd"
+                                                                     0x70636c73: "class_", // "pcls"
+                                                                     0x68636c62: "closeable", // "hclb"
+                                                                     0x6c77636c: "collating", // "lwcl"
+                                                                     0x636f6c72: "color", // "colr"
+                                                                     0x6c776370: "copies", // "lwcp"
+                                                                     0x646f6375: "document", // "docu"
+                                                                     0x6c776c70: "endingPage", // "lwlp"
+                                                                     0x6c776568: "errorHandling", // "lweh"
+                                                                     0x6661786e: "faxNumber", // "faxn"
+                                                                     0x6174666e: "fileName", // "atfn"
+                                                                     0x6973666c: "floating", // "isfl"
+                                                                     0x666f6e74: "font", // "font"
+                                                                     0x70697366: "frontmost", // "pisf"
+                                                                     0x49442020: "id", // "ID  "
+                                                                     0x70696478: "index", // "pidx"
+                                                                     0x69736d6e: "miniaturizable", // "ismn"
+                                                                     0x706d6e64: "miniaturized", // "pmnd"
+                                                                     0x706d6f64: "modal", // "pmod"
+                                                                     0x696d6f64: "modified", // "imod"
+                                                                     0x706e616d: "name", // "pnam"
+                                                                     0x6c776c61: "pagesAcross", // "lwla"
+                                                                     0x6c776c64: "pagesDown", // "lwld"
+                                                                     0x70707468: "path", // "ppth"
+                                                                     0x70414c4c: "properties", // "pALL"
+                                                                     0x6c777174: "requestedPrintTime", // "lwqt"
+                                                                     0x7072737a: "resizable", // "prsz"
+                                                                     0x7074737a: "size", // "ptsz"
+                                                                     0x6c776670: "startingPage", // "lwfp"
+                                                                     0x74727072: "targetPrinter", // "trpr"
+                                                                     0x63747874: "text", // "ctxt"
+                                                                     0x70746974: "titled", // "ptit"
+                                                                     0x76657273: "version", // "vers"
+                                                                     0x70766973: "visible", // "pvis"
+                                                                     0x69737a6d: "zoomable", // "iszm"
+                                                                     0x707a756d: "zoomed", // "pzum"
+                                                     ],
+                                                     elementsNames: [
+                                                                     0x63617070: "applications", // "capp"
+                                                                     0x61747473: "attachment", // "atts"
+                                                                     0x63617472: "attributeRuns", // "catr"
+                                                                     0x63686120: "characters", // "cha "
+                                                                     0x636f6c72: "colors", // "colr"
+                                                                     0x646f6375: "documents", // "docu"
+                                                                     0x636f626a: "items", // "cobj"
+                                                                     0x63706172: "paragraphs", // "cpar"
+                                                                     0x70736574: "printSettings", // "pset"
+                                                                     0x63747874: "text", // "ctxt"
+                                                                     0x6377696e: "windows", // "cwin"
+                                                                     0x63776f72: "words", // "cwor"
+                                                     ])
 
 
 /******************************************************************************/
 // Symbol subclass defines static type/enum/property constants based on TextEdit.app terminology
 
 public class TEDSymbol: Symbol {
-    
+
     override var typeAliasName: String {return "TED"}
-    
+
     public override class func symbol(code: OSType, type: OSType = typeType, descriptor: NSAppleEventDescriptor? = nil) -> TEDSymbol {
-        switch (code) { // TO DO: replace with dictionary? (downside is that dictionary would initialize all static lets, whether needed or not)
+        switch (code) {
         case 0x616c6973: return self.alias // "alis"
         case 0x2a2a2a2a: return self.anything // "****"
         case 0x63617070: return self.application // "capp"
@@ -266,7 +267,7 @@ public class TEDSymbol: Symbol {
         default: return super.symbol(code, type: type, descriptor: descriptor) as! TEDSymbol
         }
     }
-    
+
     // Types/properties
     public static let alias = TEDSymbol(name: "alias", code: 0x616c6973, type: typeType) // "alis"
     public static let anything = TEDSymbol(name: "anything", code: 0x2a2a2a2a, type: typeType) // "****"
@@ -435,7 +436,7 @@ public class TEDSymbol: Symbol {
     public static let yards = TEDSymbol(name: "yards", code: 0x79617264, type: typeType) // "yard"
     public static let zoomable = TEDSymbol(name: "zoomable", code: 0x69737a6d, type: typeType) // "iszm"
     public static let zoomed = TEDSymbol(name: "zoomed", code: 0x707a756d, type: typeType) // "pzum"
-    
+
     // Enumerators
     public static let ask = TEDSymbol(name: "ask", code: 0x61736b20, type: typeEnumerated) // "ask "
     public static let case_ = TEDSymbol(name: "case_", code: 0x63617365, type: typeEnumerated) // "case"
@@ -462,17 +463,17 @@ public protocol TEDCommand: SpecifierProtocol {} // provides AE dispatch methods
 
 extension TEDCommand {
     public func activate(directParameter: Any = NoParameter,
-        waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-            return try self.appData.sendAppleEvent("activate", eventClass: 0x6d697363, eventID: 0x61637476, // '"misc""actv"'
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+        return try self.appData.sendAppleEvent("activate", eventClass: 0x6d697363, eventID: 0x61637476, // '"misc""actv"'
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, asType: Any.self)
     }
     public func close(directParameter: Any = NoParameter,
-        saving: Any = NoParameter,
-        savingIn: Any = NoParameter,
-        waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-            return try self.appData.sendAppleEvent("close", eventClass: 0x636f7265, eventID: 0x636c6f73, // '"core""clos"'
+            saving: Any = NoParameter,
+            savingIn: Any = NoParameter,
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+        return try self.appData.sendAppleEvent("close", eventClass: 0x636f7265, eventID: 0x636c6f73, // '"core""clos"'
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("saving", 0x7361766f, saving), // "savo"
                     ("savingIn", 0x6b66696c, savingIn), // "kfil"
@@ -480,26 +481,26 @@ extension TEDCommand {
                 withTimeout: withTimeout, considering: considering, asType: Any.self)
     }
     public func count(directParameter: Any = NoParameter,
-        each: Any = NoParameter,
-        waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-            return try self.appData.sendAppleEvent("count", eventClass: 0x636f7265, eventID: 0x636e7465, // '"core""cnte"'
+            each: Any = NoParameter,
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+        return try self.appData.sendAppleEvent("count", eventClass: 0x636f7265, eventID: 0x636e7465, // '"core""cnte"'
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("each", 0x6b6f636c, each), // "kocl"
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, asType: Any.self)
     }
     public func delete(directParameter: Any = NoParameter,
-        waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-            return try self.appData.sendAppleEvent("delete", eventClass: 0x636f7265, eventID: 0x64656c6f, // '"core""delo"'
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+        return try self.appData.sendAppleEvent("delete", eventClass: 0x636f7265, eventID: 0x64656c6f, // '"core""delo"'
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, asType: Any.self)
     }
     public func duplicate(directParameter: Any = NoParameter,
-        to: Any = NoParameter,
-        withProperties: Any = NoParameter,
-        waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-            return try self.appData.sendAppleEvent("duplicate", eventClass: 0x636f7265, eventID: 0x636c6f6e, // '"core""clon"'
+            to: Any = NoParameter,
+            withProperties: Any = NoParameter,
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+        return try self.appData.sendAppleEvent("duplicate", eventClass: 0x636f7265, eventID: 0x636c6f6e, // '"core""clon"'
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("to", 0x696e7368, to), // "insh"
                     ("withProperties", 0x70726474, withProperties), // "prdt"
@@ -507,33 +508,33 @@ extension TEDCommand {
                 withTimeout: withTimeout, considering: considering, asType: Any.self)
     }
     public func exists(directParameter: Any = NoParameter,
-        waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-            return try self.appData.sendAppleEvent("exists", eventClass: 0x636f7265, eventID: 0x646f6578, // '"core""doex"'
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+        return try self.appData.sendAppleEvent("exists", eventClass: 0x636f7265, eventID: 0x646f6578, // '"core""doex"'
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, asType: Any.self)
     }
     public func get(directParameter: Any = NoParameter,
-        waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-            return try self.appData.sendAppleEvent("get", eventClass: 0x636f7265, eventID: 0x67657464, // '"core""getd"'
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+        return try self.appData.sendAppleEvent("get", eventClass: 0x636f7265, eventID: 0x67657464, // '"core""getd"'
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, asType: Any.self)
     }
     public func launch(directParameter: Any = NoParameter,
-        waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-            return try self.appData.sendAppleEvent("launch", eventClass: 0x61736372, eventID: 0x6e6f6f70, // '"ascr""noop"'
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+        return try self.appData.sendAppleEvent("launch", eventClass: 0x61736372, eventID: 0x6e6f6f70, // '"ascr""noop"'
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, asType: Any.self)
     }
     public func make(directParameter: Any = NoParameter,
-        new: Any = NoParameter,
-        at: Any = NoParameter,
-        withData: Any = NoParameter,
-        withProperties: Any = NoParameter,
-        waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-            return try self.appData.sendAppleEvent("make", eventClass: 0x636f7265, eventID: 0x6372656c, // '"core""crel"'
+            new: Any = NoParameter,
+            at: Any = NoParameter,
+            withData: Any = NoParameter,
+            withProperties: Any = NoParameter,
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+        return try self.appData.sendAppleEvent("make", eventClass: 0x636f7265, eventID: 0x6372656c, // '"core""crel"'
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("new", 0x6b6f636c, new), // "kocl"
                     ("at", 0x696e7368, at), // "insh"
@@ -543,35 +544,35 @@ extension TEDCommand {
                 withTimeout: withTimeout, considering: considering, asType: Any.self)
     }
     public func move(directParameter: Any = NoParameter,
-        to: Any = NoParameter,
-        waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-            return try self.appData.sendAppleEvent("move", eventClass: 0x636f7265, eventID: 0x6d6f7665, // '"core""move"'
+            to: Any = NoParameter,
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+        return try self.appData.sendAppleEvent("move", eventClass: 0x636f7265, eventID: 0x6d6f7665, // '"core""move"'
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("to", 0x696e7368, to), // "insh"
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, asType: Any.self)
     }
     public func open(directParameter: Any = NoParameter,
-        waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-            return try self.appData.sendAppleEvent("open", eventClass: 0x61657674, eventID: 0x6f646f63, // '"aevt""odoc"'
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+        return try self.appData.sendAppleEvent("open", eventClass: 0x61657674, eventID: 0x6f646f63, // '"aevt""odoc"'
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, asType: Any.self)
     }
     public func openLocation(directParameter: Any = NoParameter,
-        window: Any = NoParameter,
-        waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-            return try self.appData.sendAppleEvent("openLocation", eventClass: 0x4755524c, eventID: 0x4755524c, // '"GURL""GURL"'
+            window: Any = NoParameter,
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+        return try self.appData.sendAppleEvent("openLocation", eventClass: 0x4755524c, eventID: 0x4755524c, // '"GURL""GURL"'
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("window", 0x57494e44, window), // "WIND"
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, asType: Any.self)
     }
     public func print(directParameter: Any = NoParameter,
-        printDialog: Any = NoParameter,
-        withProperties: Any = NoParameter,
-        waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-            return try self.appData.sendAppleEvent("print", eventClass: 0x61657674, eventID: 0x70646f63, // '"aevt""pdoc"'
+            printDialog: Any = NoParameter,
+            withProperties: Any = NoParameter,
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+        return try self.appData.sendAppleEvent("print", eventClass: 0x61657674, eventID: 0x70646f63, // '"aevt""pdoc"'
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("printDialog", 0x70646c67, printDialog), // "pdlg"
                     ("withProperties", 0x70726474, withProperties), // "prdt"
@@ -579,33 +580,33 @@ extension TEDCommand {
                 withTimeout: withTimeout, considering: considering, asType: Any.self)
     }
     public func quit(directParameter: Any = NoParameter,
-        saving: Any = NoParameter,
-        waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-            return try self.appData.sendAppleEvent("quit", eventClass: 0x61657674, eventID: 0x71756974, // '"aevt""quit"'
+            saving: Any = NoParameter,
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+        return try self.appData.sendAppleEvent("quit", eventClass: 0x61657674, eventID: 0x71756974, // '"aevt""quit"'
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("saving", 0x7361766f, saving), // "savo"
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, asType: Any.self)
     }
     public func reopen(directParameter: Any = NoParameter,
-        waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-            return try self.appData.sendAppleEvent("reopen", eventClass: 0x61657674, eventID: 0x72617070, // '"aevt""rapp"'
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+        return try self.appData.sendAppleEvent("reopen", eventClass: 0x61657674, eventID: 0x72617070, // '"aevt""rapp"'
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, asType: Any.self)
     }
     public func run(directParameter: Any = NoParameter,
-        waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-            return try self.appData.sendAppleEvent("run", eventClass: 0x61657674, eventID: 0x6f617070, // '"aevt""oapp"'
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+        return try self.appData.sendAppleEvent("run", eventClass: 0x61657674, eventID: 0x6f617070, // '"aevt""oapp"'
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, asType: Any.self)
     }
     public func save(directParameter: Any = NoParameter,
-        as_: Any = NoParameter,
-        in_: Any = NoParameter,
-        waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-            return try self.appData.sendAppleEvent("save", eventClass: 0x636f7265, eventID: 0x73617665, // '"core""save"'
+            as_: Any = NoParameter,
+            in_: Any = NoParameter,
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+        return try self.appData.sendAppleEvent("save", eventClass: 0x636f7265, eventID: 0x73617665, // '"core""save"'
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("as_", 0x666c7470, as_), // "fltp"
                     ("in_", 0x6b66696c, in_), // "kfil"
@@ -613,9 +614,9 @@ extension TEDCommand {
                 withTimeout: withTimeout, considering: considering, asType: Any.self)
     }
     public func set(directParameter: Any = NoParameter,
-        to: Any = NoParameter,
-        waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-            return try self.appData.sendAppleEvent("set", eventClass: 0x636f7265, eventID: 0x73657464, // '"core""setd"'
+            to: Any = NoParameter,
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+        return try self.appData.sendAppleEvent("set", eventClass: 0x636f7265, eventID: 0x73657464, // '"core""setd"'
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("to", 0x64617461, to), // "data"
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
@@ -664,7 +665,7 @@ extension TEDQuery {
     public var visible: TEDObject {return self.property(0x70766973) as! TEDObject} // "pvis"
     public var zoomable: TEDObject {return self.property(0x69737a6d) as! TEDObject} // "iszm"
     public var zoomed: TEDObject {return self.property(0x707a756d) as! TEDObject} // "pzum"
-    
+
     // Elements
     public var applications: TEDElements {return self.elements(0x63617070) as! TEDElements} // "capp"
     public var attachment: TEDElements {return self.elements(0x61747473) as! TEDElements} // "atts"
@@ -704,7 +705,7 @@ public class TEDRoot: RootSpecifier, TEDQuery, RootSpecifierExtension {
 public class TextEdit: TEDRoot, ApplicationExtension {
     public convenience init(launchOptions: LaunchOptions = DefaultLaunchOptions, relaunchMode: RelaunchMode = DefaultRelaunchMode) {
         self.init(rootObject: AppRootDesc, appData: self.dynamicType.nullAppData.targetCopy(
-            .BundleIdentifier("com.apple.TextEdit", true), launchOptions: launchOptions, relaunchMode: relaunchMode))
+                                .BundleIdentifier("com.apple.TextEdit", true), launchOptions: launchOptions, relaunchMode: relaunchMode))
     }
 }
 
@@ -713,3 +714,4 @@ public class TextEdit: TEDRoot, ApplicationExtension {
 public let TEDApp = gNullAppData.rootObjects.app as! TEDRoot
 public let TEDCon = gNullAppData.rootObjects.con as! TEDRoot
 public let TEDIts = gNullAppData.rootObjects.its as! TEDRoot
+

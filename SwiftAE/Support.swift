@@ -51,6 +51,18 @@ public protocol SelfPacking {
 }
 
 
+public func URLForLocalApplication(name: String) -> NSURL? { // returns nil if not found
+    if name.hasPrefix("/") { // full path (note: path must include .app suffix)
+        return NSURL(fileURLWithPath: name)
+    } else { // if name is not full path, look up by name (.app suffix is optional)
+        let workspace = NSWorkspace.sharedWorkspace()
+        guard let path = workspace.fullPathForApplication(name) ?? workspace.fullPathForApplication("\(name).app") else {
+            return nil
+        }
+        return NSURL(fileURLWithPath: path)
+    }
+}
+
 // Application initializers pass application-identifying information to AppData initializer as enum according to which initializer was called
 
 public enum TargetApplication {
@@ -83,12 +95,10 @@ public enum TargetApplication {
             if name.hasPrefix("/") { // full path (note: path must include .app suffix)
                 url = NSURL(fileURLWithPath: name)
             } else { // if name is not full path, look up by name (.app suffix is optional)
-                let workspace = NSWorkspace.sharedWorkspace()
-                if let path = workspace.fullPathForApplication(name) ?? workspace.fullPathForApplication("\(name).app") {
-                    url = NSURL(fileURLWithPath: path)
-                } else {
-                    throw ConnectionError(target: self, message: "Application not found.")
+                guard let tmp = URLForLocalApplication(name) else {
+                    throw ConnectionError(target: self, message: "Application not found: \(name)")
                 }
+                url = tmp
             }
             return try self.processDescriptorForLocalApplication(url, launchOptions: launchOptions)
         case .URL(let url): // file/eppc URL
@@ -97,13 +107,13 @@ public enum TargetApplication {
             } else if url.scheme == "eppc" {
                 return NSAppleEventDescriptor(applicationURL: url)
             } else {
-                throw ConnectionError(target: self, message: "Invalid URL scheme (not file/eppc).")
+                throw ConnectionError(target: self, message: "Invalid URL scheme (not file/eppc): \(url)")
             }
         case .BundleIdentifier(let bundleIdentifier, _):
             if let url = NSWorkspace.sharedWorkspace().URLForApplicationWithBundleIdentifier(bundleIdentifier) {
                 return try self.processDescriptorForLocalApplication(url, launchOptions: launchOptions)
             } else {
-                throw ConnectionError(target: self, message: "Application not found.")
+                throw ConnectionError(target: self, message: "Application not found: \(bundleIdentifier)")
             }
         case .ProcessIdentifier(let pid):
             return NSAppleEventDescriptor(processIdentifier: pid)

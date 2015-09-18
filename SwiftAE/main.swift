@@ -9,6 +9,7 @@
 
 import Foundation
 
+
 /*
 let p = SDEFParser()
 do {
@@ -52,7 +53,7 @@ do {
     //let result = try te.sendAppleEvent(kCoreEventClass, kAEOpenDocuments, [keyDirectObject:NSURL.fileURLWithPath("/Users/has/todos.txt")])
     //print(result)
 
-    //*
+    
     
     let result1 = try te.make(new: TED.document, withProperties: [TED.text: "Hello World!"])
         
@@ -78,7 +79,7 @@ do {
     
     let result4 = try te.documents.name.get() 
     print(result4)
-    //*/
+    
     
     // get every file of folder "Documents" of home whose name extension is "txt"
     

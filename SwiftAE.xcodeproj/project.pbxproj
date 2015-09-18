@@ -15,6 +15,23 @@
 		4F0E39531BA9C6C700FF2A96 /* DefaultTerminology.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39521BA9C6C700FF2A96 /* DefaultTerminology.swift */; settings = {ASSET_TAGS = (); }; };
 		4F0E39681BAA98A900FF2A96 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39671BAA98A900FF2A96 /* main.swift */; };
 		4F0E396E1BAA9BA700FF2A96 /* StaticGlueBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E396D1BAA9BA700FF2A96 /* StaticGlueBuilder.swift */; settings = {ASSET_TAGS = (); }; };
+		4F0E39841BAB743800FF2A96 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F63C4331B7CF1C4000D74EE /* Foundation.framework */; };
+		4F0E39851BAB7B7B00FF2A96 /* AEConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F63C42E1B7CF133000D74EE /* AEConstants.swift */; };
+		4F0E39861BAB7B7B00FF2A96 /* AppData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F63C4401B86A335000D74EE /* AppData.swift */; };
+		4F0E39871BAB7B7B00FF2A96 /* Specifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F63C42F1B7CF133000D74EE /* Specifier.swift */; };
+		4F0E39881BAB7B7B00FF2A96 /* SpecifierExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1D12401BA3042600875F74 /* SpecifierExtensions.swift */; };
+		4F0E39891BAB7B7B00FF2A96 /* SpecifierFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FDD30FD1B932C29002BA20F /* SpecifierFormatter.swift */; };
+		4F0E398A1BAB7B7B00FF2A96 /* Symbol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F63C4421B87AC88000D74EE /* Symbol.swift */; };
+		4F0E398B1BAB7B7B00FF2A96 /* Errors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F63C4441B8A4DFC000D74EE /* Errors.swift */; };
+		4F0E398C1BAB7B7B00FF2A96 /* Support.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F63C4461B8A669C000D74EE /* Support.swift */; };
+		4F0E398D1BAB7B7B00FF2A96 /* TermTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39451BA86B5F00FF2A96 /* TermTypes.swift */; };
+		4F0E398E1BAB7B7B00FF2A96 /* DefaultTerminology.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39521BA9C6C700FF2A96 /* DefaultTerminology.swift */; };
+		4F0E398F1BAB7B7B00FF2A96 /* KeywordConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E394C1BA8C16300FF2A96 /* KeywordConverter.swift */; };
+		4F0E39901BAB7B7B00FF2A96 /* AETEParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E394E1BA8D2F600FF2A96 /* AETEParser.swift */; };
+		4F0E39911BAB7B7B00FF2A96 /* SDEFParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39481BA8717D00FF2A96 /* SDEFParser.swift */; };
+		4F0E39921BAB7B7B00FF2A96 /* GlueTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39501BA9A7EA00FF2A96 /* GlueTable.swift */; };
+		4F0E39931BAB7B7B00FF2A96 /* StaticGlueBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E396D1BAA9BA700FF2A96 /* StaticGlueBuilder.swift */; };
+		4F0E39941BAB7B7B00FF2A96 /* AEApplicationGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F2645AB1BA4F27700256402 /* AEApplicationGlue.swift */; };
 		4F1D12411BA3042600875F74 /* SpecifierExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1D12401BA3042600875F74 /* SpecifierExtensions.swift */; settings = {ASSET_TAGS = (); }; };
 		4F2645A81BA4243E00256402 /* TextEditGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F2645A71BA4243E00256402 /* TextEditGlue.swift */; settings = {ASSET_TAGS = (); }; };
 		4F2645AC1BA4F27700256402 /* AEApplicationGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F2645AB1BA4F27700256402 /* AEApplicationGlue.swift */; settings = {ASSET_TAGS = (); }; };
@@ -32,6 +49,16 @@
 		4F63C4471B8A669C000D74EE /* Support.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F63C4461B8A669C000D74EE /* Support.swift */; };
 		4FDD30FE1B932C29002BA20F /* SpecifierFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FDD30FD1B932C29002BA20F /* SpecifierFormatter.swift */; settings = {ASSET_TAGS = (); }; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		4F0E39821BAB742400FF2A96 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4F63C41C1B7CF06E000D74EE /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4F63C4231B7CF06E000D74EE;
+			remoteInfo = SwiftAE;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		4F0E39631BAA98A900FF2A96 /* CopyFiles */ = {
@@ -133,6 +160,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4F0E39841BAB743800FF2A96 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -329,6 +357,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				4F0E39831BAB742400FF2A96 /* PBXTargetDependency */,
 			);
 			name = aeglue;
 			productName = aeglue;
@@ -392,6 +421,22 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4F0E39851BAB7B7B00FF2A96 /* AEConstants.swift in Sources */,
+				4F0E39861BAB7B7B00FF2A96 /* AppData.swift in Sources */,
+				4F0E39871BAB7B7B00FF2A96 /* Specifier.swift in Sources */,
+				4F0E39881BAB7B7B00FF2A96 /* SpecifierExtensions.swift in Sources */,
+				4F0E39891BAB7B7B00FF2A96 /* SpecifierFormatter.swift in Sources */,
+				4F0E398A1BAB7B7B00FF2A96 /* Symbol.swift in Sources */,
+				4F0E398B1BAB7B7B00FF2A96 /* Errors.swift in Sources */,
+				4F0E398C1BAB7B7B00FF2A96 /* Support.swift in Sources */,
+				4F0E398D1BAB7B7B00FF2A96 /* TermTypes.swift in Sources */,
+				4F0E398E1BAB7B7B00FF2A96 /* DefaultTerminology.swift in Sources */,
+				4F0E398F1BAB7B7B00FF2A96 /* KeywordConverter.swift in Sources */,
+				4F0E39901BAB7B7B00FF2A96 /* AETEParser.swift in Sources */,
+				4F0E39911BAB7B7B00FF2A96 /* SDEFParser.swift in Sources */,
+				4F0E39921BAB7B7B00FF2A96 /* GlueTable.swift in Sources */,
+				4F0E39931BAB7B7B00FF2A96 /* StaticGlueBuilder.swift in Sources */,
+				4F0E39941BAB7B7B00FF2A96 /* AEApplicationGlue.swift in Sources */,
 				4F0E39681BAA98A900FF2A96 /* main.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -424,6 +469,14 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		4F0E39831BAB742400FF2A96 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4F63C4231B7CF06E000D74EE /* SwiftAE */;
+			targetProxy = 4F0E39821BAB742400FF2A96 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		4F0E396A1BAA98A900FF2A96 /* Debug */ = {

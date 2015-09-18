@@ -38,7 +38,7 @@ public class «PREFIX»Symbol: Symbol {
     override var typeAliasName: String {return "«PREFIX»"}
 
     public override class func symbol(code: OSType, type: OSType = typeType, descriptor: NSAppleEventDescriptor? = nil) -> «PREFIX»Symbol {
-        switch (code) { // TO DO: replace with dictionary? (downside is that dictionary would initialize all static lets, whether needed or not)«+SYMBOL_SWITCH»
+        switch (code) {«+SYMBOL_SWITCH»
         case «CODE»: return self.«NAME» // «CODE_STR»«-SYMBOL_SWITCH»
         default: return super.symbol(code, type: type, descriptor: descriptor) as! «PREFIX»Symbol
         }

@@ -21,11 +21,10 @@ public func CommandTermKey(eventClass: OSType, _ eventID: OSType) -> UInt64 {
 
 public class GlueTable { // used by aeglue and SwiftFormatter.formatAppleEvent()
 
-    // lookup tables used by language-specific bridges to pack/unpack/format keywords and object specifiers
+    // provides lookup tables used by language-specific bridges to pack/unpack/format symbols, specifiers, and commands
+    // note: dictionary structures are optimized for dynamic bridges, but are also usable
+    // by static glue generators (which aren't performance-sensitive anyway)
     
-    // note: when looking up Specifier members, always search tables in order: elementsByName, propertiesByName, commandsByName
-    
-    // TO DO: should values always be Terms? (the current arrangement is optimized for dynamic bridges); maybe add lazy `descriptor` getter via extension?
     public private(set) var typesByName:      [String:NSAppleEventDescriptor] = [:] // Symbol members (properties, types, and enums)
     public private(set) var typesByCode:      [OSType:String]      = [:]
     
@@ -37,6 +36,24 @@ public class GlueTable { // used by aeglue and SwiftFormatter.formatAppleEvent()
     
     public private(set) var commandsByName:   [String:CommandTerm] = [:]
     public private(set) var commandsByCode:   [UInt64:CommandTerm] = [:] // key is eventClass<<32|eventID
+    
+    private var _specifiersByName:            [String:Term]?
+    
+    // get property/elements/command by name; this eliminates duplicate (e.g. property+elements) names,
+    // according [hopefully] to the same internal rules used by AppleScript; note, however, that AS does
+    // still allow elements names masked by property names to be used by adding `every` keyword;
+    // TO DO: add an `ObjectSpecifier.all` property to do the same (also, review special-case handling of
+    // `text` property/element - it's probably correct since AS defines `text` as an element name itself,
+    // but best be safe)
+    public var specifiersByName: [String:Term] {
+        if self._specifiersByName == nil {
+            self._specifiersByName = [String:Term]()
+            for termsByName in [elementsByName, propertiesByName, commandsByName] {
+                for (key, value) in termsByName as! [String:Term] { self._specifiersByName![key] = value }
+            }
+        }
+        return self._specifiersByName!
+    }
     
     // copies of SwiftAE's built-in terms, used to disambiguate any conflicting app-defined names
     private var defaultTypesByName: [String:NSAppleEventDescriptor] = [:]
@@ -154,6 +171,7 @@ public class GlueTable { // used by aeglue and SwiftFormatter.formatAppleEvent()
             self.elementsByName["text"] = KeywordTerm(name: specialTerm.name, kind: .ElementOrType, code: specialTerm.code)
             self.propertiesByName.removeValueForKey("text")
         }
+        self._specifiersByName == nil
     }
 }
 

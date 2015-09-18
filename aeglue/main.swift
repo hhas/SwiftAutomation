@@ -5,21 +5,147 @@
 //  Generate application-specific glue files for SwiftAE
 //
 
+// TO DO: options parsing currently doesn't handle common shell shorthand (e.g. using `-rs` instead of `-r -s` currently fails)
+
 import Foundation
-// import SwiftAE
+import SwiftAE
+
+let gHelp = [
+    "Generate SwiftAE glue classes and SDEF documentation for controlling",
+    "an \"AppleScriptable\" application from Swift.",
+    "",
+    "Usage:",
+    "",
+    "    aeglue [-n CLASSNAME] [-p PREFIX] [-r] [-s] APPNAME [OUTDIR]",
+    "    aeglue -d [-r] [OUTDIR]",
+    "    aeglue [-h] [-v]",
+    "",
+    "APPNAME - Name or path to application.",
+    "",
+    "OUTDIR - Path to directory in which the glue files will be created;",
+    "             if omitted, the current working directory is used.",
+    "",
+    "On completion, the generated files' paths are written to STDOUT.",
+    "",
+    "Options:",
+    "",
+    "    -d             Generate glue using default terminology only.",
+    "    -h             Show this help and exit.",
+    "    -n CLASSNAME   Application class name as a C-style identifier;",
+    "                       if omitted, a default name is auto-generated.",
+    "    -p PREFIX      Class names prefix; if omitted, a 3-character",
+    "                       prefix is auto-generated.",
+    "    -r             Overwrite existing files.",
+    "    -s             Use SDEF terminology instead of AETE, e.g. if",
+    "                       application's ascr/gdte handler is broken.",
+    "    -v             Output the SwiftAE framework's version and exit.",
+    "",
+    "Examples:",
+    "",
+    "    aeglue iTunes",
+    "",
+    "    aeglue -r -s Finder",
+    "",
+    "    aeglue -p TE TextEdit ~/Desktop",
+    ""].joinWithSeparator("\n")
+
+
+var applicationURL: NSURL?
+var outDir: NSURL?
+
+var applicationClassName: String?
+var classNamesPrefix: String?
+var defaultTermsOnly = false
+var canOverwrite = false
+var useSDEF = false
+
+// parse ARGV
+
+var args: ArraySlice<String> = ArraySlice(Process.arguments)
+let _ = args.popFirst()
+let shellCommand = "aeglue "+args.joinWithSeparator(" ")
+if args.count == 0 {
+    print(gHelp) // TO DO: STDERR
+    exit(0)
+}
+while let opt = args.popFirst() {
+    switch(opt) {
+    case "-d":
+        defaultTermsOnly = true
+    case "-h":
+        print(gHelp) // TO DO: STDERR
+        exit(0)
+    case "-n":
+        applicationClassName = args.popFirst()
+        if applicationClassName == nil || applicationClassName!.hasPrefix("-") {
+            print("Missing value for -n option.")
+            exit(1)
+        }
+    case "-p":
+        classNamesPrefix = args.popFirst()
+        if classNamesPrefix == nil || classNamesPrefix!.hasPrefix("-") {
+            print("Missing value for -p option.")
+            exit(1)
+        }
+    case "-r":
+        canOverwrite = true
+    case "-s":
+        useSDEF = true
+    case "-v":
+        print("0.0.0") // TO DO: print SwiftAE.framework bundle version
+        exit(0)
+    default:
+        if !defaultTermsOnly {
+            guard let url = URLForLocalApplication(opt) else {
+                print("Application not found: \(opt)")
+                exit(1)
+            }
+            applicationURL = url
+        }
+        if let tmp = args.popFirst() {
+            outDir = NSURL(fileURLWithPath: tmp)
+        } else {
+            outDir = NSURL(fileURLWithPath: "./").absoluteURL // check this gives cwd
+        }
+        if args.count > 0 {
+            print("Too many arguments.")
+            exit(1)
+        }
+    }
+}
+
+let glueSpec = StaticGlueSpec(applicationURL: applicationURL, classNamesPrefix: classNamesPrefix,
+                              applicationClassName: applicationClassName, useSDEF: useSDEF)
+
+let glueFileName = "\(glueSpec.applicationClassName)Glue.swift"
+let outGlueURL = outDir!.URLByAppendingPathComponent(glueFileName)
+let outSDEFURL = outDir!.URLByAppendingPathComponent("\(glueFileName).sdef")
 
 
 
 
+do {
+    let glueCode = try renderStaticGlueTemplate(glueSpec, extraTags: ["AEGLUE_COMMAND": shellCommand,
+                                                                      "GLUE_NAME":      glueFileName])
+    // TO DO: canOverwrite
+    try glueCode.writeToURL(outGlueURL, atomically: true, encoding: NSUTF8StringEncoding)
+    print(outGlueURL.path!)
+} catch {
+    print("Couldn't generate glue: \(error)")
+    exit(Int32(error._code))
+}
 
-/*
 
-def makeglue(self: StaticGlueSpec, outdir, allowoverwrite, shellcmd):
-terms = self.terminology()
-renderglue(readtemplate('SwiftAEGlueTemplate'), outdir, self.gluename+'.swift', self, terms, allowoverwrite, shellcmd)
-if self.appurl:
-exportsdef(self.appurl, os.path.join(outdir, '%s.swift.sdef' % self.gluename),
-self.keywordconverter, self.prefix, allowoverwrite)
+// TO DO: SDEF translation
+if let appURL = applicationURL {
+    do {
+        let sdef = try GetScriptingDefinition(appURL)
+        
+        print(outSDEFURL.path!)
+    } catch {
+        print("Couldn't write SDEF: \(error)")
+        exit(Int32(error._code))
+    }
+}
 
-*/
 
