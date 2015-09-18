@@ -87,11 +87,11 @@ def render(sourcedir, destdir):
 
 if __name__ == '__main__':
     if len(sys.argv) != 3:
-        print 'Usage: mkdoc SOURCE-DIR DEST-DIR'
+        src, dest = 'doc-source', 'swiftae-manual'
     else:
         src, dest = sys.argv[1:]
-        sourcedir = os.path.abspath(os.path.expanduser(src.decode('utf-8')))
-        destdir = os.path.abspath(os.path.expanduser(dest.decode('utf-8')))
-        render(sourcedir, destdir)
+    sourcedir = os.path.abspath(os.path.expanduser(src.decode('utf-8')))
+    destdir = os.path.abspath(os.path.expanduser(dest.decode('utf-8')))
+    render(sourcedir, destdir)
 
 

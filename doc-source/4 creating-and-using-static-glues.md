@@ -16,13 +16,13 @@ The following example generates a glue for the TextEdit application, using an au
 
     aeglue TextEdit
 
-while the following command uses a custom class name prefix, `TE`, and creates the new `TextEditGlue.swift` file in your home directory's "Documents" folder:
+while the following command uses a custom class name prefix, `TE`, and creates the new `TextEditGlue.swift` file on your desktop:
 
-    aeglue -p TE TextEdit ~/Documents
+    aeglue -p TE TextEdit ~/Desktop
 
 The `aeglue` tool also creates an `.sdef` file containing the application's dictionary (interface documentation) in Swift format. For example, to view the `TextEditGlue.swift` terminology in Script Editor: 
 
-    open -a 'Script Editor' ~/Documents/TEGlue/TextEditGlue.swift.sdef
+    open -a 'Script Editor' ~/Desktop/TEGlue/TextEditGlue.swift.sdef
 
 Refer to this documentation when using SwiftAE glues in your own code, as it shows element, property, command, etc. names as they appear in the generated glue classes. (Make sure Script Editor's dictionary viewer is set to "AppleScript" language; other formats are for use with OS X's Scripting Bridge/JavaScript for Automation bridges only.)
 
@@ -49,17 +49,17 @@ To include the generated glue file in your project:
 
 Each glue contains the following classes:
 
-* `<var>PREFIX</var>Symbol` -- represents Apple event type, enumerator, and property names, e.g. `TEDSymbol`
+* <code><var>XXX</var>Symbol</code> -- represents Apple event type, enumerator, and property names, e.g. `TEDSymbol`
 
-* `<var>PREFIX</var>Insertion`, `<var>PREFIX</var>Object`, `<var>PREFIX</var>Elements`, `<var>PREFIX</var>Root` -- represents the various forms of Apple Event Object Model queries (a.k.a. object specifiers), e.g. `TEDObject`
+* <code><var>XXX</var>Insertion</code>, <code><var>XXX</var>Object</code>, <code><var>XXX</var>Elements</code>, <code><var>XXX</var>Root</code> -- represents the various forms of Apple Event Object Model queries (a.k.a. object specifiers), e.g. `TEDObject`
 
-* `<var>APPNAME</var>` -- represents an application to which you can send commands, e.g. `TextEdit`
-
-
-Each glue also provides three predefined constants - `<var>PREFIX</var>App`, `<var>PREFIX</var>Con` and `<var>PREFIX</var>Its` - for use in constructing object specifiers.
+* <code><var>ApplicationName</var></code> -- represents an application to which you can send commands, e.g. `TextEdit`
 
 
-<p class="hilitebox">Note that subsequent code examples in this manual assume the presence of suitable glues; e.g. TextEdit-based examples assume a TextEdit glue with the prefix `TED`, Finder-based examples assume a Finder glue with the prefix `FIN`, etc.</p>
+Each glue also provides three predefined constants - <code><var>XXX</var>App</code>, <code><var>XXX</var>Con</code> and <code><var>XXX</var>Its</code> - for use in constructing object specifiers.
+
+
+<p class="hilitebox">Note that subsequent code examples in this manual assume the presence of suitable glues; e.g. TextEdit-based examples assume a TextEdit glue with the prefix <code>TED</code>, Finder-based examples assume a Finder glue with the prefix <code>FIN</code>, etc.</p>
 
 
 

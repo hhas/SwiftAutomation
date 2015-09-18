@@ -29,14 +29,14 @@
 <pre><code>  aeglue TextEdit
 </code></pre>
 
-<p>while the following command uses a custom class name prefix, <code>TE</code>, and creates the new <code>TextEditGlue.swift</code> file in your home directory's "Documents" folder:</p>
+<p>while the following command uses a custom class name prefix, <code>TE</code>, and creates the new <code>TextEditGlue.swift</code> file on your desktop:</p>
 
-<pre><code>  aeglue -p TE TextEdit ~/Documents
+<pre><code>  aeglue -p TE TextEdit ~/Desktop
 </code></pre>
 
 <p>The <code>aeglue</code> tool also creates an <code>.sdef</code> file containing the application's dictionary (interface documentation) in Swift format. For example, to view the <code>TextEditGlue.swift</code> terminology in Script Editor: </p>
 
-<pre><code>  open -a 'Script Editor' ~/Documents/TEGlue/TextEditGlue.swift.sdef
+<pre><code>  open -a 'Script Editor' ~/Desktop/TEGlue/TextEditGlue.swift.sdef
 </code></pre>
 
 <p>Refer to this documentation when using SwiftAE glues in your own code, as it shows element, property, command, etc. names as they appear in the generated glue classes. (Make sure Script Editor's dictionary viewer is set to "AppleScript" language; other formats are for use with OS X's Scripting Bridge/JavaScript for Automation bridges only.)</p>
@@ -66,14 +66,14 @@
 <p>Each glue contains the following classes:</p>
 
 <ul>
-<li><p><code>&lt;var&gt;PREFIX&lt;/var&gt;Symbol</code> -- represents Apple event type, enumerator, and property names, e.g. <code>TEDSymbol</code></p></li>
-<li><p><code>&lt;var&gt;PREFIX&lt;/var&gt;Insertion</code>, <code>&lt;var&gt;PREFIX&lt;/var&gt;Object</code>, <code>&lt;var&gt;PREFIX&lt;/var&gt;Elements</code>, <code>&lt;var&gt;PREFIX&lt;/var&gt;Root</code> -- represents the various forms of Apple Event Object Model queries (a.k.a. object specifiers), e.g. <code>TEDObject</code></p></li>
-<li><p><code>&lt;var&gt;APPNAME&lt;/var&gt;</code> -- represents an application to which you can send commands, e.g. <code>TextEdit</code></p></li>
+<li><p><code><var>XXX</var>Symbol</code> -- represents Apple event type, enumerator, and property names, e.g. <code>TEDSymbol</code></p></li>
+<li><p><code><var>XXX</var>Insertion</code>, <code><var>XXX</var>Object</code>, <code><var>XXX</var>Elements</code>, <code><var>XXX</var>Root</code> -- represents the various forms of Apple Event Object Model queries (a.k.a. object specifiers), e.g. <code>TEDObject</code></p></li>
+<li><p><code><var>ApplicationName</var></code> -- represents an application to which you can send commands, e.g. <code>TextEdit</code></p></li>
 </ul>
 
-<p>Each glue also provides three predefined constants - <code>&lt;var&gt;PREFIX&lt;/var&gt;App</code>, <code>&lt;var&gt;PREFIX&lt;/var&gt;Con</code> and <code>&lt;var&gt;PREFIX&lt;/var&gt;Its</code> - for use in constructing object specifiers.</p>
+<p>Each glue also provides three predefined constants - <code><var>XXX</var>App</code>, <code><var>XXX</var>Con</code> and <code><var>XXX</var>Its</code> - for use in constructing object specifiers.</p>
 
-<p class="hilitebox">Note that subsequent code examples in this manual assume the presence of suitable glues; e.g. TextEdit-based examples assume a TextEdit glue with the prefix `TED`, Finder-based examples assume a Finder glue with the prefix `FIN`, etc.</p>
+<p class="hilitebox">Note that subsequent code examples in this manual assume the presence of suitable glues; e.g. TextEdit-based examples assume a TextEdit glue with the prefix <code>TED</code>, Finder-based examples assume a Finder glue with the prefix <code>FIN</code>, etc.</p>
 
 <h2>How keywords are converted</h2>
 
