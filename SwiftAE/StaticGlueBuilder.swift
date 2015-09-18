@@ -180,3 +180,51 @@ func renderStaticGlueTemplate(glueSpec: StaticGlueSpec, extraTags: [String:Strin
 }
 
 
+
+// generate cheap-n-nasty user documentation by reformatting command, class, property, etc. names in SDEF XML
+
+public func translateScriptingDefinition(data: NSData, glueSpec: StaticGlueSpec) throws -> NSData {
+    func convertNode(node: NSXMLElement, _ attributeName: String = "name", symbolPrefix: String = "") {
+        if let attribute = node.attributeForName(attributeName) {
+            if let value = attribute.stringValue {
+                attribute.stringValue = symbolPrefix + glueSpec.keywordConverter.convertSpecifierName(value)
+            }
+        }
+    }
+    let xml = try NSXMLDocument(data: data, options: 0)
+    guard let root = xml.rootElement() else {
+        throw TerminologyError("Malformed SDEF resource: missing root.")
+    }
+    for suite in root.elementsForName("suite") {
+        for key in ["command", "event"] {
+            for command in suite.elementsForName(key) {
+                convertNode(command)
+                for parameter in command.elementsForName("parameter") {
+                    if let attribute = parameter.attributeForName("name") {
+                        if let value = attribute.stringValue {
+                            attribute.stringValue = glueSpec.keywordConverter.convertParameterName(value)+":"
+                        }
+                    }
+                }
+            }
+        }
+        for key in ["class", "class-extension", "record-type"] {
+            for klass in suite.elementsForName(key) {
+                convertNode(klass)
+                convertNode(klass, "plural")
+                for node in klass.elementsForName("element") { convertNode(node, "type") }
+                for node in klass.elementsForName("property") { convertNode(node) }
+                for node in klass.elementsForName("contents") { convertNode(node) }
+                for node in klass.elementsForName("responds-to") { convertNode(node); convertNode(node, "command") }
+            }
+        }
+        let symbolPrefix = "\(glueSpec.classNamesPrefix)."
+        for enumeration in suite.elementsForName("enumeration") {
+            for enumerator in enumeration.elementsForName("enumerator") { convertNode(enumerator, symbolPrefix: symbolPrefix) }
+        }
+        for valueType in suite.elementsForName("value-type") { convertNode(valueType) }
+    }
+    return xml.XMLData
+}
+
+

@@ -114,36 +114,40 @@ while let opt = args.popFirst() {
     }
 }
 
+
+func writeData(data: NSData, toURL: NSURL, overwriting: Bool) throws {
+    try data.writeToURL(toURL, options: (overwriting ? .DataWritingAtomic : .DataWritingWithoutOverwriting))
+}
+
 let glueSpec = StaticGlueSpec(applicationURL: applicationURL, classNamesPrefix: classNamesPrefix,
                               applicationClassName: applicationClassName, useSDEF: useSDEF)
 
 let glueFileName = "\(glueSpec.applicationClassName)Glue.swift"
-let outGlueURL = outDir!.URLByAppendingPathComponent(glueFileName)
-let outSDEFURL = outDir!.URLByAppendingPathComponent("\(glueFileName).sdef")
 
-
-
-
+// generate SwiftAE glue file
 do {
-    let glueCode = try renderStaticGlueTemplate(glueSpec, extraTags: ["AEGLUE_COMMAND": shellCommand,
-                                                                      "GLUE_NAME":      glueFileName])
-    // TO DO: canOverwrite
-    try glueCode.writeToURL(outGlueURL, atomically: true, encoding: NSUTF8StringEncoding)
+    let code = try renderStaticGlueTemplate(glueSpec, extraTags: ["AEGLUE_COMMAND": shellCommand,
+                                                                  "GLUE_NAME":      glueFileName])
+    guard let data = code.dataUsingEncoding(NSUTF8StringEncoding) else {
+        throw TerminologyError("Invalid UTF8 data.")
+    }
+    let outGlueURL = outDir!.URLByAppendingPathComponent(glueFileName)
+    try writeData(data, toURL: outGlueURL, overwriting: canOverwrite)
     print(outGlueURL.path!)
 } catch {
-    print("Couldn't generate glue: \(error)")
+    print("Couldn't generate glue: \((error as NSError).localizedDescription)") // TO DO: check this works with non-NSErrors too
     exit(Int32(error._code))
 }
 
-
-// TO DO: SDEF translation
+// generate cheap-n-dirty user documentation
 if let appURL = applicationURL {
     do {
-        let sdef = try GetScriptingDefinition(appURL)
-        
+        let sdef = try translateScriptingDefinition(try GetScriptingDefinition(appURL), glueSpec: glueSpec)
+        let outSDEFURL = outDir!.URLByAppendingPathComponent("\(glueFileName).sdef")
+        try writeData(sdef, toURL: outSDEFURL, overwriting: canOverwrite)
         print(outSDEFURL.path!)
     } catch {
-        print("Couldn't write SDEF: \(error)")
+        print("Couldn't write SDEF: \((error as NSError).localizedDescription)")
         exit(Int32(error._code))
     }
 }
