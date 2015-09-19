@@ -64,7 +64,7 @@ extension «PREFIX»Command {«+COMMAND»
     public func «COMMAND_NAME»(directParameter: Any = NoParameter,«+PARAMETER»
             «NAME»: Any = NoParameter,«-PARAMETER»
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent("«COMMAND_NAME»", eventClass: «EVENT_CLASS», eventID: «EVENT_ID», // '«EVENT_CLASS_STR»«EVENT_ID_STR»'
+        return try self.appData.sendAppleEvent("«COMMAND_NAME»", eventClass: «EVENT_CLASS», eventID: «EVENT_ID», // «EVENT_CLASS_STR»/«EVENT_ID_STR»
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [«+PARAMETER»
                     ("«NAME»", «CODE», «NAME»), // «CODE_STR»«-PARAMETER»
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,

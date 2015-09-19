@@ -102,9 +102,9 @@ public protocol KeywordConverterProtocol {
     
     func convertSpecifierName(s: String) -> String
     func convertParameterName(s: String) -> String
-    func identifierForAppName(appName: String ) -> String
+    func identifierForAppName(appName: String) -> String
     func prefixForAppName(appName: String) -> String
-    func escapeName(s: String) -> String
+    func escapeName(s: String) -> String // TO DO: make sure this is always applied correctly (might also be wise to document dos/don'ts for implementing it correctly)
 }
 
 
@@ -141,9 +141,8 @@ public class KeywordConverter {
                 tmp.insertString("_", atIndex: 0)
             }
             result = tmp.copy() as! String // TO DO: check
-            if reservedWords.contains(result) || result.hasPrefix("_") || result == ""
-            || result.uppercaseString.hasPrefix("NS") || result.uppercaseString.hasPrefix("AE") { // TO DO: need to check against kReservedPrefixes
-                    result = self.escapeName(result)
+            if reservedWords.contains(result) || result.hasPrefix("_") || result == "" {
+                result = self.escapeName(result)
             }
             cache[s] = result
         }
@@ -191,7 +190,10 @@ public class KeywordConverter {
             result = result.stringByPaddingToLength(3, withString: "X", startingAtIndex: 0)
         }
         result = result.uppercaseString
-        return reservedWords.contains(result) ? self.escapeName(result) : result
+        if reservedWords.contains(result) || result.hasPrefix("_") || result == "" {
+            result = self.escapeName(result)
+        }
+        return result
     }
         
     public func escapeName(s: String) -> String {

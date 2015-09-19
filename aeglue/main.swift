@@ -16,7 +16,7 @@ let gHelp = [
     "",
     "Usage:",
     "",
-    "    aeglue [-n CLASSNAME] [-p PREFIX] [-r] [-s] APPNAME [OUTDIR]",
+    "    aeglue [-n CLASSNAME] [-p PREFIX] [-r] [-s] [--] APPNAME [OUTDIR]",
     "    aeglue -d [-r] [OUTDIR]",
     "    aeglue [-h] [-v]",
     "",
@@ -31,10 +31,10 @@ let gHelp = [
     "",
     "    -d             Generate glue using default terminology only.",
     "    -h             Show this help and exit.",
-    "    -n CLASSNAME   Application class name as a C-style identifier;",
-    "                       if omitted, a default name is auto-generated.",
-    "    -p PREFIX      Class names prefix; if omitted, a 3-character",
-    "                       prefix is auto-generated.",
+    "    -n CLASSNAME   C-style identifier to use as the Application",
+    "                       class's name. Auto-generated if omitted.",
+    "    -p PREFIX      Three-character prefix for glue's other classes.",
+    "                       Auto-generated if omitted.",
     "    -r             Overwrite existing files.",
     "    -s             Use SDEF terminology instead of AETE, e.g. if",
     "                       application's ascr/gdte handler is broken.",
@@ -50,25 +50,37 @@ let gHelp = [
     ""].joinWithSeparator("\n")
 
 
-var applicationURL: NSURL?
-var outDir: NSURL?
+func writeData(data: NSData, toURL: NSURL, overwriting: Bool) throws {
+    // TO DO: writeToURL throws rotten error message if dir not found, e.g. "The folder “FinderGlue.swift” doesn’t exist."
+    try data.writeToURL(toURL, options: (overwriting ? .DataWritingAtomic : .DataWritingWithoutOverwriting))
+}
+
+// parse ARGV
 
 var applicationClassName: String?
 var classNamesPrefix: String?
 var defaultTermsOnly = false
 var canOverwrite = false
 var useSDEF = false
+var applicationURL: NSURL?
+var outDir: NSURL?
 
-// parse ARGV
+// TO DO: would wrapping C getopts() be simpler?
+var optArgs = Array(Process.arguments.reverse()) // bug workaround: popping/inserting at start of Array[Slice] is buggy, so reverse it and work from end
+let _ = optArgs.popLast() // skip path to this executable
 
-var args: ArraySlice<String> = ArraySlice(Process.arguments)
-let _ = args.popFirst()
-let shellCommand = "aeglue "+args.joinWithSeparator(" ")
-if args.count == 0 {
-    print(gHelp) // TO DO: STDERR
+if optArgs.count == 0 {
+    print(gHelp) // TO DO: all error messages should be written to STDERR
     exit(0)
 }
-while let opt = args.popFirst() {
+
+let shellCommand = "aeglue " + optArgs.reverse().joinWithSeparator(" ")
+
+var arguments = [String]()
+
+// parse options
+let gValueOptions = "np".characters // must contain all options that have values
+while let opt = optArgs.popLast() {
     switch(opt) {
     case "-d":
         defaultTermsOnly = true
@@ -76,13 +88,13 @@ while let opt = args.popFirst() {
         print(gHelp) // TO DO: STDERR
         exit(0)
     case "-n":
-        applicationClassName = args.popFirst()
+        applicationClassName = optArgs.popLast()
         if applicationClassName == nil || applicationClassName!.hasPrefix("-") {
             print("Missing value for -n option.")
             exit(1)
         }
     case "-p":
-        classNamesPrefix = args.popFirst()
+        classNamesPrefix = optArgs.popLast()
         if classNamesPrefix == nil || classNamesPrefix!.hasPrefix("-") {
             print("Missing value for -p option.")
             exit(1)
@@ -94,30 +106,60 @@ while let opt = args.popFirst() {
     case "-v":
         print("0.0.0") // TO DO: print SwiftAE.framework bundle version
         exit(0)
-    default:
-        if !defaultTermsOnly {
-            guard let url = URLForLocalApplication(opt) else {
-                print("Application not found: \(opt)")
+    default: // emulate [hopefully] standard getopt parsing behavior
+        if opt == "--" { // explicit options/arguments separator, so treat remaining items as arguments
+            arguments = optArgs
+            optArgs = []
+        } else if opt.hasPrefix("-") { // if it's multiple short option flags, reinsert them as separate options
+            var chars = opt.characters
+            if chars.count > 2 { // e.g. given "-rs", split into "-r" and "-s", and reinsert
+                let _ = chars.popFirst() // skip leading "-"
+                while let c = chars.popFirst() {
+                    if gValueOptions.contains(c) { // rejoin remaining chars and put back on optArgs as option's value
+                        optArgs.append(String(chars))
+                        chars = "".characters
+                    }
+                    optArgs.append("-\(c)")
+                }
+            } else { // it's an unrecognized option, so report error
+                print("Unknown option: \(opt)")
                 exit(1)
             }
-            applicationURL = url
-        }
-        if let tmp = args.popFirst() {
-            outDir = NSURL(fileURLWithPath: tmp)
-        } else {
-            outDir = NSURL(fileURLWithPath: "./").absoluteURL // check this gives cwd
-        }
-        if args.count > 0 {
-            print("Too many arguments.")
-            exit(1)
+        } else { // it's not an option, so treat it and remaining items as arguments
+            arguments = optArgs+[opt]
+            optArgs = []
         }
     }
 }
 
-
-func writeData(data: NSData, toURL: NSURL, overwriting: Bool) throws {
-    try data.writeToURL(toURL, options: (overwriting ? .DataWritingAtomic : .DataWritingWithoutOverwriting))
+if !defaultTermsOnly { // get application name (required unless -d option was used)
+    guard let arg = arguments.popLast() else {
+        print("No application specified.")
+        exit(1)
+    }
+    applicationURL = URLForLocalApplication(arg)
+    if applicationURL == nil {
+        print("Application not found: \(arg)")
+        exit(1)
+    }
 }
+if let arg = arguments.popLast() { // get output directory (optional)
+    outDir = NSURL(fileURLWithPath: arg)
+} else { // use current working directory
+    outDir = NSURL(fileURLWithPath: "./").absoluteURL
+}
+if outDir == nil {
+    print("Invalid output directory.")
+    exit(1)
+}
+if arguments.count > 0 {
+    print("Too many arguments.")
+    exit(1)
+}
+
+
+
+// create glue spec
 
 let glueSpec = StaticGlueSpec(applicationURL: applicationURL, classNamesPrefix: classNamesPrefix,
                               applicationClassName: applicationClassName, useSDEF: useSDEF)

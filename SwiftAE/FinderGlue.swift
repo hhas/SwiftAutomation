@@ -1,8 +1,8 @@
 //
 //  FinderGlue.swift
 //  Finder.app 10.11
-//  SwiftAE 0.1.0
-//  `aeglue -r -s Finder`
+//  SwiftAE.framework 0.1.0
+//  `aeglue -rs Finder`
 //
 
 
@@ -933,7 +933,7 @@ public protocol FINCommand: SpecifierProtocol {} // provides AE dispatch methods
 extension FINCommand {
     public func activate(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent("activate", eventClass: 0x6d697363, eventID: 0x61637476, // '"misc""actv"'
+        return try self.appData.sendAppleEvent("activate", eventClass: 0x6d697363, eventID: 0x61637476, // "misc"/"actv"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, asType: Any.self)
@@ -941,7 +941,7 @@ extension FINCommand {
     public func cleanUp(directParameter: Any = NoParameter,
             by: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent("cleanUp", eventClass: 0x666e6472, eventID: 0x66636c75, // '"fndr""fclu"'
+        return try self.appData.sendAppleEvent("cleanUp", eventClass: 0x666e6472, eventID: 0x66636c75, // "fndr"/"fclu"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("by", 0x62792020, by), // "by  "
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
@@ -949,14 +949,14 @@ extension FINCommand {
     }
     public func close(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent("close", eventClass: 0x636f7265, eventID: 0x636c6f73, // '"core""clos"'
+        return try self.appData.sendAppleEvent("close", eventClass: 0x636f7265, eventID: 0x636c6f73, // "core"/"clos"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, asType: Any.self)
     }
     public func copy(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent("copy", eventClass: 0x6d697363, eventID: 0x636f7079, // '"misc""copy"'
+        return try self.appData.sendAppleEvent("copy", eventClass: 0x6d697363, eventID: 0x636f7079, // "misc"/"copy"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, asType: Any.self)
@@ -964,7 +964,7 @@ extension FINCommand {
     public func count(directParameter: Any = NoParameter,
             each: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent("count", eventClass: 0x636f7265, eventID: 0x636e7465, // '"core""cnte"'
+        return try self.appData.sendAppleEvent("count", eventClass: 0x636f7265, eventID: 0x636e7465, // "core"/"cnte"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("each", 0x6b6f636c, each), // "kocl"
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
@@ -973,7 +973,7 @@ extension FINCommand {
     public func dataSize(directParameter: Any = NoParameter,
             as_: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent("dataSize", eventClass: 0x636f7265, eventID: 0x6473697a, // '"core""dsiz"'
+        return try self.appData.sendAppleEvent("dataSize", eventClass: 0x636f7265, eventID: 0x6473697a, // "core"/"dsiz"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("as_", 0x72747970, as_), // "rtyp"
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
@@ -981,7 +981,7 @@ extension FINCommand {
     }
     public func delete(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent("delete", eventClass: 0x636f7265, eventID: 0x64656c6f, // '"core""delo"'
+        return try self.appData.sendAppleEvent("delete", eventClass: 0x636f7265, eventID: 0x64656c6f, // "core"/"delo"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, asType: Any.self)
@@ -992,7 +992,7 @@ extension FINCommand {
             routingSuppressed: Any = NoParameter,
             exactCopy: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent("duplicate", eventClass: 0x636f7265, eventID: 0x636c6f6e, // '"core""clon"'
+        return try self.appData.sendAppleEvent("duplicate", eventClass: 0x636f7265, eventID: 0x636c6f6e, // "core"/"clon"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("to", 0x696e7368, to), // "insh"
                     ("replacing", 0x616c7270, replacing), // "alrp"
@@ -1003,7 +1003,7 @@ extension FINCommand {
     }
     public func eject(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent("eject", eventClass: 0x666e6472, eventID: 0x656a6374, // '"fndr""ejct"'
+        return try self.appData.sendAppleEvent("eject", eventClass: 0x666e6472, eventID: 0x656a6374, // "fndr"/"ejct"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, asType: Any.self)
@@ -1011,7 +1011,7 @@ extension FINCommand {
     public func empty(directParameter: Any = NoParameter,
             security: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent("empty", eventClass: 0x666e6472, eventID: 0x656d7074, // '"fndr""empt"'
+        return try self.appData.sendAppleEvent("empty", eventClass: 0x666e6472, eventID: 0x656d7074, // "fndr"/"empt"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("security", 0x7365633f, security), // "sec?"
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
@@ -1019,28 +1019,28 @@ extension FINCommand {
     }
     public func erase(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent("erase", eventClass: 0x666e6472, eventID: 0x66657261, // '"fndr""fera"'
+        return try self.appData.sendAppleEvent("erase", eventClass: 0x666e6472, eventID: 0x66657261, // "fndr"/"fera"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, asType: Any.self)
     }
     public func exists(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent("exists", eventClass: 0x636f7265, eventID: 0x646f6578, // '"core""doex"'
+        return try self.appData.sendAppleEvent("exists", eventClass: 0x636f7265, eventID: 0x646f6578, // "core"/"doex"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, asType: Any.self)
     }
     public func get(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent("get", eventClass: 0x636f7265, eventID: 0x67657464, // '"core""getd"'
+        return try self.appData.sendAppleEvent("get", eventClass: 0x636f7265, eventID: 0x67657464, // "core"/"getd"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, asType: Any.self)
     }
     public func launch(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent("launch", eventClass: 0x61736372, eventID: 0x6e6f6f70, // '"ascr""noop"'
+        return try self.appData.sendAppleEvent("launch", eventClass: 0x61736372, eventID: 0x6e6f6f70, // "ascr"/"noop"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, asType: Any.self)
@@ -1051,7 +1051,7 @@ extension FINCommand {
             to: Any = NoParameter,
             withProperties: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent("make", eventClass: 0x636f7265, eventID: 0x6372656c, // '"core""crel"'
+        return try self.appData.sendAppleEvent("make", eventClass: 0x636f7265, eventID: 0x6372656c, // "core"/"crel"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("new", 0x6b6f636c, new), // "kocl"
                     ("at", 0x696e7368, at), // "insh"
@@ -1066,7 +1066,7 @@ extension FINCommand {
             positionedAt: Any = NoParameter,
             routingSuppressed: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent("move", eventClass: 0x636f7265, eventID: 0x6d6f7665, // '"core""move"'
+        return try self.appData.sendAppleEvent("move", eventClass: 0x636f7265, eventID: 0x6d6f7665, // "core"/"move"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("to", 0x696e7368, to), // "insh"
                     ("replacing", 0x616c7270, replacing), // "alrp"
@@ -1079,7 +1079,7 @@ extension FINCommand {
             using: Any = NoParameter,
             withProperties: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent("open", eventClass: 0x61657674, eventID: 0x6f646f63, // '"aevt""odoc"'
+        return try self.appData.sendAppleEvent("open", eventClass: 0x61657674, eventID: 0x6f646f63, // "aevt"/"odoc"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("using", 0x7573696e, using), // "usin"
                     ("withProperties", 0x70726474, withProperties), // "prdt"
@@ -1089,7 +1089,7 @@ extension FINCommand {
     public func openLocation(directParameter: Any = NoParameter,
             window: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent("openLocation", eventClass: 0x4755524c, eventID: 0x4755524c, // '"GURL""GURL"'
+        return try self.appData.sendAppleEvent("openLocation", eventClass: 0x4755524c, eventID: 0x4755524c, // "GURL"/"GURL"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("window", 0x57494e44, window), // "WIND"
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
@@ -1098,7 +1098,7 @@ extension FINCommand {
     public func print(directParameter: Any = NoParameter,
             withProperties: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent("print", eventClass: 0x61657674, eventID: 0x70646f63, // '"aevt""pdoc"'
+        return try self.appData.sendAppleEvent("print", eventClass: 0x61657674, eventID: 0x70646f63, // "aevt"/"pdoc"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("withProperties", 0x70726474, withProperties), // "prdt"
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
@@ -1106,42 +1106,42 @@ extension FINCommand {
     }
     public func quit(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent("quit", eventClass: 0x61657674, eventID: 0x71756974, // '"aevt""quit"'
+        return try self.appData.sendAppleEvent("quit", eventClass: 0x61657674, eventID: 0x71756974, // "aevt"/"quit"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, asType: Any.self)
     }
     public func reopen(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent("reopen", eventClass: 0x61657674, eventID: 0x72617070, // '"aevt""rapp"'
+        return try self.appData.sendAppleEvent("reopen", eventClass: 0x61657674, eventID: 0x72617070, // "aevt"/"rapp"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, asType: Any.self)
     }
     public func restart(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent("restart", eventClass: 0x666e6472, eventID: 0x72657374, // '"fndr""rest"'
+        return try self.appData.sendAppleEvent("restart", eventClass: 0x666e6472, eventID: 0x72657374, // "fndr"/"rest"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, asType: Any.self)
     }
     public func reveal(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent("reveal", eventClass: 0x6d697363, eventID: 0x6d766973, // '"misc""mvis"'
+        return try self.appData.sendAppleEvent("reveal", eventClass: 0x6d697363, eventID: 0x6d766973, // "misc"/"mvis"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, asType: Any.self)
     }
     public func run(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent("run", eventClass: 0x61657674, eventID: 0x6f617070, // '"aevt""oapp"'
+        return try self.appData.sendAppleEvent("run", eventClass: 0x61657674, eventID: 0x6f617070, // "aevt"/"oapp"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, asType: Any.self)
     }
     public func select(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent("select", eventClass: 0x6d697363, eventID: 0x736c6374, // '"misc""slct"'
+        return try self.appData.sendAppleEvent("select", eventClass: 0x6d697363, eventID: 0x736c6374, // "misc"/"slct"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, asType: Any.self)
@@ -1149,7 +1149,7 @@ extension FINCommand {
     public func set(directParameter: Any = NoParameter,
             to: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent("set", eventClass: 0x636f7265, eventID: 0x73657464, // '"core""setd"'
+        return try self.appData.sendAppleEvent("set", eventClass: 0x636f7265, eventID: 0x73657464, // "core"/"setd"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("to", 0x64617461, to), // "data"
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
@@ -1157,14 +1157,14 @@ extension FINCommand {
     }
     public func shutDown(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent("shutDown", eventClass: 0x666e6472, eventID: 0x73687574, // '"fndr""shut"'
+        return try self.appData.sendAppleEvent("shutDown", eventClass: 0x666e6472, eventID: 0x73687574, // "fndr"/"shut"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, asType: Any.self)
     }
     public func sleep(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent("sleep", eventClass: 0x666e6472, eventID: 0x736c6570, // '"fndr""slep"'
+        return try self.appData.sendAppleEvent("sleep", eventClass: 0x666e6472, eventID: 0x736c6570, // "fndr"/"slep"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, asType: Any.self)
@@ -1172,7 +1172,7 @@ extension FINCommand {
     public func sort(directParameter: Any = NoParameter,
             by: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent("sort", eventClass: 0x44415441, eventID: 0x534f5254, // '"DATA""SORT"'
+        return try self.appData.sendAppleEvent("sort", eventClass: 0x44415441, eventID: 0x534f5254, // "DATA"/"SORT"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("by", 0x62792020, by), // "by  "
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
@@ -1182,7 +1182,7 @@ extension FINCommand {
             necessity: Any = NoParameter,
             registeringApplications: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent("update", eventClass: 0x666e6472, eventID: 0x66757064, // '"fndr""fupd"'
+        return try self.appData.sendAppleEvent("update", eventClass: 0x666e6472, eventID: 0x66757064, // "fndr"/"fupd"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("necessity", 0x6e65633f, necessity), // "nec?"
                     ("registeringApplications", 0x7265673f, registeringApplications), // "reg?"
