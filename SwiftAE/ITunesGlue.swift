@@ -12,9 +12,12 @@ import Foundation
 /******************************************************************************/
 // Untargeted AppData instance used in App, Con, Its roots; also used by Application constructors to create their own targeted AppData instances
 
-private let gNullAppData = AppData(glueInfo: GlueInfo(insertionSpecifierType: ITUInsertion.self, objectSpecifierType: ITUObject.self,
-                                                      elementsSpecifierType: ITUElements.self, rootSpecifierType: ITURoot.self,
-                                                      symbolType: Symbol.self, formatter: gSpecifierFormatter))
+private let gUntargetedAppData = AppData(glueInfo: GlueInfo(insertionSpecifierType: ITUInsertion.self,
+                                                            objectSpecifierType: ITUObject.self,
+                                                            elementsSpecifierType: ITUElements.self,
+                                                            rootSpecifierType: ITURoot.self,
+                                                            symbolType: Symbol.self,
+                                                            formatter: gSpecifierFormatter))
 
 
 /******************************************************************************/
@@ -1374,19 +1377,19 @@ public class ITURoot: RootSpecifier, ITUQuery, RootSpecifierExtension {
     public typealias InsertionSpecifierType = ITUInsertion
     public typealias ObjectSpecifierType = ITUObject
     public typealias ElementsSpecifierType = ITUElements
-    public override class var nullAppData: AppData { return gNullAppData }
+    public override class var untargetedAppData: AppData { return gUntargetedAppData }
 }
 
 public class ITunes: ITURoot, ApplicationExtension {
     public convenience init(launchOptions: LaunchOptions = DefaultLaunchOptions, relaunchMode: RelaunchMode = DefaultRelaunchMode) {
-        self.init(rootObject: AppRootDesc, appData: self.dynamicType.nullAppData.targetCopy(
+        self.init(rootObject: AppRootDesc, appData: self.dynamicType.untargetedAppData.targetedCopy(
                                 .BundleIdentifier("com.apple.iTunes", true), launchOptions: launchOptions, relaunchMode: relaunchMode))
     }
 }
 
 // App/Con/Its root objects used to construct untargeted specifiers; these can be used to construct specifiers for use in commands, though cannot send commands themselves
 
-public let ITUApp = gNullAppData.rootObjects.app as! ITURoot
-public let ITUCon = gNullAppData.rootObjects.con as! ITURoot
-public let ITUIts = gNullAppData.rootObjects.its as! ITURoot
+public let ITUApp = gUntargetedAppData.rootObjects.app as! ITURoot
+public let ITUCon = gUntargetedAppData.rootObjects.con as! ITURoot
+public let ITUIts = gUntargetedAppData.rootObjects.its as! ITURoot
 

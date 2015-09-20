@@ -13,7 +13,7 @@ import AppKit
 /******************************************************************************/
 // abstract base class for _all_ specifier and test clause subclasses
 
-private let gNullAppData = AppData() // dummy instance to keep compiler happy; glues will define their own private gNullAppData constants containing an untargeted AppData instance
+private let gUntargetedAppData = AppData() // dummy instance to keep compiler happy; glues will define their own private gUntargetedAppData constants containing an untargeted AppData instance
 
 
 public class Selector: CustomStringConvertible, SelfPacking { // TO DO: Equatable?
@@ -47,7 +47,7 @@ public class Selector: CustomStringConvertible, SelfPacking { // TO DO: Equatabl
     
     var parentSelector: Selector { return self } // this implementation should never be called; subclasses must override this
     
-    public var rootSpecifier: RootSpecifier { return gNullAppData.rootObjects.app } // this implementation should never be called; subclasses must override this
+    public var rootSpecifier: RootSpecifier { return gUntargetedAppData.rootObjects.app } // this implementation should never be called; subclasses must override this
     
     public var description: String { return self.appData.formatter.format(self) }
 }
@@ -100,7 +100,7 @@ public class Specifier: Selector, SpecifierProtocol {
             self._parentSelector!.unpackParentSpecifiers()
         } catch {
             print("Deferred unpack parent specifier failed: \(error)") // TO DO: DEBUG; delete
-            self._parentSelector = RootSpecifier(rootObject: (cachedDesc.descriptorForKeyword(keyAEContainer))!, appData: self.appData) // TO DO: store SwiftAEError that captures and raises error on packing
+            self._parentSelector = RootSpecifier(rootObject: (cachedDesc.descriptorForKeyword(keyAEContainer))!, appData: self.appData) // TO DO: store error in RootSpecifier and raise it on packing
         }
     }
     
@@ -423,7 +423,7 @@ public class RootSpecifier: ObjectSpecifier { // app, con, its, custom root (not
     }
     
     // glue-defined root classes must override the following to return their own untargeted AppData instance
-    class var nullAppData: AppData { return gNullAppData }
+    class var untargetedAppData: AppData { return gUntargetedAppData }
 
 
     // TO DO: subclassing ObjectSpecifier is slightly risky, since accidental recursion in the following does very bad things, so it's essential that all Selector/Specifier/ObjectSpecifier methods that operate on parent specifier are overridden here:

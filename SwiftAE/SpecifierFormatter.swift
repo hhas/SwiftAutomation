@@ -22,16 +22,6 @@ import AppKit
 
 public class SpecifierFormatter {
     
-    // caution: if sending events to self, processes _must_ useSDEF=true or call this function on a background thread, otherwise SwiftAETranslateAppleEvent will deadlock the main loop when it tries to fetch host app's AETE via ascr/gdte event
-    
-//    class func formatAppleEvent(event: NSAppleEventDescriptor, useSDEF: Bool = false) throws -> String { // TO DO: implement
-//        return try SwiftAETranslateAppleEvent(event, useSDEF: useSDEF)
-//    }
-    
-    
-    // TO DO: add optional 'commandNames' arg for use by formatAppleEvent()? need to decide how best to design API for formatting AEs (for efficiency, it would make sense to put all terms in a SpecifierFormatter instance, allowing it to be created once and cached for reuse; might make sense for formatAppleEvent to create and manage static cache itself, perhaps with a maxsize limit to prevent cache growing too large, or a flushCache method for explicitly clearing it out?)
-        
-    
     let applicationClassName: String, classNamePrefix: String // used to render specifier roots (Application, App, Con, Its)
     let propertyNames: [OSType:String], elementsNames: [OSType:String] // note: dicts should also used in dynamic appdata to translate attribute names to ostypes
     

@@ -9,13 +9,11 @@ import Foundation
 import AppKit
 
 
-// TO DO: rename nullAppData (untargetedAppData? defaultAppData?)
-
 
 // TO DO: fix packing of Arrays and Dictionarys; currently pack() casts to NSArray/NSDictionary, but this fails when object's dynamicType is (e.g.) [Any] (only [AnyObject] is allowed), and screws up type information on Bool, Int, Double values (since Swift's NSNumber bridging is dreadful)
 
 
-// TO DO: explicit 'as' parameter? (suspect it can't always be inferred from return type, plus it should prob. only be passed when user explicitly states it)
+// TO DO: explicit 'as' parameter? (suspect it can't always be inferred from return type, plus it should prob. only be passed when user explicitly states it); note that while some apps may explicitly define `as` param for `get` command, it's something AS will add regardless (TODO: need to check this is true), so it might make more sense to make it a fixed param in glue (so that it appears on _all_ commands) and ignore it in commandInfo (so that it doesn't appear more than once)
 
 
 // TO DO: split into untargeted and targeted classes? or is current arrangement good enough? (mostly it's about returning appropriate app root in unpack)
@@ -66,14 +64,14 @@ public class AppData {
     
     private var _targetDescriptor: NSAppleEventDescriptor? = nil // targetDescriptor() creates an AEAddressDesc for the target process when dispatching first Apple event, caching it here for subsequent reuse; do not access directly
     
-    private let glueInfo: GlueInfo // glue-defined specifier and symbol classes, and standard root objects
+    public let glueInfo: GlueInfo // glue-defined specifier and symbol classes, and standard root objects
     
-    var formatter: SpecifierFormatter { return self.glueInfo.formatter }
+    public var formatter: SpecifierFormatter { return self.glueInfo.formatter }
     
     public private(set) var rootObjects: RootObjects! // note: this will be set by main initializer, but needs to be [implicitly] optional var otherwise compiler will complain about self being used before it's fully initialized
     
     public required init(target: TargetApplication,
-                         launchOptions: LaunchOptions, relaunchMode: RelaunchMode, glueInfo: GlueInfo, rootObjects: RootObjects?) { // should be private, but targetCopy requires it to be required, which in turn requires it to be public
+                         launchOptions: LaunchOptions, relaunchMode: RelaunchMode, glueInfo: GlueInfo, rootObjects: RootObjects?) { // should be private, but targetedCopy requires it to be required, which in turn requires it to be public
         self.target = target
         self.launchOptions = launchOptions
         self.relaunchMode = relaunchMode
@@ -84,19 +82,19 @@ public class AppData {
                                            its: glueInfo.rootSpecifierType.init(rootObject: ItsRootDesc, appData: self))
     }
     
-    public convenience init() { // used in Specifier file to keep compiler happy (note: this will leak memory each time it's used, and returned Specifiers will be minimally functional; for general programming tasks, use AEApplication.nullAppData instead)
+    public convenience init() { // used in Specifier file to keep compiler happy (note: this will leak memory each time it's used, and returned Specifiers will be minimally functional; for general programming tasks, use AEApplication.untargetedAppData instead)
         self.init(glueInfo: GlueInfo(insertionSpecifierType: InsertionSpecifier.self, objectSpecifierType: ObjectSpecifier.self,
                                      elementsSpecifierType: ObjectSpecifier.self, rootSpecifierType: RootSpecifier.self,
                                      symbolType: Symbol.self, formatter: SpecifierFormatter()))
     }
     
-    // create a new untargeted AppData instance for a glue file's private gNullAppData constant (note: this will leak memory each time it's used so users should not call it themselves; instead, use AEApplication.nullAppData to return an already-created instance suitable for general programming tasks)
+    // create a new untargeted AppData instance for a glue file's private gUntargetedAppData constant (note: this will leak memory each time it's used so users should not call it themselves; instead, use AEApplication.untargetedAppData to return an already-created instance suitable for general programming tasks)
     public convenience init(glueInfo: GlueInfo) {
         self.init(target: .None, launchOptions: DefaultLaunchOptions, relaunchMode: .Never, glueInfo: glueInfo, rootObjects: nil)
     }
     
     // create a targeted copy of a [typically untargeted] AppData instance; Application inits should always use this to create targeted AppData instances
-    public func targetCopy(target: TargetApplication, launchOptions: LaunchOptions, relaunchMode: RelaunchMode) -> Self {
+    public func targetedCopy(target: TargetApplication, launchOptions: LaunchOptions, relaunchMode: RelaunchMode) -> Self {
         return self.dynamicType.init(target: target, launchOptions: launchOptions, relaunchMode: relaunchMode,
                                                         glueInfo: self.glueInfo, rootObjects: self.rootObjects)
     }
@@ -125,7 +123,7 @@ public class AppData {
             return NSAppleEventDescriptor(boolean: val)
         case let val as Int: // TO DO: Int8, etc (e.g. convert toIntMax)
             if Int(Int32.min) <= val && val <= Int(Int32.max) {
-                return NSAppleEventDescriptor(int32: 0 as Int32)
+                return NSAppleEventDescriptor(int32: Int32(val))
             } else {
                 return NSAppleEventDescriptor(double: Double(val)) // TO DO: 64-bit compatibility option
             }
@@ -151,7 +149,7 @@ public class AppData {
                 }
             }
             return desc
-        default:
+        default: // TO DO: if value is ErrorType, either rethrow it as-is, or poss. chain it to PackError; e.g. see ObjectSpecifier.unpackParentSpecifiers(), which needs to report [rare] errors but can't throw itself; this should allow APIs that can't raise errors directly (e.g. specifier constructors) to have those errors raised if/when used in commands (which can throw)
             throw PackError(object: value)
         }
     }
@@ -167,7 +165,7 @@ public class AppData {
         return self.glueInfo.symbolType.symbol(code, type: typeProperty, descriptor: nil) // TO DO: use typeType? (TBH, am tempted to use it throughout, leaving AEM to coerce as necessary, as it'd simplify implementation a bit; also, note that type and property names can often overlap, e.g. `TED.document` may be either)
     }
     
-    var appRoot: RootSpecifier { return self.rootObjects.app } // TO DO: use original Application instance? when unpacking an objspec chain, it would be best if targeted AppData unpacks its main root as Application, and any nested objspecs' roots as App. Main problem is that storing Application instance inside AppData would create cyclic reference, with no obvious way to weakref it. Alternatively, since chain is lazily unpacked, it'd be possible for unpackParentSpecifiers() to instantiate a new Application object at the time (this would mean changing the way that unpackParentSpecifiers works). For now, might be simplest just to instantiate a new Application instance here each time - although that's not ideal for unpacking sub-specifiers (but they might be better unpacked using nullAppData); poss. just add an optional arg to unpack() that allows callers to specify which root to use, but picking the right AppData class with which to unpack a nested desc would be cleaner)
+    var appRoot: RootSpecifier { return self.rootObjects.app } // TO DO: use original Application instance? when unpacking an objspec chain, it would be best if targeted AppData unpacks its main root as Application, and any nested objspecs' roots as App. Main problem is that storing Application instance inside AppData would create cyclic reference, with no obvious way to weakref it. Alternatively, since chain is lazily unpacked, it'd be possible for unpackParentSpecifiers() to instantiate a new Application object at the time (this would mean changing the way that unpackParentSpecifiers works). For now, might be simplest just to instantiate a new Application instance here each time - although that's not ideal for unpacking sub-specifiers (but they might be better unpacked using untargetedAppData); poss. just add an optional arg to unpack() that allows callers to specify which root to use, but picking the right AppData class with which to unpack a nested desc would be cleaner)
     
     func unpackInsertionLoc(desc: NSAppleEventDescriptor) throws -> Specifier {
         guard let _ = desc.descriptorForKeyword(keyAEObject), // only used to check InsertionLoc record is correctly formed // TO DO: in unlikely event of receiving a malformed record, would be simpler for unpackParentSpecifiers to use a RootSpecifier that throws error on use, avoiding need for extra check here
@@ -514,9 +512,9 @@ public class AppData {
         event.setAttributeDescriptor(consideringIgnoring, forKeyword: enumConsidsAndIgnores)
         // send the event
         let sendMode = sendOptions ?? DefaultSendMode.union(waitReply ? .WaitForReply : .NoReply) // TO DO: finalize
-        let timeout = withTimeout ?? 120 // TO DO: -sendEvent method's default/no timeout options are currently busted (rdar://21477694); hopefully this gets fixed before 10.11 ships
+        let timeout = withTimeout ?? 120 // TO DO: -sendEvent method's default/no timeout options are currently busted (rdar://21477694)
         
-//        defer { print("SENT: \(event)") } // TEST
+//        defer { print("SENT: \(formatAppleEvent(event, useTerminology: .SDEF))") } // TEST
         var replyEvent: NSAppleEventDescriptor
         do {
 //            print("SENDING: \(event)")
@@ -586,7 +584,7 @@ public class AppData {
 /******************************************************************************/
 // used by AppData.sendAppleEvent() to pack ConsideringOptions as enumConsiderations (old-style) and enumConsidsAndIgnores (new-style) attributes // TO DO: move to AppData?
 
-private let considerationsTable: [(Considerations, NSAppleEventDescriptor, UInt32, UInt32)] = [
+let gConsiderationsTable: [(Considerations, NSAppleEventDescriptor, UInt32, UInt32)] = [
     // note: Swift mistranslates considering/ignoring mask constants as Int, not UInt32, so redefine them here
     (.Case,             NSAppleEventDescriptor(enumCode: kAECase),              0x00000001, 0x00010000),
     (.Diacritic,        NSAppleEventDescriptor(enumCode: kAEDiacritic),         0x00000002, 0x00020000),
@@ -600,7 +598,7 @@ private let considerationsTable: [(Considerations, NSAppleEventDescriptor, UInt3
 private func packConsideringAndIgnoringFlags(considerations: ConsideringOptions) -> (NSAppleEventDescriptor, NSAppleEventDescriptor) {
     let considerationsListDesc = NSAppleEventDescriptor.listDescriptor()
     var consideringIgnoringFlags: UInt32 = 0
-    for (consideration, considerationDesc, consideringMask, ignoringMask) in considerationsTable {
+    for (consideration, considerationDesc, consideringMask, ignoringMask) in gConsiderationsTable {
         if considerations.contains(consideration) {
             consideringIgnoringFlags |= consideringMask
             considerationsListDesc.insertDescriptor(considerationDesc, atIndex: 0)

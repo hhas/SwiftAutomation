@@ -9,10 +9,10 @@
 import Foundation
 
 
-public class StaticGlueSpec {
+public class GlueSpec {
     public let applicationURL: NSURL? // TO DO: any use cases where user would want to use .sdef file rather than .app bundle?
     public let keywordConverter: KeywordConverterProtocol
-    public let classNamesPrefix: String
+    public let classNamePrefix: String
     public let applicationClassName: String
     public let useSDEF: Bool
     public let bundleInfo: BundleInfoType
@@ -27,28 +27,28 @@ public class StaticGlueSpec {
     public var frameworkName: String { return "SwiftAE.framework" }
     public var frameworkVersion: String { return "0.1.0" }
     
-    // create StaticGlueSpec for specified application (applicationURL is typically a file:// URL, or nil to create default glue)
+    // create GlueSpec for specified application (applicationURL is typically a file:// URL, or nil to create default glue)
     public init(applicationURL: NSURL?, keywordConverter: KeywordConverterProtocol = gSwiftAEKeywordConverter,
-                classNamesPrefix: String? = nil, applicationClassName: String? = nil, useSDEF: Bool = false) {
+                classNamePrefix: String? = nil, applicationClassName: String? = nil, useSDEF: Bool = false) {
         self.applicationURL = applicationURL
         self.keywordConverter = keywordConverter
         self.useSDEF = useSDEF
         let bundleInfo: BundleInfoType = (applicationURL == nil) ? [:] : NSBundle(URL: applicationURL!)?.infoDictionary ?? [:]
         self.bundleInfo = bundleInfo
         if applicationURL == nil {
-            self.classNamesPrefix = "AE"
+            self.classNamePrefix = "AE"
             self.applicationClassName = "AEApplication"
         } else {
             var prefix: String
-            if let userPrefix = classNamesPrefix {
+            if let userPrefix = classNamePrefix {
                 prefix = keywordConverter.identifierForAppName(userPrefix)
             } else { // autogenerate (note: prefixForAppName always pads/truncates to exactly 3 chars)
                 prefix = keywordConverter.prefixForAppName((bundleInfo["CFBundleName"] as? String) ?? "")
             }
-            self.classNamesPrefix = prefix
+            self.classNamePrefix = prefix
             let appName = keywordConverter.identifierForAppName(
                     applicationClassName ?? (bundleInfo["CFBundleName"] as? String) ?? "\(prefix)Application")
-            self.applicationClassName = (appName == classNamesPrefix) ? keywordConverter.escapeName(appName) : appName
+            self.applicationClassName = (appName == classNamePrefix) ? keywordConverter.escapeName(appName) : appName
         }
     }
     
@@ -164,11 +164,11 @@ public class StaticGlueTemplate {
 /******************************************************************************/
 // glue renderer
 
-public func renderStaticGlueTemplate(glueSpec: StaticGlueSpec, extraTags: [String:String] = [:], templateString: String? = nil) throws -> String {
+public func renderStaticGlueTemplate(glueSpec: GlueSpec, extraTags: [String:String] = [:], templateString: String? = nil) throws -> String {
     // note: SwiftAEGlueTemplate requires additional values for extraTags: ["AEGLUE_COMMAND": shellCommand,"GLUE_NAME": glueFileName]
     let glueTable = try glueSpec.buildGlueTable()
     let template = StaticGlueTemplate(string: templateString)
-    template.insertString("PREFIX", glueSpec.classNamesPrefix)
+    template.insertString("PREFIX", glueSpec.classNamePrefix)
     template.insertString("APPLICATION_CLASS_NAME", glueSpec.applicationClassName)
     template.insertString("FRAMEWORK_NAME", glueSpec.frameworkName)
     template.insertString("FRAMEWORK_VERSION", glueSpec.frameworkVersion)
@@ -198,7 +198,7 @@ public func renderStaticGlueTemplate(glueSpec: StaticGlueSpec, extraTags: [Strin
 
 // generate quick-n-dirty user documentation by reformatting command, class, property, etc. names in SDEF XML
 
-public func translateScriptingDefinition(data: NSData, glueSpec: StaticGlueSpec) throws -> NSData {
+public func translateScriptingDefinition(data: NSData, glueSpec: GlueSpec) throws -> NSData {
     func convertNode(node: NSXMLElement, _ attributeName: String = "name", symbolPrefix: String = "") {
         if let attribute = node.attributeForName(attributeName) {
             if let value = attribute.stringValue {
@@ -233,7 +233,7 @@ public func translateScriptingDefinition(data: NSData, glueSpec: StaticGlueSpec)
                 for node in klass.elementsForName("responds-to") { convertNode(node); convertNode(node, "command") }
             }
         }
-        let symbolPrefix = "\(glueSpec.classNamesPrefix)."
+        let symbolPrefix = "\(glueSpec.classNamePrefix)."
         for enumeration in suite.elementsForName("enumeration") {
             for enumerator in enumeration.elementsForName("enumerator") { convertNode(enumerator, symbolPrefix: symbolPrefix) }
         }

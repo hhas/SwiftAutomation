@@ -12,9 +12,12 @@ import Foundation
 /******************************************************************************/
 // Untargeted AppData instance used in App, Con, Its roots; also used by Application constructors to create their own targeted AppData instances
 
-private let gNullAppData = AppData(glueInfo: GlueInfo(insertionSpecifierType: FINInsertion.self, objectSpecifierType: FINObject.self,
-                                                      elementsSpecifierType: FINElements.self, rootSpecifierType: FINRoot.self,
-                                                      symbolType: Symbol.self, formatter: gSpecifierFormatter))
+private let gUntargetedAppData = AppData(glueInfo: GlueInfo(insertionSpecifierType: FINInsertion.self,
+                                                            objectSpecifierType: FINObject.self,
+                                                            elementsSpecifierType: FINElements.self,
+                                                            rootSpecifierType: FINRoot.self,
+                                                            symbolType: Symbol.self,
+                                                            formatter: gSpecifierFormatter))
 
 
 /******************************************************************************/
@@ -1386,19 +1389,19 @@ public class FINRoot: RootSpecifier, FINQuery, RootSpecifierExtension {
     public typealias InsertionSpecifierType = FINInsertion
     public typealias ObjectSpecifierType = FINObject
     public typealias ElementsSpecifierType = FINElements
-    public override class var nullAppData: AppData { return gNullAppData }
+    public override class var untargetedAppData: AppData { return gUntargetedAppData }
 }
 
 public class Finder: FINRoot, ApplicationExtension {
     public convenience init(launchOptions: LaunchOptions = DefaultLaunchOptions, relaunchMode: RelaunchMode = DefaultRelaunchMode) {
-        self.init(rootObject: AppRootDesc, appData: self.dynamicType.nullAppData.targetCopy(
+        self.init(rootObject: AppRootDesc, appData: self.dynamicType.untargetedAppData.targetedCopy(
                                 .BundleIdentifier("com.apple.finder", true), launchOptions: launchOptions, relaunchMode: relaunchMode))
     }
 }
 
 // App/Con/Its root objects used to construct untargeted specifiers; these can be used to construct specifiers for use in commands, though cannot send commands themselves
 
-public let FINApp = gNullAppData.rootObjects.app as! FINRoot
-public let FINCon = gNullAppData.rootObjects.con as! FINRoot
-public let FINIts = gNullAppData.rootObjects.its as! FINRoot
+public let FINApp = gUntargetedAppData.rootObjects.app as! FINRoot
+public let FINCon = gUntargetedAppData.rootObjects.con as! FINRoot
+public let FINIts = gUntargetedAppData.rootObjects.its as! FINRoot
 

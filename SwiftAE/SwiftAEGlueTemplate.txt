@@ -12,9 +12,12 @@ import Foundation
 /******************************************************************************/
 // Untargeted AppData instance used in App, Con, Its roots; also used by Application constructors to create their own targeted AppData instances
 
-private let gNullAppData = AppData(glueInfo: GlueInfo(insertionSpecifierType: «PREFIX»Insertion.self, objectSpecifierType: «PREFIX»Object.self,
-                                                      elementsSpecifierType: «PREFIX»Elements.self, rootSpecifierType: «PREFIX»Root.self,
-                                                      symbolType: Symbol.self, formatter: gSpecifierFormatter))
+private let gUntargetedAppData = AppData(glueInfo: GlueInfo(insertionSpecifierType: «PREFIX»Insertion.self,
+                                                            objectSpecifierType: «PREFIX»Object.self,
+                                                            elementsSpecifierType: «PREFIX»Elements.self,
+                                                            rootSpecifierType: «PREFIX»Root.self,
+                                                            symbolType: Symbol.self,
+                                                            formatter: gSpecifierFormatter))
 
 
 /******************************************************************************/
@@ -102,19 +105,19 @@ public class «PREFIX»Root: RootSpecifier, «PREFIX»Query, RootSpecifierExtens
     public typealias InsertionSpecifierType = «PREFIX»Insertion
     public typealias ObjectSpecifierType = «PREFIX»Object
     public typealias ElementsSpecifierType = «PREFIX»Elements
-    public override class var nullAppData: AppData { return gNullAppData }
+    public override class var untargetedAppData: AppData { return gUntargetedAppData }
 }
 
 public class «APPLICATION_CLASS_NAME»: «PREFIX»Root, ApplicationExtension {«+DEFAULT_INIT»
     public convenience init(launchOptions: LaunchOptions = DefaultLaunchOptions, relaunchMode: RelaunchMode = DefaultRelaunchMode) {
-        self.init(rootObject: AppRootDesc, appData: self.dynamicType.nullAppData.targetCopy(
+        self.init(rootObject: AppRootDesc, appData: self.dynamicType.untargetedAppData.targetedCopy(
                                 .BundleIdentifier("«BUNDLE_IDENTIFIER»", true), launchOptions: launchOptions, relaunchMode: relaunchMode))
     }
 «-DEFAULT_INIT»}
 
 // App/Con/Its root objects used to construct untargeted specifiers; these can be used to construct specifiers for use in commands, though cannot send commands themselves
 
-public let «PREFIX»App = gNullAppData.rootObjects.app as! «PREFIX»Root
-public let «PREFIX»Con = gNullAppData.rootObjects.con as! «PREFIX»Root
-public let «PREFIX»Its = gNullAppData.rootObjects.its as! «PREFIX»Root
+public let «PREFIX»App = gUntargetedAppData.rootObjects.app as! «PREFIX»Root
+public let «PREFIX»Con = gUntargetedAppData.rootObjects.con as! «PREFIX»Root
+public let «PREFIX»Its = gUntargetedAppData.rootObjects.its as! «PREFIX»Root
 

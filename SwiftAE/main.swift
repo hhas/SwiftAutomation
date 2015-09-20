@@ -36,8 +36,8 @@ do {
 }
 */
 
-//let t = try renderStaticGlueTemplate(StaticGlueSpec(), extraTags: ["AEGLUE_COMMAND": "aeglue -d","GLUE_NAME": "AEApplicationGlue.swift"])
-//let t = try renderStaticGlueTemplate(StaticGlueSpec(applicationURL: NSURL(fileURLWithPath: "/Applications/TextEdit.app")), extraTags: ["AEGLUE_COMMAND": "aeglue TextEdit","GLUE_NAME": "TextEditGlue.swift"])
+//let t = try renderStaticGlueTemplate(GlueSpec(), extraTags: ["AEGLUE_COMMAND": "aeglue -d","GLUE_NAME": "AEApplicationGlue.swift"])
+//let t = try renderStaticGlueTemplate(GlueSpec(applicationURL: NSURL(fileURLWithPath: "/Applications/TextEdit.app")), extraTags: ["AEGLUE_COMMAND": "aeglue TextEdit","GLUE_NAME": "TextEditGlue.swift"])
 //print(t)
 
 
@@ -53,7 +53,7 @@ do {
     //let result = try te.sendAppleEvent(kCoreEventClass, kAEOpenDocuments, [keyDirectObject:NSURL.fileURLWithPath("/Users/has/todos.txt")])
     //print(result)
 
-    
+    /*
     
     let result1 = try te.make(new: TED.document, withProperties: [TED.text: "Hello World!"])
         
@@ -71,9 +71,12 @@ do {
     // - using glue-defined terminology
     let result3 = try te.get(TEDApp.documents[1].name)
     print(result3)
+    */
     
     let result3a: Any = try te.documents[1].name.get() // convenience syntax for the above
     print(result3a)
+    
+    /*
     
     // get name of every document (note: currently this example is only good for demo purposes: the `get` method result's dynamicType is Array<String>, but its static type is Any, and  Swift can't cast Any to Array<...> without falling over, so this result can't be used for anything useful; this is another reason why generic versions of commands are needed, but getting those to work right is a whole 'nother problem again...)
     
@@ -86,7 +89,7 @@ do {
     let q = Finder().home.folders["Documents"].files[FINIts.nameExtension == "txt"].name
     print(q)
     print(try q.get())
-
+*/
 
 //    try te.documents.close(saving: TED.no) // close every document saving no
 

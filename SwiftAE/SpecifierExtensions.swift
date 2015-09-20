@@ -157,7 +157,7 @@ extension ElementsSpecifierExtension {
 
 public protocol RootSpecifierExtension: ObjectSpecifierExtension {
     init(rootObject: Any, appData: AppData)
-    static var nullAppData: AppData {get}
+    static var untargetedAppData: AppData {get}
 }
 
 
@@ -168,7 +168,7 @@ extension ApplicationExtension {
 //    public var targetApplication: TargetApplication {return self.appData.target} // TO DO: include this? (might be useful to user for troubleshooting); what about processID (if local)?
     
     private init(target: TargetApplication, launchOptions: LaunchOptions, relaunchMode: RelaunchMode) {
-        let appData = Self.nullAppData.targetCopy(target, launchOptions: launchOptions, relaunchMode: relaunchMode)
+        let appData = Self.untargetedAppData.targetedCopy(target, launchOptions: launchOptions, relaunchMode: relaunchMode)
         self.init(rootObject: AppRootDesc, appData: appData)
     }
     
@@ -194,7 +194,7 @@ extension ApplicationExtension {
     
     
     public static func currentApplication() -> Self {
-        let appData = Self.nullAppData.targetCopy(.Current, launchOptions: DefaultLaunchOptions, relaunchMode: DefaultRelaunchMode)
+        let appData = Self.untargetedAppData.targetedCopy(.Current, launchOptions: DefaultLaunchOptions, relaunchMode: DefaultRelaunchMode)
         return self.init(rootObject: AppRootDesc, appData: appData)
     }
     

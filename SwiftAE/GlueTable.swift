@@ -7,7 +7,7 @@
 //
 //  The `aeglue` tool uses these tables to add properties and methods to a glue's
 //  Symbol subclass and Query and Command protocol extensions; formatAppleEvent()
-//  them to translate typeAppleEvent descriptors to SwiftAE syntax.
+//  uses them to translate typeAppleEvent descriptors to SwiftAE syntax.
 //
 //  May also be used by dynamic AE bridges.
 //
@@ -21,8 +21,7 @@ public func CommandTermKey(eventClass: OSType, _ eventID: OSType) -> UInt64 {
 }
 
 
-public class GlueTable { // used by aeglue and SwiftFormatter.formatAppleEvent()
-
+public class GlueTable {
     // provides lookup tables used by language-specific bridges to pack/unpack/format symbols, specifiers, and commands
     // note: dictionary structures are optimized for dynamic bridges, but are also usable
     // by static glue generators (which aren't performance-sensitive anyway)

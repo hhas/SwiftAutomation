@@ -12,9 +12,12 @@ import Foundation
 /******************************************************************************/
 // Untargeted AppData instance used in App, Con, Its roots; also used by Application constructors to create their own targeted AppData instances
 
-private let gNullAppData = AppData(glueInfo: GlueInfo(insertionSpecifierType: AEInsertion.self, objectSpecifierType: AEObject.self,
-                                                      elementsSpecifierType: AEElements.self, rootSpecifierType: AERoot.self,
-                                                      symbolType: Symbol.self, formatter: gSpecifierFormatter))
+private let gUntargetedAppData = AppData(glueInfo: GlueInfo(insertionSpecifierType: AEInsertion.self,
+                                                            objectSpecifierType: AEObject.self,
+                                                            elementsSpecifierType: AEElements.self,
+                                                            rootSpecifierType: AERoot.self,
+                                                            symbolType: Symbol.self,
+                                                            formatter: gSpecifierFormatter))
 
 
 /******************************************************************************/
@@ -438,14 +441,14 @@ public class AERoot: RootSpecifier, AEQuery, RootSpecifierExtension {
     public typealias InsertionSpecifierType = AEInsertion
     public typealias ObjectSpecifierType = AEObject
     public typealias ElementsSpecifierType = AEElements
-    public override class var nullAppData: AppData { return gNullAppData }
+    public override class var untargetedAppData: AppData { return gUntargetedAppData }
 }
 
 public class AEApplication: AERoot, ApplicationExtension {}
 
 // App/Con/Its root objects used to construct untargeted specifiers; these can be used to construct specifiers for use in commands, though cannot send commands themselves
 
-public let AEApp = gNullAppData.rootObjects.app as! AERoot
-public let AECon = gNullAppData.rootObjects.con as! AERoot
-public let AEIts = gNullAppData.rootObjects.its as! AERoot
+public let AEApp = gUntargetedAppData.rootObjects.app as! AERoot
+public let AECon = gUntargetedAppData.rootObjects.con as! AERoot
+public let AEIts = gUntargetedAppData.rootObjects.its as! AERoot
 

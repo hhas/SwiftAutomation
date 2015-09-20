@@ -32,6 +32,8 @@
 		4F0E39921BAB7B7B00FF2A96 /* GlueTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39501BA9A7EA00FF2A96 /* GlueTable.swift */; };
 		4F0E39931BAB7B7B00FF2A96 /* StaticGlueBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E396D1BAA9BA700FF2A96 /* StaticGlueBuilder.swift */; };
 		4F0E39941BAB7B7B00FF2A96 /* AEApplicationGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F2645AB1BA4F27700256402 /* AEApplicationGlue.swift */; };
+		4F0E39961BADD58500FF2A96 /* AppleEventFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39951BADD58500FF2A96 /* AppleEventFormatter.swift */; settings = {ASSET_TAGS = (); }; };
+		4F0E39971BAF4D7A00FF2A96 /* AppleEventFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39951BADD58500FF2A96 /* AppleEventFormatter.swift */; };
 		4F1D12411BA3042600875F74 /* SpecifierExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1D12401BA3042600875F74 /* SpecifierExtensions.swift */; settings = {ASSET_TAGS = (); }; };
 		4F2645A81BA4243E00256402 /* TextEditGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F2645A71BA4243E00256402 /* TextEditGlue.swift */; settings = {ASSET_TAGS = (); }; };
 		4F2645AC1BA4F27700256402 /* AEApplicationGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F2645AB1BA4F27700256402 /* AEApplicationGlue.swift */; settings = {ASSET_TAGS = (); }; };
@@ -130,6 +132,7 @@
 		4F0E39651BAA98A900FF2A96 /* aeglue */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = aeglue; sourceTree = BUILT_PRODUCTS_DIR; };
 		4F0E39671BAA98A900FF2A96 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		4F0E396D1BAA9BA700FF2A96 /* StaticGlueBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StaticGlueBuilder.swift; sourceTree = "<group>"; };
+		4F0E39951BADD58500FF2A96 /* AppleEventFormatter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppleEventFormatter.swift; sourceTree = "<group>"; };
 		4F1D12401BA3042600875F74 /* SpecifierExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpecifierExtensions.swift; sourceTree = "<group>"; };
 		4F2645A41BA37C5000256402 /* SwiftAEGlueTemplate.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = SwiftAEGlueTemplate.txt; sourceTree = "<group>"; };
 		4F2645A71BA4243E00256402 /* TextEditGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextEditGlue.swift; sourceTree = "<group>"; };
@@ -259,6 +262,7 @@
 				4F63C42F1B7CF133000D74EE /* Specifier.swift */,
 				4F1D12401BA3042600875F74 /* SpecifierExtensions.swift */,
 				4FDD30FD1B932C29002BA20F /* SpecifierFormatter.swift */,
+				4F0E39951BADD58500FF2A96 /* AppleEventFormatter.swift */,
 				4F63C4421B87AC88000D74EE /* Symbol.swift */,
 				4F63C4441B8A4DFC000D74EE /* Errors.swift */,
 				4F63C4461B8A669C000D74EE /* Support.swift */,
@@ -421,6 +425,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4F0E39971BAF4D7A00FF2A96 /* AppleEventFormatter.swift in Sources */,
 				4F0E39851BAB7B7B00FF2A96 /* AEConstants.swift in Sources */,
 				4F0E39861BAB7B7B00FF2A96 /* AppData.swift in Sources */,
 				4F0E39871BAB7B7B00FF2A96 /* Specifier.swift in Sources */,
@@ -461,6 +466,7 @@
 				4F2645AC1BA4F27700256402 /* AEApplicationGlue.swift in Sources */,
 				4F0E39531BA9C6C700FF2A96 /* DefaultTerminology.swift in Sources */,
 				4F2645B21BA59A0E00256402 /* ITunesGlue.swift in Sources */,
+				4F0E39961BADD58500FF2A96 /* AppleEventFormatter.swift in Sources */,
 				4F0E394F1BA8D2F600FF2A96 /* AETEParser.swift in Sources */,
 				4F0E394D1BA8C16300FF2A96 /* KeywordConverter.swift in Sources */,
 				4F0E396E1BAA9BA700FF2A96 /* StaticGlueBuilder.swift in Sources */,
@@ -604,6 +610,7 @@
 				4F0E396B1BAA98A900FF2A96 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		4F63C41F1B7CF06E000D74EE /* Build configuration list for PBXProject "SwiftAE" */ = {
 			isa = XCConfigurationList;

@@ -12,9 +12,12 @@ import Foundation
 /******************************************************************************/
 // Untargeted AppData instance used in App, Con, Its roots; also used by Application constructors to create their own targeted AppData instances
 
-private let gNullAppData = AppData(glueInfo: GlueInfo(insertionSpecifierType: TEDInsertion.self, objectSpecifierType: TEDObject.self,
-                                                      elementsSpecifierType: TEDElements.self, rootSpecifierType: TEDRoot.self,
-                                                      symbolType: Symbol.self, formatter: gSpecifierFormatter))
+private let gUntargetedAppData = AppData(glueInfo: GlueInfo(insertionSpecifierType: TEDInsertion.self,
+                                                            objectSpecifierType: TEDObject.self,
+                                                            elementsSpecifierType: TEDElements.self,
+                                                            rootSpecifierType: TEDRoot.self,
+                                                            symbolType: Symbol.self,
+                                                            formatter: gSpecifierFormatter))
 
 
 /******************************************************************************/
@@ -699,19 +702,19 @@ public class TEDRoot: RootSpecifier, TEDQuery, RootSpecifierExtension {
     public typealias InsertionSpecifierType = TEDInsertion
     public typealias ObjectSpecifierType = TEDObject
     public typealias ElementsSpecifierType = TEDElements
-    public override class var nullAppData: AppData { return gNullAppData }
+    public override class var untargetedAppData: AppData { return gUntargetedAppData }
 }
 
 public class TextEdit: TEDRoot, ApplicationExtension {
     public convenience init(launchOptions: LaunchOptions = DefaultLaunchOptions, relaunchMode: RelaunchMode = DefaultRelaunchMode) {
-        self.init(rootObject: AppRootDesc, appData: self.dynamicType.nullAppData.targetCopy(
+        self.init(rootObject: AppRootDesc, appData: self.dynamicType.untargetedAppData.targetedCopy(
                                 .BundleIdentifier("com.apple.TextEdit", true), launchOptions: launchOptions, relaunchMode: relaunchMode))
     }
 }
 
 // App/Con/Its root objects used to construct untargeted specifiers; these can be used to construct specifiers for use in commands, though cannot send commands themselves
 
-public let TEDApp = gNullAppData.rootObjects.app as! TEDRoot
-public let TEDCon = gNullAppData.rootObjects.con as! TEDRoot
-public let TEDIts = gNullAppData.rootObjects.its as! TEDRoot
+public let TEDApp = gUntargetedAppData.rootObjects.app as! TEDRoot
+public let TEDCon = gUntargetedAppData.rootObjects.con as! TEDRoot
+public let TEDIts = gUntargetedAppData.rootObjects.its as! TEDRoot
 

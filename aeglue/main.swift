@@ -58,7 +58,7 @@ func writeData(data: NSData, toURL: NSURL, overwriting: Bool) throws {
 // parse ARGV
 
 var applicationClassName: String?
-var classNamesPrefix: String?
+var classNamePrefix: String?
 var defaultTermsOnly = false
 var canOverwrite = false
 var useSDEF = false
@@ -94,8 +94,8 @@ while let opt = optArgs.popLast() {
             exit(1)
         }
     case "-p":
-        classNamesPrefix = optArgs.popLast()
-        if classNamesPrefix == nil || classNamesPrefix!.hasPrefix("-") {
+        classNamePrefix = optArgs.popLast()
+        if classNamePrefix == nil || classNamePrefix!.hasPrefix("-") {
             print("Missing value for -p option.")
             exit(1)
         }
@@ -161,7 +161,7 @@ if arguments.count > 0 {
 
 // create glue spec
 
-let glueSpec = StaticGlueSpec(applicationURL: applicationURL, classNamesPrefix: classNamesPrefix,
+let glueSpec = GlueSpec(applicationURL: applicationURL, classNamePrefix: classNamePrefix,
                               applicationClassName: applicationClassName, useSDEF: useSDEF)
 
 let glueFileName = "\(glueSpec.applicationClassName)Glue.swift"
