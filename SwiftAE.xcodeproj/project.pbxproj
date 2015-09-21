@@ -34,6 +34,33 @@
 		4F0E39941BAB7B7B00FF2A96 /* AEApplicationGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F2645AB1BA4F27700256402 /* AEApplicationGlue.swift */; };
 		4F0E39961BADD58500FF2A96 /* AppleEventFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39951BADD58500FF2A96 /* AppleEventFormatter.swift */; settings = {ASSET_TAGS = (); }; };
 		4F0E39971BAF4D7A00FF2A96 /* AppleEventFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39951BADD58500FF2A96 /* AppleEventFormatter.swift */; };
+		4F0E39A11BAF7A7400FF2A96 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4F0E39A01BAF7A7400FF2A96 /* Assets.xcassets */; };
+		4F0E39A41BAF7A7400FF2A96 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4F0E39A21BAF7A7400FF2A96 /* MainMenu.xib */; };
+		4F0E39A91BAF7ADC00FF2A96 /* OSAKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F0E394A1BA8719400FF2A96 /* OSAKit.framework */; };
+		4F0E39AA1BAF7B3400FF2A96 /* AEConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F63C42E1B7CF133000D74EE /* AEConstants.swift */; };
+		4F0E39AB1BAF7B3400FF2A96 /* AppData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F63C4401B86A335000D74EE /* AppData.swift */; };
+		4F0E39AC1BAF7B3400FF2A96 /* Specifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F63C42F1B7CF133000D74EE /* Specifier.swift */; };
+		4F0E39AD1BAF7B3400FF2A96 /* SpecifierExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1D12401BA3042600875F74 /* SpecifierExtensions.swift */; };
+		4F0E39AE1BAF7B3400FF2A96 /* SpecifierFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FDD30FD1B932C29002BA20F /* SpecifierFormatter.swift */; };
+		4F0E39AF1BAF7B3400FF2A96 /* AppleEventFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39951BADD58500FF2A96 /* AppleEventFormatter.swift */; };
+		4F0E39B01BAF7B3400FF2A96 /* Symbol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F63C4421B87AC88000D74EE /* Symbol.swift */; };
+		4F0E39B11BAF7B3400FF2A96 /* Errors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F63C4441B8A4DFC000D74EE /* Errors.swift */; };
+		4F0E39B21BAF7B3400FF2A96 /* Support.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F63C4461B8A669C000D74EE /* Support.swift */; };
+		4F0E39B31BAF7B3400FF2A96 /* TermTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39451BA86B5F00FF2A96 /* TermTypes.swift */; };
+		4F0E39B41BAF7B3400FF2A96 /* DefaultTerminology.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39521BA9C6C700FF2A96 /* DefaultTerminology.swift */; };
+		4F0E39B51BAF7B3400FF2A96 /* KeywordConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E394C1BA8C16300FF2A96 /* KeywordConverter.swift */; };
+		4F0E39B61BAF7B3400FF2A96 /* AETEParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E394E1BA8D2F600FF2A96 /* AETEParser.swift */; };
+		4F0E39B71BAF7B3400FF2A96 /* SDEFParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39481BA8717D00FF2A96 /* SDEFParser.swift */; };
+		4F0E39B81BAF7B3400FF2A96 /* GlueTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39501BA9A7EA00FF2A96 /* GlueTable.swift */; };
+		4F0E39B91BAF7B3400FF2A96 /* StaticGlueBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E396D1BAA9BA700FF2A96 /* StaticGlueBuilder.swift */; };
+		4F0E39BA1BAF7B3400FF2A96 /* AEApplicationGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F2645AB1BA4F27700256402 /* AEApplicationGlue.swift */; };
+		4F0E39BD1BAF7B7600FF2A96 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F63C4331B7CF1C4000D74EE /* Foundation.framework */; };
+		4F0E39BE1BAF7B7C00FF2A96 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F63C4351B7CF1C8000D74EE /* AppKit.framework */; };
+		4F0E39CC1BB008A400FF2A96 /* SAELanguageInstance.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39CB1BB008A400FF2A96 /* SAELanguageInstance.m */; settings = {ASSET_TAGS = (); }; };
+		4F0E39CF1BB008B400FF2A96 /* SAEEventSniffer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39CE1BB008B400FF2A96 /* SAEEventSniffer.m */; settings = {ASSET_TAGS = (); }; };
+		4F0E39D21BB00B3300FF2A96 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39D11BB00B3300FF2A96 /* AppDelegate.m */; settings = {ASSET_TAGS = (); }; };
+		4F0E39D41BB0342600FF2A96 /* SwiftAEFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39D31BB0342600FF2A96 /* SwiftAEFormatter.swift */; settings = {ASSET_TAGS = (); }; };
+		4F0E39D61BB0504D00FF2A96 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39D51BB0504D00FF2A96 /* main.m */; settings = {ASSET_TAGS = (); }; };
 		4F1D12411BA3042600875F74 /* SpecifierExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1D12401BA3042600875F74 /* SpecifierExtensions.swift */; settings = {ASSET_TAGS = (); }; };
 		4F2645A81BA4243E00256402 /* TextEditGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F2645A71BA4243E00256402 /* TextEditGlue.swift */; settings = {ASSET_TAGS = (); }; };
 		4F2645AC1BA4F27700256402 /* AEApplicationGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F2645AB1BA4F27700256402 /* AEApplicationGlue.swift */; settings = {ASSET_TAGS = (); }; };
@@ -54,6 +81,13 @@
 
 /* Begin PBXContainerItemProxy section */
 		4F0E39821BAB742400FF2A96 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4F63C41C1B7CF06E000D74EE /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4F63C4231B7CF06E000D74EE;
+			remoteInfo = SwiftAE;
+		};
+		4F0E39BB1BAF7B6800FF2A96 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 4F63C41C1B7CF06E000D74EE /* Project object */;
 			proxyType = 1;
@@ -133,6 +167,19 @@
 		4F0E39671BAA98A900FF2A96 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		4F0E396D1BAA9BA700FF2A96 /* StaticGlueBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StaticGlueBuilder.swift; sourceTree = "<group>"; };
 		4F0E39951BADD58500FF2A96 /* AppleEventFormatter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppleEventFormatter.swift; sourceTree = "<group>"; };
+		4F0E399C1BAF7A7400FF2A96 /* SwiftAETranslate.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftAETranslate.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		4F0E39A01BAF7A7400FF2A96 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		4F0E39A31BAF7A7400FF2A96 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		4F0E39A51BAF7A7400FF2A96 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		4F0E39C91BB008A400FF2A96 /* SwiftAETranslate-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SwiftAETranslate-Bridging-Header.h"; sourceTree = "<group>"; };
+		4F0E39CA1BB008A400FF2A96 /* SAELanguageInstance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SAELanguageInstance.h; sourceTree = "<group>"; };
+		4F0E39CB1BB008A400FF2A96 /* SAELanguageInstance.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SAELanguageInstance.m; sourceTree = "<group>"; };
+		4F0E39CD1BB008B400FF2A96 /* SAEEventSniffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SAEEventSniffer.h; sourceTree = "<group>"; };
+		4F0E39CE1BB008B400FF2A96 /* SAEEventSniffer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SAEEventSniffer.m; sourceTree = "<group>"; };
+		4F0E39D01BB00B3300FF2A96 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		4F0E39D11BB00B3300FF2A96 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		4F0E39D31BB0342600FF2A96 /* SwiftAEFormatter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftAEFormatter.swift; sourceTree = "<group>"; };
+		4F0E39D51BB0504D00FF2A96 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		4F1D12401BA3042600875F74 /* SpecifierExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpecifierExtensions.swift; sourceTree = "<group>"; };
 		4F2645A41BA37C5000256402 /* SwiftAEGlueTemplate.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = SwiftAEGlueTemplate.txt; sourceTree = "<group>"; };
 		4F2645A71BA4243E00256402 /* TextEditGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextEditGlue.swift; sourceTree = "<group>"; };
@@ -164,6 +211,16 @@
 			buildActionMask = 2147483647;
 			files = (
 				4F0E39841BAB743800FF2A96 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4F0E39991BAF7A7400FF2A96 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4F0E39BE1BAF7B7C00FF2A96 /* AppKit.framework in Frameworks */,
+				4F0E39BD1BAF7B7600FF2A96 /* Foundation.framework in Frameworks */,
+				4F0E39A91BAF7ADC00FF2A96 /* OSAKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -270,6 +327,25 @@
 			name = bridge;
 			sourceTree = "<group>";
 		};
+		4F0E399D1BAF7A7400FF2A96 /* SwiftAETranslate */ = {
+			isa = PBXGroup;
+			children = (
+				4F0E39D51BB0504D00FF2A96 /* main.m */,
+				4F0E39D01BB00B3300FF2A96 /* AppDelegate.h */,
+				4F0E39D11BB00B3300FF2A96 /* AppDelegate.m */,
+				4F0E39CA1BB008A400FF2A96 /* SAELanguageInstance.h */,
+				4F0E39CB1BB008A400FF2A96 /* SAELanguageInstance.m */,
+				4F0E39CD1BB008B400FF2A96 /* SAEEventSniffer.h */,
+				4F0E39CE1BB008B400FF2A96 /* SAEEventSniffer.m */,
+				4F0E39D31BB0342600FF2A96 /* SwiftAEFormatter.swift */,
+				4F0E39A01BAF7A7400FF2A96 /* Assets.xcassets */,
+				4F0E39A21BAF7A7400FF2A96 /* MainMenu.xib */,
+				4F0E39A51BAF7A7400FF2A96 /* Info.plist */,
+				4F0E39C91BB008A400FF2A96 /* SwiftAETranslate-Bridging-Header.h */,
+			);
+			path = SwiftAETranslate;
+			sourceTree = "<group>";
+		};
 		4F2645A31BA37C2B00256402 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -313,6 +389,7 @@
 				4F2645A61BA3F58F00256402 /* bin */,
 				4F63C4261B7CF06E000D74EE /* SwiftAE */,
 				4F63C4321B7CF13E000D74EE /* test */,
+				4F0E399D1BAF7A7400FF2A96 /* SwiftAETranslate */,
 				4F2645A31BA37C2B00256402 /* Frameworks */,
 				4F63C4251B7CF06E000D74EE /* Products */,
 			);
@@ -323,6 +400,7 @@
 			children = (
 				4F63C4241B7CF06E000D74EE /* SwiftAE */,
 				4F0E39651BAA98A900FF2A96 /* aeglue */,
+				4F0E399C1BAF7A7400FF2A96 /* SwiftAETranslate.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -368,6 +446,24 @@
 			productReference = 4F0E39651BAA98A900FF2A96 /* aeglue */;
 			productType = "com.apple.product-type.tool";
 		};
+		4F0E399B1BAF7A7400FF2A96 /* SwiftAETranslate */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4F0E39A61BAF7A7400FF2A96 /* Build configuration list for PBXNativeTarget "SwiftAETranslate" */;
+			buildPhases = (
+				4F0E39981BAF7A7400FF2A96 /* Sources */,
+				4F0E39991BAF7A7400FF2A96 /* Frameworks */,
+				4F0E399A1BAF7A7400FF2A96 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				4F0E39BC1BAF7B6800FF2A96 /* PBXTargetDependency */,
+			);
+			name = SwiftAETranslate;
+			productName = SwiftAETranslate;
+			productReference = 4F0E399C1BAF7A7400FF2A96 /* SwiftAETranslate.app */;
+			productType = "com.apple.product-type.application";
+		};
 		4F63C4231B7CF06E000D74EE /* SwiftAE */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 4F63C42B1B7CF06E000D74EE /* Build configuration list for PBXNativeTarget "SwiftAE" */;
@@ -397,6 +493,9 @@
 					4F0E39641BAA98A900FF2A96 = {
 						CreatedOnToolsVersion = 7.0;
 					};
+					4F0E399B1BAF7A7400FF2A96 = {
+						CreatedOnToolsVersion = 7.0;
+					};
 					4F63C4231B7CF06E000D74EE = {
 						CreatedOnToolsVersion = 7.0;
 					};
@@ -408,6 +507,7 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				Base,
 			);
 			mainGroup = 4F63C41B1B7CF06E000D74EE;
 			productRefGroup = 4F63C4251B7CF06E000D74EE /* Products */;
@@ -416,9 +516,22 @@
 			targets = (
 				4F63C4231B7CF06E000D74EE /* SwiftAE */,
 				4F0E39641BAA98A900FF2A96 /* aeglue */,
+				4F0E399B1BAF7A7400FF2A96 /* SwiftAETranslate */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		4F0E399A1BAF7A7400FF2A96 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4F0E39A11BAF7A7400FF2A96 /* Assets.xcassets in Resources */,
+				4F0E39A41BAF7A7400FF2A96 /* MainMenu.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		4F0E39611BAA98A900FF2A96 /* Sources */ = {
@@ -443,6 +556,35 @@
 				4F0E39931BAB7B7B00FF2A96 /* StaticGlueBuilder.swift in Sources */,
 				4F0E39941BAB7B7B00FF2A96 /* AEApplicationGlue.swift in Sources */,
 				4F0E39681BAA98A900FF2A96 /* main.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4F0E39981BAF7A7400FF2A96 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4F0E39CF1BB008B400FF2A96 /* SAEEventSniffer.m in Sources */,
+				4F0E39AA1BAF7B3400FF2A96 /* AEConstants.swift in Sources */,
+				4F0E39AB1BAF7B3400FF2A96 /* AppData.swift in Sources */,
+				4F0E39AC1BAF7B3400FF2A96 /* Specifier.swift in Sources */,
+				4F0E39D21BB00B3300FF2A96 /* AppDelegate.m in Sources */,
+				4F0E39AD1BAF7B3400FF2A96 /* SpecifierExtensions.swift in Sources */,
+				4F0E39AE1BAF7B3400FF2A96 /* SpecifierFormatter.swift in Sources */,
+				4F0E39AF1BAF7B3400FF2A96 /* AppleEventFormatter.swift in Sources */,
+				4F0E39B01BAF7B3400FF2A96 /* Symbol.swift in Sources */,
+				4F0E39B11BAF7B3400FF2A96 /* Errors.swift in Sources */,
+				4F0E39D41BB0342600FF2A96 /* SwiftAEFormatter.swift in Sources */,
+				4F0E39B21BAF7B3400FF2A96 /* Support.swift in Sources */,
+				4F0E39CC1BB008A400FF2A96 /* SAELanguageInstance.m in Sources */,
+				4F0E39B31BAF7B3400FF2A96 /* TermTypes.swift in Sources */,
+				4F0E39B41BAF7B3400FF2A96 /* DefaultTerminology.swift in Sources */,
+				4F0E39B51BAF7B3400FF2A96 /* KeywordConverter.swift in Sources */,
+				4F0E39B61BAF7B3400FF2A96 /* AETEParser.swift in Sources */,
+				4F0E39B71BAF7B3400FF2A96 /* SDEFParser.swift in Sources */,
+				4F0E39B81BAF7B3400FF2A96 /* GlueTable.swift in Sources */,
+				4F0E39B91BAF7B3400FF2A96 /* StaticGlueBuilder.swift in Sources */,
+				4F0E39D61BB0504D00FF2A96 /* main.m in Sources */,
+				4F0E39BA1BAF7B3400FF2A96 /* AEApplicationGlue.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -482,7 +624,23 @@
 			target = 4F63C4231B7CF06E000D74EE /* SwiftAE */;
 			targetProxy = 4F0E39821BAB742400FF2A96 /* PBXContainerItemProxy */;
 		};
+		4F0E39BC1BAF7B6800FF2A96 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4F63C4231B7CF06E000D74EE /* SwiftAE */;
+			targetProxy = 4F0E39BB1BAF7B6800FF2A96 /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		4F0E39A21BAF7A7400FF2A96 /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				4F0E39A31BAF7A7400FF2A96 /* Base */,
+			);
+			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		4F0E396A1BAA98A900FF2A96 /* Debug */ = {
@@ -496,6 +654,39 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		4F0E39A71BAF7A7400FF2A96 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = SwiftAETranslate/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = org.bitbucket.hhas.SwiftAETranslate;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_INSTALL_OBJC_HEADER = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "SwiftAETranslate/SwiftAETranslate-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		4F0E39A81BAF7A7400FF2A96 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = SwiftAETranslate/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = org.bitbucket.hhas.SwiftAETranslate;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_INSTALL_OBJC_HEADER = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "SwiftAETranslate/SwiftAETranslate-Bridging-Header.h";
 			};
 			name = Release;
 		};
@@ -611,6 +802,14 @@
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
+		};
+		4F0E39A61BAF7A7400FF2A96 /* Build configuration list for PBXNativeTarget "SwiftAETranslate" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4F0E39A71BAF7A7400FF2A96 /* Debug */,
+				4F0E39A81BAF7A7400FF2A96 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
 		};
 		4F63C41F1B7CF06E000D74EE /* Build configuration list for PBXProject "SwiftAE" */ = {
 			isa = XCConfigurationList;

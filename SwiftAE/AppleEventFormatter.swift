@@ -11,11 +11,8 @@
 
 //  TO DO: code's a bit gnarly: leaks some memory each time it's used (due to AppData-RootSpecifier coupling) and is not yet sufficiently decoupled to allow reuse over other languages (although that's something that can/should be sorted out once there are other languages than Swift to support)
 
-// TO DO: withTimeout currently always included (bugs in -[NSAppleEventDescriptor sendEvent...]) mean that AppData currently has to use 120, not kAEDefaultTimeout)
 
 // TO DO: Application object should hide url arg for display purposes
-
-// TO DO: port SwiftAETranslate.app from AEB
 
 
 import Foundation
@@ -29,8 +26,7 @@ public enum TerminologyType {
 }
 
 
-
-public func formatAppleEvent(event: NSAppleEventDescriptor, useTerminology: TerminologyType = .SDEF) -> String {
+public func SwiftAEFormatAppleEvent(event: NSAppleEventDescriptor, useTerminology: TerminologyType = .SDEF) -> String {
     //  Format an outgoing or reply AppleEvent (if the latter, only the return value/error description is displayed).
     //  Caution: if sending events to self, caller MUST use TerminologyType.SDEF or call
     //  formatAppleEvent on a background thread, otherwise formatAppleEvent will deadlock
@@ -51,7 +47,7 @@ public func formatAppleEvent(event: NSAppleEventDescriptor, useTerminology: Term
             let errs = event.paramDescriptorForKeyword(keyErrorString)?.stringValue
             return SwiftAEError(code: Int(errn), message: errs).description // TO DO: use CommandError? (need to check it's happy with only replyEvent arg)
         } else if let reply = event.paramDescriptorForKeyword(keyDirectObject) { // format return value
-            return formatValue(try? appData.unpack(reply) ?? reply)
+            return formatValue((try? appData.unpack(reply)) ?? reply)
         } else {
             return "<noreply>" // TO DO: what to return?
         }
@@ -264,6 +260,8 @@ extension SpecifierFormatter {
                 args.append("[\(params)]")
             }
         }
+        // TO DO: AE's representation of AESendMessage args (waitReply and withTimeout) is unreliable; may be best to ignore these entirely
+        /*
         if !eventDescription.waitReply {
             args.append("waitReply: false")
         }
@@ -271,6 +269,7 @@ extension SpecifierFormatter {
         if eventDescription.withTimeout != gDefaultTimeout {
             args.append("withTimeout: \(eventDescription.withTimeout)") // TO DO: if -2, use NoTimeout constant (except 10.11 hasn't defined one yet, and is still buggy in any case)
         }
+        */
         if eventDescription.considering != gDefaultConsidering {
             args.append("considering: \(eventDescription.considering)")
         }

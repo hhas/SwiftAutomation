@@ -5,7 +5,6 @@
 //  Generate application-specific glue files for SwiftAE
 //
 
-// TO DO: options parsing currently doesn't handle common shell shorthand (e.g. using `-rs` instead of `-r -s` currently fails)
 
 import Foundation
 import SwiftAE

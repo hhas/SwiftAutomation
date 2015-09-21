@@ -9,6 +9,11 @@
 			<key>orderHint</key>
 			<integer>0</integer>
 		</dict>
+		<key>SwiftAETranslate.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>2</integer>
+		</dict>
 		<key>aeglue.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
@@ -23,6 +28,11 @@
 			<true/>
 		</dict>
 		<key>4F0E39641BAA98A900FF2A96</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>4F0E399B1BAF7A7400FF2A96</key>
 		<dict>
 			<key>primary</key>
 			<true/>

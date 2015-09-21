@@ -61,4 +61,4 @@ TO DO:
 - need to check how (e.g) iTunes handles 'rawData' property vs elements; it's possible both need to be supported (see also text vs text) (note: tdta is defined by iTunes hidden types suite solely for use as `rawData` property's declared type - it doesn't actually appear as an element; other apps with conflicting keywords may be different, however)
 
 
-- check why iTunes activates when getting aete
+- check why iTunes, etc. activates when getting aete
