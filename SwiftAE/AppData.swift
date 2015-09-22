@@ -32,7 +32,7 @@ import AppKit
 
 // TO DO: implement NullAppBridge (for use in generic specifiers) that throws errors if sendEvent (or pack/unpack) is called? (alternatively, could add a TargetApplication.None option to throw upon)
 
-// TO DO: how to support sum types? (suspect this will require better type introspection support in Swift); for now, client code will have to use `Any` and switch on type itself
+// TO DO: how to support sum types? (suspect this will require better type introspection support in Swift); for now, client code will have to use `Any` and switch on type itself - one possibility would be to define a standard enum that's a sum of all supported types, then use type info to determine which of those cases are allowed when unpacking (that does, however, create a problem where T arg != T result, since enums don't support generics; it would have to be done using a class, but that creates question of how to do varargs); another possibility might be to have an explicit arg that takes set of accepted types, ensuring result's type is always one of those, then return Any; Q. could a user-defined enum that adheres to a framework defined protocol do it? (again, we'd still need to introspect, unless it calls unpack<T> itself - although that prob. wouldn't help since we don't want to coerce unless we have to, otherwise typeType descs could end up as Strings)
 
 // TO DO: option for caller to pass their own 'customUnpack' func via command, to be called when standard unpack fails (either due to unrecognized AE type or inability to coerce to specified Swift type)
 
@@ -320,7 +320,7 @@ public class AppData {
                  return Double(doubleDesc.doubleValue) as! T
              }
         } else if T.self == String.self {
-            if let result = desc.stringValue {
+            if let result = desc.stringValue { // TO DO: fail if desc is typeType, typeEnumerated, etc.? or convert to name [if known] and return that? (i.e. typeType, etc. can always coerce to typeUnicodeText, but this is misleading and could cause problems e.g. when a value may be string or missingValue)
                 return result as! T
             }
         } else if T.self is Selector.Type { // note: user typically specifies exact class ([PREFIX][Object|Elements]Specifier)

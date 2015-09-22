@@ -26,7 +26,7 @@ public class SpecifierFormatter {
     let propertyNames: [OSType:String], elementsNames: [OSType:String] // note: dicts should also used in dynamic appdata to translate attribute names to ostypes
     
     public required init(applicationClassName: String = "Application", classNamePrefix: String = "",
-                  propertyNames: [OSType:String] = [:], elementsNames: [OSType:String] = [:]) {
+                         propertyNames: [OSType:String] = [:], elementsNames: [OSType:String] = [:]) {
         self.applicationClassName = applicationClassName
         self.classNamePrefix = classNamePrefix
         self.propertyNames = propertyNames
@@ -106,7 +106,7 @@ public class SpecifierFormatter {
         case .Name(let name):
             result += "(name: \(self.format(name)))"
         case .URL(let url):
-            result += "(url: \(self.format(url)))"
+            result += "(url: \(self.format(url)))" // TO DO: if fileURL, use name:PATH representation instead? (would be more concise)
         case .BundleIdentifier(let bundleID, let isDefault):
             result += isDefault ? "()" : "(bundleIdentifier: \(self.format(bundleID)))"
         case .ProcessIdentifier(let pid):
@@ -215,7 +215,7 @@ public class SpecifierFormatter {
 // general formatting functions
 
 func formatValue(value: Any) -> String { // TO DO: while this function can be used standalone, might be cleanest just to make it a member of SpecifierFormatter
-    // formats AE-bridged Swift types as literal syntax; other Swift types will show their default description
+    // formats AE-bridged Swift types as literal syntax; other Swift types will show their default description // TO DO: use DebugPrintable where available?
     switch value {
     case let obj as NSArray: // HACK; see also AppData.pack()
         return "[" + obj.map({formatValue($0)}).joinWithSeparator(", ") + "]"

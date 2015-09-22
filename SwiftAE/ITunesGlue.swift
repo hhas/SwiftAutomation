@@ -2,7 +2,7 @@
 //  ITunesGlue.swift
 //  iTunes.app 12.2.2
 //  SwiftAE.framework 0.1.0
-//  `aeglue -r iTunes`
+//  `aeglue -r iTunes.app`
 //
 
 

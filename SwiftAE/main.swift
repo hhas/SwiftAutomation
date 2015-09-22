@@ -2,7 +2,7 @@
 //  main.swift
 //  SwiftAE
 //
-//  tests
+//  tests // TO DO: move ad-hoc tests to separate target; replace this with examples of use
 //
 //
 //
@@ -10,41 +10,9 @@
 import Foundation
 
 
-/*
-let p = SDEFParser()
-do {
-    try p.parse(try GetScriptingDefinition(NSURL(fileURLWithPath: "/Applications/TextEdit.app")))
-    print(p.types)
-    print(p.enumerators)
-    print(p.properties)
-    print(p.elements)
-    print(p.commands)
-} catch {
-    print(error)
-}
-*/
-/*
-do {
-    let p = try AEApplication(name:"TextEdit").parseAETE()
-    print(p.types)
-    print(p.enumerators)
-    print(p.properties)
-    print(p.elements)
-    print(p.commands)
-} catch {
-    print(error)
-}
-*/
-
-//let t = try renderStaticGlueTemplate(GlueSpec(), extraTags: ["AEGLUE_COMMAND": "aeglue -d","GLUE_NAME": "AEApplicationGlue.swift"])
-//let t = try renderStaticGlueTemplate(GlueSpec(applicationURL: NSURL(fileURLWithPath: "/Applications/TextEdit.app")), extraTags: ["AEGLUE_COMMAND": "aeglue TextEdit","GLUE_NAME": "TextEditGlue.swift"])
-//print(t)
-
-
 do {
     
     let te = TextEdit(name:"TextEdit")
-
 
 //print(TEDApp.documents[1].text)
 //print(te.documents[1].text)
@@ -53,7 +21,7 @@ do {
     //let result = try te.sendAppleEvent(kCoreEventClass, kAEOpenDocuments, [keyDirectObject:NSURL.fileURLWithPath("/Users/has/todos.txt")])
     //print(result)
 
-    /*
+    
     
     let result1 = try te.make(new: TED.document, withProperties: [TED.text: "Hello World!"])
         
@@ -65,18 +33,18 @@ do {
     // get name of document 1
     
     // - using four-char code strings
-    let result2 = try te.sendAppleEvent("core", "getd", ["----": te.elements("docu")[1].property("pnam")])
-    print(result2)
+    //let result2 = try te.sendAppleEvent("core", "getd", ["----": te.elements("docu")[1].property("pnam")])
+    //print(result2)
     
     // - using glue-defined terminology
     let result3 = try te.get(TEDApp.documents[1].name)
     print(result3)
-    */
+    
     
     let result3a: Any = try te.documents[1].name.get() // convenience syntax for the above
     print(result3a)
     
-    /*
+    
     
     // get name of every document (note: currently this example is only good for demo purposes: the `get` method result's dynamicType is Array<String>, but its static type is Any, and  Swift can't cast Any to Array<...> without falling over, so this result can't be used for anything useful; this is another reason why generic versions of commands are needed, but getting those to work right is a whole 'nother problem again...)
     
@@ -89,7 +57,7 @@ do {
     let q = Finder().home.folders["Documents"].files[FINIts.nameExtension == "txt"].name
     print(q)
     print(try q.get())
-*/
+    
 
 //    try te.documents.close(saving: TED.no) // close every document saving no
 

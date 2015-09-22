@@ -44,7 +44,7 @@ public extension ObjectSpecifierExtension {
     }
     
     public func property(code: String) -> ObjectSpecifierType { // caution: string must be valid four-char code; if not, 0x00000000 is used
-		return self.property(FourCharCodeUnsafe(code))
+		return self.property(FourCharCodeUnsafe(code)) // TO DO: use FourCharCode()throws, capturing error in custom root specifier to be rethrown if/when specifier is used in a command?
     }
     
     public func elements(code: OSType) -> ElementsSpecifierType {
@@ -54,7 +54,7 @@ public extension ObjectSpecifierExtension {
     }
     
     public func elements(code: String) -> ElementsSpecifierType { // caution: string must be valid four-char code; if not, 0x00000000 is used
-        return self.elements(FourCharCodeUnsafe(code))
+        return self.elements(FourCharCodeUnsafe(code)) // TO DO: ditto?
     }
 
     

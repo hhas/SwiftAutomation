@@ -9,6 +9,8 @@ import AppKit
 
 // TO DO: underscore-prefix private/internal properties and methods to reduce risk of terminology clashes
 
+// TO DO: make sure KeywordConverter lists _all_ Specifier members (e.g. `appData` currently isn't included)
+
 
 /******************************************************************************/
 // abstract base class for _all_ specifier and test clause subclasses

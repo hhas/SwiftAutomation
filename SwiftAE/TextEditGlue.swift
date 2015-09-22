@@ -2,7 +2,7 @@
 //  TextEditGlue.swift
 //  TextEdit.app 1.11
 //  SwiftAE.framework 0.1.0
-//  `aeglue -r TextEdit`
+//  `aeglue -r TextEdit.app`
 //
 
 

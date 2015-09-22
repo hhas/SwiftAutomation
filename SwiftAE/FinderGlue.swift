@@ -2,7 +2,7 @@
 //  FinderGlue.swift
 //  Finder.app 10.11
 //  SwiftAE.framework 0.1.0
-//  `aeglue -rs Finder`
+//  `aeglue -rs Finder.app`
 //
 
 
