@@ -18,7 +18,7 @@ The following example generates a glue for the TextEdit application, using an au
 
 while the following command uses a custom class name prefix, `TE`, and creates the new `TextEditGlue.swift` file on your desktop:
 
-    aeglue -p TE TextEdit ~/Desktop
+    aeglue -p TE -o ~/Desktop TextEdit
 
 The `aeglue` tool also creates an `.sdef` file containing the application's dictionary (interface documentation) in Swift format. For example, to view the `TextEditGlue.swift` terminology in Script Editor: 
 
