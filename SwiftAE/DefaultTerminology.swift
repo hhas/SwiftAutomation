@@ -110,40 +110,7 @@ public class DefaultTerminology: ApplicationTerminology {
                                     ("machine", cMachine),
                                     ("dash style", typeDashStyle),
                                     ("rotation", typeRotation),
-                                    ("suite info", typeSuiteInfo),
-                                    ("class info", typeClassInfo),
-                                    ("property info", typePropInfo),
-                                    ("element info", typeElemInfo),
-                                    ("event info", typeEventInfo),
-                                    ("parameter info", typeParamInfo),
                                     ("item", cObject),
-                                    ("centimeters", typeCentimeters),
-                                    ("meters", typeMeters),
-                                    ("kilometers", typeKilometers),
-                                    ("inches", typeInches),
-                                    ("feet", typeFeet),
-                                    ("yards", typeYards),
-                                    ("miles", typeMiles),
-                                    ("square meters", typeSquareMeters),
-                                    ("square kilometers", typeSquareKilometers),
-                                    ("square feet", typeSquareFeet),
-                                    ("square yards", typeSquareYards),
-                                    ("square miles", typeSquareMiles),
-                                    ("cubic centimeters", typeCubicCentimeter),
-                                    ("cubic meters", typeCubicMeters),
-                                    ("cubic inches", typeCubicInches),
-                                    ("cubic feet", typeCubicFeet),
-                                    ("cubic yards", typeCubicYards),
-                                    ("liters", typeLiters),
-                                    ("quarts", typeQuarts),
-                                    ("gallons", typeGallons),
-                                    ("grams", typeGrams),
-                                    ("kilograms", typeKilograms),
-                                    ("ounces", typeOunces),
-                                    ("pounds", typePounds),
-                                    ("degrees Celsius", typeDegreesC),
-                                    ("degrees Fahrenheit", typeDegreesF),
-                                    ("degrees Kelvin", typeDegreesK),
                                     ("January", cJanuary),
                                     ("February", cFebruary),
                                     ("March", cMarch),
@@ -177,8 +144,10 @@ public class DefaultTerminology: ApplicationTerminology {
     ]
     private let _properties: Keywords = [("class", pClass),
                                          ("id", pID),
+                                         ("properties", _pALL),
     ]
-    private let _elements: Keywords = [
+    private let _elements: Keywords = [("items", cObject),
+    								   // what about ("text",cText)?
     ]
     private let _commands: Commands = [("run", kCoreEventClass, kAEOpenApplication, []),
                                        ("open", kCoreEventClass, kAEOpenDocuments, []),
@@ -194,5 +163,6 @@ public class DefaultTerminology: ApplicationTerminology {
     
     private static let _GURL = try! FourCharCode("GURL")
     private static let _WIND = try! FourCharCode("WIND")
+    private static let _pALL = try! FourCharCode("pALL")
 }
 

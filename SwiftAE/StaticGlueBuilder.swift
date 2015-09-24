@@ -217,7 +217,7 @@ public func translateScriptingDefinition(data: NSData, glueSpec: GlueSpec) throw
                 for parameter in command.elementsForName("parameter") {
                     if let attribute = parameter.attributeForName("name") {
                         if let value = attribute.stringValue {
-                            attribute.stringValue = glueSpec.keywordConverter.convertParameterName(value)+":"
+                            attribute.stringValue = glueSpec.keywordConverter.convertParameterName(value)+":" // TO DO: formatting of param names should ideally be parameterized for reusability; maybe add `formatCommandName`, `formatParamName`, `formatEnum`, etc. methods to keywordConverter, and call those instead of `convert...`?
                         }
                     }
                 }
@@ -235,11 +235,11 @@ public func translateScriptingDefinition(data: NSData, glueSpec: GlueSpec) throw
         }
         let symbolPrefix = "\(glueSpec.classNamePrefix)."
         for enumeration in suite.elementsForName("enumeration") {
-            for enumerator in enumeration.elementsForName("enumerator") { convertNode(enumerator, symbolPrefix: symbolPrefix) }
+            for enumerator in enumeration.elementsForName("enumerator") { convertNode(enumerator, symbolPrefix: symbolPrefix) } // TO DO: as above, enum formatting should ideally be parameterized
         }
         for valueType in suite.elementsForName("value-type") { convertNode(valueType) }
     }
-    return xml.XMLData
+    return xml.XMLDataWithOptions(NSXMLNodePrettyPrint|NSXMLDocumentIncludeContentTypeDeclaration)
 }
 
 

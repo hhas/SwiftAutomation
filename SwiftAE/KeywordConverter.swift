@@ -115,14 +115,11 @@ public class KeywordConverter {
     public init() {}
     
     func convertName(var s: String, reservedWords: Set<String>) -> String { // Convert string to identifier
-        var result: String! = cache[s]
+        var result: String! = self.cache[s]
         if result == nil {
             s = s.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet())
             if s == "" { return "_" } // sanity check
             let tmp = NSMutableString(string: s)
-            if tmp.hasPrefix("init ") { // if "init" is first word in name, escape it separately to avoid any confusion in Swift
-                tmp.replaceCharactersInRange(NSMakeRange(0, 5), withString: "_init_")
-            }
             // convert keyword to camelcase, e.g. "audio CD playlist" -> "audioCDPlaylist"
             for i in (0..<tmp.length).reverse() {
                 let c = tmp.characterAtIndex(i)
@@ -144,7 +141,7 @@ public class KeywordConverter {
             if reservedWords.contains(result) || result.hasPrefix("_") || result == "" {
                 result = self.escapeName(result)
             }
-            cache[s] = result
+            self.cache[s] = result
         }
         return result!
     }

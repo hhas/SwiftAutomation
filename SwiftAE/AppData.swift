@@ -125,7 +125,7 @@ public class AppData {
             if Int(Int32.min) <= val && val <= Int(Int32.max) {
                 return NSAppleEventDescriptor(int32: Int32(val))
             } else {
-                return NSAppleEventDescriptor(double: Double(val)) // TO DO: 64-bit compatibility option
+                return NSAppleEventDescriptor(double: Double(val)) // TO DO: 64-bit compatibility (this should probably be the default, though some apps, e.g. Excel, will only accept SInt32 or Double, so a backwards-compatibility flag should also be implemented)
             }
         case let val as Double:
             return NSAppleEventDescriptor(double: val)
@@ -176,6 +176,7 @@ public class AppData {
         return self.glueInfo.insertionSpecifierType.init(insertionLocation: insertionLocation, parentSelector: nil, appData: self, cachedDesc: desc)
     }
     
+    // TO DO: compatibility option for fully unpacking and repacking object specifiers without caching original desc (i.e. mimic AS behavior exactly)
     func unpackObjectSpecifier(desc: NSAppleEventDescriptor) throws -> Specifier {
         guard let _ = desc.descriptorForKeyword(keyAEContainer), // container desc is only used in unpackParentSpecifiers, but confirm its existence
                 wantType = desc.descriptorForKeyword(keyAEDesiredClass),
@@ -251,7 +252,7 @@ public class AppData {
         switch desc.descriptorType {
         case typeAEList:
             var result = [T]()
-            for i in 1...desc.numberOfItems {
+            for i in 1..<(desc.numberOfItems+1) { // bug workaround for zero-length range: 1...0 throws error, but 1..<1 doesn't
                 do {
                     result.append(try self.unpack(desc.descriptorAtIndex(i)!, asType: T.self))
                 } catch {
@@ -281,7 +282,7 @@ public class AppData {
     public func unpack<T>(desc: NSAppleEventDescriptor, asType: [Symbol:T]) throws -> [Symbol:T] { // unpack desc as Dictionary; TO DO: how to handle String keys as well (e.g. define an AERecord<T> type specifically for the task)?
         if let recordDesc = desc.coerceToDescriptorType(typeAERecord) {
             var result = [Symbol:T]()
-            for i in 1...recordDesc.numberOfItems {
+            for i in 1..<(recordDesc.numberOfItems+1) {
                 let key = self.unpackAEProperty(recordDesc.keywordForDescriptorAtIndex(i))
                 do {
                     result[key] = try self.unpack(recordDesc.descriptorAtIndex(i)!, asType: T.self)
@@ -527,7 +528,7 @@ public class AppData {
                 self._targetDescriptor = nil
                 let event = NSAppleEventDescriptor(eventClass: eventClass, eventID: eventID, targetDescriptor: try self.targetDescriptor(),
                                                     returnID: AEReturnID(kAutoGenerateReturnID), transactionID: AETransactionID(kAnyTransactionID))
-                for i in 1...event.numberOfItems {
+                for i in 1..<(event.numberOfItems+1) {
                     event.setParamDescriptor(event.descriptorAtIndex(i)!, forKeyword: event.keywordForDescriptorAtIndex(i))
                 }
                 for key in [keySubjectAttr, enumConsiderations, enumConsidsAndIgnores] {

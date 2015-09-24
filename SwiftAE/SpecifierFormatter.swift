@@ -106,7 +106,7 @@ public class SpecifierFormatter {
         case .Name(let name):
             result += "(name: \(self.format(name)))"
         case .URL(let url):
-            result += "(url: \(self.format(url)))" // TO DO: if fileURL, use name:PATH representation instead? (would be more concise)
+            result += url.fileURL ? "(name: \(self.format(url.path!)))" : "(url: \(self.format(url)))"
         case .BundleIdentifier(let bundleID, let isDefault):
             result += isDefault ? "()" : "(bundleIdentifier: \(self.format(bundleID)))"
         case .ProcessIdentifier(let pid):

@@ -34,9 +34,9 @@ public func SwiftAEFormatAppleEvent(event: NSAppleEventDescriptor, useTerminolog
     if event.descriptorType != typeAppleEvent { // sanity check
         return "Can't format Apple event: wrong type: \(formatFourCharCodeString(event.descriptorType))."
     }
-    var appData: DynamicAppData
+    let appData: DynamicAppData
     do {
-        appData = try DynamicAppData.dynamicAppDataForAddress(event.attributeDescriptorForKeyword(keyAddressAttr)!, useTerminology: useTerminology) // TO DO: are there any cases where keyAddressArrr won't return correct desc? (also, double-check what reply event uses)
+        appData = try appDataForAppleEvent(event, useTerminology: useTerminology)
     } catch {
         return "Can't format Apple event: can't get terminology: \(error)"
     }
@@ -58,7 +58,28 @@ public func SwiftAEFormatAppleEvent(event: NSAppleEventDescriptor, useTerminolog
 }
 
 
-//
+/******************************************************************************/
+// cache previously parsed terminology for efficiency
+
+private let gCacheMaxLength = 10
+private var gCache = [(NSAppleEventDescriptor, TerminologyType, DynamicAppData)]()
+
+private func appDataForAppleEvent(event: NSAppleEventDescriptor, useTerminology: TerminologyType) throws -> DynamicAppData {
+    let addressDesc = event.attributeDescriptorForKeyword(keyAddressAttr)!
+    for (desc, terminologyType, appData) in gCache {
+        if desc.descriptorType == addressDesc.descriptorType && desc.data == addressDesc.data && terminologyType == useTerminology {
+            return appData
+        }
+    }
+    let appData = try DynamicAppData.dynamicAppDataForAddress(addressDesc, useTerminology: useTerminology) // TO DO: are there any cases where keyAddressArrr won't return correct desc? (also, double-check what reply event uses)
+    if gCache.count > gCacheMaxLength { gCache.removeFirst() } // TO DO: ideally this should trim least used, not longest cached
+    gCache.append((addressDesc, useTerminology, appData))
+    return appData
+}
+
+
+/******************************************************************************/
+// extend standard AppData to include terminology translation
 
 
 public class DynamicAppData: AppData {
@@ -187,7 +208,7 @@ public struct AppleEventDescription { // TO DO: split AE unpacking from CommandT
             }
         }
         if commandInfo == nil {
-            for i in 1...event.numberOfItems {
+            for i in 1..<(event.numberOfItems+1) {
                 let desc = event.descriptorAtIndex(i)!
                 //if ![keyDirectObject, keyAERequestedType].contains(desc.descriptorType) {
                 self.rawParameters[event.keywordForDescriptorAtIndex(i)] = try? appData.unpack(desc) ?? desc

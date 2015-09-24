@@ -4,6 +4,8 @@
 //
 //
 
+// TO DO: this is dog-slow on InDesign (4-5sec), probably due to extra NSData layer (pure Python AETE parser does it in 0.25sec)
+
 import Foundation
 
 
@@ -68,7 +70,7 @@ public class AETEParser: ApplicationTerminology {
                 throw TerminologyError("An error occurred while parsing AETE. \(error)")
             }
         case typeAEList:
-            for i in 1...descriptor.numberOfItems {
+            for i in 1..<(descriptor.numberOfItems+1) {
                 try self.parse(descriptor.descriptorAtIndex(i)!)
             }
         default:
