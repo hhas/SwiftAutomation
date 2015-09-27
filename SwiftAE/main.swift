@@ -10,10 +10,33 @@
 import Foundation
 
 
+let te = TextEdit(name:"TextEdit")
+
+
 do {
     
-    let te = TextEdit(name:"TextEdit")
+    
+    let c = te.appData
+    
+    do {
+        let seq = [1, 2, 3]
+        let desc = try c.pack(seq)
+        print(try c.unpack(desc, returnType: [String].self))
+    }
+    /*
+    do {
+        let seq = [AE.id:0, AE.point:4, AE.version:9]
+        let desc = try c.pack(seq)
+        print(try c.unpack(desc, returnType: [Symbol:Int].self))
+    }*/
+    
+} catch {print(error)}
 
+
+print("\n\n")
+
+do {
+    
 //print(TEDApp.documents[1].text)
 //print(te.documents[1].text)
 
@@ -21,7 +44,7 @@ do {
     //let result = try te.sendAppleEvent(kCoreEventClass, kAEOpenDocuments, [keyDirectObject:NSURL.fileURLWithPath("/Users/has/todos.txt")])
     //print(result)
 
-    
+    /*
     
     let result1 = try te.make(new: TED.document, withProperties: [TED.text: "Hello World!"])
         
@@ -39,16 +62,16 @@ do {
     // - using glue-defined terminology
     let result3 = try te.get(TEDApp.documents[1].name)
     print(result3)
+    */
     
-    
-    let result3a: Any = try te.documents[1].name.get() // convenience syntax for the above
-    print(result3a)
+//    let result3a: Any = try te.documents[1].name.get() // convenience syntax for the above
+//    print(result3a)
     
     
     
     // get name of every document (note: currently this example is only good for demo purposes: the `get` method result's dynamicType is Array<String>, but its static type is Any, and  Swift can't cast Any to Array<...> without falling over, so this result can't be used for anything useful; this is another reason why generic versions of commands are needed, but getting those to work right is a whole 'nother problem again...)
     
-    let result4 = try te.documents.name.get() 
+    let result4 = try te.documents.name.get() as [String]
     print(result4)
     
     
@@ -62,11 +85,11 @@ do {
 //    try te.documents.close(saving: TED.no) // close every document saving no
 
     
-//    let result5: String = try te.documents[1].name.get() // unpack get command's result as String; note: generic versions of commands are currently disabled as they don't yet work correctly
-//    print(result5)
+    let result5: String = try te.documents[1].name.get() // unpack get command's result as String; note: generic versions of commands are currently disabled as they don't yet work correctly
+    print(result5)
     
-//    let result6: [String] = try te.documents.name.get() // unpack get command's result as [String]; note: same as above (AppData currently can't unpack collections correctly due to crappy generics)
-//    print(result6)
+    let result6: [String] = try te.documents.name.get() // unpack get command's result as [String]; note: same as above (AppData currently can't unpack collections correctly due to crappy generics)
+    print(result6)
 
 } catch {
     print(error)
@@ -74,24 +97,51 @@ do {
 
 
 
-
-
-
-
 /*
+
+
 // test Swift<->AE type conversions
-let c = AEApplication.currentApplication().appData!
+let c = AEApplication.currentApplication().appData
 
 //let lst = try c.pack([1,2,3])
 //print(try c.unpack(lst))
 
-print(try c.pack("hello"))
-print(try c.pack(3))
-print(try c.pack(true))
+do {
+    /*
+//print(try c.pack("hello"))
+print("PACK AS BOOLEAN")
 
-NSLog("%08X", try c.pack(true).descriptorType) // 0x626F6F6C = typeBoolean
+print("\(try c.pack(true)) \(formatFourCharCodeString(try c.pack(true).descriptorType))")
+print("\(try c.pack(NSNumber(bool: true))) \(formatFourCharCodeString(try c.pack(NSNumber(bool: true)).descriptorType))")
+print("")
+print("PACK AS INTEGER")
+print("\(try c.pack(3)) \(formatFourCharCodeString(try c.pack(3).descriptorType))")
+print("\(try c.pack(NSNumber(int: 3))) \(formatFourCharCodeString(try c.pack(NSNumber(int: 3)).descriptorType))")
+print("")
+print("PACK AS DOUBLE")
+print("\(try c.pack(3.1)) \(formatFourCharCodeString(try c.pack(3.1).descriptorType))")
+print("\(try c.pack(NSNumber(double: 3.1))) \(formatFourCharCodeString(try c.pack(NSNumber(double: 3.1)).descriptorType))")
+*/
+    
+    do {
+        let seq = [1, 2, 3]
+        let desc = try c.pack(seq)
+        print(try c.unpack(desc, returnType: [Int].self))
+    }
+    do {
+        let seq = [AE.id:0, AE.point:4, AE.version:9]
+        let desc = try c.pack(seq)
+        print(try c.unpack(desc, returnType: [AESymbol:Int].self))
+    }
+    
+} catch {print(error)}
+    
 
-print(c)
+//NSLog("%08X", try c.pack(true).descriptorType) // 0x626F6F6C = typeBoolean
+
+//print(c)
+
+
 */
 
 
@@ -121,7 +171,7 @@ let result = try finder.appData!.sendAppleEvent("open", eventClass: kAECoreSuite
                                         sendOptions: nil,
                                         withTimeout: nil,
                                         considering: nil,
-                                        asType: Any.self)
+                                        returnType: Any.self)
 */
 
 /*

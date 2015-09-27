@@ -16,7 +16,7 @@ private let gUntargetedAppData = AppData(glueInfo: GlueInfo(insertionSpecifierTy
                                                             objectSpecifierType: «PREFIX»Object.self,
                                                             elementsSpecifierType: «PREFIX»Elements.self,
                                                             rootSpecifierType: «PREFIX»Root.self,
-                                                            symbolType: Symbol.self,
+                                                            symbolType: «PREFIX»Symbol.self,
                                                             formatter: gSpecifierFormatter))
 
 
@@ -71,7 +71,16 @@ extension «PREFIX»Command {«+COMMAND»
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [«+PARAMETER»
                     ("«NAME»", «CODE», «NAME»), // «CODE_STR»«-PARAMETER»
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+    }
+    public func «COMMAND_NAME»<T>(directParameter: Any = NoParameter,«+PARAMETER»
+            «NAME»: Any = NoParameter,«-PARAMETER»
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent("«COMMAND_NAME»", eventClass: «EVENT_CLASS», eventID: «EVENT_ID», // «EVENT_CLASS_STR»/«EVENT_ID_STR»
+                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [«+PARAMETER»
+                    ("«NAME»", «CODE», «NAME»), // «CODE_STR»«-PARAMETER»
+                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                withTimeout: withTimeout, considering: considering, returnType: T.self)
     }«-COMMAND»
 }
 

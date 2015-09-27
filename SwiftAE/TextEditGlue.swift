@@ -2,7 +2,7 @@
 //  TextEditGlue.swift
 //  TextEdit.app 1.11
 //  SwiftAE.framework 0.1.0
-//  `aeglue -r TextEdit.app`
+//  `aeglue -rd TextEdit.app`
 //
 
 
@@ -16,7 +16,7 @@ private let gUntargetedAppData = AppData(glueInfo: GlueInfo(insertionSpecifierTy
                                                             objectSpecifierType: TEDObject.self,
                                                             elementsSpecifierType: TEDElements.self,
                                                             rootSpecifierType: TEDRoot.self,
-                                                            symbolType: Symbol.self,
+                                                            symbolType: TEDSymbol.self,
                                                             formatter: gSpecifierFormatter))
 
 
@@ -104,44 +104,31 @@ public class TEDSymbol: Symbol {
         case 0x71647274: return self.boundingRectangle // "qdrt"
         case 0x70626e64: return self.bounds // "pbnd"
         case 0x63617365: return self.case_ // "case"
-        case 0x636d7472: return self.centimeters // "cmtr"
         case 0x63686120: return self.character // "cha "
         case 0x70636c73: return self.class_ // "pcls"
-        case 0x67636c69: return self.classInfo // "gcli"
         case 0x68636c62: return self.closeable // "hclb"
         case 0x6c77636c: return self.collating // "lwcl"
         case 0x636f6c72: return self.color // "colr"
         case 0x636c7274: return self.colorTable // "clrt"
         case 0x6c776370: return self.copies // "lwcp"
-        case 0x63636d74: return self.cubicCentimeters // "ccmt"
-        case 0x63666574: return self.cubicFeet // "cfet"
-        case 0x6375696e: return self.cubicInches // "cuin"
-        case 0x636d6574: return self.cubicMeters // "cmet"
-        case 0x63797264: return self.cubicYards // "cyrd"
         case 0x74646173: return self.dashStyle // "tdas"
         case 0x74647461: return self.data // "tdta"
         case 0x6c647420: return self.date // "ldt "
         case 0x64656320: return self.December // "dec "
         case 0x6465636d: return self.decimalStruct // "decm"
-        case 0x64656763: return self.degreesCelsius // "degc"
-        case 0x64656766: return self.degreesFahrenheit // "degf"
-        case 0x6465676b: return self.degreesKelvin // "degk"
         case 0x6c776474: return self.detailed // "lwdt"
         case 0x64696163: return self.diacriticals // "diac"
         case 0x646f6375: return self.document // "docu"
         case 0x636f6d70: return self.doubleInteger // "comp"
-        case 0x656c696e: return self.elementInfo // "elin"
         case 0x656e6373: return self.encodedString // "encs"
         case 0x6c776c70: return self.endingPage // "lwlp"
         case 0x656e756d: return self.enumerator // "enum"
         case 0x45505320: return self.EPSPicture // "EPS "
         case 0x6c776568: return self.errorHandling // "lweh"
-        case 0x6576696e: return self.eventInfo // "evin"
         case 0x65787061: return self.expansion // "expa"
         case 0x65787465: return self.extendedFloat // "exte"
         case 0x6661786e: return self.faxNumber // "faxn"
         case 0x66656220: return self.February // "feb "
-        case 0x66656574: return self.feet // "feet"
         case 0x6174666e: return self.fileName // "atfn"
         case 0x66737266: return self.fileRef // "fsrf"
         case 0x66737320: return self.fileSpecification // "fss "
@@ -155,13 +142,10 @@ public class TEDSymbol: Symbol {
         case 0x666f6e74: return self.font // "font"
         case 0x66726920: return self.Friday // "fri "
         case 0x70697366: return self.frontmost // "pisf"
-        case 0x67616c6e: return self.gallons // "galn"
         case 0x47494666: return self.GIFPicture // "GIFf"
-        case 0x6772616d: return self.grams // "gram"
         case 0x63677478: return self.graphicText // "cgtx"
         case 0x68797068: return self.hyphens // "hyph"
         case 0x49442020: return self.id // "ID  "
-        case 0x696e6368: return self.inches // "inch"
         case 0x70696478: return self.index // "pidx"
         case 0x6c6f6e67: return self.integer // "long"
         case 0x69747874: return self.internationalText // "itxt"
@@ -172,10 +156,7 @@ public class TEDSymbol: Symbol {
         case 0x6a756c20: return self.July // "jul "
         case 0x6a756e20: return self.June // "jun "
         case 0x6b706964: return self.kernelProcessId // "kpid"
-        case 0x6b67726d: return self.kilograms // "kgrm"
-        case 0x6b6d7472: return self.kilometers // "kmtr"
         case 0x6c697374: return self.list // "list"
-        case 0x6c697472: return self.liters // "litr"
         case 0x696e736c: return self.locationReference // "insl"
         case 0x6c667864: return self.longFixed // "lfxd"
         case 0x6c667074: return self.longFixedPoint // "lfpt"
@@ -187,8 +168,6 @@ public class TEDSymbol: Symbol {
         case 0x706f7274: return self.machPort // "port"
         case 0x6d617220: return self.March // "mar "
         case 0x6d617920: return self.May // "may "
-        case 0x6d657472: return self.meters // "metr"
-        case 0x6d696c65: return self.miles // "mile"
         case 0x69736d6e: return self.miniaturizable // "ismn"
         case 0x706d6e64: return self.miniaturized // "pmnd"
         case 0x6d736e67: return self.missingValue // "msng"
@@ -201,23 +180,18 @@ public class TEDSymbol: Symbol {
         case 0x6e756c6c: return self.null // "null"
         case 0x6e756d65: return self.numericStrings // "nume"
         case 0x6f637420: return self.October // "oct "
-        case 0x6f7a7320: return self.ounces // "ozs "
         case 0x6c776c61: return self.pagesAcross // "lwla"
         case 0x6c776c64: return self.pagesDown // "lwld"
         case 0x63706172: return self.paragraph // "cpar"
-        case 0x706d696e: return self.parameterInfo // "pmin"
         case 0x70707468: return self.path // "ppth"
         case 0x50494354: return self.PICTPicture // "PICT"
         case 0x74706d6d: return self.pixelMapRecord // "tpmm"
         case 0x51447074: return self.point // "QDpt"
-        case 0x6c627320: return self.pounds // "lbs "
         case 0x70736574: return self.printSettings // "pset"
         case 0x70736e20: return self.processSerialNumber // "psn "
         case 0x70414c4c: return self.properties // "pALL"
         case 0x70726f70: return self.property_ // "prop"
-        case 0x70696e66: return self.propertyInfo // "pinf"
         case 0x70756e63: return self.punctuation // "punc"
-        case 0x71727473: return self.quarts // "qrts"
         case 0x7265636f: return self.record // "reco"
         case 0x6f626a20: return self.reference // "obj "
         case 0x6c777174: return self.requestedPrintTime // "lwqt"
@@ -232,17 +206,11 @@ public class TEDSymbol: Symbol {
         case 0x73696e67: return self.shortFloat // "sing"
         case 0x73686f72: return self.shortInteger // "shor"
         case 0x7074737a: return self.size // "ptsz"
-        case 0x73716674: return self.squareFeet // "sqft"
-        case 0x73716b6d: return self.squareKilometers // "sqkm"
-        case 0x7371726d: return self.squareMeters // "sqrm"
-        case 0x73716d69: return self.squareMiles // "sqmi"
-        case 0x73717964: return self.squareYards // "sqyd"
         case 0x6c777374: return self.standard // "lwst"
         case 0x6c776670: return self.startingPage // "lwfp"
         case 0x54455854: return self.string // "TEXT"
         case 0x7374796c: return self.styledClipboardText // "styl"
         case 0x53545854: return self.styledText // "STXT"
-        case 0x7375696e: return self.suiteInfo // "suin"
         case 0x73756e20: return self.Sunday // "sun "
         case 0x74727072: return self.targetPrinter // "trpr"
         case 0x63747874: return self.text // "ctxt"
@@ -263,7 +231,6 @@ public class TEDSymbol: Symbol {
         case 0x6377696e: return self.window // "cwin"
         case 0x63776f72: return self.word // "cwor"
         case 0x70736374: return self.writingCode // "psct"
-        case 0x79617264: return self.yards // "yard"
         case 0x79657320: return self.yes // "yes "
         case 0x69737a6d: return self.zoomable // "iszm"
         case 0x707a756d: return self.zoomed // "pzum"
@@ -286,41 +253,28 @@ public class TEDSymbol: Symbol {
     public static let boolean = TEDSymbol(name: "boolean", code: 0x626f6f6c, type: typeType) // "bool"
     public static let boundingRectangle = TEDSymbol(name: "boundingRectangle", code: 0x71647274, type: typeType) // "qdrt"
     public static let bounds = TEDSymbol(name: "bounds", code: 0x70626e64, type: typeType) // "pbnd"
-    public static let centimeters = TEDSymbol(name: "centimeters", code: 0x636d7472, type: typeType) // "cmtr"
     public static let character = TEDSymbol(name: "character", code: 0x63686120, type: typeType) // "cha "
     public static let class_ = TEDSymbol(name: "class_", code: 0x70636c73, type: typeType) // "pcls"
-    public static let classInfo = TEDSymbol(name: "classInfo", code: 0x67636c69, type: typeType) // "gcli"
     public static let closeable = TEDSymbol(name: "closeable", code: 0x68636c62, type: typeType) // "hclb"
     public static let collating = TEDSymbol(name: "collating", code: 0x6c77636c, type: typeType) // "lwcl"
     public static let color = TEDSymbol(name: "color", code: 0x636f6c72, type: typeType) // "colr"
     public static let colorTable = TEDSymbol(name: "colorTable", code: 0x636c7274, type: typeType) // "clrt"
     public static let copies = TEDSymbol(name: "copies", code: 0x6c776370, type: typeType) // "lwcp"
-    public static let cubicCentimeters = TEDSymbol(name: "cubicCentimeters", code: 0x63636d74, type: typeType) // "ccmt"
-    public static let cubicFeet = TEDSymbol(name: "cubicFeet", code: 0x63666574, type: typeType) // "cfet"
-    public static let cubicInches = TEDSymbol(name: "cubicInches", code: 0x6375696e, type: typeType) // "cuin"
-    public static let cubicMeters = TEDSymbol(name: "cubicMeters", code: 0x636d6574, type: typeType) // "cmet"
-    public static let cubicYards = TEDSymbol(name: "cubicYards", code: 0x63797264, type: typeType) // "cyrd"
     public static let dashStyle = TEDSymbol(name: "dashStyle", code: 0x74646173, type: typeType) // "tdas"
     public static let data = TEDSymbol(name: "data", code: 0x74647461, type: typeType) // "tdta"
     public static let date = TEDSymbol(name: "date", code: 0x6c647420, type: typeType) // "ldt "
     public static let December = TEDSymbol(name: "December", code: 0x64656320, type: typeType) // "dec "
     public static let decimalStruct = TEDSymbol(name: "decimalStruct", code: 0x6465636d, type: typeType) // "decm"
-    public static let degreesCelsius = TEDSymbol(name: "degreesCelsius", code: 0x64656763, type: typeType) // "degc"
-    public static let degreesFahrenheit = TEDSymbol(name: "degreesFahrenheit", code: 0x64656766, type: typeType) // "degf"
-    public static let degreesKelvin = TEDSymbol(name: "degreesKelvin", code: 0x6465676b, type: typeType) // "degk"
     public static let document = TEDSymbol(name: "document", code: 0x646f6375, type: typeType) // "docu"
     public static let doubleInteger = TEDSymbol(name: "doubleInteger", code: 0x636f6d70, type: typeType) // "comp"
-    public static let elementInfo = TEDSymbol(name: "elementInfo", code: 0x656c696e, type: typeType) // "elin"
     public static let encodedString = TEDSymbol(name: "encodedString", code: 0x656e6373, type: typeType) // "encs"
     public static let endingPage = TEDSymbol(name: "endingPage", code: 0x6c776c70, type: typeType) // "lwlp"
     public static let enumerator = TEDSymbol(name: "enumerator", code: 0x656e756d, type: typeType) // "enum"
     public static let EPSPicture = TEDSymbol(name: "EPSPicture", code: 0x45505320, type: typeType) // "EPS "
     public static let errorHandling = TEDSymbol(name: "errorHandling", code: 0x6c776568, type: typeType) // "lweh"
-    public static let eventInfo = TEDSymbol(name: "eventInfo", code: 0x6576696e, type: typeType) // "evin"
     public static let extendedFloat = TEDSymbol(name: "extendedFloat", code: 0x65787465, type: typeType) // "exte"
     public static let faxNumber = TEDSymbol(name: "faxNumber", code: 0x6661786e, type: typeType) // "faxn"
     public static let February = TEDSymbol(name: "February", code: 0x66656220, type: typeType) // "feb "
-    public static let feet = TEDSymbol(name: "feet", code: 0x66656574, type: typeType) // "feet"
     public static let fileName = TEDSymbol(name: "fileName", code: 0x6174666e, type: typeType) // "atfn"
     public static let fileRef = TEDSymbol(name: "fileRef", code: 0x66737266, type: typeType) // "fsrf"
     public static let fileSpecification = TEDSymbol(name: "fileSpecification", code: 0x66737320, type: typeType) // "fss "
@@ -334,12 +288,9 @@ public class TEDSymbol: Symbol {
     public static let font = TEDSymbol(name: "font", code: 0x666f6e74, type: typeType) // "font"
     public static let Friday = TEDSymbol(name: "Friday", code: 0x66726920, type: typeType) // "fri "
     public static let frontmost = TEDSymbol(name: "frontmost", code: 0x70697366, type: typeType) // "pisf"
-    public static let gallons = TEDSymbol(name: "gallons", code: 0x67616c6e, type: typeType) // "galn"
     public static let GIFPicture = TEDSymbol(name: "GIFPicture", code: 0x47494666, type: typeType) // "GIFf"
-    public static let grams = TEDSymbol(name: "grams", code: 0x6772616d, type: typeType) // "gram"
     public static let graphicText = TEDSymbol(name: "graphicText", code: 0x63677478, type: typeType) // "cgtx"
     public static let id = TEDSymbol(name: "id", code: 0x49442020, type: typeType) // "ID  "
-    public static let inches = TEDSymbol(name: "inches", code: 0x696e6368, type: typeType) // "inch"
     public static let index = TEDSymbol(name: "index", code: 0x70696478, type: typeType) // "pidx"
     public static let integer = TEDSymbol(name: "integer", code: 0x6c6f6e67, type: typeType) // "long"
     public static let internationalText = TEDSymbol(name: "internationalText", code: 0x69747874, type: typeType) // "itxt"
@@ -350,10 +301,7 @@ public class TEDSymbol: Symbol {
     public static let July = TEDSymbol(name: "July", code: 0x6a756c20, type: typeType) // "jul "
     public static let June = TEDSymbol(name: "June", code: 0x6a756e20, type: typeType) // "jun "
     public static let kernelProcessId = TEDSymbol(name: "kernelProcessId", code: 0x6b706964, type: typeType) // "kpid"
-    public static let kilograms = TEDSymbol(name: "kilograms", code: 0x6b67726d, type: typeType) // "kgrm"
-    public static let kilometers = TEDSymbol(name: "kilometers", code: 0x6b6d7472, type: typeType) // "kmtr"
     public static let list = TEDSymbol(name: "list", code: 0x6c697374, type: typeType) // "list"
-    public static let liters = TEDSymbol(name: "liters", code: 0x6c697472, type: typeType) // "litr"
     public static let locationReference = TEDSymbol(name: "locationReference", code: 0x696e736c, type: typeType) // "insl"
     public static let longFixed = TEDSymbol(name: "longFixed", code: 0x6c667864, type: typeType) // "lfxd"
     public static let longFixedPoint = TEDSymbol(name: "longFixedPoint", code: 0x6c667074, type: typeType) // "lfpt"
@@ -365,8 +313,6 @@ public class TEDSymbol: Symbol {
     public static let machPort = TEDSymbol(name: "machPort", code: 0x706f7274, type: typeType) // "port"
     public static let March = TEDSymbol(name: "March", code: 0x6d617220, type: typeType) // "mar "
     public static let May = TEDSymbol(name: "May", code: 0x6d617920, type: typeType) // "may "
-    public static let meters = TEDSymbol(name: "meters", code: 0x6d657472, type: typeType) // "metr"
-    public static let miles = TEDSymbol(name: "miles", code: 0x6d696c65, type: typeType) // "mile"
     public static let miniaturizable = TEDSymbol(name: "miniaturizable", code: 0x69736d6e, type: typeType) // "ismn"
     public static let miniaturized = TEDSymbol(name: "miniaturized", code: 0x706d6e64, type: typeType) // "pmnd"
     public static let missingValue = TEDSymbol(name: "missingValue", code: 0x6d736e67, type: typeType) // "msng"
@@ -377,22 +323,17 @@ public class TEDSymbol: Symbol {
     public static let November = TEDSymbol(name: "November", code: 0x6e6f7620, type: typeType) // "nov "
     public static let null = TEDSymbol(name: "null", code: 0x6e756c6c, type: typeType) // "null"
     public static let October = TEDSymbol(name: "October", code: 0x6f637420, type: typeType) // "oct "
-    public static let ounces = TEDSymbol(name: "ounces", code: 0x6f7a7320, type: typeType) // "ozs "
     public static let pagesAcross = TEDSymbol(name: "pagesAcross", code: 0x6c776c61, type: typeType) // "lwla"
     public static let pagesDown = TEDSymbol(name: "pagesDown", code: 0x6c776c64, type: typeType) // "lwld"
     public static let paragraph = TEDSymbol(name: "paragraph", code: 0x63706172, type: typeType) // "cpar"
-    public static let parameterInfo = TEDSymbol(name: "parameterInfo", code: 0x706d696e, type: typeType) // "pmin"
     public static let path = TEDSymbol(name: "path", code: 0x70707468, type: typeType) // "ppth"
     public static let PICTPicture = TEDSymbol(name: "PICTPicture", code: 0x50494354, type: typeType) // "PICT"
     public static let pixelMapRecord = TEDSymbol(name: "pixelMapRecord", code: 0x74706d6d, type: typeType) // "tpmm"
     public static let point = TEDSymbol(name: "point", code: 0x51447074, type: typeType) // "QDpt"
-    public static let pounds = TEDSymbol(name: "pounds", code: 0x6c627320, type: typeType) // "lbs "
     public static let printSettings = TEDSymbol(name: "printSettings", code: 0x70736574, type: typeType) // "pset"
     public static let processSerialNumber = TEDSymbol(name: "processSerialNumber", code: 0x70736e20, type: typeType) // "psn "
     public static let properties = TEDSymbol(name: "properties", code: 0x70414c4c, type: typeType) // "pALL"
     public static let property_ = TEDSymbol(name: "property_", code: 0x70726f70, type: typeType) // "prop"
-    public static let propertyInfo = TEDSymbol(name: "propertyInfo", code: 0x70696e66, type: typeType) // "pinf"
-    public static let quarts = TEDSymbol(name: "quarts", code: 0x71727473, type: typeType) // "qrts"
     public static let record = TEDSymbol(name: "record", code: 0x7265636f, type: typeType) // "reco"
     public static let reference = TEDSymbol(name: "reference", code: 0x6f626a20, type: typeType) // "obj "
     public static let requestedPrintTime = TEDSymbol(name: "requestedPrintTime", code: 0x6c777174, type: typeType) // "lwqt"
@@ -407,16 +348,10 @@ public class TEDSymbol: Symbol {
     public static let shortFloat = TEDSymbol(name: "shortFloat", code: 0x73696e67, type: typeType) // "sing"
     public static let shortInteger = TEDSymbol(name: "shortInteger", code: 0x73686f72, type: typeType) // "shor"
     public static let size = TEDSymbol(name: "size", code: 0x7074737a, type: typeType) // "ptsz"
-    public static let squareFeet = TEDSymbol(name: "squareFeet", code: 0x73716674, type: typeType) // "sqft"
-    public static let squareKilometers = TEDSymbol(name: "squareKilometers", code: 0x73716b6d, type: typeType) // "sqkm"
-    public static let squareMeters = TEDSymbol(name: "squareMeters", code: 0x7371726d, type: typeType) // "sqrm"
-    public static let squareMiles = TEDSymbol(name: "squareMiles", code: 0x73716d69, type: typeType) // "sqmi"
-    public static let squareYards = TEDSymbol(name: "squareYards", code: 0x73717964, type: typeType) // "sqyd"
     public static let startingPage = TEDSymbol(name: "startingPage", code: 0x6c776670, type: typeType) // "lwfp"
     public static let string = TEDSymbol(name: "string", code: 0x54455854, type: typeType) // "TEXT"
     public static let styledClipboardText = TEDSymbol(name: "styledClipboardText", code: 0x7374796c, type: typeType) // "styl"
     public static let styledText = TEDSymbol(name: "styledText", code: 0x53545854, type: typeType) // "STXT"
-    public static let suiteInfo = TEDSymbol(name: "suiteInfo", code: 0x7375696e, type: typeType) // "suin"
     public static let Sunday = TEDSymbol(name: "Sunday", code: 0x73756e20, type: typeType) // "sun "
     public static let targetPrinter = TEDSymbol(name: "targetPrinter", code: 0x74727072, type: typeType) // "trpr"
     public static let text = TEDSymbol(name: "text", code: 0x63747874, type: typeType) // "ctxt"
@@ -436,7 +371,6 @@ public class TEDSymbol: Symbol {
     public static let window = TEDSymbol(name: "window", code: 0x6377696e, type: typeType) // "cwin"
     public static let word = TEDSymbol(name: "word", code: 0x63776f72, type: typeType) // "cwor"
     public static let writingCode = TEDSymbol(name: "writingCode", code: 0x70736374, type: typeType) // "psct"
-    public static let yards = TEDSymbol(name: "yards", code: 0x79617264, type: typeType) // "yard"
     public static let zoomable = TEDSymbol(name: "zoomable", code: 0x69737a6d, type: typeType) // "iszm"
     public static let zoomed = TEDSymbol(name: "zoomed", code: 0x707a756d, type: typeType) // "pzum"
 
@@ -470,7 +404,14 @@ extension TEDCommand {
         return try self.appData.sendAppleEvent("activate", eventClass: 0x6d697363, eventID: 0x61637476, // "misc"/"actv"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+    }
+    public func activate<T>(directParameter: Any = NoParameter,
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent("activate", eventClass: 0x6d697363, eventID: 0x61637476, // "misc"/"actv"
+                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     public func close(directParameter: Any = NoParameter,
             saving: Any = NoParameter,
@@ -481,7 +422,18 @@ extension TEDCommand {
                     ("saving", 0x7361766f, saving), // "savo"
                     ("savingIn", 0x6b66696c, savingIn), // "kfil"
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+    }
+    public func close<T>(directParameter: Any = NoParameter,
+            saving: Any = NoParameter,
+            savingIn: Any = NoParameter,
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent("close", eventClass: 0x636f7265, eventID: 0x636c6f73, // "core"/"clos"
+                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                    ("saving", 0x7361766f, saving), // "savo"
+                    ("savingIn", 0x6b66696c, savingIn), // "kfil"
+                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     public func count(directParameter: Any = NoParameter,
             each: Any = NoParameter,
@@ -490,14 +442,30 @@ extension TEDCommand {
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("each", 0x6b6f636c, each), // "kocl"
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+    }
+    public func count<T>(directParameter: Any = NoParameter,
+            each: Any = NoParameter,
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent("count", eventClass: 0x636f7265, eventID: 0x636e7465, // "core"/"cnte"
+                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                    ("each", 0x6b6f636c, each), // "kocl"
+                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     public func delete(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("delete", eventClass: 0x636f7265, eventID: 0x64656c6f, // "core"/"delo"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+    }
+    public func delete<T>(directParameter: Any = NoParameter,
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent("delete", eventClass: 0x636f7265, eventID: 0x64656c6f, // "core"/"delo"
+                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     public func duplicate(directParameter: Any = NoParameter,
             to: Any = NoParameter,
@@ -508,28 +476,60 @@ extension TEDCommand {
                     ("to", 0x696e7368, to), // "insh"
                     ("withProperties", 0x70726474, withProperties), // "prdt"
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+    }
+    public func duplicate<T>(directParameter: Any = NoParameter,
+            to: Any = NoParameter,
+            withProperties: Any = NoParameter,
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent("duplicate", eventClass: 0x636f7265, eventID: 0x636c6f6e, // "core"/"clon"
+                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                    ("to", 0x696e7368, to), // "insh"
+                    ("withProperties", 0x70726474, withProperties), // "prdt"
+                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     public func exists(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("exists", eventClass: 0x636f7265, eventID: 0x646f6578, // "core"/"doex"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+    }
+    public func exists<T>(directParameter: Any = NoParameter,
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent("exists", eventClass: 0x636f7265, eventID: 0x646f6578, // "core"/"doex"
+                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     public func get(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("get", eventClass: 0x636f7265, eventID: 0x67657464, // "core"/"getd"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+    }
+    public func get<T>(directParameter: Any = NoParameter,
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent("get", eventClass: 0x636f7265, eventID: 0x67657464, // "core"/"getd"
+                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     public func launch(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("launch", eventClass: 0x61736372, eventID: 0x6e6f6f70, // "ascr"/"noop"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+    }
+    public func launch<T>(directParameter: Any = NoParameter,
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent("launch", eventClass: 0x61736372, eventID: 0x6e6f6f70, // "ascr"/"noop"
+                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     public func make(directParameter: Any = NoParameter,
             new: Any = NoParameter,
@@ -544,7 +544,22 @@ extension TEDCommand {
                     ("withData", 0x64617461, withData), // "data"
                     ("withProperties", 0x70726474, withProperties), // "prdt"
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+    }
+    public func make<T>(directParameter: Any = NoParameter,
+            new: Any = NoParameter,
+            at: Any = NoParameter,
+            withData: Any = NoParameter,
+            withProperties: Any = NoParameter,
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent("make", eventClass: 0x636f7265, eventID: 0x6372656c, // "core"/"crel"
+                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                    ("new", 0x6b6f636c, new), // "kocl"
+                    ("at", 0x696e7368, at), // "insh"
+                    ("withData", 0x64617461, withData), // "data"
+                    ("withProperties", 0x70726474, withProperties), // "prdt"
+                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     public func move(directParameter: Any = NoParameter,
             to: Any = NoParameter,
@@ -553,14 +568,30 @@ extension TEDCommand {
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("to", 0x696e7368, to), // "insh"
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+    }
+    public func move<T>(directParameter: Any = NoParameter,
+            to: Any = NoParameter,
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent("move", eventClass: 0x636f7265, eventID: 0x6d6f7665, // "core"/"move"
+                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                    ("to", 0x696e7368, to), // "insh"
+                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     public func open(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("open", eventClass: 0x61657674, eventID: 0x6f646f63, // "aevt"/"odoc"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+    }
+    public func open<T>(directParameter: Any = NoParameter,
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent("open", eventClass: 0x61657674, eventID: 0x6f646f63, // "aevt"/"odoc"
+                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     public func openLocation(directParameter: Any = NoParameter,
             window: Any = NoParameter,
@@ -569,7 +600,16 @@ extension TEDCommand {
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("window", 0x57494e44, window), // "WIND"
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+    }
+    public func openLocation<T>(directParameter: Any = NoParameter,
+            window: Any = NoParameter,
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent("openLocation", eventClass: 0x4755524c, eventID: 0x4755524c, // "GURL"/"GURL"
+                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                    ("window", 0x57494e44, window), // "WIND"
+                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     public func print(directParameter: Any = NoParameter,
             printDialog: Any = NoParameter,
@@ -580,7 +620,18 @@ extension TEDCommand {
                     ("printDialog", 0x70646c67, printDialog), // "pdlg"
                     ("withProperties", 0x70726474, withProperties), // "prdt"
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+    }
+    public func print<T>(directParameter: Any = NoParameter,
+            printDialog: Any = NoParameter,
+            withProperties: Any = NoParameter,
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent("print", eventClass: 0x61657674, eventID: 0x70646f63, // "aevt"/"pdoc"
+                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                    ("printDialog", 0x70646c67, printDialog), // "pdlg"
+                    ("withProperties", 0x70726474, withProperties), // "prdt"
+                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     public func quit(directParameter: Any = NoParameter,
             saving: Any = NoParameter,
@@ -589,21 +640,44 @@ extension TEDCommand {
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("saving", 0x7361766f, saving), // "savo"
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+    }
+    public func quit<T>(directParameter: Any = NoParameter,
+            saving: Any = NoParameter,
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent("quit", eventClass: 0x61657674, eventID: 0x71756974, // "aevt"/"quit"
+                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                    ("saving", 0x7361766f, saving), // "savo"
+                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     public func reopen(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("reopen", eventClass: 0x61657674, eventID: 0x72617070, // "aevt"/"rapp"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+    }
+    public func reopen<T>(directParameter: Any = NoParameter,
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent("reopen", eventClass: 0x61657674, eventID: 0x72617070, // "aevt"/"rapp"
+                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     public func run(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("run", eventClass: 0x61657674, eventID: 0x6f617070, // "aevt"/"oapp"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+    }
+    public func run<T>(directParameter: Any = NoParameter,
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent("run", eventClass: 0x61657674, eventID: 0x6f617070, // "aevt"/"oapp"
+                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     public func save(directParameter: Any = NoParameter,
             as_: Any = NoParameter,
@@ -614,7 +688,18 @@ extension TEDCommand {
                     ("as_", 0x666c7470, as_), // "fltp"
                     ("in_", 0x6b66696c, in_), // "kfil"
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+    }
+    public func save<T>(directParameter: Any = NoParameter,
+            as_: Any = NoParameter,
+            in_: Any = NoParameter,
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent("save", eventClass: 0x636f7265, eventID: 0x73617665, // "core"/"save"
+                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                    ("as_", 0x666c7470, as_), // "fltp"
+                    ("in_", 0x6b66696c, in_), // "kfil"
+                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     public func set(directParameter: Any = NoParameter,
             to: Any = NoParameter,
@@ -623,7 +708,16 @@ extension TEDCommand {
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("to", 0x64617461, to), // "data"
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+    }
+    public func set<T>(directParameter: Any = NoParameter,
+            to: Any = NoParameter,
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent("set", eventClass: 0x636f7265, eventID: 0x73657464, // "core"/"setd"
+                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                    ("to", 0x64617461, to), // "data"
+                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
 }
 

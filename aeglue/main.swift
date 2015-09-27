@@ -71,7 +71,7 @@ public var errStream = StderrStream()
 
 var applicationClassName: String?
 var classNamePrefix: String?
-var defaultTermsOnly = false
+var writeDefaultGlue = false
 var canOverwrite = false
 var useSDEF = false
 var applicationURLs: [NSURL?] = []
@@ -94,7 +94,7 @@ let gValueOptions = "onp".characters // must contain all options that have value
 while let opt = optArgs.popLast() {
     switch(opt) {
     case "-d":
-        defaultTermsOnly = true
+        writeDefaultGlue = true
     case "-h":
         print(gHelp, toStream: &errStream)
         exit(0)
@@ -167,7 +167,7 @@ while let arg = applicationPaths.popLast() { // get application name[s] (require
     applicationURLs.append(applicationURL)
     foundOpts.removeLast()
 }
-if defaultTermsOnly {
+if writeDefaultGlue {
     applicationURLs.append(nil)
 } else if applicationURLs.count == 0 {
         print("No application specified.", toStream: &errStream)
@@ -180,7 +180,7 @@ if defaultTermsOnly {
 for applicationURL in applicationURLs {
     let glueSpec = GlueSpec(applicationURL: applicationURL, classNamePrefix: classNamePrefix,
                             applicationClassName: applicationClassName, useSDEF: useSDEF)
-    let shellCommand = "aeglue " + (foundOpts + [applicationURL!.lastPathComponent!]).joinWithSeparator(" ")
+    let shellCommand = "aeglue " + (foundOpts + (applicationURL == nil ? [] : [applicationURL!.lastPathComponent!])).joinWithSeparator(" ")
     let glueFileName = "\(glueSpec.applicationClassName)Glue.swift"
     // generate SwiftAE glue file
     do {

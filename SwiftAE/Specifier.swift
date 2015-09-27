@@ -98,7 +98,7 @@ public class Specifier: Selector, SpecifierProtocol {
         }
         do {
             let parentDesc = cachedDesc.descriptorForKeyword(keyAEContainer)!
-            self._parentSelector = try appData.unpack(parentDesc, asType: Specifier.self)
+            self._parentSelector = try appData.unpack(parentDesc, returnType: Specifier.self)
             self._parentSelector!.unpackParentSpecifiers()
         } catch {
             print("Deferred unpack parent specifier failed: \(error)") // TO DO: DEBUG; delete
@@ -115,7 +115,7 @@ public class Specifier: Selector, SpecifierProtocol {
                            withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(eventClass, eventID: eventID, parentSpecifier: self,
                                           parameters: parameters, waitReply: waitReply, sendOptions: sendOptions,
-                                          withTimeout: withTimeout, considering: considering, asType: T.self)
+                                          withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     
     func sendAppleEvent<T>(eventClass: String, _ eventID: String, _ parameters: [String:Any] = [:],
@@ -125,7 +125,7 @@ public class Specifier: Selector, SpecifierProtocol {
         for (k, v) in parameters { params[FourCharCodeUnsafe(k)] = v }
         return try self.appData.sendAppleEvent(FourCharCodeUnsafe(eventClass), eventID: FourCharCodeUnsafe(eventID), parentSpecifier: self,
                                           parameters: params, waitReply: waitReply, sendOptions: sendOptions,
-                                          withTimeout: withTimeout, considering: considering, asType: T.self)
+                                          withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     
     // non-generic version of the above used when T isn't already specified/inferrable, in which case Any! is used // TO DO: use 'Any' or 'Any!'?
@@ -134,7 +134,7 @@ public class Specifier: Selector, SpecifierProtocol {
                         withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(eventClass, eventID: eventID, parentSpecifier: self,
                                           parameters: parameters, waitReply: waitReply, sendOptions: sendOptions,
-                                          withTimeout: withTimeout, considering: considering, asType: Any.self)
+                                          withTimeout: withTimeout, considering: considering, returnType: Any.self)
     }
     
     func sendAppleEvent(eventClass: String, _ eventID: String, _ parameters: [String:Any] = [:],
@@ -144,7 +144,7 @@ public class Specifier: Selector, SpecifierProtocol {
         for (k, v) in parameters { params[FourCharCodeUnsafe(k)] = v }
         return try self.appData.sendAppleEvent(FourCharCodeUnsafe(eventClass), eventID: FourCharCodeUnsafe(eventID), parentSpecifier: self,
                                           parameters: params, waitReply: waitReply, sendOptions: sendOptions,
-                                          withTimeout: withTimeout, considering: considering, asType: Any.self)
+                                          withTimeout: withTimeout, considering: considering, returnType: Any.self)
     }
 }
 

@@ -16,7 +16,7 @@ private let gUntargetedAppData = AppData(glueInfo: GlueInfo(insertionSpecifierTy
                                                             objectSpecifierType: ITUObject.self,
                                                             elementsSpecifierType: ITUElements.self,
                                                             rootSpecifierType: ITURoot.self,
-                                                            symbolType: Symbol.self,
+                                                            symbolType: ITUSymbol.self,
                                                             formatter: gSpecifierFormatter))
 
 
@@ -247,9 +247,7 @@ public class ITUSymbol: Symbol {
         case 0x63617365: return self.case_ // "case"
         case 0x70436174: return self.category // "pCat"
         case 0x6b434469: return self.cdInsert // "kCDi"
-        case 0x636d7472: return self.centimeters // "cmtr"
         case 0x70636c73: return self.class_ // "pcls"
-        case 0x67636c69: return self.classInfo // "gcli"
         case 0x68636c62: return self.closeable // "hclb"
         case 0x70575368: return self.collapseable // "pWSh"
         case 0x77736864: return self.collapsed // "wshd"
@@ -262,11 +260,6 @@ public class ITUSymbol: Symbol {
         case 0x6b527443: return self.computed // "kRtC"
         case 0x63746e72: return self.container // "ctnr"
         case 0x6c776370: return self.copies // "lwcp"
-        case 0x63636d74: return self.cubicCentimeters // "ccmt"
-        case 0x63666574: return self.cubicFeet // "cfet"
-        case 0x6375696e: return self.cubicInches // "cuin"
-        case 0x636d6574: return self.cubicMeters // "cmet"
-        case 0x63797264: return self.cubicYards // "cyrd"
         case 0x70456e63: return self.currentEncoder // "pEnc"
         case 0x70455150: return self.currentEQPreset // "pEQP"
         case 0x70506c61: return self.currentPlaylist // "pPla"
@@ -281,9 +274,6 @@ public class ITUSymbol: Symbol {
         case 0x70416464: return self.dateAdded // "pAdd"
         case 0x64656320: return self.December // "dec "
         case 0x6465636d: return self.decimalStruct // "decm"
-        case 0x64656763: return self.degreesCelsius // "degc"
-        case 0x64656766: return self.degreesFahrenheit // "degf"
-        case 0x6465676b: return self.degreesKelvin // "degk"
         case 0x70446573: return self.description // "pDes"
         case 0x6c776474: return self.detailed // "lwdt"
         case 0x6b446576: return self.device // "kDev"
@@ -296,7 +286,6 @@ public class ITUSymbol: Symbol {
         case 0x636f6d70: return self.doubleInteger // "comp"
         case 0x70446c41: return self.downloaded // "pDlA"
         case 0x70447572: return self.duration // "pDur"
-        case 0x656c696e: return self.elementInfo // "elin"
         case 0x656e626c: return self.enabled // "enbl"
         case 0x656e6373: return self.encodedString // "encs"
         case 0x63456e63: return self.encoder // "cEnc"
@@ -310,13 +299,11 @@ public class ITUSymbol: Symbol {
         case 0x63455150: return self.EQPreset // "cEQP"
         case 0x63455157: return self.EQWindow // "cEQW"
         case 0x6c776568: return self.errorHandling // "lweh"
-        case 0x6576696e: return self.eventInfo // "evin"
         case 0x65787061: return self.expansion // "expa"
         case 0x65787465: return self.extendedFloat // "exte"
         case 0x6b505346: return self.fastForwarding // "kPSF"
         case 0x6661786e: return self.faxNumber // "faxn"
         case 0x66656220: return self.February // "feb "
-        case 0x66656574: return self.feet // "feet"
         case 0x66737266: return self.fileRef // "fsrf"
         case 0x66737320: return self.fileSpecification // "fss "
         case 0x63466c54: return self.fileTrack // "cFlT"
@@ -335,17 +322,14 @@ public class ITUSymbol: Symbol {
         case 0x66726920: return self.Friday // "fri "
         case 0x70697366: return self.frontmost // "pisf"
         case 0x70465363: return self.fullScreen // "pFSc"
-        case 0x67616c6e: return self.gallons // "galn"
         case 0x7047706c: return self.gapless // "pGpl"
         case 0x6b537047: return self.Genius // "kSpG"
         case 0x7047656e: return self.genre // "pGen"
         case 0x47494666: return self.GIFPicture // "GIFf"
-        case 0x6772616d: return self.grams // "gram"
         case 0x63677478: return self.graphicText // "cgtx"
         case 0x70477270: return self.grouping // "pGrp"
         case 0x68797068: return self.hyphens // "hyph"
         case 0x49442020: return self.id // "ID  "
-        case 0x696e6368: return self.inches // "inch"
         case 0x70696478: return self.index // "pidx"
         case 0x6c6f6e67: return self.integer // "long"
         case 0x69747874: return self.internationalText // "itxt"
@@ -358,15 +342,12 @@ public class ITUSymbol: Symbol {
         case 0x6a756c20: return self.July // "jul "
         case 0x6a756e20: return self.June // "jun "
         case 0x6b706964: return self.kernelProcessId // "kpid"
-        case 0x6b67726d: return self.kilograms // "kgrm"
-        case 0x6b6d7472: return self.kilometers // "kmtr"
         case 0x704b6e64: return self.kind // "pKnd"
         case 0x6b56534c: return self.large // "kVSL"
-        case 0x6b53704c: return self.Library // "kSpL"
         case 0x6b4c6962: return self.library // "kLib"
+        case 0x6b53704c: return self.Library // "kSpL"
         case 0x634c6950: return self.libraryPlaylist // "cLiP"
         case 0x6c697374: return self.list // "list"
-        case 0x6c697472: return self.liters // "litr"
         case 0x704c6f63: return self.location // "pLoc"
         case 0x696e736c: return self.locationReference // "insl"
         case 0x704c6473: return self.longDescription // "pLds"
@@ -382,8 +363,6 @@ public class ITUSymbol: Symbol {
         case 0x6d617220: return self.March // "mar "
         case 0x6d617920: return self.May // "may "
         case 0x6b56534d: return self.medium // "kVSM"
-        case 0x6d657472: return self.meters // "metr"
-        case 0x6d696c65: return self.miles // "mile"
         case 0x704d696e: return self.minimized // "pMin"
         case 0x6d736e67: return self.missingValue // "msng"
         case 0x704d6f64: return self.modifiable // "pMod"
@@ -404,10 +383,8 @@ public class ITUSymbol: Symbol {
         case 0x6f637420: return self.October // "oct "
         case 0x6b52704f: return self.off // "kRpO"
         case 0x6b527031: return self.one // "kRp1"
-        case 0x6f7a7320: return self.ounces // "ozs "
         case 0x6c776c61: return self.pagesAcross // "lwla"
         case 0x6c776c64: return self.pagesDown // "lwld"
-        case 0x706d696e: return self.parameterInfo // "pmin"
         case 0x70506c50: return self.parent // "pPlP"
         case 0x6b537053: return self.PartyShuffle // "kSpS"
         case 0x6b505370: return self.paused // "kPSp"
@@ -425,23 +402,20 @@ public class ITUSymbol: Symbol {
         case 0x6b537050: return self.Podcasts // "kSpP"
         case 0x51447074: return self.point // "QDpt"
         case 0x70706f73: return self.position // "ppos"
-        case 0x6c627320: return self.pounds // "lbs "
         case 0x70455141: return self.preamp // "pEQA"
         case 0x6c777066: return self.printerFeatures // "lwpf"
         case 0x70736574: return self.printSettings // "pset"
         case 0x70736e20: return self.processSerialNumber // "psn "
         case 0x70414c4c: return self.properties // "pALL"
         case 0x70726f70: return self.property_ // "prop"
-        case 0x70696e66: return self.propertyInfo // "pinf"
         case 0x70756e63: return self.punctuation // "punc"
         case 0x6b53704d: return self.PurchasedMusic // "kSpM"
-        case 0x71727473: return self.quarts // "qrts"
         case 0x6b54756e: return self.radioTuner // "kTun"
         case 0x63525450: return self.radioTunerPlaylist // "cRTP"
         case 0x70527465: return self.rating // "pRte"
         case 0x7052746b: return self.ratingKind // "pRtk"
-        case 0x70526177: return self.rawData // "pRaw"
         case 0x74647461: return self.rawData // "tdta"
+        case 0x70526177: return self.rawData // "pRaw"
         case 0x7265636f: return self.record // "reco"
         case 0x6f626a20: return self.reference // "obj "
         case 0x70526c44: return self.releaseDate // "pRlD"
@@ -482,11 +456,6 @@ public class ITUSymbol: Symbol {
         case 0x70566f6c: return self.soundVolume // "pVol"
         case 0x63537263: return self.source // "cSrc"
         case 0x7053704b: return self.specialKind // "pSpK"
-        case 0x73716674: return self.squareFeet // "sqft"
-        case 0x73716b6d: return self.squareKilometers // "sqkm"
-        case 0x7371726d: return self.squareMeters // "sqrm"
-        case 0x73716d69: return self.squareMiles // "sqmi"
-        case 0x73717964: return self.squareYards // "sqyd"
         case 0x6c777374: return self.standard // "lwst"
         case 0x70537472: return self.start // "pStr"
         case 0x6c776670: return self.startingPage // "lwfp"
@@ -494,7 +463,6 @@ public class ITUSymbol: Symbol {
         case 0x54455854: return self.string // "TEXT"
         case 0x7374796c: return self.styledClipboardText // "styl"
         case 0x53545854: return self.styledText // "STXT"
-        case 0x7375696e: return self.suiteInfo // "suin"
         case 0x73756e20: return self.Sunday // "sun "
         case 0x74727072: return self.targetPrinter // "trpr"
         case 0x74737479: return self.textStyleInfo // "tsty"
@@ -531,7 +499,6 @@ public class ITUSymbol: Symbol {
         case 0x77686974: return self.whitespace // "whit"
         case 0x6377696e: return self.window // "cwin"
         case 0x70736374: return self.writingCode // "psct"
-        case 0x79617264: return self.yards // "yard"
         case 0x70597220: return self.year // "pYr "
         case 0x79657320: return self.yes // "yes "
         case 0x69737a6d: return self.zoomable // "iszm"
@@ -579,9 +546,7 @@ public class ITUSymbol: Symbol {
     public static let browserWindow = ITUSymbol(name: "browserWindow", code: 0x63427257, type: typeType) // "cBrW"
     public static let capacity = ITUSymbol(name: "capacity", code: 0x63617061, type: typeType) // "capa"
     public static let category = ITUSymbol(name: "category", code: 0x70436174, type: typeType) // "pCat"
-    public static let centimeters = ITUSymbol(name: "centimeters", code: 0x636d7472, type: typeType) // "cmtr"
     public static let class_ = ITUSymbol(name: "class_", code: 0x70636c73, type: typeType) // "pcls"
-    public static let classInfo = ITUSymbol(name: "classInfo", code: 0x67636c69, type: typeType) // "gcli"
     public static let closeable = ITUSymbol(name: "closeable", code: 0x68636c62, type: typeType) // "hclb"
     public static let collapseable = ITUSymbol(name: "collapseable", code: 0x70575368, type: typeType) // "pWSh"
     public static let collapsed = ITUSymbol(name: "collapsed", code: 0x77736864, type: typeType) // "wshd"
@@ -592,11 +557,6 @@ public class ITUSymbol: Symbol {
     public static let composer = ITUSymbol(name: "composer", code: 0x70436d70, type: typeType) // "pCmp"
     public static let container = ITUSymbol(name: "container", code: 0x63746e72, type: typeType) // "ctnr"
     public static let copies = ITUSymbol(name: "copies", code: 0x6c776370, type: typeType) // "lwcp"
-    public static let cubicCentimeters = ITUSymbol(name: "cubicCentimeters", code: 0x63636d74, type: typeType) // "ccmt"
-    public static let cubicFeet = ITUSymbol(name: "cubicFeet", code: 0x63666574, type: typeType) // "cfet"
-    public static let cubicInches = ITUSymbol(name: "cubicInches", code: 0x6375696e, type: typeType) // "cuin"
-    public static let cubicMeters = ITUSymbol(name: "cubicMeters", code: 0x636d6574, type: typeType) // "cmet"
-    public static let cubicYards = ITUSymbol(name: "cubicYards", code: 0x63797264, type: typeType) // "cyrd"
     public static let currentEncoder = ITUSymbol(name: "currentEncoder", code: 0x70456e63, type: typeType) // "pEnc"
     public static let currentEQPreset = ITUSymbol(name: "currentEQPreset", code: 0x70455150, type: typeType) // "pEQP"
     public static let currentPlaylist = ITUSymbol(name: "currentPlaylist", code: 0x70506c61, type: typeType) // "pPla"
@@ -612,9 +572,6 @@ public class ITUSymbol: Symbol {
     public static let dateAdded = ITUSymbol(name: "dateAdded", code: 0x70416464, type: typeType) // "pAdd"
     public static let December = ITUSymbol(name: "December", code: 0x64656320, type: typeType) // "dec "
     public static let decimalStruct = ITUSymbol(name: "decimalStruct", code: 0x6465636d, type: typeType) // "decm"
-    public static let degreesCelsius = ITUSymbol(name: "degreesCelsius", code: 0x64656763, type: typeType) // "degc"
-    public static let degreesFahrenheit = ITUSymbol(name: "degreesFahrenheit", code: 0x64656766, type: typeType) // "degf"
-    public static let degreesKelvin = ITUSymbol(name: "degreesKelvin", code: 0x6465676b, type: typeType) // "degk"
     public static let description = ITUSymbol(name: "description", code: 0x70446573, type: typeType) // "pDes"
     public static let devicePlaylist = ITUSymbol(name: "devicePlaylist", code: 0x63447650, type: typeType) // "cDvP"
     public static let deviceTrack = ITUSymbol(name: "deviceTrack", code: 0x63447654, type: typeType) // "cDvT"
@@ -623,7 +580,6 @@ public class ITUSymbol: Symbol {
     public static let doubleInteger = ITUSymbol(name: "doubleInteger", code: 0x636f6d70, type: typeType) // "comp"
     public static let downloaded = ITUSymbol(name: "downloaded", code: 0x70446c41, type: typeType) // "pDlA"
     public static let duration = ITUSymbol(name: "duration", code: 0x70447572, type: typeType) // "pDur"
-    public static let elementInfo = ITUSymbol(name: "elementInfo", code: 0x656c696e, type: typeType) // "elin"
     public static let enabled = ITUSymbol(name: "enabled", code: 0x656e626c, type: typeType) // "enbl"
     public static let encodedString = ITUSymbol(name: "encodedString", code: 0x656e6373, type: typeType) // "encs"
     public static let encoder = ITUSymbol(name: "encoder", code: 0x63456e63, type: typeType) // "cEnc"
@@ -637,11 +593,9 @@ public class ITUSymbol: Symbol {
     public static let EQPreset = ITUSymbol(name: "EQPreset", code: 0x63455150, type: typeType) // "cEQP"
     public static let EQWindow = ITUSymbol(name: "EQWindow", code: 0x63455157, type: typeType) // "cEQW"
     public static let errorHandling = ITUSymbol(name: "errorHandling", code: 0x6c776568, type: typeType) // "lweh"
-    public static let eventInfo = ITUSymbol(name: "eventInfo", code: 0x6576696e, type: typeType) // "evin"
     public static let extendedFloat = ITUSymbol(name: "extendedFloat", code: 0x65787465, type: typeType) // "exte"
     public static let faxNumber = ITUSymbol(name: "faxNumber", code: 0x6661786e, type: typeType) // "faxn"
     public static let February = ITUSymbol(name: "February", code: 0x66656220, type: typeType) // "feb "
-    public static let feet = ITUSymbol(name: "feet", code: 0x66656574, type: typeType) // "feet"
     public static let fileRef = ITUSymbol(name: "fileRef", code: 0x66737266, type: typeType) // "fsrf"
     public static let fileSpecification = ITUSymbol(name: "fileSpecification", code: 0x66737320, type: typeType) // "fss "
     public static let fileTrack = ITUSymbol(name: "fileTrack", code: 0x63466c54, type: typeType) // "cFlT"
@@ -659,15 +613,12 @@ public class ITUSymbol: Symbol {
     public static let Friday = ITUSymbol(name: "Friday", code: 0x66726920, type: typeType) // "fri "
     public static let frontmost = ITUSymbol(name: "frontmost", code: 0x70697366, type: typeType) // "pisf"
     public static let fullScreen = ITUSymbol(name: "fullScreen", code: 0x70465363, type: typeType) // "pFSc"
-    public static let gallons = ITUSymbol(name: "gallons", code: 0x67616c6e, type: typeType) // "galn"
     public static let gapless = ITUSymbol(name: "gapless", code: 0x7047706c, type: typeType) // "pGpl"
     public static let genre = ITUSymbol(name: "genre", code: 0x7047656e, type: typeType) // "pGen"
     public static let GIFPicture = ITUSymbol(name: "GIFPicture", code: 0x47494666, type: typeType) // "GIFf"
-    public static let grams = ITUSymbol(name: "grams", code: 0x6772616d, type: typeType) // "gram"
     public static let graphicText = ITUSymbol(name: "graphicText", code: 0x63677478, type: typeType) // "cgtx"
     public static let grouping = ITUSymbol(name: "grouping", code: 0x70477270, type: typeType) // "pGrp"
     public static let id = ITUSymbol(name: "id", code: 0x49442020, type: typeType) // "ID  "
-    public static let inches = ITUSymbol(name: "inches", code: 0x696e6368, type: typeType) // "inch"
     public static let index = ITUSymbol(name: "index", code: 0x70696478, type: typeType) // "pidx"
     public static let integer = ITUSymbol(name: "integer", code: 0x6c6f6e67, type: typeType) // "long"
     public static let internationalText = ITUSymbol(name: "internationalText", code: 0x69747874, type: typeType) // "itxt"
@@ -678,12 +629,9 @@ public class ITUSymbol: Symbol {
     public static let July = ITUSymbol(name: "July", code: 0x6a756c20, type: typeType) // "jul "
     public static let June = ITUSymbol(name: "June", code: 0x6a756e20, type: typeType) // "jun "
     public static let kernelProcessId = ITUSymbol(name: "kernelProcessId", code: 0x6b706964, type: typeType) // "kpid"
-    public static let kilograms = ITUSymbol(name: "kilograms", code: 0x6b67726d, type: typeType) // "kgrm"
-    public static let kilometers = ITUSymbol(name: "kilometers", code: 0x6b6d7472, type: typeType) // "kmtr"
     public static let kind = ITUSymbol(name: "kind", code: 0x704b6e64, type: typeType) // "pKnd"
     public static let libraryPlaylist = ITUSymbol(name: "libraryPlaylist", code: 0x634c6950, type: typeType) // "cLiP"
     public static let list = ITUSymbol(name: "list", code: 0x6c697374, type: typeType) // "list"
-    public static let liters = ITUSymbol(name: "liters", code: 0x6c697472, type: typeType) // "litr"
     public static let location = ITUSymbol(name: "location", code: 0x704c6f63, type: typeType) // "pLoc"
     public static let locationReference = ITUSymbol(name: "locationReference", code: 0x696e736c, type: typeType) // "insl"
     public static let longDescription = ITUSymbol(name: "longDescription", code: 0x704c6473, type: typeType) // "pLds"
@@ -698,8 +646,6 @@ public class ITUSymbol: Symbol {
     public static let machPort = ITUSymbol(name: "machPort", code: 0x706f7274, type: typeType) // "port"
     public static let March = ITUSymbol(name: "March", code: 0x6d617220, type: typeType) // "mar "
     public static let May = ITUSymbol(name: "May", code: 0x6d617920, type: typeType) // "may "
-    public static let meters = ITUSymbol(name: "meters", code: 0x6d657472, type: typeType) // "metr"
-    public static let miles = ITUSymbol(name: "miles", code: 0x6d696c65, type: typeType) // "mile"
     public static let minimized = ITUSymbol(name: "minimized", code: 0x704d696e, type: typeType) // "pMin"
     public static let missingValue = ITUSymbol(name: "missingValue", code: 0x6d736e67, type: typeType) // "msng"
     public static let modifiable = ITUSymbol(name: "modifiable", code: 0x704d6f64, type: typeType) // "pMod"
@@ -710,10 +656,8 @@ public class ITUSymbol: Symbol {
     public static let November = ITUSymbol(name: "November", code: 0x6e6f7620, type: typeType) // "nov "
     public static let null = ITUSymbol(name: "null", code: 0x6e756c6c, type: typeType) // "null"
     public static let October = ITUSymbol(name: "October", code: 0x6f637420, type: typeType) // "oct "
-    public static let ounces = ITUSymbol(name: "ounces", code: 0x6f7a7320, type: typeType) // "ozs "
     public static let pagesAcross = ITUSymbol(name: "pagesAcross", code: 0x6c776c61, type: typeType) // "lwla"
     public static let pagesDown = ITUSymbol(name: "pagesDown", code: 0x6c776c64, type: typeType) // "lwld"
-    public static let parameterInfo = ITUSymbol(name: "parameterInfo", code: 0x706d696e, type: typeType) // "pmin"
     public static let parent = ITUSymbol(name: "parent", code: 0x70506c50, type: typeType) // "pPlP"
     public static let persistentID = ITUSymbol(name: "persistentID", code: 0x70504953, type: typeType) // "pPIS"
     public static let PICTPicture = ITUSymbol(name: "PICTPicture", code: 0x50494354, type: typeType) // "PICT"
@@ -728,15 +672,12 @@ public class ITUSymbol: Symbol {
     public static let podcast = ITUSymbol(name: "podcast", code: 0x70545063, type: typeType) // "pTPc"
     public static let point = ITUSymbol(name: "point", code: 0x51447074, type: typeType) // "QDpt"
     public static let position = ITUSymbol(name: "position", code: 0x70706f73, type: typeType) // "ppos"
-    public static let pounds = ITUSymbol(name: "pounds", code: 0x6c627320, type: typeType) // "lbs "
     public static let preamp = ITUSymbol(name: "preamp", code: 0x70455141, type: typeType) // "pEQA"
     public static let printerFeatures = ITUSymbol(name: "printerFeatures", code: 0x6c777066, type: typeType) // "lwpf"
     public static let printSettings = ITUSymbol(name: "printSettings", code: 0x70736574, type: typeType) // "pset"
     public static let processSerialNumber = ITUSymbol(name: "processSerialNumber", code: 0x70736e20, type: typeType) // "psn "
     public static let properties = ITUSymbol(name: "properties", code: 0x70414c4c, type: typeType) // "pALL"
     public static let property_ = ITUSymbol(name: "property_", code: 0x70726f70, type: typeType) // "prop"
-    public static let propertyInfo = ITUSymbol(name: "propertyInfo", code: 0x70696e66, type: typeType) // "pinf"
-    public static let quarts = ITUSymbol(name: "quarts", code: 0x71727473, type: typeType) // "qrts"
     public static let radioTunerPlaylist = ITUSymbol(name: "radioTunerPlaylist", code: 0x63525450, type: typeType) // "cRTP"
     public static let rating = ITUSymbol(name: "rating", code: 0x70527465, type: typeType) // "pRte"
     public static let ratingKind = ITUSymbol(name: "ratingKind", code: 0x7052746b, type: typeType) // "pRtk"
@@ -777,17 +718,11 @@ public class ITUSymbol: Symbol {
     public static let soundVolume = ITUSymbol(name: "soundVolume", code: 0x70566f6c, type: typeType) // "pVol"
     public static let source = ITUSymbol(name: "source", code: 0x63537263, type: typeType) // "cSrc"
     public static let specialKind = ITUSymbol(name: "specialKind", code: 0x7053704b, type: typeType) // "pSpK"
-    public static let squareFeet = ITUSymbol(name: "squareFeet", code: 0x73716674, type: typeType) // "sqft"
-    public static let squareKilometers = ITUSymbol(name: "squareKilometers", code: 0x73716b6d, type: typeType) // "sqkm"
-    public static let squareMeters = ITUSymbol(name: "squareMeters", code: 0x7371726d, type: typeType) // "sqrm"
-    public static let squareMiles = ITUSymbol(name: "squareMiles", code: 0x73716d69, type: typeType) // "sqmi"
-    public static let squareYards = ITUSymbol(name: "squareYards", code: 0x73717964, type: typeType) // "sqyd"
     public static let start = ITUSymbol(name: "start", code: 0x70537472, type: typeType) // "pStr"
     public static let startingPage = ITUSymbol(name: "startingPage", code: 0x6c776670, type: typeType) // "lwfp"
     public static let string = ITUSymbol(name: "string", code: 0x54455854, type: typeType) // "TEXT"
     public static let styledClipboardText = ITUSymbol(name: "styledClipboardText", code: 0x7374796c, type: typeType) // "styl"
     public static let styledText = ITUSymbol(name: "styledText", code: 0x53545854, type: typeType) // "STXT"
-    public static let suiteInfo = ITUSymbol(name: "suiteInfo", code: 0x7375696e, type: typeType) // "suin"
     public static let Sunday = ITUSymbol(name: "Sunday", code: 0x73756e20, type: typeType) // "sun "
     public static let targetPrinter = ITUSymbol(name: "targetPrinter", code: 0x74727072, type: typeType) // "trpr"
     public static let textStyleInfo = ITUSymbol(name: "textStyleInfo", code: 0x74737479, type: typeType) // "tsty"
@@ -818,7 +753,6 @@ public class ITUSymbol: Symbol {
     public static let Wednesday = ITUSymbol(name: "Wednesday", code: 0x77656420, type: typeType) // "wed "
     public static let window = ITUSymbol(name: "window", code: 0x6377696e, type: typeType) // "cwin"
     public static let writingCode = ITUSymbol(name: "writingCode", code: 0x70736374, type: typeType) // "psct"
-    public static let yards = ITUSymbol(name: "yards", code: 0x79617264, type: typeType) // "yard"
     public static let year = ITUSymbol(name: "year", code: 0x70597220, type: typeType) // "pYr "
     public static let zoomable = ITUSymbol(name: "zoomable", code: 0x69737a6d, type: typeType) // "iszm"
     public static let zoomed = ITUSymbol(name: "zoomed", code: 0x707a756d, type: typeType) // "pzum"
@@ -897,7 +831,7 @@ extension ITUCommand {
         return try self.appData.sendAppleEvent("activate", eventClass: 0x6d697363, eventID: 0x61637476, // "misc"/"actv"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
     }
     public func add(directParameter: Any = NoParameter,
             to: Any = NoParameter,
@@ -906,28 +840,28 @@ extension ITUCommand {
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("to", 0x696e7368, to), // "insh"
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
     }
     public func backTrack(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("backTrack", eventClass: 0x686f6f6b, eventID: 0x4261636b, // "hook"/"Back"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
     }
     public func close(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("close", eventClass: 0x636f7265, eventID: 0x636c6f73, // "core"/"clos"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
     }
     public func convert(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("convert", eventClass: 0x686f6f6b, eventID: 0x436f6e76, // "hook"/"Conv"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
     }
     public func count(directParameter: Any = NoParameter,
             each: Any = NoParameter,
@@ -936,21 +870,21 @@ extension ITUCommand {
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("each", 0x6b6f636c, each), // "kocl"
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
     }
     public func delete(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("delete", eventClass: 0x636f7265, eventID: 0x64656c6f, // "core"/"delo"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
     }
     public func download(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("download", eventClass: 0x686f6f6b, eventID: 0x44776e6c, // "hook"/"Dwnl"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
     }
     public func duplicate(directParameter: Any = NoParameter,
             to: Any = NoParameter,
@@ -959,42 +893,42 @@ extension ITUCommand {
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("to", 0x696e7368, to), // "insh"
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
     }
     public func eject(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("eject", eventClass: 0x686f6f6b, eventID: 0x456a6374, // "hook"/"Ejct"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
     }
     public func exists(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("exists", eventClass: 0x636f7265, eventID: 0x646f6578, // "core"/"doex"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
     }
     public func fastForward(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("fastForward", eventClass: 0x686f6f6b, eventID: 0x46617374, // "hook"/"Fast"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
     }
     public func get(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("get", eventClass: 0x636f7265, eventID: 0x67657464, // "core"/"getd"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
     }
     public func launch(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("launch", eventClass: 0x61736372, eventID: 0x6e6f6f70, // "ascr"/"noop"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
     }
     public func make(directParameter: Any = NoParameter,
             new: Any = NoParameter,
@@ -1007,7 +941,7 @@ extension ITUCommand {
                     ("at", 0x696e7368, at), // "insh"
                     ("withProperties", 0x70726474, withProperties), // "prdt"
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
     }
     public func move(directParameter: Any = NoParameter,
             to: Any = NoParameter,
@@ -1016,35 +950,35 @@ extension ITUCommand {
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("to", 0x696e7368, to), // "insh"
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
     }
     public func nextTrack(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("nextTrack", eventClass: 0x686f6f6b, eventID: 0x4e657874, // "hook"/"Next"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
     }
     public func open(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("open", eventClass: 0x61657674, eventID: 0x6f646f63, // "aevt"/"odoc"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
     }
     public func openLocation(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("openLocation", eventClass: 0x4755524c, eventID: 0x4755524c, // "GURL"/"GURL"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
     }
     public func pause(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("pause", eventClass: 0x686f6f6b, eventID: 0x50617573, // "hook"/"Paus"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
     }
     public func play(directParameter: Any = NoParameter,
             once: Any = NoParameter,
@@ -1053,21 +987,21 @@ extension ITUCommand {
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("once", 0x504f6e65, once), // "POne"
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
     }
     public func playpause(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("playpause", eventClass: 0x686f6f6b, eventID: 0x506c5073, // "hook"/"PlPs"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
     }
     public func previousTrack(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("previousTrack", eventClass: 0x686f6f6b, eventID: 0x50726576, // "hook"/"Prev"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
     }
     public func print(directParameter: Any = NoParameter,
             printDialog: Any = NoParameter,
@@ -1082,56 +1016,56 @@ extension ITUCommand {
                     ("kind", 0x704b6e64, kind), // "pKnd"
                     ("theme", 0x7054686d, theme), // "pThm"
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
     }
     public func quit(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("quit", eventClass: 0x61657674, eventID: 0x71756974, // "aevt"/"quit"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
     }
     public func refresh(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("refresh", eventClass: 0x686f6f6b, eventID: 0x52667273, // "hook"/"Rfrs"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
     }
     public func reopen(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("reopen", eventClass: 0x61657674, eventID: 0x72617070, // "aevt"/"rapp"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
     }
     public func resume(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("resume", eventClass: 0x686f6f6b, eventID: 0x52657375, // "hook"/"Resu"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
     }
     public func reveal(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("reveal", eventClass: 0x686f6f6b, eventID: 0x5265766c, // "hook"/"Revl"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
     }
     public func rewind(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("rewind", eventClass: 0x686f6f6b, eventID: 0x52776e64, // "hook"/"Rwnd"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
     }
     public func run(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("run", eventClass: 0x61657674, eventID: 0x6f617070, // "aevt"/"oapp"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
     }
     public func search(directParameter: Any = NoParameter,
             for_: Any = NoParameter,
@@ -1142,7 +1076,7 @@ extension ITUCommand {
                     ("for_", 0x7054726d, for_), // "pTrm"
                     ("only", 0x70417265, only), // "pAre"
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
     }
     public func set(directParameter: Any = NoParameter,
             to: Any = NoParameter,
@@ -1151,42 +1085,42 @@ extension ITUCommand {
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("to", 0x64617461, to), // "data"
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
     }
     public func stop(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("stop", eventClass: 0x686f6f6b, eventID: 0x53746f70, // "hook"/"Stop"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
     }
     public func subscribe(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("subscribe", eventClass: 0x686f6f6b, eventID: 0x70537562, // "hook"/"pSub"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
     }
     public func update(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("update", eventClass: 0x686f6f6b, eventID: 0x55706474, // "hook"/"Updt"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
     }
     public func updateAllPodcasts(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("updateAllPodcasts", eventClass: 0x686f6f6b, eventID: 0x55706470, // "hook"/"Updp"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
     }
     public func updatePodcast(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("updatePodcast", eventClass: 0x686f6f6b, eventID: 0x55706431, // "hook"/"Upd1"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
     }
 }
 

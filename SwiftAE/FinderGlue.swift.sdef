@@ -1,3 +1,509 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <!DOCTYPE dictionary SYSTEM "file://localhost/System/Library/DTDs/sdef.dtd">
-<dictionary><suite name="Standard Suite" code="CoRe" description="Common terms that most applications should support"><command name="open" code="aevtodoc" description="Open the specified object(s)"><direct-parameter type="specifier" description="list of objects to open"></direct-parameter><parameter name="using:" code="usin" type="specifier" optional="yes" description="the application file to open the object with"></parameter><parameter name="withProperties:" code="prdt" type="record" optional="yes" description="the initial values for the properties, to be included with the open command sent to the application that opens the direct object"></parameter></command><command name="print" code="aevtpdoc" description="Print the specified object(s)"><direct-parameter type="specifier" description="list of objects to print"></direct-parameter><parameter name="withProperties:" code="prdt" type="record" optional="yes" description="optional properties to be included with the print command sent to the application that prints the direct object"></parameter></command><command name="quit" code="aevtquit" description="Quit the Finder"></command><command name="activate" code="miscactv" description="Activate the specified window (or the Finder)"><direct-parameter type="specifier" optional="yes" description="the window to activate (if not specified, activates the Finder)"></direct-parameter></command><command name="close" code="coreclos" description="Close an object"><direct-parameter type="specifier" description="the object to close"></direct-parameter></command><command name="count" code="corecnte" description="Return the number of elements of a particular class within an object"><direct-parameter type="specifier" description="the object whose elements are to be counted"></direct-parameter><parameter name="each:" code="kocl" type="type" description="the class of the elements to be counted"></parameter><result type="integer" description="the number of elements"></result></command><command name="dataSize" code="coredsiz" description="Return the size in bytes of an object"><direct-parameter type="specifier" description="the object whose data size is to be returned"></direct-parameter><parameter name="as_:" code="rtyp" type="type" optional="yes" description="the data type for which the size is calculated"></parameter><result type="integer" description="the size of the object in bytes"></result></command><command name="delete" code="coredelo" description="Move an item from its container to the trash"><direct-parameter type="specifier" description="the item to delete"></direct-parameter><result type="specifier" description="to the item that was just deleted"></result></command><command name="duplicate" code="coreclon" description="Duplicate one or more object(s)"><direct-parameter type="specifier" description="the object(s) to duplicate"></direct-parameter><parameter name="to:" code="insh" type="location specifier" optional="yes" description="the new location for the object(s)"></parameter><parameter name="replacing:" code="alrp" type="boolean" optional="yes" description="Specifies whether or not to replace items in the destination that have the same name as items being duplicated"></parameter><parameter name="routingSuppressed:" code="rout" type="boolean" optional="yes" description="Specifies whether or not to autoroute items (default is false). Only applies when copying to the system folder."></parameter><parameter name="exactCopy:" code="exct" type="boolean" optional="yes" description="Specifies whether or not to copy permissions/ownership as is"></parameter><result type="specifier" description="to the duplicated object(s)"></result></command><command name="exists" code="coredoex" description="Verify if an object exists"><direct-parameter type="specifier" description="the object in question"></direct-parameter><result type="boolean" description="true if it exists, false if not"></result></command><command name="make" code="corecrel" description="Make a new element"><parameter name="new:" code="kocl" type="type" description="the class of the new element"></parameter><parameter name="at:" code="insh" type="location specifier" description="the location at which to insert the element"></parameter><parameter name="to:" code="to  " type="specifier" optional="yes" description="when creating an alias file, the original item to create an alias to or when creating a file viewer window, the target of the window"></parameter><parameter name="withProperties:" code="prdt" type="record" optional="yes" description="the initial values for the properties of the element"></parameter><result type="specifier" description="to the new object(s)"></result></command><command name="move" code="coremove" description="Move object(s) to a new location"><direct-parameter type="specifier" description="the object(s) to move"></direct-parameter><parameter name="to:" code="insh" type="location specifier" description="the new location for the object(s)"></parameter><parameter name="replacing:" code="alrp" type="boolean" optional="yes" description="Specifies whether or not to replace items in the destination that have the same name as items being moved"></parameter><parameter name="positionedAt:" code="mvpl" type="list" optional="yes" description="Gives a list (in local window coordinates) of positions for the destination items"></parameter><parameter name="routingSuppressed:" code="rout" type="boolean" optional="yes" description="Specifies whether or not to autoroute items (default is false). Only applies when moving to the system folder."></parameter><result type="specifier" description="to the object(s) after they have been moved"></result></command><command name="select" code="miscslct" description="Select the specified object(s)"><direct-parameter type="specifier" description="the object to select"></direct-parameter></command></suite><suite name="Finder Basics" code="fndr" description="Commonly-used Finder commands and object classes"><command name="copy" code="misccopy" description="(NOT AVAILABLE YET) Copy the selected items to the clipboard (the Finder must be the front application)"></command><command name="sort" code="DATASORT" description="Return the specified object(s) in a sorted list"><direct-parameter type="specifier" description="a list of finder objects to sort"></direct-parameter><parameter name="by:" code="by  " type="property" description="the property to sort the items by (name, index, date, etc.)"></parameter><result type="specifier" optional="yes" description="the sorted items in their new order"></result></command><class name="application" code="capp" description="The Finder"><element type="item"></element><element type="container"></element><element type="disk"></element><element type="folder"></element><element type="file"></element><element type="aliasFile"></element><element type="applicationFile"></element><element type="documentFile"></element><element type="internetLocationFile"></element><element type="clipping"></element><element type="package"></element><element type="window"></element><element type="FinderWindow"></element><element type="clippingWindow"></element><property name="clipboard" code="pcli" type="specifier" access="r" description="(NOT AVAILABLE YET) the Finder’s clipboard window"></property><property name="name" code="pnam" type="text" access="r" description="the Finder’s name"></property><property name="visible" code="pvis" type="boolean" description="Is the Finder’s layer visible?"></property><property name="frontmost" code="pisf" type="boolean" description="Is the Finder the frontmost process?"></property><property name="selection" code="sele" type="specifier" description="the selection in the frontmost Finder window"></property><property name="insertionLocation" code="pins" type="specifier" access="r" description="the container in which a new folder would appear if “New Folder” was selected"></property><property name="productVersion" code="ver2" type="text" access="r" description="the version of the System software running on this computer"></property><property name="version" code="vers" type="text" access="r" description="the version of the Finder"></property><property name="startupDisk" code="sdsk" type="disk" access="r" description="the startup disk"></property><property name="desktop" code="desk" type="desktop-object" access="r" description="the desktop"></property><property name="trash" code="trsh" type="trash-object" access="r" description="the trash"></property><property name="home" code="home" type="folder" access="r" description="the home directory"></property><property name="computerContainer" code="pcmp" type="computer-object" access="r" description="the computer location (as in Go &gt; Computer)"></property><property name="FinderPreferences" code="pfrp" type="preferences" access="r" description="Various preferences that apply to the Finder as a whole"></property></class></suite><suite name="Finder items" code="fndr" description="Commands used with file system items, and basic item definition"><command name="cleanUp" code="fndrfclu" description="Arrange items in window nicely (only applies to open windows in icon view that are not kept arranged)"><direct-parameter type="specifier" description="the window to clean up"></direct-parameter><parameter name="by:" code="by  " type="property" optional="yes" description="the order in which to clean up the objects (name, index, date, etc.)"></parameter></command><command name="eject" code="fndrejct" description="Eject the specified disk(s)"><direct-parameter type="specifier" optional="yes" description="the disk(s) to eject"></direct-parameter></command><command name="empty" code="fndrempt" description="Empty the trash"><direct-parameter type="specifier" optional="yes" description="“empty” and “empty trash” both do the same thing"></direct-parameter><parameter name="security:" code="sec?" type="boolean" optional="yes" description="Specifies whether or not to empty the trash securely"></parameter></command><command name="erase" code="fndrfera" description="(NOT AVAILABLE) Erase the specified disk(s)"><direct-parameter type="specifier" description="the items to erase"></direct-parameter></command><command name="reveal" code="miscmvis" description="Bring the specified object(s) into view"><direct-parameter type="specifier" description="the object to be made visible"></direct-parameter></command><command name="update" code="fndrfupd" description="Update the display of the specified object(s) to match their on-disk representation"><direct-parameter type="specifier" description="the item to update"></direct-parameter><parameter name="necessity:" code="nec?" type="boolean" optional="yes" description="only update if necessary (i.e. a finder window is open).  default is false"></parameter><parameter name="registeringApplications:" code="reg?" type="boolean" optional="yes" description="register applications. default is true"></parameter></command><class name="item" code="cobj" description="An item" plural="items"><property name="name" code="pnam" type="text" description="the name of the item"></property><property name="displayedName" code="dnam" type="text" access="r" description="the user-visible name of the item"></property><property name="nameExtension" code="nmxt" type="text" description="the name extension of the item (such as “txt”)"></property><property name="extensionHidden" code="hidx" type="boolean" description="Is the item's extension hidden from the user?"></property><property name="index" code="pidx" type="integer" access="r" description="the index in the front-to-back ordering within its container"></property><property name="container" code="ctnr" type="specifier" access="r" description="the container of the item"></property><property name="disk" code="cdis" type="specifier" access="r" description="the disk on which the item is stored"></property><property name="position" code="posn" type="point" description="the position of the item within its parent window (can only be set for an item in a window viewed as icons or buttons)"></property><property name="desktopPosition" code="dpos" type="point" description="the position of the item on the desktop"></property><property name="bounds" code="pbnd" type="rectangle" description="the bounding rectangle of the item (can only be set for an item in a window viewed as icons or buttons)"></property><property name="labelIndex" code="labi" type="integer" description="the label of the item"></property><property name="locked" code="aslk" type="boolean" description="Is the file locked?"></property><property name="kind" code="kind" type="text" access="r" description="the kind of the item"></property><property name="description" code="dscr" type="text" access="r" description="a description of the item"></property><property name="comment" code="comt" type="text" description="the comment of the item, displayed in the “Get Info” window"></property><property name="size" code="ptsz" type="double integer" access="r" description="the logical size of the item"></property><property name="physicalSize" code="phys" type="double integer" access="r" description="the actual space used by the item on disk"></property><property name="creationDate" code="ascd" type="date" access="r" description="the date on which the item was created"></property><property name="modificationDate" code="asmo" type="date" description="the date on which the item was last modified"></property><property name="icon" code="iimg" type="icon family" description="the icon bitmap of the item"></property><property name="URL" code="pURL" type="text" access="r" description="the URL of the item"></property><property name="owner" code="sown" type="text" description="the user that owns the container"></property><property name="group" code="sgrp" type="text" description="the user or group that has special access to the container"></property><property name="ownerPrivileges" code="ownr" type="priv"></property><property name="groupPrivileges" code="gppr" type="priv"></property><property name="everyonesPrivileges" code="gstp" type="priv"></property><property name="informationWindow" code="iwnd" type="specifier" access="r" description="the information window for the item"></property><property name="properties" code="pALL" type="record" description="every property of an item"></property><property name="class_" code="pcls" type="type" access="r" description="the class of the item"></property></class><enumeration name="priv" code="priv"><enumerator name="FIN.readOnly" code="read"></enumerator><enumerator name="FIN.readWrite" code="rdwr"></enumerator><enumerator name="FIN.writeOnly" code="writ"></enumerator><enumerator name="FIN.none_" code="none"></enumerator></enumeration></suite><suite name="Containers and folders" code="fndr" description="Classes that can contain other file system items"><class name="container" code="ctnr" description="An item that contains other items" inherits="item" plural="containers"><element type="item"></element><element type="container"></element><element type="folder"></element><element type="file"></element><element type="aliasFile"></element><element type="applicationFile"></element><element type="documentFile"></element><element type="internetLocationFile"></element><element type="clipping"></element><element type="package"></element><property name="entireContents" code="ects" type="specifier" access="r" description="the entire contents of the container, including the contents of its children"></property><property name="expandable" code="pexa" type="boolean" access="r" description="(NOT AVAILABLE YET) Is the container capable of being expanded as an outline?"></property><property name="expanded" code="pexp" type="boolean" description="(NOT AVAILABLE YET) Is the container opened as an outline? (can only be set for containers viewed as lists)"></property><property name="completelyExpanded" code="pexc" type="boolean" description="(NOT AVAILABLE YET) Are the container and all of its children opened as outlines? (can only be set for containers viewed as lists)"></property><property name="containerWindow" code="cwnd" type="specifier" access="r" description="the container window for this folder"></property></class><class name="computerObject" code="ccmp" description="the Computer location (as in Go &gt; Computer)" inherits="item"></class><class name="disk" code="cdis" description="A disk" inherits="container" plural="disks"><element type="item"></element><element type="container"></element><element type="folder"></element><element type="file"></element><element type="aliasFile"></element><element type="applicationFile"></element><element type="documentFile"></element><element type="internetLocationFile"></element><element type="clipping"></element><element type="package"></element><property name="id" code="ID  " type="integer" access="r" description="the unique id for this disk (unchanged while disk remains connected and Finder remains running)"></property><property name="capacity" code="capa" type="double integer" access="r" description="the total number of bytes (free or used) on the disk"></property><property name="freeSpace" code="frsp" type="double integer" access="r" description="the number of free bytes left on the disk"></property><property name="ejectable" code="isej" type="boolean" access="r" description="Can the media be ejected (floppies, CDs, and so on)?"></property><property name="localVolume" code="isrv" type="boolean" access="r" description="Is the media a local volume (as opposed to a file server)?"></property><property name="startup" code="istd" type="boolean" access="r" description="Is this disk the boot disk?"></property><property name="format" code="dfmt" type="edfm" access="r" description="the filesystem format of this disk"></property><property name="journalingEnabled" code="Jrnl" type="boolean" access="r" description="Does this disk do file system journaling?"></property><property name="ignorePrivileges" code="igpr" type="boolean" description="Ignore permissions on this disk?"></property></class><class name="folder" code="cfol" description="A folder" inherits="container" plural="folders"><element type="item"></element><element type="container"></element><element type="folder"></element><element type="file"></element><element type="aliasFile"></element><element type="applicationFile"></element><element type="documentFile"></element><element type="internetLocationFile"></element><element type="clipping"></element><element type="package"></element></class><class name="desktopObject" code="cdsk" description="Desktop-object is the class of the “desktop” object" inherits="container"><element type="item"></element><element type="container"></element><element type="disk"></element><element type="folder"></element><element type="file"></element><element type="aliasFile"></element><element type="applicationFile"></element><element type="documentFile"></element><element type="internetLocationFile"></element><element type="clipping"></element><element type="package"></element></class><class name="trashObject" code="ctrs" description="Trash-object is the class of the “trash” object" inherits="container"><element type="item"></element><element type="container"></element><element type="folder"></element><element type="file"></element><element type="aliasFile"></element><element type="applicationFile"></element><element type="documentFile"></element><element type="internetLocationFile"></element><element type="clipping"></element><element type="package"></element><property name="warnsBeforeEmptying" code="warn" type="boolean" description="Display a dialog when emptying the trash?"></property></class><enumeration name="edfm" code="edfm"><enumerator name="FIN.MacOSFormat" code="dfhf"></enumerator><enumerator name="FIN.MacOSExtendedFormat" code="dfh+"></enumerator><enumerator name="FIN.UFSFormat" code="dfuf"></enumerator><enumerator name="FIN.NFSFormat" code="dfnf"></enumerator><enumerator name="FIN.audioFormat" code="dfau"></enumerator><enumerator name="FIN.ProDOSFormat" code="dfpr"></enumerator><enumerator name="FIN.MSDOSFormat" code="dfms"></enumerator><enumerator name="FIN.NTFSFormat" code="dfnt"></enumerator><enumerator name="FIN.ISO9660Format" code="df96"></enumerator><enumerator name="FIN.HighSierraFormat" code="dfhs"></enumerator><enumerator name="FIN.QuickTakeFormat" code="dfqt"></enumerator><enumerator name="FIN.ApplePhotoFormat" code="dfph"></enumerator><enumerator name="FIN.AppleShareFormat" code="dfas"></enumerator><enumerator name="FIN.UDFFormat" code="dfud"></enumerator><enumerator name="FIN.WebDAVFormat" code="dfwd"></enumerator><enumerator name="FIN.FTPFormat" code="dfft"></enumerator><enumerator name="FIN.PacketWrittenUDFFormat" code="dfpu"></enumerator><enumerator name="FIN.XsanFormat" code="dfac"></enumerator><enumerator name="FIN.unknownFormat" code="df??"></enumerator></enumeration></suite><suite name="Files" code="fndr" description="Classes representing files"><class name="file" code="file" description="A file" inherits="item" plural="files"><property name="fileType" code="asty" type="type" description="the OSType identifying the type of data contained in the item"></property><property name="creatorType" code="fcrt" type="type" description="the OSType identifying the application that created the item"></property><property name="stationery" code="pspd" type="boolean" description="Is the file a stationery pad?"></property><property name="productVersion" code="ver2" type="text" access="r" description="the version of the product (visible at the top of the “Get Info” window)"></property><property name="version" code="vers" type="text" access="r" description="the version of the file (visible at the bottom of the “Get Info” window)"></property></class><class name="aliasFile" code="alia" description="An alias file (created with “Make Alias”)" inherits="file" plural="aliasFiles"><property name="originalItem" code="orig" type="specifier" description="the original item pointed to by the alias"></property></class><class name="applicationFile" code="appf" description="An application's file on disk" inherits="file" plural="applicationFiles"><property name="id" code="ID  " type="text" access="r" description="the bundle identifier or creator type of the application"></property><property name="suggestedSize" code="sprt" type="integer" access="r" description="(AVAILABLE IN 10.1 TO 10.4) the memory size with which the developer recommends the application be launched"></property><property name="minimumSize" code="mprt" type="integer" description="(AVAILABLE IN 10.1 TO 10.4) the smallest memory size with which the application can be launched"></property><property name="preferredSize" code="appt" type="integer" description="(AVAILABLE IN 10.1 TO 10.4) the memory size with which the application will be launched"></property><property name="acceptsHighLevelEvents" code="isab" type="boolean" access="r" description="Is the application high-level event aware? (OBSOLETE: always returns true)"></property><property name="hasScriptingTerminology" code="hscr" type="boolean" access="r" description="Does the process have a scripting terminology, i.e., can it be scripted?"></property><property name="opensInClassic" code="Clsc" type="boolean" description="(AVAILABLE IN 10.1 TO 10.4) Should the application launch in the Classic environment?"></property></class><class name="documentFile" code="docf" description="A document file" inherits="file" plural="documentFiles"></class><class name="internetLocationFile" code="inlf" description="A file containing an internet location" inherits="file" plural="internetLocationFiles"><property name="location" code="iloc" type="text" access="r" description="the internet location"></property></class><class name="clipping" code="clpf" description="A clipping" inherits="file" plural="clippings"><property name="clippingWindow" code="lwnd" type="specifier" access="r" description="(NOT AVAILABLE YET) the clipping window for this clipping"></property></class><class name="package" code="pack" description="A package" inherits="item" plural="packages"></class></suite><suite name="Window classes" code="fndr" description="Classes representing windows"><class name="window" code="cwin" description="A window" plural="windows"><property name="id" code="ID  " type="unsigned integer" access="r" description="the unique id for this window"></property><property name="position" code="posn" type="point" description="the upper left position of the window"></property><property name="bounds" code="pbnd" type="rectangle" description="the boundary rectangle for the window"></property><property name="titled" code="ptit" type="boolean" access="r" description="Does the window have a title bar?"></property><property name="name" code="pnam" type="text" access="r" description="the name of the window"></property><property name="index" code="pidx" type="integer" description="the number of the window in the front-to-back layer ordering"></property><property name="closeable" code="hclb" type="boolean" access="r" description="Does the window have a close box?"></property><property name="floating" code="isfl" type="boolean" access="r" description="Does the window have a title bar?"></property><property name="modal" code="pmod" type="boolean" access="r" description="Is the window modal?"></property><property name="resizable" code="prsz" type="boolean" access="r" description="Is the window resizable?"></property><property name="zoomable" code="iszm" type="boolean" access="r" description="Is the window zoomable?"></property><property name="zoomed" code="pzum" type="boolean" description="Is the window zoomed?"></property><property name="visible" code="pvis" type="boolean" access="r" description="Is the window visible (always true for open Finder windows)?"></property><property name="collapsed" code="wshd" type="boolean" description="Is the window collapsed"></property><property name="properties" code="pALL" type="record" description="every property of a window"></property></class><class name="FinderWindow" code="brow" description="A file viewer window" inherits="window" plural="FinderWindows"><property name="target" code="fvtg" type="specifier" description="the container at which this file viewer is targeted"></property><property name="currentView" code="pvew" type="ecvw" description="the current view for the container window"></property><property name="iconViewOptions" code="icop" type="icon view options" access="r" description="the icon view options for the container window"></property><property name="listViewOptions" code="lvop" type="list view options" access="r" description="the list view options for the container window"></property><property name="columnViewOptions" code="cvop" type="column view options" access="r" description="the column view options for the container window"></property><property name="toolbarVisible" code="tbvi" type="boolean" description="Is the window's toolbar visible?"></property><property name="statusbarVisible" code="stvi" type="boolean" description="Is the window's status bar visible?"></property><property name="sidebarWidth" code="sbwi" type="integer" description="the width of the sidebar for the container window"></property></class><class name="desktopWindow" code="dktw" description="the desktop window" inherits="Finder window"></class><class name="informationWindow" code="iwnd" description="An inspector window (opened by “Show Info”)" inherits="window"><property name="item" code="cobj" type="specifier" access="r" description="the item from which this window was opened"></property><property name="currentPanel" code="panl" type="ipnl" description="the current panel in the information window"></property></class><class name="preferencesWindow" code="pwnd" description="The Finder Preferences window" inherits="window"><property name="currentPanel" code="panl" type="pple" description="The current panel in the Finder preferences window"></property></class><class name="clippingWindow" code="lwnd" description="The window containing a clipping" inherits="window" plural="clippingWindows"></class><enumeration name="ipnl" code="ipnl"><enumerator name="FIN.GeneralInformationPanel" code="gpnl"></enumerator><enumerator name="FIN.SharingPanel" code="spnl"></enumerator><enumerator name="FIN.MemoryPanel" code="mpnl"></enumerator><enumerator name="FIN.PreviewPanel" code="vpnl"></enumerator><enumerator name="FIN.ApplicationPanel" code="apnl"></enumerator><enumerator name="FIN.LanguagesPanel" code="pklg"></enumerator><enumerator name="FIN.PluginsPanel" code="pkpg"></enumerator><enumerator name="FIN.NameAndExtensionPanel" code="npnl"></enumerator><enumerator name="FIN.CommentsPanel" code="cpnl"></enumerator><enumerator name="FIN.ContentIndexPanel" code="cinl"></enumerator><enumerator name="FIN.BurningPanel" code="bpnl"></enumerator><enumerator name="FIN.MoreInfoPanel" code="minl"></enumerator><enumerator name="FIN.SimpleHeaderPanel" code="shnl"></enumerator></enumeration><enumeration name="pple" code="pple"><enumerator name="FIN.GeneralPreferencesPanel" code="pgnp"></enumerator><enumerator name="FIN.LabelPreferencesPanel" code="plbp"></enumerator><enumerator name="FIN.SidebarPreferencesPanel" code="psid"></enumerator><enumerator name="FIN.AdvancedPreferencesPanel" code="padv"></enumerator></enumeration><enumeration name="ecvw" code="ecvw"><enumerator name="FIN.iconView" code="icnv"></enumerator><enumerator name="FIN.listView" code="lsvw"></enumerator><enumerator name="FIN.columnView" code="clvw"></enumerator><enumerator name="FIN.groupView" code="grvw"></enumerator><enumerator name="FIN.flowView" code="flvw"></enumerator></enumeration></suite><suite name="Legacy suite" code="fleg" description="Operations formerly handled by the Finder, but now automatically delegated to other applications"><command name="restart" code="fndrrest" description="Restart the computer"></command><command name="shutDown" code="fndrshut" description="Shut Down the computer"></command><command name="sleep" code="fndrslep" description="Put the computer to sleep"></command><class-extension extends="application" description="The Finder"><property name="desktopPicture" code="dpic" type="file" description="the desktop picture of the main monitor"></property></class-extension><class name="process" code="prcs" description="A process running on this computer" plural="processes"><property name="name" code="pnam" type="text" access="r" description="the name of the process"></property><property name="visible" code="pvis" type="boolean" description="Is the process' layer visible?"></property><property name="frontmost" code="pisf" type="boolean" description="Is the process the frontmost process?"></property><property name="file" code="file" type="specifier" access="r" description="the file from which the process was launched"></property><property name="fileType" code="asty" type="type" access="r" description="the OSType of the file type of the process"></property><property name="creatorType" code="fcrt" type="type" access="r" description="the OSType of the creator of the process (the signature)"></property><property name="acceptsHighLevelEvents" code="isab" type="boolean" access="r" description="Is the process high-level event aware (accepts open application, open document, print document, and quit)?"></property><property name="acceptsRemoteEvents" code="revt" type="boolean" access="r" description="Does the process accept remote events?"></property><property name="hasScriptingTerminology" code="hscr" type="boolean" access="r" description="Does the process have a scripting terminology, i.e., can it be scripted?"></property><property name="totalPartitionSize" code="appt" type="integer" access="r" description="the size of the partition with which the process was launched"></property><property name="partitionSpaceUsed" code="pusd" type="integer" access="r" description="the number of bytes currently used in the process' partition"></property></class><class name="applicationProcess" code="pcap" description="A process launched from an application file" inherits="process" plural="applicationProcesses"><property name="applicationFile" code="appf" type="application file" access="r" description="the application file from which this process was launched"></property></class><class name="deskAccessoryProcess" code="pcda" description="A process launched from a desk accessory file" inherits="process" plural="deskAccessoryProcesses"><property name="deskAccessoryFile" code="dafi" type="specifier" access="r" description="the desk accessory file from which this process was launched"></property></class></suite><suite name="Type Definitions" code="tpdf" description="Definitions of records used in scripting the Finder"><class name="preferences" code="cprf" description="The Finder Preferences"><property name="window" code="cwin" type="preferences window" access="r" description="the window that would open if Finder preferences was opened"></property><property name="iconViewOptions" code="icop" type="icon view options" access="r" description="the default icon view options"></property><property name="listViewOptions" code="lvop" type="list view options" access="r" description="the default list view options"></property><property name="columnViewOptions" code="cvop" type="column view options" access="r" description="the column view options for all windows"></property><property name="foldersSpringOpen" code="sprg" type="boolean" description="Spring open folders after the specified delay?"></property><property name="delayBeforeSpringing" code="dela" type="real" description="the delay before springing open a container in seconds (from 0.167 to 1.169)"></property><property name="desktopShowsHardDisks" code="pdhd" type="boolean" description="Hard disks appear on the desktop?"></property><property name="desktopShowsExternalHardDisks" code="pehd" type="boolean" description="External hard disks appear on the desktop?"></property><property name="desktopShowsRemovableMedia" code="pdrm" type="boolean" description="CDs, DVDs, and iPods appear on the desktop?"></property><property name="desktopShowsConnectedServers" code="pdsv" type="boolean" description="Connected servers appear on the desktop?"></property><property name="newWindowTarget" code="pnwt" type="specifier" description="target location for a newly-opened Finder window"></property><property name="foldersOpenInNewWindows" code="ponw" type="boolean" description="Folders open into new windows?"></property><property name="foldersOpenInNewTabs" code="pont" type="boolean" description="Folders open into new tabs?"></property><property name="newWindowsOpenInColumnView" code="pocv" type="boolean" description="Open new windows in column view?"></property><property name="allNameExtensionsShowing" code="psnx" type="boolean" description="Show name extensions, even for items whose “extension hidden” is true?"></property></class><class name="label" code="clbl" description="(NOT AVAILABLE YET) A Finder label (name and color)"><property name="name" code="pnam" type="text" description="the name associated with the label"></property><property name="index" code="pidx" type="integer" description="the index in the front-to-back ordering within its container"></property><property name="color" code="colr" type="RGB color" description="the color associated with the label"></property></class><class name="iconFamily" code="ifam" description="(NOT AVAILABLE YET) A family of icons"><property name="largeMonochromeIconAndMask" code="ICN#" type="ICN#" access="r" description="the large black-and-white icon and the mask for large icons"></property><property name="large8BitMask" code="l8mk" type="l8mk" access="r" description="the large 8-bit mask for large 32-bit icons"></property><property name="large32BitIcon" code="il32" type="il32" access="r" description="the large 32-bit color icon"></property><property name="large8BitIcon" code="icl8" type="icl8" access="r" description="the large 8-bit color icon"></property><property name="large4BitIcon" code="icl4" type="icl4" access="r" description="the large 4-bit color icon"></property><property name="smallMonochromeIconAndMask" code="ics#" type="ics#" access="r" description="the small black-and-white icon and the mask for small icons"></property><property name="small8BitMask" code="ics8" type="s8mk" access="r" description="the small 8-bit mask for small 32-bit icons"></property><property name="small32BitIcon" code="is32" type="is32" access="r" description="the small 32-bit color icon"></property><property name="small8BitIcon" code="ics8" type="ics8" access="r" description="the small 8-bit color icon"></property><property name="small4BitIcon" code="ics4" type="ics4" access="r" description="the small 4-bit color icon"></property></class><class name="iconViewOptions" code="icop" description="the icon view options"><property name="arrangement" code="iarr" type="earr" description="the property by which to keep icons arranged"></property><property name="iconSize" code="lvis" type="integer" description="the size of icons displayed in the icon view"></property><property name="showsItemInfo" code="mnfo" type="boolean" description="additional info about an item displayed in icon view"></property><property name="showsIconPreview" code="prvw" type="boolean" description="displays a preview of the item in icon view"></property><property name="textSize" code="fsiz" type="integer" description="the size of the text displayed in the icon view"></property><property name="labelPosition" code="lpos" type="epos" description="the location of the label in reference to the icon"></property><property name="backgroundPicture" code="ibkg" type="file" description="the background picture of the icon view"></property><property name="backgroundColor" code="colr" type="RGB color" description="the background color of the icon view"></property></class><class name="columnViewOptions" code="cvop" description="the column view options"><property name="textSize" code="fsiz" type="integer" description="the size of the text displayed in the column view"></property><property name="showsIcon" code="shic" type="boolean" description="displays an icon next to the label in column view"></property><property name="showsIconPreview" code="prvw" type="boolean" description="displays a preview of the item in column view"></property><property name="showsPreviewColumn" code="shpr" type="boolean" description="displays the preview column in column view"></property><property name="disclosesPreviewPane" code="dspr" type="boolean" description="discloses the preview pane of the preview column in column view"></property></class><class name="listViewOptions" code="lvop" description="the list view options"><element type="column"></element><property name="calculatesFolderSizes" code="sfsz" type="boolean" description="Are folder sizes calculated and displayed in the window?"></property><property name="showsIconPreview" code="prvw" type="boolean" description="displays a preview of the item in list view"></property><property name="iconSize" code="lvis" type="lvic" description="the size of icons displayed in the list view"></property><property name="textSize" code="fsiz" type="integer" description="the size of the text displayed in the list view"></property><property name="sortColumn" code="srtc" type="column" description="the column that the list view is sorted on"></property><property name="usesRelativeDates" code="urdt" type="boolean" description="Are relative dates (e.g., today, yesterday) shown in the list view?"></property></class><class name="column" code="lvcl" description="a column of a list view" plural="columns"><property name="index" code="pidx" type="integer" description="the index in the front-to-back ordering within its container"></property><property name="name" code="pnam" type="elsv" access="r" description="the column name"></property><property name="sortDirection" code="sord" type="sodr" description="The direction in which the window is sorted"></property><property name="width" code="clwd" type="integer" description="the width of this column"></property><property name="minimumWidth" code="clwn" type="integer" access="r" description="the minimum allowed width of this column"></property><property name="maximumWidth" code="clwm" type="integer" access="r" description="the maximum allowed width of this column"></property><property name="visible" code="pvis" type="boolean" description="is this column visible"></property></class><class name="aliasList" code="alst" description="A list of aliases.  Use ‘as alias list’ when a list of aliases is needed (instead of a list of file system item references)."></class><enumeration name="earr" code="earr"><enumerator name="FIN.notArranged" code="narr"></enumerator><enumerator name="FIN.snapToGrid" code="grda"></enumerator><enumerator name="FIN.arrangedByName" code="nama"></enumerator><enumerator name="FIN.arrangedByModificationDate" code="mdta"></enumerator><enumerator name="FIN.arrangedByCreationDate" code="cdta"></enumerator><enumerator name="FIN.arrangedBySize" code="siza"></enumerator><enumerator name="FIN.arrangedByKind" code="kina"></enumerator><enumerator name="FIN.arrangedByLabel" code="laba"></enumerator></enumeration><enumeration name="epos" code="epos"><enumerator name="FIN.right_" code="lrgt"></enumerator><enumerator name="FIN.bottom" code="lbot"></enumerator></enumeration><enumeration name="sodr" code="sodr"><enumerator name="FIN.normal" code="snrm"></enumerator><enumerator name="FIN.reversed" code="srvs"></enumerator></enumeration><enumeration name="elsv" code="elsv"><enumerator name="FIN.nameColumn" code="elsn"></enumerator><enumerator name="FIN.modificationDateColumn" code="elsm"></enumerator><enumerator name="FIN.creationDateColumn" code="elsc"></enumerator><enumerator name="FIN.sizeColumn" code="elss"></enumerator><enumerator name="FIN.kindColumn" code="elsk"></enumerator><enumerator name="FIN.labelColumn" code="elsl"></enumerator><enumerator name="FIN.versionColumn" code="elsv"></enumerator><enumerator name="FIN.commentColumn" code="elsC"></enumerator></enumeration><enumeration name="lvic" code="lvic"><enumerator name="FIN.smallIcon" code="smic"></enumerator><enumerator name="FIN.largeIcon" code="lgic"></enumerator></enumeration></suite><suite name="Enumerations" code="tpnm" description="Enumerations for the Finder" hidden="yes"><enumeration name="isiz" code="isiz" hidden="yes"><enumerator name="FIN.mini" code="miic"></enumerator><enumerator name="FIN.small" code="smic"></enumerator><enumerator name="FIN.large" code="lgic"></enumerator></enumeration><enumeration name="sort" code="sort" hidden="yes"><enumerator name="FIN.name" code="pnam"></enumerator><enumerator name="FIN.modificationDate" code="asmo"></enumerator><enumerator name="FIN.creationDate" code="ascd"></enumerator><enumerator name="FIN.size" code="phys"></enumerator><enumerator name="FIN.kind" code="kind"></enumerator><enumerator name="FIN.labelIndex" code="labi"></enumerator><enumerator name="FIN.comment" code="comt"></enumerator><enumerator name="FIN.version" code="vers"></enumerator></enumeration></suite></dictionary>
+
+<dictionary>
+    <suite name="Standard Suite" code="CoRe" description="Common terms that most applications should support">
+        <command name="open" code="aevtodoc" description="Open the specified object(s)">
+            <direct-parameter type="specifier" description="list of objects to open"></direct-parameter>
+            <parameter name="using:" code="usin" type="specifier" optional="yes" description="the application file to open the object with"></parameter>
+            <parameter name="withProperties:" code="prdt" type="record" optional="yes" description="the initial values for the properties, to be included with the open command sent to the application that opens the direct object"></parameter>
+        </command>
+        <command name="print" code="aevtpdoc" description="Print the specified object(s)">
+            <direct-parameter type="specifier" description="list of objects to print"></direct-parameter>
+            <parameter name="withProperties:" code="prdt" type="record" optional="yes" description="optional properties to be included with the print command sent to the application that prints the direct object"></parameter>
+        </command>
+        <command name="quit" code="aevtquit" description="Quit the Finder"></command>
+        <command name="activate" code="miscactv" description="Activate the specified window (or the Finder)">
+            <direct-parameter type="specifier" optional="yes" description="the window to activate (if not specified, activates the Finder)"></direct-parameter>
+        </command>
+        <command name="close" code="coreclos" description="Close an object">
+            <direct-parameter type="specifier" description="the object to close"></direct-parameter>
+        </command>
+        <command name="count" code="corecnte" description="Return the number of elements of a particular class within an object">
+            <direct-parameter type="specifier" description="the object whose elements are to be counted"></direct-parameter>
+            <parameter name="each:" code="kocl" type="type" description="the class of the elements to be counted"></parameter>
+            <result type="integer" description="the number of elements"></result>
+        </command>
+        <command name="dataSize" code="coredsiz" description="Return the size in bytes of an object">
+            <direct-parameter type="specifier" description="the object whose data size is to be returned"></direct-parameter>
+            <parameter name="as_:" code="rtyp" type="type" optional="yes" description="the data type for which the size is calculated"></parameter>
+            <result type="integer" description="the size of the object in bytes"></result>
+        </command>
+        <command name="delete" code="coredelo" description="Move an item from its container to the trash">
+            <direct-parameter type="specifier" description="the item to delete"></direct-parameter>
+            <result type="specifier" description="to the item that was just deleted"></result>
+        </command>
+        <command name="duplicate" code="coreclon" description="Duplicate one or more object(s)">
+            <direct-parameter type="specifier" description="the object(s) to duplicate"></direct-parameter>
+            <parameter name="to:" code="insh" type="location specifier" optional="yes" description="the new location for the object(s)"></parameter>
+            <parameter name="replacing:" code="alrp" type="boolean" optional="yes" description="Specifies whether or not to replace items in the destination that have the same name as items being duplicated"></parameter>
+            <parameter name="routingSuppressed:" code="rout" type="boolean" optional="yes" description="Specifies whether or not to autoroute items (default is false). Only applies when copying to the system folder."></parameter>
+            <parameter name="exactCopy:" code="exct" type="boolean" optional="yes" description="Specifies whether or not to copy permissions/ownership as is"></parameter>
+            <result type="specifier" description="to the duplicated object(s)"></result>
+        </command>
+        <command name="exists" code="coredoex" description="Verify if an object exists">
+            <direct-parameter type="specifier" description="the object in question"></direct-parameter>
+            <result type="boolean" description="true if it exists, false if not"></result>
+        </command>
+        <command name="make" code="corecrel" description="Make a new element">
+            <parameter name="new:" code="kocl" type="type" description="the class of the new element"></parameter>
+            <parameter name="at:" code="insh" type="location specifier" description="the location at which to insert the element"></parameter>
+            <parameter name="to:" code="to  " type="specifier" optional="yes" description="when creating an alias file, the original item to create an alias to or when creating a file viewer window, the target of the window"></parameter>
+            <parameter name="withProperties:" code="prdt" type="record" optional="yes" description="the initial values for the properties of the element"></parameter>
+            <result type="specifier" description="to the new object(s)"></result>
+        </command>
+        <command name="move" code="coremove" description="Move object(s) to a new location">
+            <direct-parameter type="specifier" description="the object(s) to move"></direct-parameter>
+            <parameter name="to:" code="insh" type="location specifier" description="the new location for the object(s)"></parameter>
+            <parameter name="replacing:" code="alrp" type="boolean" optional="yes" description="Specifies whether or not to replace items in the destination that have the same name as items being moved"></parameter>
+            <parameter name="positionedAt:" code="mvpl" type="list" optional="yes" description="Gives a list (in local window coordinates) of positions for the destination items"></parameter>
+            <parameter name="routingSuppressed:" code="rout" type="boolean" optional="yes" description="Specifies whether or not to autoroute items (default is false). Only applies when moving to the system folder."></parameter>
+            <result type="specifier" description="to the object(s) after they have been moved"></result>
+        </command>
+        <command name="select" code="miscslct" description="Select the specified object(s)">
+            <direct-parameter type="specifier" description="the object to select"></direct-parameter>
+        </command>
+    </suite>
+    <suite name="Finder Basics" code="fndr" description="Commonly-used Finder commands and object classes">
+        <command name="copy" code="misccopy" description="(NOT AVAILABLE YET) Copy the selected items to the clipboard (the Finder must be the front application)"></command>
+        <command name="sort" code="DATASORT" description="Return the specified object(s) in a sorted list">
+            <direct-parameter type="specifier" description="a list of finder objects to sort"></direct-parameter>
+            <parameter name="by:" code="by  " type="property" description="the property to sort the items by (name, index, date, etc.)"></parameter>
+            <result type="specifier" optional="yes" description="the sorted items in their new order"></result>
+        </command>
+        <class name="application" code="capp" description="The Finder">
+            <element type="item"></element>
+            <element type="container"></element>
+            <element type="disk"></element>
+            <element type="folder"></element>
+            <element type="file"></element>
+            <element type="aliasFile"></element>
+            <element type="applicationFile"></element>
+            <element type="documentFile"></element>
+            <element type="internetLocationFile"></element>
+            <element type="clipping"></element>
+            <element type="package"></element>
+            <element type="window"></element>
+            <element type="FinderWindow"></element>
+            <element type="clippingWindow"></element>
+            <property name="clipboard" code="pcli" type="specifier" access="r" description="(NOT AVAILABLE YET) the Finder’s clipboard window"></property>
+            <property name="name" code="pnam" type="text" access="r" description="the Finder’s name"></property>
+            <property name="visible" code="pvis" type="boolean" description="Is the Finder’s layer visible?"></property>
+            <property name="frontmost" code="pisf" type="boolean" description="Is the Finder the frontmost process?"></property>
+            <property name="selection" code="sele" type="specifier" description="the selection in the frontmost Finder window"></property>
+            <property name="insertionLocation" code="pins" type="specifier" access="r" description="the container in which a new folder would appear if “New Folder” was selected"></property>
+            <property name="productVersion" code="ver2" type="text" access="r" description="the version of the System software running on this computer"></property>
+            <property name="version" code="vers" type="text" access="r" description="the version of the Finder"></property>
+            <property name="startupDisk" code="sdsk" type="disk" access="r" description="the startup disk"></property>
+            <property name="desktop" code="desk" type="desktop-object" access="r" description="the desktop"></property>
+            <property name="trash" code="trsh" type="trash-object" access="r" description="the trash"></property>
+            <property name="home" code="home" type="folder" access="r" description="the home directory"></property>
+            <property name="computerContainer" code="pcmp" type="computer-object" access="r" description="the computer location (as in Go &gt; Computer)"></property>
+            <property name="FinderPreferences" code="pfrp" type="preferences" access="r" description="Various preferences that apply to the Finder as a whole"></property>
+        </class>
+    </suite>
+    <suite name="Finder items" code="fndr" description="Commands used with file system items, and basic item definition">
+        <command name="cleanUp" code="fndrfclu" description="Arrange items in window nicely (only applies to open windows in icon view that are not kept arranged)">
+            <direct-parameter type="specifier" description="the window to clean up"></direct-parameter>
+            <parameter name="by:" code="by  " type="property" optional="yes" description="the order in which to clean up the objects (name, index, date, etc.)"></parameter>
+        </command>
+        <command name="eject" code="fndrejct" description="Eject the specified disk(s)">
+            <direct-parameter type="specifier" optional="yes" description="the disk(s) to eject"></direct-parameter>
+        </command>
+        <command name="empty" code="fndrempt" description="Empty the trash">
+            <direct-parameter type="specifier" optional="yes" description="“empty” and “empty trash” both do the same thing"></direct-parameter>
+            <parameter name="security:" code="sec?" type="boolean" optional="yes" description="Specifies whether or not to empty the trash securely"></parameter>
+        </command>
+        <command name="erase" code="fndrfera" description="(NOT AVAILABLE) Erase the specified disk(s)">
+            <direct-parameter type="specifier" description="the items to erase"></direct-parameter>
+        </command>
+        <command name="reveal" code="miscmvis" description="Bring the specified object(s) into view">
+            <direct-parameter type="specifier" description="the object to be made visible"></direct-parameter>
+        </command>
+        <command name="update" code="fndrfupd" description="Update the display of the specified object(s) to match their on-disk representation">
+            <direct-parameter type="specifier" description="the item to update"></direct-parameter>
+            <parameter name="necessity:" code="nec?" type="boolean" optional="yes" description="only update if necessary (i.e. a finder window is open).  default is false"></parameter>
+            <parameter name="registeringApplications:" code="reg?" type="boolean" optional="yes" description="register applications. default is true"></parameter>
+        </command>
+        <class name="item" code="cobj" description="An item" plural="items">
+            <property name="name" code="pnam" type="text" description="the name of the item"></property>
+            <property name="displayedName" code="dnam" type="text" access="r" description="the user-visible name of the item"></property>
+            <property name="nameExtension" code="nmxt" type="text" description="the name extension of the item (such as “txt”)"></property>
+            <property name="extensionHidden" code="hidx" type="boolean" description="Is the item's extension hidden from the user?"></property>
+            <property name="index" code="pidx" type="integer" access="r" description="the index in the front-to-back ordering within its container"></property>
+            <property name="container" code="ctnr" type="specifier" access="r" description="the container of the item"></property>
+            <property name="disk" code="cdis" type="specifier" access="r" description="the disk on which the item is stored"></property>
+            <property name="position" code="posn" type="point" description="the position of the item within its parent window (can only be set for an item in a window viewed as icons or buttons)"></property>
+            <property name="desktopPosition" code="dpos" type="point" description="the position of the item on the desktop"></property>
+            <property name="bounds" code="pbnd" type="rectangle" description="the bounding rectangle of the item (can only be set for an item in a window viewed as icons or buttons)"></property>
+            <property name="labelIndex" code="labi" type="integer" description="the label of the item"></property>
+            <property name="locked" code="aslk" type="boolean" description="Is the file locked?"></property>
+            <property name="kind" code="kind" type="text" access="r" description="the kind of the item"></property>
+            <property name="description" code="dscr" type="text" access="r" description="a description of the item"></property>
+            <property name="comment" code="comt" type="text" description="the comment of the item, displayed in the “Get Info” window"></property>
+            <property name="size" code="ptsz" type="double integer" access="r" description="the logical size of the item"></property>
+            <property name="physicalSize" code="phys" type="double integer" access="r" description="the actual space used by the item on disk"></property>
+            <property name="creationDate" code="ascd" type="date" access="r" description="the date on which the item was created"></property>
+            <property name="modificationDate" code="asmo" type="date" description="the date on which the item was last modified"></property>
+            <property name="icon" code="iimg" type="icon family" description="the icon bitmap of the item"></property>
+            <property name="URL" code="pURL" type="text" access="r" description="the URL of the item"></property>
+            <property name="owner" code="sown" type="text" description="the user that owns the container"></property>
+            <property name="group" code="sgrp" type="text" description="the user or group that has special access to the container"></property>
+            <property name="ownerPrivileges" code="ownr" type="priv"></property>
+            <property name="groupPrivileges" code="gppr" type="priv"></property>
+            <property name="everyonesPrivileges" code="gstp" type="priv"></property>
+            <property name="informationWindow" code="iwnd" type="specifier" access="r" description="the information window for the item"></property>
+            <property name="properties" code="pALL" type="record" description="every property of an item"></property>
+            <property name="class_" code="pcls" type="type" access="r" description="the class of the item"></property>
+        </class>
+        <enumeration name="priv" code="priv">
+            <enumerator name="FIN.readOnly" code="read"></enumerator>
+            <enumerator name="FIN.readWrite" code="rdwr"></enumerator>
+            <enumerator name="FIN.writeOnly" code="writ"></enumerator>
+            <enumerator name="FIN.none_" code="none"></enumerator>
+        </enumeration>
+    </suite>
+    <suite name="Containers and folders" code="fndr" description="Classes that can contain other file system items">
+        <class name="container" code="ctnr" description="An item that contains other items" inherits="item" plural="containers">
+            <element type="item"></element>
+            <element type="container"></element>
+            <element type="folder"></element>
+            <element type="file"></element>
+            <element type="aliasFile"></element>
+            <element type="applicationFile"></element>
+            <element type="documentFile"></element>
+            <element type="internetLocationFile"></element>
+            <element type="clipping"></element>
+            <element type="package"></element>
+            <property name="entireContents" code="ects" type="specifier" access="r" description="the entire contents of the container, including the contents of its children"></property>
+            <property name="expandable" code="pexa" type="boolean" access="r" description="(NOT AVAILABLE YET) Is the container capable of being expanded as an outline?"></property>
+            <property name="expanded" code="pexp" type="boolean" description="(NOT AVAILABLE YET) Is the container opened as an outline? (can only be set for containers viewed as lists)"></property>
+            <property name="completelyExpanded" code="pexc" type="boolean" description="(NOT AVAILABLE YET) Are the container and all of its children opened as outlines? (can only be set for containers viewed as lists)"></property>
+            <property name="containerWindow" code="cwnd" type="specifier" access="r" description="the container window for this folder"></property>
+        </class>
+        <class name="computerObject" code="ccmp" description="the Computer location (as in Go &gt; Computer)" inherits="item"></class>
+        <class name="disk" code="cdis" description="A disk" inherits="container" plural="disks">
+            <element type="item"></element>
+            <element type="container"></element>
+            <element type="folder"></element>
+            <element type="file"></element>
+            <element type="aliasFile"></element>
+            <element type="applicationFile"></element>
+            <element type="documentFile"></element>
+            <element type="internetLocationFile"></element>
+            <element type="clipping"></element>
+            <element type="package"></element>
+            <property name="id" code="ID  " type="integer" access="r" description="the unique id for this disk (unchanged while disk remains connected and Finder remains running)"></property>
+            <property name="capacity" code="capa" type="double integer" access="r" description="the total number of bytes (free or used) on the disk"></property>
+            <property name="freeSpace" code="frsp" type="double integer" access="r" description="the number of free bytes left on the disk"></property>
+            <property name="ejectable" code="isej" type="boolean" access="r" description="Can the media be ejected (floppies, CDs, and so on)?"></property>
+            <property name="localVolume" code="isrv" type="boolean" access="r" description="Is the media a local volume (as opposed to a file server)?"></property>
+            <property name="startup" code="istd" type="boolean" access="r" description="Is this disk the boot disk?"></property>
+            <property name="format" code="dfmt" type="edfm" access="r" description="the filesystem format of this disk"></property>
+            <property name="journalingEnabled" code="Jrnl" type="boolean" access="r" description="Does this disk do file system journaling?"></property>
+            <property name="ignorePrivileges" code="igpr" type="boolean" description="Ignore permissions on this disk?"></property>
+        </class>
+        <class name="folder" code="cfol" description="A folder" inherits="container" plural="folders">
+            <element type="item"></element>
+            <element type="container"></element>
+            <element type="folder"></element>
+            <element type="file"></element>
+            <element type="aliasFile"></element>
+            <element type="applicationFile"></element>
+            <element type="documentFile"></element>
+            <element type="internetLocationFile"></element>
+            <element type="clipping"></element>
+            <element type="package"></element>
+        </class>
+        <class name="desktopObject" code="cdsk" description="Desktop-object is the class of the “desktop” object" inherits="container">
+            <element type="item"></element>
+            <element type="container"></element>
+            <element type="disk"></element>
+            <element type="folder"></element>
+            <element type="file"></element>
+            <element type="aliasFile"></element>
+            <element type="applicationFile"></element>
+            <element type="documentFile"></element>
+            <element type="internetLocationFile"></element>
+            <element type="clipping"></element>
+            <element type="package"></element>
+        </class>
+        <class name="trashObject" code="ctrs" description="Trash-object is the class of the “trash” object" inherits="container">
+            <element type="item"></element>
+            <element type="container"></element>
+            <element type="folder"></element>
+            <element type="file"></element>
+            <element type="aliasFile"></element>
+            <element type="applicationFile"></element>
+            <element type="documentFile"></element>
+            <element type="internetLocationFile"></element>
+            <element type="clipping"></element>
+            <element type="package"></element>
+            <property name="warnsBeforeEmptying" code="warn" type="boolean" description="Display a dialog when emptying the trash?"></property>
+        </class>
+        <enumeration name="edfm" code="edfm">
+            <enumerator name="FIN.MacOSFormat" code="dfhf"></enumerator>
+            <enumerator name="FIN.MacOSExtendedFormat" code="dfh+"></enumerator>
+            <enumerator name="FIN.UFSFormat" code="dfuf"></enumerator>
+            <enumerator name="FIN.NFSFormat" code="dfnf"></enumerator>
+            <enumerator name="FIN.audioFormat" code="dfau"></enumerator>
+            <enumerator name="FIN.ProDOSFormat" code="dfpr"></enumerator>
+            <enumerator name="FIN.MSDOSFormat" code="dfms"></enumerator>
+            <enumerator name="FIN.NTFSFormat" code="dfnt"></enumerator>
+            <enumerator name="FIN.ISO9660Format" code="df96"></enumerator>
+            <enumerator name="FIN.HighSierraFormat" code="dfhs"></enumerator>
+            <enumerator name="FIN.QuickTakeFormat" code="dfqt"></enumerator>
+            <enumerator name="FIN.ApplePhotoFormat" code="dfph"></enumerator>
+            <enumerator name="FIN.AppleShareFormat" code="dfas"></enumerator>
+            <enumerator name="FIN.UDFFormat" code="dfud"></enumerator>
+            <enumerator name="FIN.WebDAVFormat" code="dfwd"></enumerator>
+            <enumerator name="FIN.FTPFormat" code="dfft"></enumerator>
+            <enumerator name="FIN.PacketWrittenUDFFormat" code="dfpu"></enumerator>
+            <enumerator name="FIN.XsanFormat" code="dfac"></enumerator>
+            <enumerator name="FIN.unknownFormat" code="df??"></enumerator>
+        </enumeration>
+    </suite>
+    <suite name="Files" code="fndr" description="Classes representing files">
+        <class name="file" code="file" description="A file" inherits="item" plural="files">
+            <property name="fileType" code="asty" type="type" description="the OSType identifying the type of data contained in the item"></property>
+            <property name="creatorType" code="fcrt" type="type" description="the OSType identifying the application that created the item"></property>
+            <property name="stationery" code="pspd" type="boolean" description="Is the file a stationery pad?"></property>
+            <property name="productVersion" code="ver2" type="text" access="r" description="the version of the product (visible at the top of the “Get Info” window)"></property>
+            <property name="version" code="vers" type="text" access="r" description="the version of the file (visible at the bottom of the “Get Info” window)"></property>
+        </class>
+        <class name="aliasFile" code="alia" description="An alias file (created with “Make Alias”)" inherits="file" plural="aliasFiles">
+            <property name="originalItem" code="orig" type="specifier" description="the original item pointed to by the alias"></property>
+        </class>
+        <class name="applicationFile" code="appf" description="An application's file on disk" inherits="file" plural="applicationFiles">
+            <property name="id" code="ID  " type="text" access="r" description="the bundle identifier or creator type of the application"></property>
+            <property name="suggestedSize" code="sprt" type="integer" access="r" description="(AVAILABLE IN 10.1 TO 10.4) the memory size with which the developer recommends the application be launched"></property>
+            <property name="minimumSize" code="mprt" type="integer" description="(AVAILABLE IN 10.1 TO 10.4) the smallest memory size with which the application can be launched"></property>
+            <property name="preferredSize" code="appt" type="integer" description="(AVAILABLE IN 10.1 TO 10.4) the memory size with which the application will be launched"></property>
+            <property name="acceptsHighLevelEvents" code="isab" type="boolean" access="r" description="Is the application high-level event aware? (OBSOLETE: always returns true)"></property>
+            <property name="hasScriptingTerminology" code="hscr" type="boolean" access="r" description="Does the process have a scripting terminology, i.e., can it be scripted?"></property>
+            <property name="opensInClassic" code="Clsc" type="boolean" description="(AVAILABLE IN 10.1 TO 10.4) Should the application launch in the Classic environment?"></property>
+        </class>
+        <class name="documentFile" code="docf" description="A document file" inherits="file" plural="documentFiles"></class>
+        <class name="internetLocationFile" code="inlf" description="A file containing an internet location" inherits="file" plural="internetLocationFiles">
+            <property name="location" code="iloc" type="text" access="r" description="the internet location"></property>
+        </class>
+        <class name="clipping" code="clpf" description="A clipping" inherits="file" plural="clippings">
+            <property name="clippingWindow" code="lwnd" type="specifier" access="r" description="(NOT AVAILABLE YET) the clipping window for this clipping"></property>
+        </class>
+        <class name="package" code="pack" description="A package" inherits="item" plural="packages"></class>
+    </suite>
+    <suite name="Window classes" code="fndr" description="Classes representing windows">
+        <class name="window" code="cwin" description="A window" plural="windows">
+            <property name="id" code="ID  " type="unsigned integer" access="r" description="the unique id for this window"></property>
+            <property name="position" code="posn" type="point" description="the upper left position of the window"></property>
+            <property name="bounds" code="pbnd" type="rectangle" description="the boundary rectangle for the window"></property>
+            <property name="titled" code="ptit" type="boolean" access="r" description="Does the window have a title bar?"></property>
+            <property name="name" code="pnam" type="text" access="r" description="the name of the window"></property>
+            <property name="index" code="pidx" type="integer" description="the number of the window in the front-to-back layer ordering"></property>
+            <property name="closeable" code="hclb" type="boolean" access="r" description="Does the window have a close box?"></property>
+            <property name="floating" code="isfl" type="boolean" access="r" description="Does the window have a title bar?"></property>
+            <property name="modal" code="pmod" type="boolean" access="r" description="Is the window modal?"></property>
+            <property name="resizable" code="prsz" type="boolean" access="r" description="Is the window resizable?"></property>
+            <property name="zoomable" code="iszm" type="boolean" access="r" description="Is the window zoomable?"></property>
+            <property name="zoomed" code="pzum" type="boolean" description="Is the window zoomed?"></property>
+            <property name="visible" code="pvis" type="boolean" access="r" description="Is the window visible (always true for open Finder windows)?"></property>
+            <property name="collapsed" code="wshd" type="boolean" description="Is the window collapsed"></property>
+            <property name="properties" code="pALL" type="record" description="every property of a window"></property>
+        </class>
+        <class name="FinderWindow" code="brow" description="A file viewer window" inherits="window" plural="FinderWindows">
+            <property name="target" code="fvtg" type="specifier" description="the container at which this file viewer is targeted"></property>
+            <property name="currentView" code="pvew" type="ecvw" description="the current view for the container window"></property>
+            <property name="iconViewOptions" code="icop" type="icon view options" access="r" description="the icon view options for the container window"></property>
+            <property name="listViewOptions" code="lvop" type="list view options" access="r" description="the list view options for the container window"></property>
+            <property name="columnViewOptions" code="cvop" type="column view options" access="r" description="the column view options for the container window"></property>
+            <property name="toolbarVisible" code="tbvi" type="boolean" description="Is the window's toolbar visible?"></property>
+            <property name="statusbarVisible" code="stvi" type="boolean" description="Is the window's status bar visible?"></property>
+            <property name="sidebarWidth" code="sbwi" type="integer" description="the width of the sidebar for the container window"></property>
+        </class>
+        <class name="desktopWindow" code="dktw" description="the desktop window" inherits="Finder window"></class>
+        <class name="informationWindow" code="iwnd" description="An inspector window (opened by “Show Info”)" inherits="window">
+            <property name="item" code="cobj" type="specifier" access="r" description="the item from which this window was opened"></property>
+            <property name="currentPanel" code="panl" type="ipnl" description="the current panel in the information window"></property>
+        </class>
+        <class name="preferencesWindow" code="pwnd" description="The Finder Preferences window" inherits="window">
+            <property name="currentPanel" code="panl" type="pple" description="The current panel in the Finder preferences window"></property>
+        </class>
+        <class name="clippingWindow" code="lwnd" description="The window containing a clipping" inherits="window" plural="clippingWindows"></class>
+        <enumeration name="ipnl" code="ipnl">
+            <enumerator name="FIN.GeneralInformationPanel" code="gpnl"></enumerator>
+            <enumerator name="FIN.SharingPanel" code="spnl"></enumerator>
+            <enumerator name="FIN.MemoryPanel" code="mpnl"></enumerator>
+            <enumerator name="FIN.PreviewPanel" code="vpnl"></enumerator>
+            <enumerator name="FIN.ApplicationPanel" code="apnl"></enumerator>
+            <enumerator name="FIN.LanguagesPanel" code="pklg"></enumerator>
+            <enumerator name="FIN.PluginsPanel" code="pkpg"></enumerator>
+            <enumerator name="FIN.NameAndExtensionPanel" code="npnl"></enumerator>
+            <enumerator name="FIN.CommentsPanel" code="cpnl"></enumerator>
+            <enumerator name="FIN.ContentIndexPanel" code="cinl"></enumerator>
+            <enumerator name="FIN.BurningPanel" code="bpnl"></enumerator>
+            <enumerator name="FIN.MoreInfoPanel" code="minl"></enumerator>
+            <enumerator name="FIN.SimpleHeaderPanel" code="shnl"></enumerator>
+        </enumeration>
+        <enumeration name="pple" code="pple">
+            <enumerator name="FIN.GeneralPreferencesPanel" code="pgnp"></enumerator>
+            <enumerator name="FIN.LabelPreferencesPanel" code="plbp"></enumerator>
+            <enumerator name="FIN.SidebarPreferencesPanel" code="psid"></enumerator>
+            <enumerator name="FIN.AdvancedPreferencesPanel" code="padv"></enumerator>
+        </enumeration>
+        <enumeration name="ecvw" code="ecvw">
+            <enumerator name="FIN.iconView" code="icnv"></enumerator>
+            <enumerator name="FIN.listView" code="lsvw"></enumerator>
+            <enumerator name="FIN.columnView" code="clvw"></enumerator>
+            <enumerator name="FIN.groupView" code="grvw"></enumerator>
+            <enumerator name="FIN.flowView" code="flvw"></enumerator>
+        </enumeration>
+    </suite>
+    <suite name="Legacy suite" code="fleg" description="Operations formerly handled by the Finder, but now automatically delegated to other applications">
+        <command name="restart" code="fndrrest" description="Restart the computer"></command>
+        <command name="shutDown" code="fndrshut" description="Shut Down the computer"></command>
+        <command name="sleep" code="fndrslep" description="Put the computer to sleep"></command>
+        <class-extension extends="application" description="The Finder">
+            <property name="desktopPicture" code="dpic" type="file" description="the desktop picture of the main monitor"></property>
+        </class-extension>
+        <class name="process" code="prcs" description="A process running on this computer" plural="processes">
+            <property name="name" code="pnam" type="text" access="r" description="the name of the process"></property>
+            <property name="visible" code="pvis" type="boolean" description="Is the process' layer visible?"></property>
+            <property name="frontmost" code="pisf" type="boolean" description="Is the process the frontmost process?"></property>
+            <property name="file" code="file" type="specifier" access="r" description="the file from which the process was launched"></property>
+            <property name="fileType" code="asty" type="type" access="r" description="the OSType of the file type of the process"></property>
+            <property name="creatorType" code="fcrt" type="type" access="r" description="the OSType of the creator of the process (the signature)"></property>
+            <property name="acceptsHighLevelEvents" code="isab" type="boolean" access="r" description="Is the process high-level event aware (accepts open application, open document, print document, and quit)?"></property>
+            <property name="acceptsRemoteEvents" code="revt" type="boolean" access="r" description="Does the process accept remote events?"></property>
+            <property name="hasScriptingTerminology" code="hscr" type="boolean" access="r" description="Does the process have a scripting terminology, i.e., can it be scripted?"></property>
+            <property name="totalPartitionSize" code="appt" type="integer" access="r" description="the size of the partition with which the process was launched"></property>
+            <property name="partitionSpaceUsed" code="pusd" type="integer" access="r" description="the number of bytes currently used in the process' partition"></property>
+        </class>
+        <class name="applicationProcess" code="pcap" description="A process launched from an application file" inherits="process" plural="applicationProcesses">
+            <property name="applicationFile" code="appf" type="application file" access="r" description="the application file from which this process was launched"></property>
+        </class>
+        <class name="deskAccessoryProcess" code="pcda" description="A process launched from a desk accessory file" inherits="process" plural="deskAccessoryProcesses">
+            <property name="deskAccessoryFile" code="dafi" type="specifier" access="r" description="the desk accessory file from which this process was launched"></property>
+        </class>
+    </suite>
+    <suite name="Type Definitions" code="tpdf" description="Definitions of records used in scripting the Finder">
+        <class name="preferences" code="cprf" description="The Finder Preferences">
+            <property name="window" code="cwin" type="preferences window" access="r" description="the window that would open if Finder preferences was opened"></property>
+            <property name="iconViewOptions" code="icop" type="icon view options" access="r" description="the default icon view options"></property>
+            <property name="listViewOptions" code="lvop" type="list view options" access="r" description="the default list view options"></property>
+            <property name="columnViewOptions" code="cvop" type="column view options" access="r" description="the column view options for all windows"></property>
+            <property name="foldersSpringOpen" code="sprg" type="boolean" description="Spring open folders after the specified delay?"></property>
+            <property name="delayBeforeSpringing" code="dela" type="real" description="the delay before springing open a container in seconds (from 0.167 to 1.169)"></property>
+            <property name="desktopShowsHardDisks" code="pdhd" type="boolean" description="Hard disks appear on the desktop?"></property>
+            <property name="desktopShowsExternalHardDisks" code="pehd" type="boolean" description="External hard disks appear on the desktop?"></property>
+            <property name="desktopShowsRemovableMedia" code="pdrm" type="boolean" description="CDs, DVDs, and iPods appear on the desktop?"></property>
+            <property name="desktopShowsConnectedServers" code="pdsv" type="boolean" description="Connected servers appear on the desktop?"></property>
+            <property name="newWindowTarget" code="pnwt" type="specifier" description="target location for a newly-opened Finder window"></property>
+            <property name="foldersOpenInNewWindows" code="ponw" type="boolean" description="Folders open into new windows?"></property>
+            <property name="foldersOpenInNewTabs" code="pont" type="boolean" description="Folders open into new tabs?"></property>
+            <property name="newWindowsOpenInColumnView" code="pocv" type="boolean" description="Open new windows in column view?"></property>
+            <property name="allNameExtensionsShowing" code="psnx" type="boolean" description="Show name extensions, even for items whose “extension hidden” is true?"></property>
+        </class>
+        <class name="label" code="clbl" description="(NOT AVAILABLE YET) A Finder label (name and color)">
+            <property name="name" code="pnam" type="text" description="the name associated with the label"></property>
+            <property name="index" code="pidx" type="integer" description="the index in the front-to-back ordering within its container"></property>
+            <property name="color" code="colr" type="RGB color" description="the color associated with the label"></property>
+        </class>
+        <class name="iconFamily" code="ifam" description="(NOT AVAILABLE YET) A family of icons">
+            <property name="largeMonochromeIconAndMask" code="ICN#" type="ICN#" access="r" description="the large black-and-white icon and the mask for large icons"></property>
+            <property name="large8BitMask" code="l8mk" type="l8mk" access="r" description="the large 8-bit mask for large 32-bit icons"></property>
+            <property name="large32BitIcon" code="il32" type="il32" access="r" description="the large 32-bit color icon"></property>
+            <property name="large8BitIcon" code="icl8" type="icl8" access="r" description="the large 8-bit color icon"></property>
+            <property name="large4BitIcon" code="icl4" type="icl4" access="r" description="the large 4-bit color icon"></property>
+            <property name="smallMonochromeIconAndMask" code="ics#" type="ics#" access="r" description="the small black-and-white icon and the mask for small icons"></property>
+            <property name="small8BitMask" code="ics8" type="s8mk" access="r" description="the small 8-bit mask for small 32-bit icons"></property>
+            <property name="small32BitIcon" code="is32" type="is32" access="r" description="the small 32-bit color icon"></property>
+            <property name="small8BitIcon" code="ics8" type="ics8" access="r" description="the small 8-bit color icon"></property>
+            <property name="small4BitIcon" code="ics4" type="ics4" access="r" description="the small 4-bit color icon"></property>
+        </class>
+        <class name="iconViewOptions" code="icop" description="the icon view options">
+            <property name="arrangement" code="iarr" type="earr" description="the property by which to keep icons arranged"></property>
+            <property name="iconSize" code="lvis" type="integer" description="the size of icons displayed in the icon view"></property>
+            <property name="showsItemInfo" code="mnfo" type="boolean" description="additional info about an item displayed in icon view"></property>
+            <property name="showsIconPreview" code="prvw" type="boolean" description="displays a preview of the item in icon view"></property>
+            <property name="textSize" code="fsiz" type="integer" description="the size of the text displayed in the icon view"></property>
+            <property name="labelPosition" code="lpos" type="epos" description="the location of the label in reference to the icon"></property>
+            <property name="backgroundPicture" code="ibkg" type="file" description="the background picture of the icon view"></property>
+            <property name="backgroundColor" code="colr" type="RGB color" description="the background color of the icon view"></property>
+        </class>
+        <class name="columnViewOptions" code="cvop" description="the column view options">
+            <property name="textSize" code="fsiz" type="integer" description="the size of the text displayed in the column view"></property>
+            <property name="showsIcon" code="shic" type="boolean" description="displays an icon next to the label in column view"></property>
+            <property name="showsIconPreview" code="prvw" type="boolean" description="displays a preview of the item in column view"></property>
+            <property name="showsPreviewColumn" code="shpr" type="boolean" description="displays the preview column in column view"></property>
+            <property name="disclosesPreviewPane" code="dspr" type="boolean" description="discloses the preview pane of the preview column in column view"></property>
+        </class>
+        <class name="listViewOptions" code="lvop" description="the list view options">
+            <element type="column"></element>
+            <property name="calculatesFolderSizes" code="sfsz" type="boolean" description="Are folder sizes calculated and displayed in the window?"></property>
+            <property name="showsIconPreview" code="prvw" type="boolean" description="displays a preview of the item in list view"></property>
+            <property name="iconSize" code="lvis" type="lvic" description="the size of icons displayed in the list view"></property>
+            <property name="textSize" code="fsiz" type="integer" description="the size of the text displayed in the list view"></property>
+            <property name="sortColumn" code="srtc" type="column" description="the column that the list view is sorted on"></property>
+            <property name="usesRelativeDates" code="urdt" type="boolean" description="Are relative dates (e.g., today, yesterday) shown in the list view?"></property>
+        </class>
+        <class name="column" code="lvcl" description="a column of a list view" plural="columns">
+            <property name="index" code="pidx" type="integer" description="the index in the front-to-back ordering within its container"></property>
+            <property name="name" code="pnam" type="elsv" access="r" description="the column name"></property>
+            <property name="sortDirection" code="sord" type="sodr" description="The direction in which the window is sorted"></property>
+            <property name="width" code="clwd" type="integer" description="the width of this column"></property>
+            <property name="minimumWidth" code="clwn" type="integer" access="r" description="the minimum allowed width of this column"></property>
+            <property name="maximumWidth" code="clwm" type="integer" access="r" description="the maximum allowed width of this column"></property>
+            <property name="visible" code="pvis" type="boolean" description="is this column visible"></property>
+        </class>
+        <class name="aliasList" code="alst" description="A list of aliases.  Use ‘as alias list’ when a list of aliases is needed (instead of a list of file system item references)."></class>
+        <enumeration name="earr" code="earr">
+            <enumerator name="FIN.notArranged" code="narr"></enumerator>
+            <enumerator name="FIN.snapToGrid" code="grda"></enumerator>
+            <enumerator name="FIN.arrangedByName" code="nama"></enumerator>
+            <enumerator name="FIN.arrangedByModificationDate" code="mdta"></enumerator>
+            <enumerator name="FIN.arrangedByCreationDate" code="cdta"></enumerator>
+            <enumerator name="FIN.arrangedBySize" code="siza"></enumerator>
+            <enumerator name="FIN.arrangedByKind" code="kina"></enumerator>
+            <enumerator name="FIN.arrangedByLabel" code="laba"></enumerator>
+        </enumeration>
+        <enumeration name="epos" code="epos">
+            <enumerator name="FIN.right_" code="lrgt"></enumerator>
+            <enumerator name="FIN.bottom" code="lbot"></enumerator>
+        </enumeration>
+        <enumeration name="sodr" code="sodr">
+            <enumerator name="FIN.normal" code="snrm"></enumerator>
+            <enumerator name="FIN.reversed" code="srvs"></enumerator>
+        </enumeration>
+        <enumeration name="elsv" code="elsv">
+            <enumerator name="FIN.nameColumn" code="elsn"></enumerator>
+            <enumerator name="FIN.modificationDateColumn" code="elsm"></enumerator>
+            <enumerator name="FIN.creationDateColumn" code="elsc"></enumerator>
+            <enumerator name="FIN.sizeColumn" code="elss"></enumerator>
+            <enumerator name="FIN.kindColumn" code="elsk"></enumerator>
+            <enumerator name="FIN.labelColumn" code="elsl"></enumerator>
+            <enumerator name="FIN.versionColumn" code="elsv"></enumerator>
+            <enumerator name="FIN.commentColumn" code="elsC"></enumerator>
+        </enumeration>
+        <enumeration name="lvic" code="lvic">
+            <enumerator name="FIN.smallIcon" code="smic"></enumerator>
+            <enumerator name="FIN.largeIcon" code="lgic"></enumerator>
+        </enumeration>
+    </suite>
+    <suite name="Enumerations" code="tpnm" description="Enumerations for the Finder" hidden="yes">
+        <enumeration name="isiz" code="isiz" hidden="yes">
+            <enumerator name="FIN.mini" code="miic"></enumerator>
+            <enumerator name="FIN.small" code="smic"></enumerator>
+            <enumerator name="FIN.large" code="lgic"></enumerator>
+        </enumeration>
+        <enumeration name="sort" code="sort" hidden="yes">
+            <enumerator name="FIN.name" code="pnam"></enumerator>
+            <enumerator name="FIN.modificationDate" code="asmo"></enumerator>
+            <enumerator name="FIN.creationDate" code="ascd"></enumerator>
+            <enumerator name="FIN.size" code="phys"></enumerator>
+            <enumerator name="FIN.kind" code="kind"></enumerator>
+            <enumerator name="FIN.labelIndex" code="labi"></enumerator>
+            <enumerator name="FIN.comment" code="comt"></enumerator>
+            <enumerator name="FIN.version" code="vers"></enumerator>
+        </enumeration>
+    </suite>
+</dictionary>

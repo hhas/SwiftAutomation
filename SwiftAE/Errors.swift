@@ -5,6 +5,8 @@
 
 import Foundation
 
+// TO DO: how best to compose/chain exceptions?
+
 
 // TO DO: can/should Errors be implemented as enums? TBH, only error user should see directly is CommandError (though currently sendAppleEvent throws non-CommandError if called on generic specifier); specific errors (which may be SwiftAE or NSError [sub]classes) should be encapsulated in that, and are really only included for informational purposes. Any specialized error handling would be decided according to OSStatus code (which cannot be defined as an enum as it's completely arbitrary) so will require a switch block instead.
 
@@ -119,8 +121,8 @@ public class SwiftAEError: ErrorType, CustomStringConvertible { // TO DO: should
 }
 
 public class NotImplementedError: SwiftAEError {
-    convenience init() {
-        self.init(code: 1, message: "Not Implemented Error")
+    convenience init(message: String? = nil) {
+        self.init(code: 1, message: "Not Implemented Error" + (message == nil ? "." : ": \(message!)"))
     }
 }
 
@@ -160,15 +162,15 @@ public class UnpackError: SwiftAEError {
         super.init(code: -1700, message: message) // TO DO: what error code?
     }
     
-    public override var description: String {
+    public override var description: String { // TO DO: how best to phrase error message?
         var value: Any = self.descriptor
-        var msg: String = " as \(self.type)"
+        var msg: String = "Can't unpack value as \(self.type)"
         do {
             value = try self.appData.unpack(self.descriptor)
         } catch {
-            msg = " due to error"
+            msg = "Can't unpack descriptor as \(self.type)"
         }
-        return "Error \(self._code): Can't unpack value\(msg):\n\n\t\(value)" + (self.message == nil ? "" : "\n\n\(self.message!)")
+        return "Error \(self._code): \(msg):\n\n\t\(value)" + (self.message == nil ? "" : "\n\n\(self.message!)")
     }
 }
 
@@ -214,7 +216,7 @@ public class CommandError: SwiftAEError {
 
     /* TO DO: update and incorporate this error message construction code (taken from AppleEventBridge)
 
-    let aemError = error as NSError // an AEBCommand-supplied NSError containing (none/some/all?) standard AE error keys in its userInfo dict; these should be replaced by public constants (note that the 'expectedType' value is a typeType descriptor supplied by the application where appropriate, and not to be confused with the Swift Type supplied by the caller via the asType: argument nor the typeType descriptor supplied via the requestedType: arg)
+    let aemError = error as NSError // an AEBCommand-supplied NSError containing (none/some/all?) standard AE error keys in its userInfo dict; these should be replaced by public constants (note that the 'expectedType' value is a typeType descriptor supplied by the application where appropriate, and not to be confused with the Swift Type supplied by the caller via the returnType: argument nor the typeType descriptor supplied via the requestedType: arg)
     
     
     var args = [String]()

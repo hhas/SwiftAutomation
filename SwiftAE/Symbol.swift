@@ -43,7 +43,7 @@ public class Symbol: Hashable, Equatable, CustomStringConvertible, SelfPacking {
         if let name = self.name {
             return "\(self.typeAliasName).\(name)"
         } else {
-            return "\(self.dynamicType)(code: \"\(formatFourCharCodeString(self.code))\", type: \"\(formatFourCharCodeString(self.type))\")"
+            return "\(self.dynamicType)(code:\(formatFourCharCodeString(self.code)),type:\(formatFourCharCodeString(self.type)))"
         }
     }
     

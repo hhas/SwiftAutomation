@@ -12,6 +12,20 @@ TO DO:
 
 
 
+- framework target
+
+- include tutorial playground? (see manual ch.4) Q. just how predictable is playground-based execution when performing commands with side effects?
+
+
+
+- explicit 'asType:Symbol' (requestType:? as_:?) parameter on command methods? keyAERequestedType can't always be inferred from return type, plus it should prob. only be passed when user explicitly states it; note that while some apps may explicitly define `as` param for `get` command, it's something AS will add regardless (TODO: need to check this is true), so it might make more sense to make it a fixed param in glue (so that it appears on _all_ commands) and ignore it in commandInfo (so that it doesn't appear more than once). Might be wise to look at commands that already contain this param, e.g. `get` and `dataSize` in Finder (though note that Finder's dictionary doesn't explicitly define `get`, at least not in SDEF [which is what we're stuck with these days]) (what else? e.g. StdAdds has `read...as...`, which isn't directly relevant but may provide some clue as to how consistently it's named)
+
+    As an example of why this option is needed, in Python app('Finder').files.get(returntype=k.alias) is used to return a list of aliases; in Swift, this is not inferrable from static type Array<NSURL> since 1. NSURL type declaration can't distinguish bookmark-style from path-style, and 2. it would need to ignore the Array part of the type (since types expressed as typeType descs can't be parameterized) which is a major assumption to which other apps may not hold so could well backfire in practice;
+
+
+
+- extra problem with Dictionary unpack: returnType: currently only accepts [Symbol:U], not Symbol subclasses (e.g. AESymbol)
+
 
 
 - SpecifierFormatter.format() currently never shows Application(...) root as returned specifiers use generic AppRoot which never contains appData. This doesn't affect subsequent use of those specifiers, since the rest of the specifier consists of SpecifierNodes that do retain the AppData used to unpack them, but does screw up introspection a bit. Simplest fix here might be to pass existing appData as [optional] arg to SpecifierFormatter.format(). Best solution may be for Application constructors to pass weakrefd self to AppData constructor, so that returned specifiers always have targeted absolute root, and rely purely on formatter to deal with abbreviating nested specifiers. (Note: AppleEventBridge never had this issue since all nodes including root were represented by single wrapper class.)

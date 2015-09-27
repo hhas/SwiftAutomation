@@ -2,7 +2,7 @@
 //  AEApplicationGlue.swift
 //  built-in 
 //  SwiftAE.framework 0.1.0
-//  `aeglue -dr`
+//  `aeglue -rd`
 //
 
 
@@ -16,7 +16,7 @@ private let gUntargetedAppData = AppData(glueInfo: GlueInfo(insertionSpecifierTy
                                                             objectSpecifierType: AEObject.self,
                                                             elementsSpecifierType: AEElements.self,
                                                             rootSpecifierType: AERoot.self,
-                                                            symbolType: Symbol.self,
+                                                            symbolType: AESymbol.self,
                                                             formatter: gSpecifierFormatter))
 
 
@@ -28,8 +28,10 @@ private let gSpecifierFormatter = SpecifierFormatter(applicationClassName: "AEAp
                                                      propertyNames: [
                                                                      0x70636c73: "class_", // "pcls"
                                                                      0x49442020: "id", // "ID  "
+                                                                     0x70414c4c: "properties", // "pALL"
                                                      ],
-                                                     elementsNames: [:
+                                                     elementsNames: [
+                                                                     0x636f626a: "items", // "cobj"
                                                      ])
 
 
@@ -54,34 +56,21 @@ public class AESymbol: Symbol {
         case 0x626f6f6c: return self.boolean // "bool"
         case 0x71647274: return self.boundingRectangle // "qdrt"
         case 0x63617365: return self.case_ // "case"
-        case 0x636d7472: return self.centimeters // "cmtr"
         case 0x70636c73: return self.class_ // "pcls"
-        case 0x67636c69: return self.classInfo // "gcli"
         case 0x636c7274: return self.colorTable // "clrt"
-        case 0x63636d74: return self.cubicCentimeters // "ccmt"
-        case 0x63666574: return self.cubicFeet // "cfet"
-        case 0x6375696e: return self.cubicInches // "cuin"
-        case 0x636d6574: return self.cubicMeters // "cmet"
-        case 0x63797264: return self.cubicYards // "cyrd"
         case 0x74646173: return self.dashStyle // "tdas"
         case 0x74647461: return self.data // "tdta"
         case 0x6c647420: return self.date // "ldt "
         case 0x64656320: return self.December // "dec "
         case 0x6465636d: return self.decimalStruct // "decm"
-        case 0x64656763: return self.degreesCelsius // "degc"
-        case 0x64656766: return self.degreesFahrenheit // "degf"
-        case 0x6465676b: return self.degreesKelvin // "degk"
         case 0x64696163: return self.diacriticals // "diac"
         case 0x636f6d70: return self.doubleInteger // "comp"
-        case 0x656c696e: return self.elementInfo // "elin"
         case 0x656e6373: return self.encodedString // "encs"
         case 0x656e756d: return self.enumerator // "enum"
         case 0x45505320: return self.EPSPicture // "EPS "
-        case 0x6576696e: return self.eventInfo // "evin"
         case 0x65787061: return self.expansion // "expa"
         case 0x65787465: return self.extendedFloat // "exte"
         case 0x66656220: return self.February // "feb "
-        case 0x66656574: return self.feet // "feet"
         case 0x66737266: return self.fileRef // "fsrf"
         case 0x66737320: return self.fileSpecification // "fss "
         case 0x6675726c: return self.fileUrl // "furl"
@@ -91,13 +80,10 @@ public class AESymbol: Symbol {
         case 0x646f7562: return self.float // "doub"
         case 0x6c64626c: return self.float128bit // "ldbl"
         case 0x66726920: return self.Friday // "fri "
-        case 0x67616c6e: return self.gallons // "galn"
         case 0x47494666: return self.GIFPicture // "GIFf"
-        case 0x6772616d: return self.grams // "gram"
         case 0x63677478: return self.graphicText // "cgtx"
         case 0x68797068: return self.hyphens // "hyph"
         case 0x49442020: return self.id // "ID  "
-        case 0x696e6368: return self.inches // "inch"
         case 0x6c6f6e67: return self.integer // "long"
         case 0x69747874: return self.internationalText // "itxt"
         case 0x696e746c: return self.internationalWritingCode // "intl"
@@ -107,10 +93,7 @@ public class AESymbol: Symbol {
         case 0x6a756c20: return self.July // "jul "
         case 0x6a756e20: return self.June // "jun "
         case 0x6b706964: return self.kernelProcessId // "kpid"
-        case 0x6b67726d: return self.kilograms // "kgrm"
-        case 0x6b6d7472: return self.kilometers // "kmtr"
         case 0x6c697374: return self.list // "list"
-        case 0x6c697472: return self.liters // "litr"
         case 0x696e736c: return self.locationReference // "insl"
         case 0x6c667864: return self.longFixed // "lfxd"
         case 0x6c667074: return self.longFixedPoint // "lfpt"
@@ -122,8 +105,6 @@ public class AESymbol: Symbol {
         case 0x706f7274: return self.machPort // "port"
         case 0x6d617220: return self.March // "mar "
         case 0x6d617920: return self.May // "may "
-        case 0x6d657472: return self.meters // "metr"
-        case 0x6d696c65: return self.miles // "mile"
         case 0x6d736e67: return self.missingValue // "msng"
         case 0x6d6f6e20: return self.Monday // "mon "
         case 0x6e6f2020: return self.no // "no  "
@@ -131,17 +112,13 @@ public class AESymbol: Symbol {
         case 0x6e756c6c: return self.null // "null"
         case 0x6e756d65: return self.numericStrings // "nume"
         case 0x6f637420: return self.October // "oct "
-        case 0x6f7a7320: return self.ounces // "ozs "
-        case 0x706d696e: return self.parameterInfo // "pmin"
         case 0x50494354: return self.PICTPicture // "PICT"
         case 0x74706d6d: return self.pixelMapRecord // "tpmm"
         case 0x51447074: return self.point // "QDpt"
-        case 0x6c627320: return self.pounds // "lbs "
         case 0x70736e20: return self.processSerialNumber // "psn "
+        case 0x70414c4c: return self.properties // "pALL"
         case 0x70726f70: return self.property_ // "prop"
-        case 0x70696e66: return self.propertyInfo // "pinf"
         case 0x70756e63: return self.punctuation // "punc"
-        case 0x71727473: return self.quarts // "qrts"
         case 0x7265636f: return self.record // "reco"
         case 0x6f626a20: return self.reference // "obj "
         case 0x74723136: return self.RGB16Color // "tr16"
@@ -153,15 +130,9 @@ public class AESymbol: Symbol {
         case 0x73657020: return self.September // "sep "
         case 0x73696e67: return self.shortFloat // "sing"
         case 0x73686f72: return self.shortInteger // "shor"
-        case 0x73716674: return self.squareFeet // "sqft"
-        case 0x73716b6d: return self.squareKilometers // "sqkm"
-        case 0x7371726d: return self.squareMeters // "sqrm"
-        case 0x73716d69: return self.squareMiles // "sqmi"
-        case 0x73717964: return self.squareYards // "sqyd"
         case 0x54455854: return self.string // "TEXT"
         case 0x7374796c: return self.styledClipboardText // "styl"
         case 0x53545854: return self.styledText // "STXT"
-        case 0x7375696e: return self.suiteInfo // "suin"
         case 0x73756e20: return self.Sunday // "sun "
         case 0x74737479: return self.textStyleInfo // "tsty"
         case 0x74687520: return self.Thursday // "thu "
@@ -176,7 +147,6 @@ public class AESymbol: Symbol {
         case 0x77656420: return self.Wednesday // "wed "
         case 0x77686974: return self.whitespace // "whit"
         case 0x70736374: return self.writingCode // "psct"
-        case 0x79617264: return self.yards // "yard"
         case 0x79657320: return self.yes // "yes "
         default: return super.symbol(code, type: type, descriptor: descriptor) as! AESymbol
         }
@@ -193,32 +163,19 @@ public class AESymbol: Symbol {
     public static let best = AESymbol(name: "best", code: 0x62657374, type: typeType) // "best"
     public static let boolean = AESymbol(name: "boolean", code: 0x626f6f6c, type: typeType) // "bool"
     public static let boundingRectangle = AESymbol(name: "boundingRectangle", code: 0x71647274, type: typeType) // "qdrt"
-    public static let centimeters = AESymbol(name: "centimeters", code: 0x636d7472, type: typeType) // "cmtr"
     public static let class_ = AESymbol(name: "class_", code: 0x70636c73, type: typeType) // "pcls"
-    public static let classInfo = AESymbol(name: "classInfo", code: 0x67636c69, type: typeType) // "gcli"
     public static let colorTable = AESymbol(name: "colorTable", code: 0x636c7274, type: typeType) // "clrt"
-    public static let cubicCentimeters = AESymbol(name: "cubicCentimeters", code: 0x63636d74, type: typeType) // "ccmt"
-    public static let cubicFeet = AESymbol(name: "cubicFeet", code: 0x63666574, type: typeType) // "cfet"
-    public static let cubicInches = AESymbol(name: "cubicInches", code: 0x6375696e, type: typeType) // "cuin"
-    public static let cubicMeters = AESymbol(name: "cubicMeters", code: 0x636d6574, type: typeType) // "cmet"
-    public static let cubicYards = AESymbol(name: "cubicYards", code: 0x63797264, type: typeType) // "cyrd"
     public static let dashStyle = AESymbol(name: "dashStyle", code: 0x74646173, type: typeType) // "tdas"
     public static let data = AESymbol(name: "data", code: 0x74647461, type: typeType) // "tdta"
     public static let date = AESymbol(name: "date", code: 0x6c647420, type: typeType) // "ldt "
     public static let December = AESymbol(name: "December", code: 0x64656320, type: typeType) // "dec "
     public static let decimalStruct = AESymbol(name: "decimalStruct", code: 0x6465636d, type: typeType) // "decm"
-    public static let degreesCelsius = AESymbol(name: "degreesCelsius", code: 0x64656763, type: typeType) // "degc"
-    public static let degreesFahrenheit = AESymbol(name: "degreesFahrenheit", code: 0x64656766, type: typeType) // "degf"
-    public static let degreesKelvin = AESymbol(name: "degreesKelvin", code: 0x6465676b, type: typeType) // "degk"
     public static let doubleInteger = AESymbol(name: "doubleInteger", code: 0x636f6d70, type: typeType) // "comp"
-    public static let elementInfo = AESymbol(name: "elementInfo", code: 0x656c696e, type: typeType) // "elin"
     public static let encodedString = AESymbol(name: "encodedString", code: 0x656e6373, type: typeType) // "encs"
     public static let enumerator = AESymbol(name: "enumerator", code: 0x656e756d, type: typeType) // "enum"
     public static let EPSPicture = AESymbol(name: "EPSPicture", code: 0x45505320, type: typeType) // "EPS "
-    public static let eventInfo = AESymbol(name: "eventInfo", code: 0x6576696e, type: typeType) // "evin"
     public static let extendedFloat = AESymbol(name: "extendedFloat", code: 0x65787465, type: typeType) // "exte"
     public static let February = AESymbol(name: "February", code: 0x66656220, type: typeType) // "feb "
-    public static let feet = AESymbol(name: "feet", code: 0x66656574, type: typeType) // "feet"
     public static let fileRef = AESymbol(name: "fileRef", code: 0x66737266, type: typeType) // "fsrf"
     public static let fileSpecification = AESymbol(name: "fileSpecification", code: 0x66737320, type: typeType) // "fss "
     public static let fileUrl = AESymbol(name: "fileUrl", code: 0x6675726c, type: typeType) // "furl"
@@ -228,12 +185,9 @@ public class AESymbol: Symbol {
     public static let float = AESymbol(name: "float", code: 0x646f7562, type: typeType) // "doub"
     public static let float128bit = AESymbol(name: "float128bit", code: 0x6c64626c, type: typeType) // "ldbl"
     public static let Friday = AESymbol(name: "Friday", code: 0x66726920, type: typeType) // "fri "
-    public static let gallons = AESymbol(name: "gallons", code: 0x67616c6e, type: typeType) // "galn"
     public static let GIFPicture = AESymbol(name: "GIFPicture", code: 0x47494666, type: typeType) // "GIFf"
-    public static let grams = AESymbol(name: "grams", code: 0x6772616d, type: typeType) // "gram"
     public static let graphicText = AESymbol(name: "graphicText", code: 0x63677478, type: typeType) // "cgtx"
     public static let id = AESymbol(name: "id", code: 0x49442020, type: typeType) // "ID  "
-    public static let inches = AESymbol(name: "inches", code: 0x696e6368, type: typeType) // "inch"
     public static let integer = AESymbol(name: "integer", code: 0x6c6f6e67, type: typeType) // "long"
     public static let internationalText = AESymbol(name: "internationalText", code: 0x69747874, type: typeType) // "itxt"
     public static let internationalWritingCode = AESymbol(name: "internationalWritingCode", code: 0x696e746c, type: typeType) // "intl"
@@ -243,10 +197,7 @@ public class AESymbol: Symbol {
     public static let July = AESymbol(name: "July", code: 0x6a756c20, type: typeType) // "jul "
     public static let June = AESymbol(name: "June", code: 0x6a756e20, type: typeType) // "jun "
     public static let kernelProcessId = AESymbol(name: "kernelProcessId", code: 0x6b706964, type: typeType) // "kpid"
-    public static let kilograms = AESymbol(name: "kilograms", code: 0x6b67726d, type: typeType) // "kgrm"
-    public static let kilometers = AESymbol(name: "kilometers", code: 0x6b6d7472, type: typeType) // "kmtr"
     public static let list = AESymbol(name: "list", code: 0x6c697374, type: typeType) // "list"
-    public static let liters = AESymbol(name: "liters", code: 0x6c697472, type: typeType) // "litr"
     public static let locationReference = AESymbol(name: "locationReference", code: 0x696e736c, type: typeType) // "insl"
     public static let longFixed = AESymbol(name: "longFixed", code: 0x6c667864, type: typeType) // "lfxd"
     public static let longFixedPoint = AESymbol(name: "longFixedPoint", code: 0x6c667074, type: typeType) // "lfpt"
@@ -258,23 +209,17 @@ public class AESymbol: Symbol {
     public static let machPort = AESymbol(name: "machPort", code: 0x706f7274, type: typeType) // "port"
     public static let March = AESymbol(name: "March", code: 0x6d617220, type: typeType) // "mar "
     public static let May = AESymbol(name: "May", code: 0x6d617920, type: typeType) // "may "
-    public static let meters = AESymbol(name: "meters", code: 0x6d657472, type: typeType) // "metr"
-    public static let miles = AESymbol(name: "miles", code: 0x6d696c65, type: typeType) // "mile"
     public static let missingValue = AESymbol(name: "missingValue", code: 0x6d736e67, type: typeType) // "msng"
     public static let Monday = AESymbol(name: "Monday", code: 0x6d6f6e20, type: typeType) // "mon "
     public static let November = AESymbol(name: "November", code: 0x6e6f7620, type: typeType) // "nov "
     public static let null = AESymbol(name: "null", code: 0x6e756c6c, type: typeType) // "null"
     public static let October = AESymbol(name: "October", code: 0x6f637420, type: typeType) // "oct "
-    public static let ounces = AESymbol(name: "ounces", code: 0x6f7a7320, type: typeType) // "ozs "
-    public static let parameterInfo = AESymbol(name: "parameterInfo", code: 0x706d696e, type: typeType) // "pmin"
     public static let PICTPicture = AESymbol(name: "PICTPicture", code: 0x50494354, type: typeType) // "PICT"
     public static let pixelMapRecord = AESymbol(name: "pixelMapRecord", code: 0x74706d6d, type: typeType) // "tpmm"
     public static let point = AESymbol(name: "point", code: 0x51447074, type: typeType) // "QDpt"
-    public static let pounds = AESymbol(name: "pounds", code: 0x6c627320, type: typeType) // "lbs "
     public static let processSerialNumber = AESymbol(name: "processSerialNumber", code: 0x70736e20, type: typeType) // "psn "
+    public static let properties = AESymbol(name: "properties", code: 0x70414c4c, type: typeType) // "pALL"
     public static let property_ = AESymbol(name: "property_", code: 0x70726f70, type: typeType) // "prop"
-    public static let propertyInfo = AESymbol(name: "propertyInfo", code: 0x70696e66, type: typeType) // "pinf"
-    public static let quarts = AESymbol(name: "quarts", code: 0x71727473, type: typeType) // "qrts"
     public static let record = AESymbol(name: "record", code: 0x7265636f, type: typeType) // "reco"
     public static let reference = AESymbol(name: "reference", code: 0x6f626a20, type: typeType) // "obj "
     public static let RGB16Color = AESymbol(name: "RGB16Color", code: 0x74723136, type: typeType) // "tr16"
@@ -286,15 +231,9 @@ public class AESymbol: Symbol {
     public static let September = AESymbol(name: "September", code: 0x73657020, type: typeType) // "sep "
     public static let shortFloat = AESymbol(name: "shortFloat", code: 0x73696e67, type: typeType) // "sing"
     public static let shortInteger = AESymbol(name: "shortInteger", code: 0x73686f72, type: typeType) // "shor"
-    public static let squareFeet = AESymbol(name: "squareFeet", code: 0x73716674, type: typeType) // "sqft"
-    public static let squareKilometers = AESymbol(name: "squareKilometers", code: 0x73716b6d, type: typeType) // "sqkm"
-    public static let squareMeters = AESymbol(name: "squareMeters", code: 0x7371726d, type: typeType) // "sqrm"
-    public static let squareMiles = AESymbol(name: "squareMiles", code: 0x73716d69, type: typeType) // "sqmi"
-    public static let squareYards = AESymbol(name: "squareYards", code: 0x73717964, type: typeType) // "sqyd"
     public static let string = AESymbol(name: "string", code: 0x54455854, type: typeType) // "TEXT"
     public static let styledClipboardText = AESymbol(name: "styledClipboardText", code: 0x7374796c, type: typeType) // "styl"
     public static let styledText = AESymbol(name: "styledText", code: 0x53545854, type: typeType) // "STXT"
-    public static let suiteInfo = AESymbol(name: "suiteInfo", code: 0x7375696e, type: typeType) // "suin"
     public static let Sunday = AESymbol(name: "Sunday", code: 0x73756e20, type: typeType) // "sun "
     public static let textStyleInfo = AESymbol(name: "textStyleInfo", code: 0x74737479, type: typeType) // "tsty"
     public static let Thursday = AESymbol(name: "Thursday", code: 0x74687520, type: typeType) // "thu "
@@ -308,7 +247,6 @@ public class AESymbol: Symbol {
     public static let version = AESymbol(name: "version", code: 0x76657273, type: typeType) // "vers"
     public static let Wednesday = AESymbol(name: "Wednesday", code: 0x77656420, type: typeType) // "wed "
     public static let writingCode = AESymbol(name: "writingCode", code: 0x70736374, type: typeType) // "psct"
-    public static let yards = AESymbol(name: "yards", code: 0x79617264, type: typeType) // "yard"
 
     // Enumerators
     public static let ask = AESymbol(name: "ask", code: 0x61736b20, type: typeEnumerated) // "ask "
@@ -338,28 +276,56 @@ extension AECommand {
         return try self.appData.sendAppleEvent("activate", eventClass: 0x6d697363, eventID: 0x61637476, // "misc"/"actv"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+    }
+    public func activate<T>(directParameter: Any = NoParameter,
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent("activate", eventClass: 0x6d697363, eventID: 0x61637476, // "misc"/"actv"
+                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     public func get(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("get", eventClass: 0x636f7265, eventID: 0x67657464, // "core"/"getd"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+    }
+    public func get<T>(directParameter: Any = NoParameter,
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent("get", eventClass: 0x636f7265, eventID: 0x67657464, // "core"/"getd"
+                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     public func launch(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("launch", eventClass: 0x61736372, eventID: 0x6e6f6f70, // "ascr"/"noop"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+    }
+    public func launch<T>(directParameter: Any = NoParameter,
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent("launch", eventClass: 0x61736372, eventID: 0x6e6f6f70, // "ascr"/"noop"
+                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     public func open(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("open", eventClass: 0x61657674, eventID: 0x6f646f63, // "aevt"/"odoc"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+    }
+    public func open<T>(directParameter: Any = NoParameter,
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent("open", eventClass: 0x61657674, eventID: 0x6f646f63, // "aevt"/"odoc"
+                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     public func openLocation(directParameter: Any = NoParameter,
             window: Any = NoParameter,
@@ -368,14 +334,30 @@ extension AECommand {
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("window", 0x57494e44, window), // "WIND"
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+    }
+    public func openLocation<T>(directParameter: Any = NoParameter,
+            window: Any = NoParameter,
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent("openLocation", eventClass: 0x4755524c, eventID: 0x4755524c, // "GURL"/"GURL"
+                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                    ("window", 0x57494e44, window), // "WIND"
+                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     public func print(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("print", eventClass: 0x61657674, eventID: 0x70646f63, // "aevt"/"pdoc"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+    }
+    public func print<T>(directParameter: Any = NoParameter,
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent("print", eventClass: 0x61657674, eventID: 0x70646f63, // "aevt"/"pdoc"
+                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     public func quit(directParameter: Any = NoParameter,
             saving: Any = NoParameter,
@@ -384,21 +366,44 @@ extension AECommand {
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("saving", 0x7361766f, saving), // "savo"
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+    }
+    public func quit<T>(directParameter: Any = NoParameter,
+            saving: Any = NoParameter,
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent("quit", eventClass: 0x61657674, eventID: 0x71756974, // "aevt"/"quit"
+                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                    ("saving", 0x7361766f, saving), // "savo"
+                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     public func reopen(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("reopen", eventClass: 0x61657674, eventID: 0x72617070, // "aevt"/"rapp"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+    }
+    public func reopen<T>(directParameter: Any = NoParameter,
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent("reopen", eventClass: 0x61657674, eventID: 0x72617070, // "aevt"/"rapp"
+                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     public func run(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("run", eventClass: 0x61657674, eventID: 0x6f617070, // "aevt"/"oapp"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+    }
+    public func run<T>(directParameter: Any = NoParameter,
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent("run", eventClass: 0x61657674, eventID: 0x6f617070, // "aevt"/"oapp"
+                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     public func set(directParameter: Any = NoParameter,
             to: Any = NoParameter,
@@ -407,7 +412,16 @@ extension AECommand {
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("to", 0x64617461, to), // "data"
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+    }
+    public func set<T>(directParameter: Any = NoParameter,
+            to: Any = NoParameter,
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent("set", eventClass: 0x636f7265, eventID: 0x73657464, // "core"/"setd"
+                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                    ("to", 0x64617461, to), // "data"
+                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
 }
 
@@ -419,8 +433,10 @@ extension AEQuery {
     // Properties
     public var class_: AEObject {return self.property(0x70636c73) as! AEObject} // "pcls"
     public var id: AEObject {return self.property(0x49442020) as! AEObject} // "ID  "
+    public var properties: AEObject {return self.property(0x70414c4c) as! AEObject} // "pALL"
 
     // Elements
+    public var items: AEElements {return self.elements(0x636f626a) as! AEElements} // "cobj"
 }
 
 

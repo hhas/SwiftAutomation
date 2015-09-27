@@ -16,7 +16,7 @@ private let gUntargetedAppData = AppData(glueInfo: GlueInfo(insertionSpecifierTy
                                                             objectSpecifierType: FINObject.self,
                                                             elementsSpecifierType: FINElements.self,
                                                             rootSpecifierType: FINRoot.self,
-                                                            symbolType: Symbol.self,
+                                                            symbolType: FINSymbol.self,
                                                             formatter: gSpecifierFormatter))
 
 
@@ -243,9 +243,7 @@ public class FINSymbol: Symbol {
         case 0x7366737a: return self.calculatesFolderSizes // "sfsz"
         case 0x63617061: return self.capacity // "capa"
         case 0x63617365: return self.case_ // "case"
-        case 0x636d7472: return self.centimeters // "cmtr"
         case 0x70636c73: return self.class_ // "pcls"
-        case 0x67636c69: return self.classInfo // "gcli"
         case 0x70636c69: return self.clipboard // "pcli"
         case 0x636c7066: return self.clipping // "clpf"
         case 0x6c776e64: return self.clippingWindow // "lwnd"
@@ -267,11 +265,6 @@ public class FINSymbol: Symbol {
         case 0x61736364: return self.creationDate // "ascd"
         case 0x656c7363: return self.creationDateColumn // "elsc"
         case 0x66637274: return self.creatorType // "fcrt"
-        case 0x63636d74: return self.cubicCentimeters // "ccmt"
-        case 0x63666574: return self.cubicFeet // "cfet"
-        case 0x6375696e: return self.cubicInches // "cuin"
-        case 0x636d6574: return self.cubicMeters // "cmet"
-        case 0x63797264: return self.cubicYards // "cyrd"
         case 0x70616e6c: return self.currentPanel // "panl"
         case 0x70766577: return self.currentView // "pvew"
         case 0x74646173: return self.dashStyle // "tdas"
@@ -279,9 +272,6 @@ public class FINSymbol: Symbol {
         case 0x6c647420: return self.date // "ldt "
         case 0x64656320: return self.December // "dec "
         case 0x6465636d: return self.decimalStruct // "decm"
-        case 0x64656763: return self.degreesCelsius // "degc"
-        case 0x64656766: return self.degreesFahrenheit // "degf"
-        case 0x6465676b: return self.degreesKelvin // "degk"
         case 0x64656c61: return self.delayBeforeSpringing // "dela"
         case 0x64736372: return self.description // "dscr"
         case 0x64616669: return self.deskAccessoryFile // "dafi"
@@ -302,12 +292,10 @@ public class FINSymbol: Symbol {
         case 0x646f6366: return self.documentFile // "docf"
         case 0x636f6d70: return self.doubleInteger // "comp"
         case 0x6973656a: return self.ejectable // "isej"
-        case 0x656c696e: return self.elementInfo // "elin"
         case 0x656e6373: return self.encodedString // "encs"
         case 0x65637473: return self.entireContents // "ects"
         case 0x656e756d: return self.enumerator // "enum"
         case 0x45505320: return self.EPSPicture // "EPS "
-        case 0x6576696e: return self.eventInfo // "evin"
         case 0x67737470: return self.everyonesPrivileges // "gstp"
         case 0x70657861: return self.expandable // "pexa"
         case 0x70657870: return self.expanded // "pexp"
@@ -315,7 +303,6 @@ public class FINSymbol: Symbol {
         case 0x65787465: return self.extendedFloat // "exte"
         case 0x68696478: return self.extensionHidden // "hidx"
         case 0x66656220: return self.February // "feb "
-        case 0x66656574: return self.feet // "feet"
         case 0x66696c65: return self.file // "file"
         case 0x66737266: return self.fileRef // "fsrf"
         case 0x66737320: return self.fileSpecification // "fss "
@@ -339,11 +326,9 @@ public class FINSymbol: Symbol {
         case 0x66726920: return self.Friday // "fri "
         case 0x70697366: return self.frontmost // "pisf"
         case 0x64666674: return self.FTPFormat // "dfft"
-        case 0x67616c6e: return self.gallons // "galn"
         case 0x67706e6c: return self.GeneralInformationPanel // "gpnl"
         case 0x70676e70: return self.GeneralPreferencesPanel // "pgnp"
         case 0x47494666: return self.GIFPicture // "GIFf"
-        case 0x6772616d: return self.grams // "gram"
         case 0x63677478: return self.graphicText // "cgtx"
         case 0x73677270: return self.group // "sgrp"
         case 0x67707072: return self.groupPrivileges // "gppr"
@@ -359,7 +344,6 @@ public class FINSymbol: Symbol {
         case 0x69636f70: return self.iconViewOptions // "icop"
         case 0x49442020: return self.id // "ID  "
         case 0x69677072: return self.ignorePrivileges // "igpr"
-        case 0x696e6368: return self.inches // "inch"
         case 0x70696478: return self.index // "pidx"
         case 0x69776e64: return self.informationWindow // "iwnd"
         case 0x70696e73: return self.insertionLocation // "pins"
@@ -375,8 +359,6 @@ public class FINSymbol: Symbol {
         case 0x6a756c20: return self.July // "jul "
         case 0x6a756e20: return self.June // "jun "
         case 0x6b706964: return self.kernelProcessId // "kpid"
-        case 0x6b67726d: return self.kilograms // "kgrm"
-        case 0x6b6d7472: return self.kilometers // "kmtr"
         case 0x6b696e64: return self.kind // "kind"
         case 0x656c736b: return self.kindColumn // "elsk"
         case 0x636c626c: return self.label // "clbl"
@@ -394,7 +376,6 @@ public class FINSymbol: Symbol {
         case 0x6c697374: return self.list // "list"
         case 0x6c737677: return self.listView // "lsvw"
         case 0x6c766f70: return self.listViewOptions // "lvop"
-        case 0x6c697472: return self.liters // "litr"
         case 0x69737276: return self.localVolume // "isrv"
         case 0x696c6f63: return self.location // "iloc"
         case 0x696e736c: return self.locationReference // "insl"
@@ -413,8 +394,6 @@ public class FINSymbol: Symbol {
         case 0x636c776d: return self.maximumWidth // "clwm"
         case 0x6d617920: return self.May // "may "
         case 0x6d706e6c: return self.MemoryPanel // "mpnl"
-        case 0x6d657472: return self.meters // "metr"
-        case 0x6d696c65: return self.miles // "mile"
         case 0x6d696963: return self.mini // "miic"
         case 0x6d707274: return self.minimumSize // "mprt"
         case 0x636c776e: return self.minimumWidth // "clwn"
@@ -443,19 +422,16 @@ public class FINSymbol: Symbol {
         case 0x6f637420: return self.October // "oct "
         case 0x436c7363: return self.opensInClassic // "Clsc"
         case 0x6f726967: return self.originalItem // "orig"
-        case 0x6f7a7320: return self.ounces // "ozs "
         case 0x736f776e: return self.owner // "sown"
         case 0x6f776e72: return self.ownerPrivileges // "ownr"
         case 0x7061636b: return self.package // "pack"
         case 0x64667075: return self.PacketWrittenUDFFormat // "dfpu"
-        case 0x706d696e: return self.parameterInfo // "pmin"
         case 0x70757364: return self.partitionSpaceUsed // "pusd"
         case 0x50494354: return self.PICTPicture // "PICT"
         case 0x74706d6d: return self.pixelMapRecord // "tpmm"
         case 0x706b7067: return self.PluginsPanel // "pkpg"
         case 0x51447074: return self.point // "QDpt"
         case 0x706f736e: return self.position // "posn"
-        case 0x6c627320: return self.pounds // "lbs "
         case 0x63707266: return self.preferences // "cprf"
         case 0x70776e64: return self.preferencesWindow // "pwnd"
         case 0x76706e6c: return self.PreviewPanel // "vpnl"
@@ -465,9 +441,7 @@ public class FINSymbol: Symbol {
         case 0x76657232: return self.productVersion // "ver2"
         case 0x70414c4c: return self.properties // "pALL"
         case 0x70726f70: return self.property_ // "prop"
-        case 0x70696e66: return self.propertyInfo // "pinf"
         case 0x70756e63: return self.punctuation // "punc"
-        case 0x71727473: return self.quarts // "qrts"
         case 0x64667174: return self.QuickTakeFormat // "dfqt"
         case 0x72656164: return self.readOnly // "read"
         case 0x72647772: return self.readWrite // "rdwr"
@@ -494,8 +468,8 @@ public class FINSymbol: Symbol {
         case 0x70736964: return self.SidebarPreferencesPanel // "psid"
         case 0x73627769: return self.sidebarWidth // "sbwi"
         case 0x73686e6c: return self.SimpleHeaderPanel // "shnl"
-        case 0x7074737a: return self.size // "ptsz"
         case 0x70687973: return self.size // "phys"
+        case 0x7074737a: return self.size // "ptsz"
         case 0x656c7373: return self.sizeColumn // "elss"
         case 0x736d6963: return self.small // "smic"
         case 0x69733332: return self.small32BitIcon // "is32"
@@ -505,11 +479,6 @@ public class FINSymbol: Symbol {
         case 0x67726461: return self.snapToGrid // "grda"
         case 0x73727463: return self.sortColumn // "srtc"
         case 0x736f7264: return self.sortDirection // "sord"
-        case 0x73716674: return self.squareFeet // "sqft"
-        case 0x73716b6d: return self.squareKilometers // "sqkm"
-        case 0x7371726d: return self.squareMeters // "sqrm"
-        case 0x73716d69: return self.squareMiles // "sqmi"
-        case 0x73717964: return self.squareYards // "sqyd"
         case 0x69737464: return self.startup // "istd"
         case 0x7364736b: return self.startupDisk // "sdsk"
         case 0x70737064: return self.stationery // "pspd"
@@ -518,7 +487,6 @@ public class FINSymbol: Symbol {
         case 0x7374796c: return self.styledClipboardText // "styl"
         case 0x53545854: return self.styledText // "STXT"
         case 0x73707274: return self.suggestedSize // "sprt"
-        case 0x7375696e: return self.suiteInfo // "suin"
         case 0x73756e20: return self.Sunday // "sun "
         case 0x66767467: return self.target // "fvtg"
         case 0x6673697a: return self.textSize // "fsiz"
@@ -553,7 +521,6 @@ public class FINSymbol: Symbol {
         case 0x77726974: return self.writeOnly // "writ"
         case 0x70736374: return self.writingCode // "psct"
         case 0x64666163: return self.XsanFormat // "dfac"
-        case 0x79617264: return self.yards // "yard"
         case 0x79657320: return self.yes // "yes "
         case 0x69737a6d: return self.zoomable // "iszm"
         case 0x707a756d: return self.zoomed // "pzum"
@@ -586,9 +553,7 @@ public class FINSymbol: Symbol {
     public static let bounds = FINSymbol(name: "bounds", code: 0x70626e64, type: typeType) // "pbnd"
     public static let calculatesFolderSizes = FINSymbol(name: "calculatesFolderSizes", code: 0x7366737a, type: typeType) // "sfsz"
     public static let capacity = FINSymbol(name: "capacity", code: 0x63617061, type: typeType) // "capa"
-    public static let centimeters = FINSymbol(name: "centimeters", code: 0x636d7472, type: typeType) // "cmtr"
     public static let class_ = FINSymbol(name: "class_", code: 0x70636c73, type: typeType) // "pcls"
-    public static let classInfo = FINSymbol(name: "classInfo", code: 0x67636c69, type: typeType) // "gcli"
     public static let clipboard = FINSymbol(name: "clipboard", code: 0x70636c69, type: typeType) // "pcli"
     public static let clipping = FINSymbol(name: "clipping", code: 0x636c7066, type: typeType) // "clpf"
     public static let clippingWindow = FINSymbol(name: "clippingWindow", code: 0x6c776e64, type: typeType) // "lwnd"
@@ -604,11 +569,6 @@ public class FINSymbol: Symbol {
     public static let container = FINSymbol(name: "container", code: 0x63746e72, type: typeType) // "ctnr"
     public static let containerWindow = FINSymbol(name: "containerWindow", code: 0x63776e64, type: typeType) // "cwnd"
     public static let creatorType = FINSymbol(name: "creatorType", code: 0x66637274, type: typeType) // "fcrt"
-    public static let cubicCentimeters = FINSymbol(name: "cubicCentimeters", code: 0x63636d74, type: typeType) // "ccmt"
-    public static let cubicFeet = FINSymbol(name: "cubicFeet", code: 0x63666574, type: typeType) // "cfet"
-    public static let cubicInches = FINSymbol(name: "cubicInches", code: 0x6375696e, type: typeType) // "cuin"
-    public static let cubicMeters = FINSymbol(name: "cubicMeters", code: 0x636d6574, type: typeType) // "cmet"
-    public static let cubicYards = FINSymbol(name: "cubicYards", code: 0x63797264, type: typeType) // "cyrd"
     public static let currentPanel = FINSymbol(name: "currentPanel", code: 0x70616e6c, type: typeType) // "panl"
     public static let currentView = FINSymbol(name: "currentView", code: 0x70766577, type: typeType) // "pvew"
     public static let dashStyle = FINSymbol(name: "dashStyle", code: 0x74646173, type: typeType) // "tdas"
@@ -616,9 +576,6 @@ public class FINSymbol: Symbol {
     public static let date = FINSymbol(name: "date", code: 0x6c647420, type: typeType) // "ldt "
     public static let December = FINSymbol(name: "December", code: 0x64656320, type: typeType) // "dec "
     public static let decimalStruct = FINSymbol(name: "decimalStruct", code: 0x6465636d, type: typeType) // "decm"
-    public static let degreesCelsius = FINSymbol(name: "degreesCelsius", code: 0x64656763, type: typeType) // "degc"
-    public static let degreesFahrenheit = FINSymbol(name: "degreesFahrenheit", code: 0x64656766, type: typeType) // "degf"
-    public static let degreesKelvin = FINSymbol(name: "degreesKelvin", code: 0x6465676b, type: typeType) // "degk"
     public static let delayBeforeSpringing = FINSymbol(name: "delayBeforeSpringing", code: 0x64656c61, type: typeType) // "dela"
     public static let description = FINSymbol(name: "description", code: 0x64736372, type: typeType) // "dscr"
     public static let deskAccessoryFile = FINSymbol(name: "deskAccessoryFile", code: 0x64616669, type: typeType) // "dafi"
@@ -638,19 +595,16 @@ public class FINSymbol: Symbol {
     public static let documentFile = FINSymbol(name: "documentFile", code: 0x646f6366, type: typeType) // "docf"
     public static let doubleInteger = FINSymbol(name: "doubleInteger", code: 0x636f6d70, type: typeType) // "comp"
     public static let ejectable = FINSymbol(name: "ejectable", code: 0x6973656a, type: typeType) // "isej"
-    public static let elementInfo = FINSymbol(name: "elementInfo", code: 0x656c696e, type: typeType) // "elin"
     public static let encodedString = FINSymbol(name: "encodedString", code: 0x656e6373, type: typeType) // "encs"
     public static let entireContents = FINSymbol(name: "entireContents", code: 0x65637473, type: typeType) // "ects"
     public static let enumerator = FINSymbol(name: "enumerator", code: 0x656e756d, type: typeType) // "enum"
     public static let EPSPicture = FINSymbol(name: "EPSPicture", code: 0x45505320, type: typeType) // "EPS "
-    public static let eventInfo = FINSymbol(name: "eventInfo", code: 0x6576696e, type: typeType) // "evin"
     public static let everyonesPrivileges = FINSymbol(name: "everyonesPrivileges", code: 0x67737470, type: typeType) // "gstp"
     public static let expandable = FINSymbol(name: "expandable", code: 0x70657861, type: typeType) // "pexa"
     public static let expanded = FINSymbol(name: "expanded", code: 0x70657870, type: typeType) // "pexp"
     public static let extendedFloat = FINSymbol(name: "extendedFloat", code: 0x65787465, type: typeType) // "exte"
     public static let extensionHidden = FINSymbol(name: "extensionHidden", code: 0x68696478, type: typeType) // "hidx"
     public static let February = FINSymbol(name: "February", code: 0x66656220, type: typeType) // "feb "
-    public static let feet = FINSymbol(name: "feet", code: 0x66656574, type: typeType) // "feet"
     public static let file = FINSymbol(name: "file", code: 0x66696c65, type: typeType) // "file"
     public static let fileRef = FINSymbol(name: "fileRef", code: 0x66737266, type: typeType) // "fsrf"
     public static let fileSpecification = FINSymbol(name: "fileSpecification", code: 0x66737320, type: typeType) // "fss "
@@ -672,9 +626,7 @@ public class FINSymbol: Symbol {
     public static let freeSpace = FINSymbol(name: "freeSpace", code: 0x66727370, type: typeType) // "frsp"
     public static let Friday = FINSymbol(name: "Friday", code: 0x66726920, type: typeType) // "fri "
     public static let frontmost = FINSymbol(name: "frontmost", code: 0x70697366, type: typeType) // "pisf"
-    public static let gallons = FINSymbol(name: "gallons", code: 0x67616c6e, type: typeType) // "galn"
     public static let GIFPicture = FINSymbol(name: "GIFPicture", code: 0x47494666, type: typeType) // "GIFf"
-    public static let grams = FINSymbol(name: "grams", code: 0x6772616d, type: typeType) // "gram"
     public static let graphicText = FINSymbol(name: "graphicText", code: 0x63677478, type: typeType) // "cgtx"
     public static let group = FINSymbol(name: "group", code: 0x73677270, type: typeType) // "sgrp"
     public static let groupPrivileges = FINSymbol(name: "groupPrivileges", code: 0x67707072, type: typeType) // "gppr"
@@ -686,7 +638,6 @@ public class FINSymbol: Symbol {
     public static let iconViewOptions = FINSymbol(name: "iconViewOptions", code: 0x69636f70, type: typeType) // "icop"
     public static let id = FINSymbol(name: "id", code: 0x49442020, type: typeType) // "ID  "
     public static let ignorePrivileges = FINSymbol(name: "ignorePrivileges", code: 0x69677072, type: typeType) // "igpr"
-    public static let inches = FINSymbol(name: "inches", code: 0x696e6368, type: typeType) // "inch"
     public static let index = FINSymbol(name: "index", code: 0x70696478, type: typeType) // "pidx"
     public static let informationWindow = FINSymbol(name: "informationWindow", code: 0x69776e64, type: typeType) // "iwnd"
     public static let insertionLocation = FINSymbol(name: "insertionLocation", code: 0x70696e73, type: typeType) // "pins"
@@ -701,8 +652,6 @@ public class FINSymbol: Symbol {
     public static let July = FINSymbol(name: "July", code: 0x6a756c20, type: typeType) // "jul "
     public static let June = FINSymbol(name: "June", code: 0x6a756e20, type: typeType) // "jun "
     public static let kernelProcessId = FINSymbol(name: "kernelProcessId", code: 0x6b706964, type: typeType) // "kpid"
-    public static let kilograms = FINSymbol(name: "kilograms", code: 0x6b67726d, type: typeType) // "kgrm"
-    public static let kilometers = FINSymbol(name: "kilometers", code: 0x6b6d7472, type: typeType) // "kmtr"
     public static let label = FINSymbol(name: "label", code: 0x636c626c, type: typeType) // "clbl"
     public static let labelPosition = FINSymbol(name: "labelPosition", code: 0x6c706f73, type: typeType) // "lpos"
     public static let large32BitIcon = FINSymbol(name: "large32BitIcon", code: 0x696c3332, type: typeType) // "il32"
@@ -712,7 +661,6 @@ public class FINSymbol: Symbol {
     public static let largeMonochromeIconAndMask = FINSymbol(name: "largeMonochromeIconAndMask", code: 0x49434e23, type: typeType) // "ICN#"
     public static let list = FINSymbol(name: "list", code: 0x6c697374, type: typeType) // "list"
     public static let listViewOptions = FINSymbol(name: "listViewOptions", code: 0x6c766f70, type: typeType) // "lvop"
-    public static let liters = FINSymbol(name: "liters", code: 0x6c697472, type: typeType) // "litr"
     public static let localVolume = FINSymbol(name: "localVolume", code: 0x69737276, type: typeType) // "isrv"
     public static let location = FINSymbol(name: "location", code: 0x696c6f63, type: typeType) // "iloc"
     public static let locationReference = FINSymbol(name: "locationReference", code: 0x696e736c, type: typeType) // "insl"
@@ -728,8 +676,6 @@ public class FINSymbol: Symbol {
     public static let March = FINSymbol(name: "March", code: 0x6d617220, type: typeType) // "mar "
     public static let maximumWidth = FINSymbol(name: "maximumWidth", code: 0x636c776d, type: typeType) // "clwm"
     public static let May = FINSymbol(name: "May", code: 0x6d617920, type: typeType) // "may "
-    public static let meters = FINSymbol(name: "meters", code: 0x6d657472, type: typeType) // "metr"
-    public static let miles = FINSymbol(name: "miles", code: 0x6d696c65, type: typeType) // "mile"
     public static let minimumSize = FINSymbol(name: "minimumSize", code: 0x6d707274, type: typeType) // "mprt"
     public static let minimumWidth = FINSymbol(name: "minimumWidth", code: 0x636c776e, type: typeType) // "clwn"
     public static let missingValue = FINSymbol(name: "missingValue", code: 0x6d736e67, type: typeType) // "msng"
@@ -743,18 +689,15 @@ public class FINSymbol: Symbol {
     public static let October = FINSymbol(name: "October", code: 0x6f637420, type: typeType) // "oct "
     public static let opensInClassic = FINSymbol(name: "opensInClassic", code: 0x436c7363, type: typeType) // "Clsc"
     public static let originalItem = FINSymbol(name: "originalItem", code: 0x6f726967, type: typeType) // "orig"
-    public static let ounces = FINSymbol(name: "ounces", code: 0x6f7a7320, type: typeType) // "ozs "
     public static let owner = FINSymbol(name: "owner", code: 0x736f776e, type: typeType) // "sown"
     public static let ownerPrivileges = FINSymbol(name: "ownerPrivileges", code: 0x6f776e72, type: typeType) // "ownr"
     public static let package = FINSymbol(name: "package", code: 0x7061636b, type: typeType) // "pack"
-    public static let parameterInfo = FINSymbol(name: "parameterInfo", code: 0x706d696e, type: typeType) // "pmin"
     public static let partitionSpaceUsed = FINSymbol(name: "partitionSpaceUsed", code: 0x70757364, type: typeType) // "pusd"
     public static let physicalSize = FINSymbol(name: "physicalSize", code: 0x70687973, type: typeType) // "phys"
     public static let PICTPicture = FINSymbol(name: "PICTPicture", code: 0x50494354, type: typeType) // "PICT"
     public static let pixelMapRecord = FINSymbol(name: "pixelMapRecord", code: 0x74706d6d, type: typeType) // "tpmm"
     public static let point = FINSymbol(name: "point", code: 0x51447074, type: typeType) // "QDpt"
     public static let position = FINSymbol(name: "position", code: 0x706f736e, type: typeType) // "posn"
-    public static let pounds = FINSymbol(name: "pounds", code: 0x6c627320, type: typeType) // "lbs "
     public static let preferences = FINSymbol(name: "preferences", code: 0x63707266, type: typeType) // "cprf"
     public static let preferencesWindow = FINSymbol(name: "preferencesWindow", code: 0x70776e64, type: typeType) // "pwnd"
     public static let preferredSize = FINSymbol(name: "preferredSize", code: 0x61707074, type: typeType) // "appt"
@@ -763,8 +706,6 @@ public class FINSymbol: Symbol {
     public static let productVersion = FINSymbol(name: "productVersion", code: 0x76657232, type: typeType) // "ver2"
     public static let properties = FINSymbol(name: "properties", code: 0x70414c4c, type: typeType) // "pALL"
     public static let property_ = FINSymbol(name: "property_", code: 0x70726f70, type: typeType) // "prop"
-    public static let propertyInfo = FINSymbol(name: "propertyInfo", code: 0x70696e66, type: typeType) // "pinf"
-    public static let quarts = FINSymbol(name: "quarts", code: 0x71727473, type: typeType) // "qrts"
     public static let record = FINSymbol(name: "record", code: 0x7265636f, type: typeType) // "reco"
     public static let reference = FINSymbol(name: "reference", code: 0x6f626a20, type: typeType) // "obj "
     public static let resizable = FINSymbol(name: "resizable", code: 0x7072737a, type: typeType) // "prsz"
@@ -790,11 +731,6 @@ public class FINSymbol: Symbol {
     public static let smallMonochromeIconAndMask = FINSymbol(name: "smallMonochromeIconAndMask", code: 0x69637323, type: typeType) // "ics#"
     public static let sortColumn = FINSymbol(name: "sortColumn", code: 0x73727463, type: typeType) // "srtc"
     public static let sortDirection = FINSymbol(name: "sortDirection", code: 0x736f7264, type: typeType) // "sord"
-    public static let squareFeet = FINSymbol(name: "squareFeet", code: 0x73716674, type: typeType) // "sqft"
-    public static let squareKilometers = FINSymbol(name: "squareKilometers", code: 0x73716b6d, type: typeType) // "sqkm"
-    public static let squareMeters = FINSymbol(name: "squareMeters", code: 0x7371726d, type: typeType) // "sqrm"
-    public static let squareMiles = FINSymbol(name: "squareMiles", code: 0x73716d69, type: typeType) // "sqmi"
-    public static let squareYards = FINSymbol(name: "squareYards", code: 0x73717964, type: typeType) // "sqyd"
     public static let startup = FINSymbol(name: "startup", code: 0x69737464, type: typeType) // "istd"
     public static let startupDisk = FINSymbol(name: "startupDisk", code: 0x7364736b, type: typeType) // "sdsk"
     public static let stationery = FINSymbol(name: "stationery", code: 0x70737064, type: typeType) // "pspd"
@@ -803,7 +739,6 @@ public class FINSymbol: Symbol {
     public static let styledClipboardText = FINSymbol(name: "styledClipboardText", code: 0x7374796c, type: typeType) // "styl"
     public static let styledText = FINSymbol(name: "styledText", code: 0x53545854, type: typeType) // "STXT"
     public static let suggestedSize = FINSymbol(name: "suggestedSize", code: 0x73707274, type: typeType) // "sprt"
-    public static let suiteInfo = FINSymbol(name: "suiteInfo", code: 0x7375696e, type: typeType) // "suin"
     public static let Sunday = FINSymbol(name: "Sunday", code: 0x73756e20, type: typeType) // "sun "
     public static let target = FINSymbol(name: "target", code: 0x66767467, type: typeType) // "fvtg"
     public static let textSize = FINSymbol(name: "textSize", code: 0x6673697a, type: typeType) // "fsiz"
@@ -829,7 +764,6 @@ public class FINSymbol: Symbol {
     public static let width = FINSymbol(name: "width", code: 0x636c7764, type: typeType) // "clwd"
     public static let window = FINSymbol(name: "window", code: 0x6377696e, type: typeType) // "cwin"
     public static let writingCode = FINSymbol(name: "writingCode", code: 0x70736374, type: typeType) // "psct"
-    public static let yards = FINSymbol(name: "yards", code: 0x79617264, type: typeType) // "yard"
     public static let zoomable = FINSymbol(name: "zoomable", code: 0x69737a6d, type: typeType) // "iszm"
     public static let zoomed = FINSymbol(name: "zoomed", code: 0x707a756d, type: typeType) // "pzum"
 
@@ -939,7 +873,14 @@ extension FINCommand {
         return try self.appData.sendAppleEvent("activate", eventClass: 0x6d697363, eventID: 0x61637476, // "misc"/"actv"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+    }
+    public func activate<T>(directParameter: Any = NoParameter,
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent("activate", eventClass: 0x6d697363, eventID: 0x61637476, // "misc"/"actv"
+                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     public func cleanUp(directParameter: Any = NoParameter,
             by: Any = NoParameter,
@@ -948,21 +889,44 @@ extension FINCommand {
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("by", 0x62792020, by), // "by  "
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+    }
+    public func cleanUp<T>(directParameter: Any = NoParameter,
+            by: Any = NoParameter,
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent("cleanUp", eventClass: 0x666e6472, eventID: 0x66636c75, // "fndr"/"fclu"
+                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                    ("by", 0x62792020, by), // "by  "
+                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     public func close(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("close", eventClass: 0x636f7265, eventID: 0x636c6f73, // "core"/"clos"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+    }
+    public func close<T>(directParameter: Any = NoParameter,
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent("close", eventClass: 0x636f7265, eventID: 0x636c6f73, // "core"/"clos"
+                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     public func copy(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("copy", eventClass: 0x6d697363, eventID: 0x636f7079, // "misc"/"copy"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+    }
+    public func copy<T>(directParameter: Any = NoParameter,
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent("copy", eventClass: 0x6d697363, eventID: 0x636f7079, // "misc"/"copy"
+                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     public func count(directParameter: Any = NoParameter,
             each: Any = NoParameter,
@@ -971,7 +935,16 @@ extension FINCommand {
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("each", 0x6b6f636c, each), // "kocl"
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+    }
+    public func count<T>(directParameter: Any = NoParameter,
+            each: Any = NoParameter,
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent("count", eventClass: 0x636f7265, eventID: 0x636e7465, // "core"/"cnte"
+                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                    ("each", 0x6b6f636c, each), // "kocl"
+                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     public func dataSize(directParameter: Any = NoParameter,
             as_: Any = NoParameter,
@@ -980,14 +953,30 @@ extension FINCommand {
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("as_", 0x72747970, as_), // "rtyp"
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+    }
+    public func dataSize<T>(directParameter: Any = NoParameter,
+            as_: Any = NoParameter,
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent("dataSize", eventClass: 0x636f7265, eventID: 0x6473697a, // "core"/"dsiz"
+                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                    ("as_", 0x72747970, as_), // "rtyp"
+                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     public func delete(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("delete", eventClass: 0x636f7265, eventID: 0x64656c6f, // "core"/"delo"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+    }
+    public func delete<T>(directParameter: Any = NoParameter,
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent("delete", eventClass: 0x636f7265, eventID: 0x64656c6f, // "core"/"delo"
+                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     public func duplicate(directParameter: Any = NoParameter,
             to: Any = NoParameter,
@@ -1002,14 +991,36 @@ extension FINCommand {
                     ("routingSuppressed", 0x726f7574, routingSuppressed), // "rout"
                     ("exactCopy", 0x65786374, exactCopy), // "exct"
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+    }
+    public func duplicate<T>(directParameter: Any = NoParameter,
+            to: Any = NoParameter,
+            replacing: Any = NoParameter,
+            routingSuppressed: Any = NoParameter,
+            exactCopy: Any = NoParameter,
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent("duplicate", eventClass: 0x636f7265, eventID: 0x636c6f6e, // "core"/"clon"
+                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                    ("to", 0x696e7368, to), // "insh"
+                    ("replacing", 0x616c7270, replacing), // "alrp"
+                    ("routingSuppressed", 0x726f7574, routingSuppressed), // "rout"
+                    ("exactCopy", 0x65786374, exactCopy), // "exct"
+                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     public func eject(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("eject", eventClass: 0x666e6472, eventID: 0x656a6374, // "fndr"/"ejct"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+    }
+    public func eject<T>(directParameter: Any = NoParameter,
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent("eject", eventClass: 0x666e6472, eventID: 0x656a6374, // "fndr"/"ejct"
+                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     public func empty(directParameter: Any = NoParameter,
             security: Any = NoParameter,
@@ -1018,35 +1029,72 @@ extension FINCommand {
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("security", 0x7365633f, security), // "sec?"
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+    }
+    public func empty<T>(directParameter: Any = NoParameter,
+            security: Any = NoParameter,
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent("empty", eventClass: 0x666e6472, eventID: 0x656d7074, // "fndr"/"empt"
+                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                    ("security", 0x7365633f, security), // "sec?"
+                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     public func erase(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("erase", eventClass: 0x666e6472, eventID: 0x66657261, // "fndr"/"fera"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+    }
+    public func erase<T>(directParameter: Any = NoParameter,
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent("erase", eventClass: 0x666e6472, eventID: 0x66657261, // "fndr"/"fera"
+                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     public func exists(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("exists", eventClass: 0x636f7265, eventID: 0x646f6578, // "core"/"doex"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+    }
+    public func exists<T>(directParameter: Any = NoParameter,
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent("exists", eventClass: 0x636f7265, eventID: 0x646f6578, // "core"/"doex"
+                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     public func get(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("get", eventClass: 0x636f7265, eventID: 0x67657464, // "core"/"getd"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+    }
+    public func get<T>(directParameter: Any = NoParameter,
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent("get", eventClass: 0x636f7265, eventID: 0x67657464, // "core"/"getd"
+                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     public func launch(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("launch", eventClass: 0x61736372, eventID: 0x6e6f6f70, // "ascr"/"noop"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+    }
+    public func launch<T>(directParameter: Any = NoParameter,
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent("launch", eventClass: 0x61736372, eventID: 0x6e6f6f70, // "ascr"/"noop"
+                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     public func make(directParameter: Any = NoParameter,
             new: Any = NoParameter,
@@ -1061,7 +1109,22 @@ extension FINCommand {
                     ("to", 0x746f2020, to), // "to  "
                     ("withProperties", 0x70726474, withProperties), // "prdt"
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+    }
+    public func make<T>(directParameter: Any = NoParameter,
+            new: Any = NoParameter,
+            at: Any = NoParameter,
+            to: Any = NoParameter,
+            withProperties: Any = NoParameter,
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent("make", eventClass: 0x636f7265, eventID: 0x6372656c, // "core"/"crel"
+                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                    ("new", 0x6b6f636c, new), // "kocl"
+                    ("at", 0x696e7368, at), // "insh"
+                    ("to", 0x746f2020, to), // "to  "
+                    ("withProperties", 0x70726474, withProperties), // "prdt"
+                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     public func move(directParameter: Any = NoParameter,
             to: Any = NoParameter,
@@ -1076,7 +1139,22 @@ extension FINCommand {
                     ("positionedAt", 0x6d76706c, positionedAt), // "mvpl"
                     ("routingSuppressed", 0x726f7574, routingSuppressed), // "rout"
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+    }
+    public func move<T>(directParameter: Any = NoParameter,
+            to: Any = NoParameter,
+            replacing: Any = NoParameter,
+            positionedAt: Any = NoParameter,
+            routingSuppressed: Any = NoParameter,
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent("move", eventClass: 0x636f7265, eventID: 0x6d6f7665, // "core"/"move"
+                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                    ("to", 0x696e7368, to), // "insh"
+                    ("replacing", 0x616c7270, replacing), // "alrp"
+                    ("positionedAt", 0x6d76706c, positionedAt), // "mvpl"
+                    ("routingSuppressed", 0x726f7574, routingSuppressed), // "rout"
+                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     public func open(directParameter: Any = NoParameter,
             using: Any = NoParameter,
@@ -1087,7 +1165,18 @@ extension FINCommand {
                     ("using", 0x7573696e, using), // "usin"
                     ("withProperties", 0x70726474, withProperties), // "prdt"
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+    }
+    public func open<T>(directParameter: Any = NoParameter,
+            using: Any = NoParameter,
+            withProperties: Any = NoParameter,
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent("open", eventClass: 0x61657674, eventID: 0x6f646f63, // "aevt"/"odoc"
+                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                    ("using", 0x7573696e, using), // "usin"
+                    ("withProperties", 0x70726474, withProperties), // "prdt"
+                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     public func openLocation(directParameter: Any = NoParameter,
             window: Any = NoParameter,
@@ -1096,7 +1185,16 @@ extension FINCommand {
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("window", 0x57494e44, window), // "WIND"
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+    }
+    public func openLocation<T>(directParameter: Any = NoParameter,
+            window: Any = NoParameter,
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent("openLocation", eventClass: 0x4755524c, eventID: 0x4755524c, // "GURL"/"GURL"
+                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                    ("window", 0x57494e44, window), // "WIND"
+                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     public func print(directParameter: Any = NoParameter,
             withProperties: Any = NoParameter,
@@ -1105,49 +1203,100 @@ extension FINCommand {
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("withProperties", 0x70726474, withProperties), // "prdt"
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+    }
+    public func print<T>(directParameter: Any = NoParameter,
+            withProperties: Any = NoParameter,
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent("print", eventClass: 0x61657674, eventID: 0x70646f63, // "aevt"/"pdoc"
+                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                    ("withProperties", 0x70726474, withProperties), // "prdt"
+                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     public func quit(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("quit", eventClass: 0x61657674, eventID: 0x71756974, // "aevt"/"quit"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+    }
+    public func quit<T>(directParameter: Any = NoParameter,
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent("quit", eventClass: 0x61657674, eventID: 0x71756974, // "aevt"/"quit"
+                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     public func reopen(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("reopen", eventClass: 0x61657674, eventID: 0x72617070, // "aevt"/"rapp"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+    }
+    public func reopen<T>(directParameter: Any = NoParameter,
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent("reopen", eventClass: 0x61657674, eventID: 0x72617070, // "aevt"/"rapp"
+                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     public func restart(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("restart", eventClass: 0x666e6472, eventID: 0x72657374, // "fndr"/"rest"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+    }
+    public func restart<T>(directParameter: Any = NoParameter,
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent("restart", eventClass: 0x666e6472, eventID: 0x72657374, // "fndr"/"rest"
+                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     public func reveal(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("reveal", eventClass: 0x6d697363, eventID: 0x6d766973, // "misc"/"mvis"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+    }
+    public func reveal<T>(directParameter: Any = NoParameter,
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent("reveal", eventClass: 0x6d697363, eventID: 0x6d766973, // "misc"/"mvis"
+                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     public func run(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("run", eventClass: 0x61657674, eventID: 0x6f617070, // "aevt"/"oapp"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+    }
+    public func run<T>(directParameter: Any = NoParameter,
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent("run", eventClass: 0x61657674, eventID: 0x6f617070, // "aevt"/"oapp"
+                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     public func select(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("select", eventClass: 0x6d697363, eventID: 0x736c6374, // "misc"/"slct"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+    }
+    public func select<T>(directParameter: Any = NoParameter,
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent("select", eventClass: 0x6d697363, eventID: 0x736c6374, // "misc"/"slct"
+                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     public func set(directParameter: Any = NoParameter,
             to: Any = NoParameter,
@@ -1156,21 +1305,44 @@ extension FINCommand {
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("to", 0x64617461, to), // "data"
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+    }
+    public func set<T>(directParameter: Any = NoParameter,
+            to: Any = NoParameter,
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent("set", eventClass: 0x636f7265, eventID: 0x73657464, // "core"/"setd"
+                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                    ("to", 0x64617461, to), // "data"
+                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     public func shutDown(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("shutDown", eventClass: 0x666e6472, eventID: 0x73687574, // "fndr"/"shut"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+    }
+    public func shutDown<T>(directParameter: Any = NoParameter,
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent("shutDown", eventClass: 0x666e6472, eventID: 0x73687574, // "fndr"/"shut"
+                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     public func sleep(directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("sleep", eventClass: 0x666e6472, eventID: 0x736c6570, // "fndr"/"slep"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+    }
+    public func sleep<T>(directParameter: Any = NoParameter,
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent("sleep", eventClass: 0x666e6472, eventID: 0x736c6570, // "fndr"/"slep"
+                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     public func sort(directParameter: Any = NoParameter,
             by: Any = NoParameter,
@@ -1179,7 +1351,16 @@ extension FINCommand {
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("by", 0x62792020, by), // "by  "
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+    }
+    public func sort<T>(directParameter: Any = NoParameter,
+            by: Any = NoParameter,
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent("sort", eventClass: 0x44415441, eventID: 0x534f5254, // "DATA"/"SORT"
+                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                    ("by", 0x62792020, by), // "by  "
+                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     public func update(directParameter: Any = NoParameter,
             necessity: Any = NoParameter,
@@ -1190,7 +1371,18 @@ extension FINCommand {
                     ("necessity", 0x6e65633f, necessity), // "nec?"
                     ("registeringApplications", 0x7265673f, registeringApplications), // "reg?"
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, asType: Any.self)
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+    }
+    public func update<T>(directParameter: Any = NoParameter,
+            necessity: Any = NoParameter,
+            registeringApplications: Any = NoParameter,
+            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent("update", eventClass: 0x666e6472, eventID: 0x66757064, // "fndr"/"fupd"
+                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                    ("necessity", 0x6e65633f, necessity), // "nec?"
+                    ("registeringApplications", 0x7265673f, registeringApplications), // "reg?"
+                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
 }
 
