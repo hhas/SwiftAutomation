@@ -40,7 +40,7 @@ public class «PREFIX»Symbol: Symbol {
 
     override var typeAliasName: String {return "«PREFIX»"}
 
-    public override class func symbol(code: OSType, type: OSType = typeType, descriptor: NSAppleEventDescriptor? = nil) -> «PREFIX»Symbol {
+    public override class func symbol(_ code: OSType, type: OSType = typeType, descriptor: NSAppleEventDescriptor? = nil) -> «PREFIX»Symbol {
         switch (code) {«+SYMBOL_SWITCH»
         case «CODE»: return self.«NAME» // «CODE_STR»«-SYMBOL_SWITCH»
         default: return super.symbol(code, type: type, descriptor: descriptor) as! «PREFIX»Symbol
@@ -64,18 +64,18 @@ public typealias «PREFIX» = «PREFIX»Symbol // allows symbols to be written a
 public protocol «PREFIX»Command: SpecifierProtocol {} // provides AE dispatch methods
 
 extension «PREFIX»Command {«+COMMAND»
-    public func «COMMAND_NAME»(directParameter: Any = NoParameter,«+PARAMETER»
+    public func «COMMAND_NAME»(_ directParameter: Any = NoParameter,«+PARAMETER»
             «NAME»: Any = NoParameter,«-PARAMETER»
-            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+            waitReply: Bool = true, withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("«COMMAND_NAME»", eventClass: «EVENT_CLASS», eventID: «EVENT_ID», // «EVENT_CLASS_STR»/«EVENT_ID_STR»
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [«+PARAMETER»
                     ("«NAME»", «CODE», «NAME»), // «CODE_STR»«-PARAMETER»
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: Any.self)
     }
-    public func «COMMAND_NAME»<T>(directParameter: Any = NoParameter,«+PARAMETER»
+    public func «COMMAND_NAME»<T>(_ directParameter: Any = NoParameter,«+PARAMETER»
             «NAME»: Any = NoParameter,«-PARAMETER»
-            waitReply: Bool = true, withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+            waitReply: Bool = true, withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent("«COMMAND_NAME»", eventClass: «EVENT_CLASS», eventID: «EVENT_ID», // «EVENT_CLASS_STR»/«EVENT_ID_STR»
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [«+PARAMETER»
                     ("«NAME»", «CODE», «NAME»), // «CODE_STR»«-PARAMETER»
@@ -120,7 +120,7 @@ public class «PREFIX»Root: RootSpecifier, «PREFIX»Query, RootSpecifierExtens
 public class «APPLICATION_CLASS_NAME»: «PREFIX»Root, ApplicationExtension {«+DEFAULT_INIT»
     public convenience init(launchOptions: LaunchOptions = DefaultLaunchOptions, relaunchMode: RelaunchMode = DefaultRelaunchMode) {
         self.init(rootObject: AppRootDesc, appData: self.dynamicType.untargetedAppData.targetedCopy(
-                                .BundleIdentifier("«BUNDLE_IDENTIFIER»", true), launchOptions: launchOptions, relaunchMode: relaunchMode))
+                                .bundleIdentifier("«BUNDLE_IDENTIFIER»", true), launchOptions: launchOptions, relaunchMode: relaunchMode))
     }
 «-DEFAULT_INIT»}
 

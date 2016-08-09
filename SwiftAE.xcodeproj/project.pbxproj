@@ -7,14 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		4F0E39461BA86B5F00FF2A96 /* TermTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39451BA86B5F00FF2A96 /* TermTypes.swift */; settings = {ASSET_TAGS = (); }; };
-		4F0E39491BA8717D00FF2A96 /* SDEFParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39481BA8717D00FF2A96 /* SDEFParser.swift */; settings = {ASSET_TAGS = (); }; };
-		4F0E394D1BA8C16300FF2A96 /* KeywordConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E394C1BA8C16300FF2A96 /* KeywordConverter.swift */; settings = {ASSET_TAGS = (); }; };
-		4F0E394F1BA8D2F600FF2A96 /* AETEParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E394E1BA8D2F600FF2A96 /* AETEParser.swift */; settings = {ASSET_TAGS = (); }; };
-		4F0E39511BA9A7EA00FF2A96 /* GlueTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39501BA9A7EA00FF2A96 /* GlueTable.swift */; settings = {ASSET_TAGS = (); }; };
-		4F0E39531BA9C6C700FF2A96 /* DefaultTerminology.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39521BA9C6C700FF2A96 /* DefaultTerminology.swift */; settings = {ASSET_TAGS = (); }; };
+		4F0E39461BA86B5F00FF2A96 /* TermTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39451BA86B5F00FF2A96 /* TermTypes.swift */; };
+		4F0E39491BA8717D00FF2A96 /* SDEFParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39481BA8717D00FF2A96 /* SDEFParser.swift */; };
+		4F0E394D1BA8C16300FF2A96 /* KeywordConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E394C1BA8C16300FF2A96 /* KeywordConverter.swift */; };
+		4F0E394F1BA8D2F600FF2A96 /* AETEParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E394E1BA8D2F600FF2A96 /* AETEParser.swift */; };
+		4F0E39511BA9A7EA00FF2A96 /* GlueTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39501BA9A7EA00FF2A96 /* GlueTable.swift */; };
+		4F0E39531BA9C6C700FF2A96 /* DefaultTerminology.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39521BA9C6C700FF2A96 /* DefaultTerminology.swift */; };
 		4F0E39681BAA98A900FF2A96 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39671BAA98A900FF2A96 /* main.swift */; };
-		4F0E396E1BAA9BA700FF2A96 /* StaticGlueBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E396D1BAA9BA700FF2A96 /* StaticGlueBuilder.swift */; settings = {ASSET_TAGS = (); }; };
+		4F0E396E1BAA9BA700FF2A96 /* StaticGlueBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E396D1BAA9BA700FF2A96 /* StaticGlueBuilder.swift */; };
 		4F0E39841BAB743800FF2A96 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F63C4331B7CF1C4000D74EE /* Foundation.framework */; };
 		4F0E39851BAB7B7B00FF2A96 /* AEConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F63C42E1B7CF133000D74EE /* AEConstants.swift */; };
 		4F0E39861BAB7B7B00FF2A96 /* AppData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F63C4401B86A335000D74EE /* AppData.swift */; };
@@ -32,7 +32,7 @@
 		4F0E39921BAB7B7B00FF2A96 /* GlueTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39501BA9A7EA00FF2A96 /* GlueTable.swift */; };
 		4F0E39931BAB7B7B00FF2A96 /* StaticGlueBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E396D1BAA9BA700FF2A96 /* StaticGlueBuilder.swift */; };
 		4F0E39941BAB7B7B00FF2A96 /* AEApplicationGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F2645AB1BA4F27700256402 /* AEApplicationGlue.swift */; };
-		4F0E39961BADD58500FF2A96 /* EventFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39951BADD58500FF2A96 /* EventFormatter.swift */; settings = {ASSET_TAGS = (); }; };
+		4F0E39961BADD58500FF2A96 /* EventFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39951BADD58500FF2A96 /* EventFormatter.swift */; };
 		4F0E39971BAF4D7A00FF2A96 /* EventFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39951BADD58500FF2A96 /* EventFormatter.swift */; };
 		4F0E39A11BAF7A7400FF2A96 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4F0E39A01BAF7A7400FF2A96 /* Assets.xcassets */; };
 		4F0E39A41BAF7A7400FF2A96 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4F0E39A21BAF7A7400FF2A96 /* MainMenu.xib */; };
@@ -56,16 +56,16 @@
 		4F0E39BA1BAF7B3400FF2A96 /* AEApplicationGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F2645AB1BA4F27700256402 /* AEApplicationGlue.swift */; };
 		4F0E39BD1BAF7B7600FF2A96 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F63C4331B7CF1C4000D74EE /* Foundation.framework */; };
 		4F0E39BE1BAF7B7C00FF2A96 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F63C4351B7CF1C8000D74EE /* AppKit.framework */; };
-		4F0E39CC1BB008A400FF2A96 /* SAELanguageInstance.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39CB1BB008A400FF2A96 /* SAELanguageInstance.m */; settings = {ASSET_TAGS = (); }; };
-		4F0E39CF1BB008B400FF2A96 /* SAEEventSniffer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39CE1BB008B400FF2A96 /* SAEEventSniffer.m */; settings = {ASSET_TAGS = (); }; };
-		4F0E39D21BB00B3300FF2A96 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39D11BB00B3300FF2A96 /* AppDelegate.m */; settings = {ASSET_TAGS = (); }; };
-		4F0E39D41BB0342600FF2A96 /* SwiftAEFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39D31BB0342600FF2A96 /* SwiftAEFormatter.swift */; settings = {ASSET_TAGS = (); }; };
-		4F0E39D61BB0504D00FF2A96 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39D51BB0504D00FF2A96 /* main.m */; settings = {ASSET_TAGS = (); }; };
-		4F1D12411BA3042600875F74 /* SpecifierExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1D12401BA3042600875F74 /* SpecifierExtensions.swift */; settings = {ASSET_TAGS = (); }; };
-		4F2645A81BA4243E00256402 /* TextEditGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F2645A71BA4243E00256402 /* TextEditGlue.swift */; settings = {ASSET_TAGS = (); }; };
-		4F2645AC1BA4F27700256402 /* AEApplicationGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F2645AB1BA4F27700256402 /* AEApplicationGlue.swift */; settings = {ASSET_TAGS = (); }; };
-		4F2645B11BA59A0E00256402 /* FinderGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F2645AE1BA59A0E00256402 /* FinderGlue.swift */; settings = {ASSET_TAGS = (); }; };
-		4F2645B21BA59A0E00256402 /* ITunesGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F2645B01BA59A0E00256402 /* ITunesGlue.swift */; settings = {ASSET_TAGS = (); }; };
+		4F0E39CC1BB008A400FF2A96 /* SAELanguageInstance.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39CB1BB008A400FF2A96 /* SAELanguageInstance.m */; };
+		4F0E39CF1BB008B400FF2A96 /* SAEEventSniffer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39CE1BB008B400FF2A96 /* SAEEventSniffer.m */; };
+		4F0E39D21BB00B3300FF2A96 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39D11BB00B3300FF2A96 /* AppDelegate.m */; };
+		4F0E39D41BB0342600FF2A96 /* SwiftAEFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39D31BB0342600FF2A96 /* SwiftAEFormatter.swift */; };
+		4F0E39D61BB0504D00FF2A96 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39D51BB0504D00FF2A96 /* main.m */; };
+		4F1D12411BA3042600875F74 /* SpecifierExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1D12401BA3042600875F74 /* SpecifierExtensions.swift */; };
+		4F2645A81BA4243E00256402 /* TextEditGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F2645A71BA4243E00256402 /* TextEditGlue.swift */; };
+		4F2645AC1BA4F27700256402 /* AEApplicationGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F2645AB1BA4F27700256402 /* AEApplicationGlue.swift */; };
+		4F2645B11BA59A0E00256402 /* FinderGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F2645AE1BA59A0E00256402 /* FinderGlue.swift */; };
+		4F2645B21BA59A0E00256402 /* ITunesGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F2645B01BA59A0E00256402 /* ITunesGlue.swift */; };
 		4F63C4281B7CF06E000D74EE /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F63C4271B7CF06E000D74EE /* main.swift */; };
 		4F63C4301B7CF133000D74EE /* AEConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F63C42E1B7CF133000D74EE /* AEConstants.swift */; };
 		4F63C4311B7CF133000D74EE /* Specifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F63C42F1B7CF133000D74EE /* Specifier.swift */; };
@@ -76,7 +76,7 @@
 		4F63C4431B87AC88000D74EE /* Symbol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F63C4421B87AC88000D74EE /* Symbol.swift */; };
 		4F63C4451B8A4DFC000D74EE /* Errors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F63C4441B8A4DFC000D74EE /* Errors.swift */; };
 		4F63C4471B8A669C000D74EE /* Support.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F63C4461B8A669C000D74EE /* Support.swift */; };
-		4FDD30FE1B932C29002BA20F /* SpecifierFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FDD30FD1B932C29002BA20F /* SpecifierFormatter.swift */; settings = {ASSET_TAGS = (); }; };
+		4FDD30FE1B932C29002BA20F /* SpecifierFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FDD30FD1B932C29002BA20F /* SpecifierFormatter.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -488,16 +488,19 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0700;
-				LastUpgradeCheck = 0700;
+				LastUpgradeCheck = 0800;
 				TargetAttributes = {
 					4F0E39641BAA98A900FF2A96 = {
 						CreatedOnToolsVersion = 7.0;
+						LastSwiftMigration = 0800;
 					};
 					4F0E399B1BAF7A7400FF2A96 = {
 						CreatedOnToolsVersion = 7.0;
+						LastSwiftMigration = 0800;
 					};
 					4F63C4231B7CF06E000D74EE = {
 						CreatedOnToolsVersion = 7.0;
+						LastSwiftMigration = 0800;
 					};
 				};
 			};
@@ -647,6 +650,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
@@ -654,6 +658,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
 		};
@@ -671,6 +677,7 @@
 				SWIFT_INSTALL_OBJC_HEADER = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "SwiftAETranslate/SwiftAETranslate-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
@@ -687,6 +694,8 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_INSTALL_OBJC_HEADER = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "SwiftAETranslate/SwiftAETranslate-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
 		};
@@ -703,8 +712,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
@@ -747,8 +758,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
@@ -778,6 +791,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
@@ -788,6 +802,8 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "";
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
 		};

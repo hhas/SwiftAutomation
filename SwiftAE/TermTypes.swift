@@ -30,11 +30,11 @@ public protocol ApplicationTerminology {
 
 
 public enum TermType {
-    case ElementOrType
-    case Enumerator
-    case Property
-    case Command
-    case Parameter
+    case elementOrType
+    case enumerator
+    case property
+    case command
+    case parameter
 }
 
 
@@ -86,18 +86,18 @@ public class CommandTerm : Term, Hashable, CustomStringConvertible {
         self.parametersByName = [String: KeywordTerm]()
         self.parametersByCode = [OSType: KeywordTerm]()
         self.orderedParameters = [KeywordTerm]()
-        super.init(name: name, kind: .Command)
+        super.init(name: name, kind: .command)
     }
     
     public var hashValue: Int { return Int(self.eventClass) - Int(self.eventID)}
     
     public var description: String {
-        let params = self.orderedParameters.map({"\($0.name)=\(FourCharCodeString($0.code))"}).joinWithSeparator(",")
+        let params = self.orderedParameters.map({"\($0.name)=\(FourCharCodeString($0.code))"}).joined(separator: ",")
         return "<Command:\(self.name)=\(FourCharCodeString(self.eventClass))\(FourCharCodeString(self.eventID))(\(params))>"
     }
     
-    func addParameter(name: String, code: OSType) {
-        let paramDef = KeywordTerm(name: name, kind: .Parameter, code: code)
+    func addParameter(_ name: String, code: OSType) {
+        let paramDef = KeywordTerm(name: name, kind: .parameter, code: code)
         self.parametersByName[name] = paramDef
         self.parametersByCode[code] = paramDef
         self.orderedParameters.append(paramDef)

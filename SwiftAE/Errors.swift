@@ -104,7 +104,7 @@ let gDescriptionForError: [Int:String] = [ // error descriptions from ASLG/MacEr
 
 // errors
 
-public class SwiftAEError: ErrorType, CustomStringConvertible { // TO DO: should all errors be chained? or just CommandError?
+public class SwiftAEError: Error, CustomStringConvertible { // TO DO: should all errors be chained? or just CommandError?
     public let _domain = "SwiftAE"
     public let _code: Int // TO DO: use custom codes for error types, or standard OSStatus codes?
     public let message: String?
@@ -180,15 +180,16 @@ public class CommandError: SwiftAEError {
     let event: NSAppleEventDescriptor?
     let replyEvent: NSAppleEventDescriptor?
     let commandInfo: Any? // TO DO
-    let parentError: ErrorType?
+    let parentError: Error?
     
     init(appData: AppData,
             event: NSAppleEventDescriptor? = nil,
             replyEvent: NSAppleEventDescriptor? = nil,
             commandInfo: Any? = nil,
-            parentError: ErrorType? = nil, // TO DO: rename
-            var message: String = "Command failed.")
+            parentError: Error? = nil, // TO DO: rename
+            message: String = "Command failed.")
     {
+        var message = message
         self.appData = appData
         self.event = event
         self.replyEvent = replyEvent
@@ -202,7 +203,7 @@ public class CommandError: SwiftAEError {
             errorNumber = error._code
         } else if let reply = replyEvent {
             print("App reply event: \(reply)")
-            if let appError = reply.descriptorForKeyword(keyErrorNumber) {
+            if let appError = reply.forKeyword(keyErrorNumber) {
                 errorNumber = Int(appError.int32Value)
                 // TO DO: [lazily] unpack any other available error info
             }

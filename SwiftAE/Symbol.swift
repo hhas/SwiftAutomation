@@ -35,7 +35,7 @@ public class Symbol: Hashable, Equatable, CustomStringConvertible, SelfPacking {
     }
     
     // this is called by AppData when unpacking typeType, typeEnumerated, etc; glue-defined symbol subclasses should override to return glue-defined symbols where available
-    public class func symbol(code: OSType, type: OSType = typeType, descriptor: NSAppleEventDescriptor? = nil) -> Symbol {
+    public class func symbol(_ code: OSType, type: OSType = typeType, descriptor: NSAppleEventDescriptor? = nil) -> Symbol {
         return self.init(name: nil, code: code, type: type, cachedDesc: descriptor)
     }
     
@@ -49,7 +49,7 @@ public class Symbol: Hashable, Equatable, CustomStringConvertible, SelfPacking {
     
     // TO DO: implement overrideable class method for unpacking descs as glue-defined (and/or standard) Symbols
     
-    public func packSelf(appData: AppData) throws -> NSAppleEventDescriptor {
+    public func packSelf(_ appData: AppData) throws -> NSAppleEventDescriptor {
         return self.descriptor
     }
     

@@ -10,7 +10,7 @@ import Foundation
 
 
 public class GlueSpec {
-    public let applicationURL: NSURL? // TO DO: any use cases where user would want to use .sdef file rather than .app bundle?
+    public let applicationURL: URL? // TO DO: any use cases where user would want to use .sdef file rather than .app bundle?
     public let keywordConverter: KeywordConverterProtocol
     public let classNamePrefix: String
     public let applicationClassName: String
@@ -28,12 +28,12 @@ public class GlueSpec {
     public var frameworkVersion: String { return "0.1.0" }
     
     // create GlueSpec for specified application (applicationURL is typically a file:// URL, or nil to create default glue)
-    public init(applicationURL: NSURL?, keywordConverter: KeywordConverterProtocol = gSwiftAEKeywordConverter,
+    public init(applicationURL: URL?, keywordConverter: KeywordConverterProtocol = gSwiftAEKeywordConverter,
                 classNamePrefix: String? = nil, applicationClassName: String? = nil, useSDEF: Bool = false) {
         self.applicationURL = applicationURL
         self.keywordConverter = keywordConverter
         self.useSDEF = useSDEF
-        let bundleInfo: BundleInfoType = (applicationURL == nil) ? [:] : NSBundle(URL: applicationURL!)?.infoDictionary ?? [:]
+        let bundleInfo: BundleInfoType = (applicationURL == nil) ? [:] : Bundle(url: applicationURL!)?.infoDictionary ?? [:]
         self.bundleInfo = bundleInfo
         if applicationURL == nil {
             self.classNamePrefix = "AE"
@@ -84,30 +84,31 @@ public class StaticGlueTemplate {
     public var string: String { return self._template.copy() as! String }
     
     
-    public init(var string: NSString? = nil) { // if nil, uses SwiftAEGlueTemplate
+    public init(string: NSString? = nil) { // if nil, uses SwiftAEGlueTemplate
+        var string = string
         if string == nil {
             // TO DO: temp kludge; eventually use NSBundle.pathForResource(_:ofType:inDirectory:) to look up in SwiftAE.framework
-            let url = NSURLComponents(string:"SwiftAEGlueTemplate.txt")!.URLRelativeToURL(NSURL.fileURLWithPath(__FILE__))!
-            string = try! NSString(contentsOfURL: url, encoding: NSUTF8StringEncoding)
+            let url = URLComponents(string:"SwiftAEGlueTemplate.txt")!.url(relativeTo: URL(fileURLWithPath: #file))!
+            string = try! NSString(contentsOf: url, encoding: String.Encoding.utf8.rawValue)
         }
         self._template = NSMutableString(string: string!)
     }
     
-    private func subRender<T>(newContents: T, renderer: (StaticGlueTemplate, T) -> ()) -> String {
+    private func subRender<T>(_ newContents: T, renderer: (StaticGlueTemplate, T) -> ()) -> String {
         renderer(self, newContents)
         return self.string
     }
     
-    private func iterate<T>(name: String, newContents: [T], emptyContent: String,renderer: (StaticGlueTemplate, T) -> ()) {
+    private func iterate<T>(_ name: String, newContents: [T], emptyContent: String,renderer: (StaticGlueTemplate, T) -> ()) {
         let tagLength = ("«+\(name)»" as NSString).length
         while true {
-            let range = self._template.rangeOfString("(?s)«\\+\(name)».*?«-\(name)»",
-                                           options: .RegularExpressionSearch, range: NSMakeRange(0, self._template.length))
+            let range = self._template.range(of: "(?s)«\\+\(name)».*?«-\(name)»",
+                                           options: .regularExpression, range: NSMakeRange(0, self._template.length))
             if range.length == 0 {
                 return
             }
-            let subString = self._template.substringWithRange(NSMakeRange(range.location+tagLength,range.length-tagLength*2))
-            self._template.deleteCharactersInRange(range)
+            let subString = self._template.substring(with: NSMakeRange(range.location+tagLength,range.length-tagLength*2))
+            self._template.deleteCharacters(in: range)
             var result = ""
             if newContents.count > 0 {
                 for newContent in newContents { // TO DO: if newContents is generator, make sure this doesn't exhaust it (as in python)
@@ -116,36 +117,36 @@ public class StaticGlueTemplate {
             }else {
                 result = emptyContent // e.g. empty dictionary literals require ':'
             }
-            self._template.insertString(result, atIndex: range.location)
+            self._template.insert(result, at: range.location)
         }
     }
     
     // render tags
     
-    public func insertString(name: String, _ newContent: String) {
-        self._template.replaceOccurrencesOfString("«\(name)»", withString: newContent,
-            options: .LiteralSearch, range: NSMakeRange(0, _template.length))
+    public func insertString(_ name: String, _ newContent: String) {
+        self._template.replaceOccurrences(of: "«\(name)»", with: newContent,
+            options: .literal, range: NSMakeRange(0, _template.length))
     }
     
-    public func insertOSType(name: String, _ code: OSType) { // insert OSType as numeric and/or string literal representations (tag for the latter is name+"_STR")
+    public func insertOSType(_ name: String, _ code: OSType) { // insert OSType as numeric and/or string literal representations (tag for the latter is name+"_STR")
         self.insertString(name, NSString(format: "0x%08x", code) as String)
         self.insertString("\(name)_STR", formatFourCharCodeString(code))
     }
     
-    public func insertKeywords(name: String, _ newContents: [KeywordTerm], emptyContent: String = "") {
+    public func insertKeywords(_ name: String, _ newContents: [KeywordTerm], emptyContent: String = "") {
         self.iterate(name, newContents: newContents, emptyContent: emptyContent) {
             $0.insertString("NAME", $1.name)
             $0.insertOSType("CODE", $1.code)
         }
     }
-    public func insertKeywords(name: String, _ newContents: [(OSType, String)], emptyContent: String = "") {
+    public func insertKeywords(_ name: String, _ newContents: [(key:OSType, value:String)], emptyContent: String = "") {
         self.iterate(name, newContents: newContents, emptyContent: emptyContent) {
             $0.insertString("NAME", $1.1)
             $0.insertOSType("CODE", $1.0)
         }
     }
     
-    public func insertCommands(name: String, _ newContents: [CommandTerm], emptyContent: String = "") {
+    public func insertCommands(_ name: String, _ newContents: [CommandTerm], emptyContent: String = "") {
         self.iterate(name, newContents: newContents, emptyContent: emptyContent) {
             $0.insertString("COMMAND_NAME", $1.name)
             $0.insertOSType("EVENT_CLASS", $1.eventClass)
@@ -154,9 +155,9 @@ public class StaticGlueTemplate {
         }
     }
     
-    public func removeTags(name: String, deleteContent: Bool) {
-        self._template.replaceOccurrencesOfString("(?s)«\\+\(name)»(.*?)«-\(name)»", withString: deleteContent ? "" : "$1",
-                                            options: .RegularExpressionSearch, range: NSMakeRange(0, _template.length))
+    public func removeTags(_ name: String, deleteContent: Bool) {
+        self._template.replaceOccurrences(of: "(?s)«\\+\(name)»(.*?)«-\(name)»", with: deleteContent ? "" : "$1",
+                                            options: .regularExpression, range: NSMakeRange(0, _template.length))
     }
 }
 
@@ -164,7 +165,7 @@ public class StaticGlueTemplate {
 /******************************************************************************/
 // glue renderer
 
-public func renderStaticGlueTemplate(glueSpec: GlueSpec, extraTags: [String:String] = [:], templateString: String? = nil) throws -> String {
+public func renderStaticGlueTemplate(_ glueSpec: GlueSpec, extraTags: [String:String] = [:], templateString: String? = nil) throws -> String {
     // note: SwiftAEGlueTemplate requires additional values for extraTags: ["AEGLUE_COMMAND": shellCommand,"GLUE_NAME": glueFileName]
     let glueTable = try glueSpec.buildGlueTable()
     let template = StaticGlueTemplate(string: templateString)
@@ -181,16 +182,16 @@ public func renderStaticGlueTemplate(glueSpec: GlueSpec, extraTags: [String:Stri
     // note: both by-name and by-code tables are used here to ensure conflicting keywords are represented correctly, e.g. if keyword `foo`
     // is defined as both a type and a property but with different codes for each, it should appear only once in TYPE_SYMBOL (by-name) list
     // but twice in SYMBOL_SWITCH (by-code) list; this [hopefully] emulates the way in which AppleScript resolves these conflicts
-    template.insertKeywords("SYMBOL_SWITCH", glueTable.typesByCode.sort({$0.1.lowercaseString<$1.1.lowercaseString}))
-    let typesByName = glueTable.typesByName.sort({$0.0.lowercaseString<$1.0.lowercaseString})
+    template.insertKeywords("SYMBOL_SWITCH", glueTable.typesByCode.sorted(by: {$0.1.lowercased()<$1.1.lowercased()}))
+    let typesByName = glueTable.typesByName.sorted(by: {$0.0.lowercased()<$1.0.lowercased()})
     template.insertKeywords("TYPE_SYMBOL", typesByName.filter({$1.descriptorType != typeEnumerated}).map({(code: $1.typeCodeValue, name: $0)}))
     template.insertKeywords("ENUM_SYMBOL", typesByName.filter({$1.descriptorType == typeEnumerated}).map({(code: $1.enumCodeValue, name: $0)}))
-    template.insertKeywords("PROPERTY_FORMATTER", glueTable.propertiesByCode.sort({$0.1.lowercaseString<$1.1.lowercaseString}), emptyContent: ":")
-    template.insertKeywords("ELEMENTS_FORMATTER", glueTable.elementsByCode.sort({$0.1.lowercaseString<$1.1.lowercaseString}), emptyContent: ":")
-    let specifiersByName = glueTable.specifiersByName.values.sort({$0.name.lowercaseString<$1.name.lowercaseString})
-    template.insertKeywords("PROPERTY_SPECIFIER", specifiersByName.filter({$0.kind == TermType.Property}) as! [KeywordTerm])
-    template.insertKeywords("ELEMENTS_SPECIFIER", specifiersByName.filter({$0.kind == TermType.ElementOrType}) as! [KeywordTerm])
-    template.insertCommands("COMMAND", specifiersByName.filter({$0.kind == TermType.Command}) as! [CommandTerm])
+    template.insertKeywords("PROPERTY_FORMATTER", glueTable.propertiesByCode.sorted(by: {$0.1.lowercased()<$1.1.lowercased()}), emptyContent: ":")
+    template.insertKeywords("ELEMENTS_FORMATTER", glueTable.elementsByCode.sorted(by: {$0.1.lowercased()<$1.1.lowercased()}), emptyContent: ":")
+    let specifiersByName = glueTable.specifiersByName.values.sorted(by: {$0.name.lowercased()<$1.name.lowercased()})
+    template.insertKeywords("PROPERTY_SPECIFIER", specifiersByName.filter({$0.kind == TermType.property}) as! [KeywordTerm])
+    template.insertKeywords("ELEMENTS_SPECIFIER", specifiersByName.filter({$0.kind == TermType.elementOrType}) as! [KeywordTerm])
+    template.insertCommands("COMMAND", specifiersByName.filter({$0.kind == TermType.command}) as! [CommandTerm])
     for (name, value) in extraTags { template.insertString(name, value) }
     return template.string
 }
@@ -198,24 +199,24 @@ public func renderStaticGlueTemplate(glueSpec: GlueSpec, extraTags: [String:Stri
 
 // generate quick-n-dirty user documentation by reformatting command, class, property, etc. names in SDEF XML
 
-public func translateScriptingDefinition(data: NSData, glueSpec: GlueSpec) throws -> NSData {
-    func convertNode(node: NSXMLElement, _ attributeName: String = "name", symbolPrefix: String = "") {
-        if let attribute = node.attributeForName(attributeName) {
+public func translateScriptingDefinition(_ data: Data, glueSpec: GlueSpec) throws -> Data {
+    func convertNode(_ node: XMLElement, _ attributeName: String = "name", symbolPrefix: String = "") {
+        if let attribute = node.attribute(forName: attributeName) {
             if let value = attribute.stringValue {
                 attribute.stringValue = symbolPrefix + glueSpec.keywordConverter.convertSpecifierName(value)
             }
         }
     }
-    let xml = try NSXMLDocument(data: data, options: 0)
+    let xml = try XMLDocument(data: data, options: 0)
     guard let root = xml.rootElement() else {
         throw TerminologyError("Malformed SDEF resource: missing root.")
     }
-    for suite in root.elementsForName("suite") {
+    for suite in root.elements(forName: "suite") {
         for key in ["command", "event"] {
-            for command in suite.elementsForName(key) {
+            for command in suite.elements(forName: key) {
                 convertNode(command)
-                for parameter in command.elementsForName("parameter") {
-                    if let attribute = parameter.attributeForName("name") {
+                for parameter in command.elements(forName: "parameter") {
+                    if let attribute = parameter.attribute(forName: "name") {
                         if let value = attribute.stringValue {
                             attribute.stringValue = glueSpec.keywordConverter.convertParameterName(value)+":" // TO DO: formatting of param names should ideally be parameterized for reusability; maybe add `formatCommandName`, `formatParamName`, `formatEnum`, etc. methods to keywordConverter, and call those instead of `convert...`?
                         }
@@ -224,22 +225,22 @@ public func translateScriptingDefinition(data: NSData, glueSpec: GlueSpec) throw
             }
         }
         for key in ["class", "class-extension", "record-type"] {
-            for klass in suite.elementsForName(key) {
+            for klass in suite.elements(forName: key) {
                 convertNode(klass)
                 convertNode(klass, "plural")
-                for node in klass.elementsForName("element") { convertNode(node, "type") }
-                for node in klass.elementsForName("property") { convertNode(node) }
-                for node in klass.elementsForName("contents") { convertNode(node) }
-                for node in klass.elementsForName("responds-to") { convertNode(node); convertNode(node, "command") }
+                for node in klass.elements(forName: "element") { convertNode(node, "type") }
+                for node in klass.elements(forName: "property") { convertNode(node) }
+                for node in klass.elements(forName: "contents") { convertNode(node) }
+                for node in klass.elements(forName: "responds-to") { convertNode(node); convertNode(node, "command") }
             }
         }
         let symbolPrefix = "\(glueSpec.classNamePrefix)."
-        for enumeration in suite.elementsForName("enumeration") {
-            for enumerator in enumeration.elementsForName("enumerator") { convertNode(enumerator, symbolPrefix: symbolPrefix) } // TO DO: as above, enum formatting should ideally be parameterized
+        for enumeration in suite.elements(forName: "enumeration") {
+            for enumerator in enumeration.elements(forName: "enumerator") { convertNode(enumerator, symbolPrefix: symbolPrefix) } // TO DO: as above, enum formatting should ideally be parameterized
         }
-        for valueType in suite.elementsForName("value-type") { convertNode(valueType) }
+        for valueType in suite.elements(forName: "value-type") { convertNode(valueType) }
     }
-    return xml.XMLDataWithOptions(NSXMLNodePrettyPrint|NSXMLDocumentIncludeContentTypeDeclaration)
+    return xml.xmlData(withOptions: (1 << 18)) // XMLNode.Options.nodePrettyPrint|XMLNode.Options.documentIncludeContentTypeDeclaration
 }
 
 

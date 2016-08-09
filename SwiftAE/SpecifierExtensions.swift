@@ -24,48 +24,48 @@ import Foundation
 // Property/single-element specifier; identifies an attribute/describes a one-to-one relationship between nodes in the app's AEOM graph
 
 public protocol ObjectSpecifierExtension: ObjectSpecifierProtocol {
-    typealias InsertionSpecifierType: InsertionSpecifier
-    typealias ObjectSpecifierType: ObjectSpecifier
-    typealias ElementsSpecifierType: ObjectSpecifier
+    associatedtype InsertionSpecifierType: InsertionSpecifier
+    associatedtype ObjectSpecifierType: ObjectSpecifier
+    associatedtype ElementsSpecifierType: ObjectSpecifier
 }
 
 public extension ObjectSpecifierExtension {
 
-    public func userProperty(name: String) -> ObjectSpecifierType {
+    public func userProperty(_ name: String) -> ObjectSpecifierType {
         return ObjectSpecifierType(wantType: gPropertyType,
 				selectorForm: gUserPropertyForm, selectorData: NSAppleEventDescriptor(string: name),
 				parentSelector: (self as! Selector), appData: self.appData, cachedDesc: nil)
     }
 
-    public func property(code: OSType) -> ObjectSpecifierType {
+    public func property(_ code: OSType) -> ObjectSpecifierType {
 		return ObjectSpecifierType(wantType: gPropertyType,
 				selectorForm: gPropertyForm, selectorData: NSAppleEventDescriptor(typeCode: code),
 				parentSelector: (self as! Selector), appData: self.appData, cachedDesc: nil)
     }
     
-    public func property(code: String) -> ObjectSpecifierType { // caution: string must be valid four-char code; if not, 0x00000000 is used
+    public func property(_ code: String) -> ObjectSpecifierType { // caution: string must be valid four-char code; if not, 0x00000000 is used
 		return self.property(FourCharCodeUnsafe(code)) // TO DO: use FourCharCode()throws, capturing error in custom root specifier to be rethrown if/when specifier is used in a command?
     }
     
-    public func elements(code: OSType) -> ElementsSpecifierType {
+    public func elements(_ code: OSType) -> ElementsSpecifierType {
         return ElementsSpecifierType(wantType: NSAppleEventDescriptor(typeCode: code),
                 selectorForm: gAbsolutePositionForm, selectorData: gAll,
                 parentSelector: (self as! Selector), appData: self.appData, cachedDesc: nil)
     }
     
-    public func elements(code: String) -> ElementsSpecifierType { // caution: string must be valid four-char code; if not, 0x00000000 is used
+    public func elements(_ code: String) -> ElementsSpecifierType { // caution: string must be valid four-char code; if not, 0x00000000 is used
         return self.elements(FourCharCodeUnsafe(code)) // TO DO: ditto?
     }
 
     
     // relative position selectors
-    public func previous(elementClass: Symbol? = nil) -> ObjectSpecifierType {
+    public func previous(_ elementClass: Symbol? = nil) -> ObjectSpecifierType {
         return ObjectSpecifierType(wantType: elementClass == nil ? self.wantType : elementClass!.descriptor,
 				selectorForm: gRelativePositionForm, selectorData: gPrevious,
 				parentSelector: (self as! Selector), appData: self.appData, cachedDesc: nil)
     }
     
-    public func next(elementClass: Symbol? = nil) -> ObjectSpecifierType {
+    public func next(_ elementClass: Symbol? = nil) -> ObjectSpecifierType {
         return ObjectSpecifierType(wantType: elementClass == nil ? self.wantType : elementClass!.descriptor,
 				selectorForm: gRelativePositionForm, selectorData: gNext,
 				parentSelector: (self as! Selector), appData: self.appData, cachedDesc: nil)
@@ -119,11 +119,11 @@ extension ElementsSpecifierExtension {
     }
     
     // by-name, by-id, by-range
-    public func named(name: Any) -> ObjectSpecifierType { // use this if name is not a String, else use subscript // TO DO: trying to think of a use case where this has been found necessary
+    public func named(_ name: Any) -> ObjectSpecifierType { // use this if name is not a String, else use subscript // TO DO: trying to think of a use case where this has been found necessary
         return ObjectSpecifierType(wantType: self.wantType, selectorForm: gNameForm, selectorData: name,
             parentSelector: self.baseQuery, appData: self.appData, cachedDesc: nil)
     }
-    public func ID(id: Any) -> ObjectSpecifierType {
+    public func ID(_ id: Any) -> ObjectSpecifierType {
         return ObjectSpecifierType(wantType: self.wantType, selectorForm: gUniqueIDForm, selectorData: id,
             parentSelector: self.baseQuery, appData: self.appData, cachedDesc: nil)
     }
@@ -173,19 +173,19 @@ extension ApplicationExtension {
     }
     
     public init(name: String, launchOptions: LaunchOptions = DefaultLaunchOptions, relaunchMode: RelaunchMode = DefaultRelaunchMode) {
-        self.init(target: .Name(name), launchOptions: launchOptions, relaunchMode: relaunchMode)
+        self.init(target: .name(name), launchOptions: launchOptions, relaunchMode: relaunchMode)
     }
     
-    public init(url: NSURL, launchOptions: LaunchOptions = DefaultLaunchOptions, relaunchMode: RelaunchMode = DefaultRelaunchMode) {
-        self.init(target: .URL(url), launchOptions: launchOptions, relaunchMode: relaunchMode)
+    public init(url: URL, launchOptions: LaunchOptions = DefaultLaunchOptions, relaunchMode: RelaunchMode = DefaultRelaunchMode) {
+        self.init(target: .url(url), launchOptions: launchOptions, relaunchMode: relaunchMode)
     }
     
     public init(bundleIdentifier: String, launchOptions: LaunchOptions = DefaultLaunchOptions, relaunchMode: RelaunchMode = DefaultRelaunchMode) {
-        self.init(target: .BundleIdentifier(bundleIdentifier, false), launchOptions: launchOptions, relaunchMode: relaunchMode)
+        self.init(target: .bundleIdentifier(bundleIdentifier, false), launchOptions: launchOptions, relaunchMode: relaunchMode)
     }
     
     public init(processIdentifier: pid_t, launchOptions: LaunchOptions = DefaultLaunchOptions, relaunchMode: RelaunchMode = DefaultRelaunchMode) {
-        self.init(target: .ProcessIdentifier(processIdentifier), launchOptions: launchOptions, relaunchMode: relaunchMode)
+        self.init(target: .processIdentifier(processIdentifier), launchOptions: launchOptions, relaunchMode: relaunchMode)
     }
     
     public init(addressDescriptor: NSAppleEventDescriptor, launchOptions: LaunchOptions = DefaultLaunchOptions, relaunchMode: RelaunchMode = DefaultRelaunchMode) {
@@ -194,11 +194,11 @@ extension ApplicationExtension {
     
     
     public static func currentApplication() -> Self {
-        let appData = Self.untargetedAppData.targetedCopy(.Current, launchOptions: DefaultLaunchOptions, relaunchMode: DefaultRelaunchMode)
+        let appData = Self.untargetedAppData.targetedCopy(.current, launchOptions: DefaultLaunchOptions, relaunchMode: DefaultRelaunchMode)
         return self.init(rootObject: AppRootDesc, appData: appData)
     }
     
-    public func customRoot(object: Any) -> Self { // TO DO: should AppData also provide an option to set default app root object, to be used in building and unpacking _all_ object specifiers?
+    public func customRoot(_ object: Any) -> Self { // TO DO: should AppData also provide an option to set default app root object, to be used in building and unpacking _all_ object specifiers?
         return self.dynamicType.init(rootObject: object, appData: self.appData)
     }
 }

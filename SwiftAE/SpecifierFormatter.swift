@@ -34,7 +34,7 @@ public class SpecifierFormatter {
     }
     
     
-    public func format(object: Any) -> String {
+    public func format(_ object: Any) -> String {
         // formats Specifier, Symbol as literals
         switch object {
             // TO DO: this isn't right yet: specifiers with different formatter should use that formatter (think we're getting tied in knots here regarding static vs dynamic - and since dynamic requires a completely different appdata+formatter it's kinda academic)
@@ -57,15 +57,15 @@ public class SpecifierFormatter {
     
     // hooks
     
-    func formatSymbol(code: OSType) -> String {
+    func formatSymbol(_ code: OSType) -> String {
         return self.formatSymbol(Symbol.symbol(code)) // TO DO: hook for glue-specific Symbol subclasses
     }
     
-    func formatSymbol(symbol: Symbol) -> String {
+    func formatSymbol(_ symbol: Symbol) -> String {
         return "\(symbol)" // TO DO: if symbol doesn't have a name, try lookup table; also, what, if any, hooks are needed here? (TBH, prob. don't need any hooks, except for class)
     }
     
-    func formatPropertyVar(code: OSType) -> String {
+    func formatPropertyVar(_ code: OSType) -> String {
         if let name = self.propertyNames[code] ?? self.elementsNames[code] {
             return ".\(name)"
         } else { // no code->name translation available
@@ -73,7 +73,7 @@ public class SpecifierFormatter {
         }
     }
     
-    func formatElementsVar(code: OSType) -> String {
+    func formatElementsVar(_ code: OSType) -> String {
         if let name = self.elementsNames[code] ?? self.propertyNames[code] {
             return ".\(name)"
         } else { // no code->name translation available
@@ -83,7 +83,7 @@ public class SpecifierFormatter {
     
     // Specifier formatters
     
-    func formatRootSpecifier(specifier: RootSpecifier) -> String {
+    func formatRootSpecifier(_ specifier: RootSpecifier) -> String {
         var hasCustomRoot = true
         if let desc = specifier.rootObject as? NSAppleEventDescriptor {
             switch desc.descriptorType {
@@ -99,17 +99,17 @@ public class SpecifierFormatter {
         }
         var result  = applicationClassName
         switch specifier.appData.target { // TO DO: specifiers returned by app currently don't display correctly, showing untargeted App root instead of targeted Application root. i.e. AppData unpacks specifiers using untargeted App RootSpecifier as root, so this will _always_ be .None, which defeats the point (in prototype, the AppData instance was captured in a new mutable formatter instance created by the receiving `description` property; this formatter then walked the specifier chain building up representation using that AppData instance, so even though the root specifier object itself was untargeted the full rendered specifier was displayed as having a targeted root, thus accurately reflecting its ability to dispatch events itself. the mutable renderer also rendered nested specifiers more attractively, since it could always display them with an untargeted App root regardless of how they were actually constructed)
-        case .None:
+        case .none:
             result = "\(self.classNamePrefix)App"
-        case .Current:
+        case .current:
             result += ".currentApplication()"
-        case .Name(let name):
+        case .name(let name):
             result += "(name: \(self.format(name)))"
-        case .URL(let url):
-            result += url.fileURL ? "(name: \(self.format(url.path!)))" : "(url: \(self.format(url)))"
-        case .BundleIdentifier(let bundleID, let isDefault):
+        case .url(let url):
+            result += url.isFileURL ? "(name: \(self.format(url.path)))" : "(url: \(self.format(url)))"
+        case .bundleIdentifier(let bundleID, let isDefault):
             result += isDefault ? "()" : "(bundleIdentifier: \(self.format(bundleID)))"
-        case .ProcessIdentifier(let pid):
+        case .processIdentifier(let pid):
             result += "(processIdentifier: \(pid))"
         case .Descriptor(let desc):
             result += "(addressDescriptor: \(desc))"
@@ -121,7 +121,7 @@ public class SpecifierFormatter {
         return result
     }
     
-    func formatInsertionSpecifier(specifier: InsertionSpecifier) -> String {
+    func formatInsertionSpecifier(_ specifier: InsertionSpecifier) -> String {
         if let name = [kAEBeginning: "beginning",
                        kAEEnd: "end", kAEBefore: "before", kAEAfter: "after"][specifier.insertionLocation.enumCodeValue] {
             return "\(self.format(specifier.parentSelector)).\(name)"
@@ -129,13 +129,13 @@ public class SpecifierFormatter {
         return "<\(specifier.dynamicType)(kpos:\(specifier.insertionLocation),kobj:\(self.format(specifier.parentSelector)))>"
     }
     
-    func formatObjectSpecifier(specifier: ObjectSpecifier) -> String {
+    func formatObjectSpecifier(_ specifier: ObjectSpecifier) -> String {
         let form = specifier.selectorForm.enumCodeValue
         var result = self.format(specifier.parentSelector)
         switch form {
         case formPropertyID:
             // kludge, seld is either desc or symbol, depending on whether constructed or unpacked; TO DO: eliminate?
-            if let desc = specifier.selectorData as? NSAppleEventDescriptor, propertyDesc = desc.coerceToDescriptorType(typeType) {
+            if let desc = specifier.selectorData as? NSAppleEventDescriptor, let propertyDesc = desc.coerce(toDescriptorType: typeType) {
                 return result + formatPropertyVar(propertyDesc.typeCodeValue)
             } else if let symbol = specifier.selectorData as? Symbol {
                 return result + formatPropertyVar(symbol.code)
@@ -144,13 +144,13 @@ public class SpecifierFormatter {
             return "\(result).userProperty(\(formatValue(specifier.selectorData)))"
         default:
             result += formatElementsVar(specifier.wantType.typeCodeValue)
-            if let desc = specifier.selectorData as? NSAppleEventDescriptor where desc.typeCodeValue == kAEAll {
+            if let desc = specifier.selectorData as? NSAppleEventDescriptor, desc.typeCodeValue == kAEAll { // TO DO: check this is right (replaced `where` with `,`)
                 return result
             }
             switch form {
             case formAbsolutePosition: // specifier[IDX] or specifier.first/middle/last/any
                 if let desc = specifier.selectorData as? NSAppleEventDescriptor, // ObjectSpecifier.unpackSelf does not unpack ordinals
-                        ordinal = [kAEFirst: "first", kAEMiddle: "middle", kAELast: "last", kAEAny: "any"][desc.enumCodeValue] {
+                        let ordinal = [kAEFirst: "first", kAEMiddle: "middle", kAELast: "last", kAEAny: "any"][desc.enumCodeValue] {
                     return "\(result).\(ordinal)"
                 } else {
                     return "\(result)[\(formatValue(specifier.selectorData))]"
@@ -162,8 +162,8 @@ public class SpecifierFormatter {
                 return "\(result).ID(\(self.format(specifier.selectorData)))"
             case formRelativePosition: // specifier.previous/next(SYMBOL)
                 if let seld = specifier.selectorData as? NSAppleEventDescriptor, // ObjectSpecifier.unpackSelf does not unpack ordinals
-                    name = [kAEPrevious: "previous", kAENext: "next"][seld.enumCodeValue],
-                    parent = specifier.parentSelector as? ObjectSpecifier {
+                    let name = [kAEPrevious: "previous", kAENext: "next"][seld.enumCodeValue],
+                    let parent = specifier.parentSelector as? ObjectSpecifier {
                         if specifier.wantType.typeCodeValue == parent.wantType.typeCodeValue {
                             return "\(result).\(name)()" // use shorthand form for neatness
                         } else {
@@ -183,7 +183,7 @@ public class SpecifierFormatter {
         return "<\(specifier.dynamicType)(want:\(specifier.wantType),form:\(specifier.selectorForm),seld:\(formatValue(specifier.selectorData)),from:\(self.format(specifier.parentSelector)))>"
     }
     
-    func formatComparisonTest(specifier: ComparisonTest) -> String {
+    func formatComparisonTest(_ specifier: ComparisonTest) -> String {
         let operand1 = formatValue(specifier.operand1), operand2 = formatValue(specifier.operand2)
         let opcode = specifier.operatorType.enumCodeValue
         if let name = [kAELessThan: "<", kAELessThanEquals: "<=", kAEEquals: "==",
@@ -196,12 +196,12 @@ public class SpecifierFormatter {
         return "<\(specifier.dynamicType)(relo:\(specifier.operatorType),obj1:\(formatValue(operand1)),obj2:\(formatValue(operand2)))>"
     }
     
-    func formatLogicalTest(specifier: LogicalTest) -> String {
+    func formatLogicalTest(_ specifier: LogicalTest) -> String {
         let operands = specifier.operands.map({formatValue($0)})
         let opcode = specifier.operatorType.enumCodeValue
         if let name = [kAEAND: "&&", kAEOR: "||"][opcode] {
             if operands.count > 1 {
-                return operands.joinWithSeparator(" \(name) ")
+                return operands.joined(separator: " \(name) ")
             }
         } else if opcode == kAENOT && operands.count == 1 {
             return "!(\(operands[0]))"
@@ -214,22 +214,22 @@ public class SpecifierFormatter {
 
 // general formatting functions
 
-func formatValue(value: Any) -> String { // TO DO: while this function can be used standalone, might be cleanest just to make it a member of SpecifierFormatter
-    // formats AE-bridged Swift types as literal syntax; other Swift types will show their default description // TO DO: use DebugPrintable where available?
+func formatValue(_ value: Any) -> String { // TO DO: while this function can be used standalone, might be cleanest just to make it a member of SpecifierFormatter
+    // formats AE-bridged Swift types as literal syntax; other Swift types will show their default description (unfortunately debugDescription doesn't provide usable literal representations - e.g. String doesn't show tabs in escaped form, Cocoa classes return their [non-literal] description string instead, and reliable representations of Bool/Int/Double are a dead loss as soon as NSNumber gets involved)
     switch value {
     case let obj as NSArray: // HACK; see also AppData.pack()
-        return "[" + obj.map({formatValue($0)}).joinWithSeparator(", ") + "]"
+        return "[" + obj.map({formatValue($0)}).joined(separator: ", ") + "]"
     case let obj as NSDictionary: // HACK; see also AppData.pack()
-        return "[" + obj.map({"\(formatValue($0)): \(formatValue($1))"}).joinWithSeparator(", ") + "]"
+        return "[" + obj.map({"\(formatValue($0)): \(formatValue($1))"}).joined(separator: ", ") + "]"
     case let obj as String:
         let tmp = NSMutableString(string: obj)
         for (from, to) in [("\\", "\\\\"), ("\"", "\\\""), ("\r", "\\r"), ("\n", "\\n"), ("\t", "\\t")] {
-            tmp.replaceOccurrencesOfString(from, withString: to, options: .LiteralSearch, range: NSMakeRange(0, tmp.length))
+            tmp.replaceOccurrences(of: from, with: to, options: .literal, range: NSMakeRange(0, tmp.length))
         }
         return "\"\(tmp)\""
-    case let obj as NSDate:
+    case let obj as Date:
         return "NSDate(string:\(formatValue(obj.description)))" // TO DO: fix this representation (not sure what's best; maybe include human-readable date string as inline comment?)
-    case let obj as NSURL:
+    case let obj as URL:
         return "NSURL(string:\(formatValue(obj.absoluteString)))"
     case let obj as NSNumber:
         // note: matching Bool, Int, Double types can be glitchy due to Swift's crappy bridging of ObjC's crappy NSNumber class,
@@ -245,7 +245,7 @@ func formatValue(value: Any) -> String { // TO DO: while this function can be us
 }
 
 
-func formatFourCharCodeString(code: OSType) -> String {
+func formatFourCharCodeString(_ code: OSType) -> String {
     return "\"\(FourCharCodeString(code))\"" // TO DO: unfinished; non-alphanumeric chars should appear as \x00 codes
 }
 

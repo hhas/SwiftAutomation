@@ -16,7 +16,7 @@ import Foundation
 
 
 // helper function; used to construct keys for commandsByCode dictionary
-public func CommandTermKey(eventClass: OSType, _ eventID: OSType) -> UInt64 {
+public func CommandTermKey(_ eventClass: OSType, _ eventID: OSType) -> UInt64 {
     return UInt64(eventClass) << 32 | UInt64(eventID)
 }
 
@@ -72,7 +72,7 @@ public class GlueTable {
         self.defaultCommandsByName = self.commandsByName
     }
 
-    private func addTypes(keywords: KeywordTerms, descriptorType: OSType) {
+    private func addTypes(_ keywords: KeywordTerms, descriptorType: OSType) {
         let len = keywords.count
         for i in 0..<len {
             // add a definition to typeByCode table
@@ -111,7 +111,7 @@ public class GlueTable {
     }
 
     // TO DO: confirm tables are passed by ref
-    private func addSpecifiers(keywords: KeywordTerms, inout nameTable: [String:KeywordTerm], inout codeTable: [OSType:String]) {
+    private func addSpecifiers(_ keywords: KeywordTerms, nameTable: inout [String:KeywordTerm], codeTable: inout [OSType:String]) {
         let len = keywords.count
         for i in 0..<len {
             // add a definition to the byCode table
@@ -130,7 +130,7 @@ public class GlueTable {
         }
     }
 
-    private func addCommands(commands: [CommandTerm]) {
+    private func addCommands(_ commands: [CommandTerm]) {
         // To handle synonyms, if two commands have same name but different codes, only the first
         // definition should be used (iterating array in reverse ensures this)
         let len = commands.count
@@ -155,7 +155,7 @@ public class GlueTable {
 
     // add data from AETEParser, SDEFParser or equivalent
     // (note: default terminology is added automatically when GlueTable is instantiated; users should not add it themselves)
-    public func addApplicationTerminology(terms: ApplicationTerminology) {
+    public func addApplicationTerminology(_ terms: ApplicationTerminology) {
         // build type tables
         self.addTypes(terms.properties, descriptorType: typeType) // technically typeProperty, but typeType is prob. safest
         self.addTypes(terms.enumerators, descriptorType: typeEnumerated)
@@ -169,10 +169,10 @@ public class GlueTable {
         // (AppleScript always packs 'text of...' as an all-elements specifier, not a property specifier)
         // TO DO: should check if this rule only applies to 'text', or other ambiguous property/element names too
         if let specialTerm = self.propertiesByName["text"] {
-            self.elementsByName["text"] = KeywordTerm(name: specialTerm.name, kind: .ElementOrType, code: specialTerm.code)
-            self.propertiesByName.removeValueForKey("text")
+            self.elementsByName["text"] = KeywordTerm(name: specialTerm.name, kind: .elementOrType, code: specialTerm.code)
+            self.propertiesByName.removeValue(forKey: "text")
         }
-        self._specifiersByName == nil
+        self._specifiersByName = nil
     }
 }
 

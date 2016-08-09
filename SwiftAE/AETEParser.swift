@@ -40,7 +40,7 @@ public class AETEParser: ApplicationTerminology {
         self.keywordConverter = keywordConverter
     }
     
-    public func parse(descriptor: NSAppleEventDescriptor) throws { // accepts AETE/AEUT or AEList of AETE/AEUTs
+    public func parse(_ descriptor: NSAppleEventDescriptor) throws { // accepts AETE/AEUT or AEList of AETE/AEUTs
         switch descriptor.descriptorType {
         case typeAETE, typeAEUT:
             self.aeteData = descriptor.data
@@ -71,14 +71,14 @@ public class AETEParser: ApplicationTerminology {
             }
         case typeAEList:
             for i in 1..<(descriptor.numberOfItems+1) {
-                try self.parse(descriptor.descriptorAtIndex(i)!)
+                try self.parse(descriptor.atIndex(i)!)
             }
         default:
             throw TerminologyError("An error occurred while parsing AETE. Unsupported descriptor type: \(formatFourCharCodeString(descriptor.descriptorType))")
         }
     }
     
-    public func parse(descriptors: [NSAppleEventDescriptor]) throws {
+    public func parse(_ descriptors: [NSAppleEventDescriptor]) throws {
         for descriptor in descriptors {
             try self.parse(descriptor)
         }
@@ -90,24 +90,24 @@ public class AETEParser: ApplicationTerminology {
     
     func short() -> UInt16 { // unsigned short (2 bytes)
         var value: UInt16 = 0
-        self.aeteData.getBytes(&value, range: NSMakeRange(self.cursor,sizeof(UInt16)))
-        self.cursor += sizeof(UInt16)
+        self.aeteData.getBytes(&value, range: NSMakeRange(self.cursor,sizeof(UInt16.self)))
+        self.cursor += sizeof(UInt16.self)
         return value
     }
     
     func code() -> OSType { // (4 bytes)
         var value: OSType = 0
-        self.aeteData.getBytes(&value, range: NSMakeRange(self.cursor,sizeof(OSType)))
-        self.cursor += sizeof(OSType)
+        self.aeteData.getBytes(&value, range: NSMakeRange(self.cursor,sizeof(OSType.self)))
+        self.cursor += sizeof(OSType.self)
         return value
     }
     
     func string() -> String {
         var length: UInt8 = 0 // Pascal string = 1-byte length (unsigned char) followed by 0-255 MacRoman chars
-        self.aeteData.getBytes(&length, range: NSMakeRange(self.cursor,sizeof(UInt8)))
-        self.cursor += sizeof(UInt8)
-        let value = length == 0 ? "" : NSString(data: aeteData.subdataWithRange(NSMakeRange(self.cursor,Int(length))),
-                                                encoding: NSMacOSRomanStringEncoding) as! String
+        self.aeteData.getBytes(&length, range: NSMakeRange(self.cursor,sizeof(UInt8.self)))
+        self.cursor += sizeof(UInt8.self)
+        let value = length == 0 ? "" : NSString(data: aeteData.subdata(with: NSMakeRange(self.cursor,Int(length))),
+                                                encoding: String.Encoding.macOSRoman.rawValue) as! String
         self.cursor += Int(length)
         return value
     }
@@ -115,15 +115,15 @@ public class AETEParser: ApplicationTerminology {
     // skip unneeded aete data
     
     func skipShort() {
-        self.cursor += sizeof(UInt16)
+        self.cursor += sizeof(UInt16.self)
     }
     func skipCode() {
-        self.cursor += sizeof(OSType)
+        self.cursor += sizeof(OSType.self)
     }
     func skipString() {
         var len: UInt8 = 0
-        self.aeteData.getBytes(&len, range: NSMakeRange(self.cursor,sizeof(UInt8)))
-        self.cursor += sizeof(UInt8) + Int(len)
+        self.aeteData.getBytes(&len, range: NSMakeRange(self.cursor,sizeof(UInt8.self)))
+        self.cursor += sizeof(UInt8.self) + Int(len)
     }
     func alignCursor() { // realign aete data cursor on even byte after reading strings
         if self.cursor % 2 != 0 {
@@ -203,7 +203,7 @@ public class AETEParser: ApplicationTerminology {
             self.alignCursor()
             let flags = self.short()
             if propertyCode != kSwiftAEInheritedProperties { // it's a normal property definition, not a superclass  definition
-                let propertyDef = KeywordTerm(name: propertyName, kind: .Property, code: propertyCode)
+                let propertyDef = KeywordTerm(name: propertyName, kind: .property, code: propertyCode)
                 if (flags % 2 != 0) { // class name is plural
                     isPlural = true
                 } else if !properties.contains(propertyDef) { // add to list of property definitions
@@ -221,7 +221,7 @@ public class AETEParser: ApplicationTerminology {
             try self.checkCursor()
         }
         // add either singular (class) or plural (element) name definition
-        let classDef = KeywordTerm(name: className, kind: .ElementOrType, code: classCode)
+        let classDef = KeywordTerm(name: className, kind: .elementOrType, code: classCode)
         if isPlural {
             if !self.elements.contains(classDef) {
                 self.elements.append(classDef)
@@ -251,7 +251,7 @@ public class AETEParser: ApplicationTerminology {
         for _ in 0..<n {
             let name = self.keywordConverter.convertSpecifierName(self.string())
             self.alignCursor()
-            let enumeratorDef = KeywordTerm(name: name, kind: .Enumerator, code: self.code())
+            let enumeratorDef = KeywordTerm(name: name, kind: .enumerator, code: self.code())
             self.skipString()    // description
             self.alignCursor()
             if !self.enumerators.contains(enumeratorDef) {
@@ -299,7 +299,7 @@ extension AEApplication { // TO DO: extend AppData first, with convenience metho
         return try self.sendAppleEvent(kASAppleScriptSuite, kGetAETE, [keyDirectObject:0]) as NSAppleEventDescriptor
     }
     
-    public func parseAETE(keywordConverter: KeywordConverterProtocol = gSwiftAEKeywordConverter) throws -> AETEParser {
+    public func parseAETE(_ keywordConverter: KeywordConverterProtocol = gSwiftAEKeywordConverter) throws -> AETEParser {
         let p = AETEParser(keywordConverter: keywordConverter)
         try p.parse(try self.getAETE())
         return p

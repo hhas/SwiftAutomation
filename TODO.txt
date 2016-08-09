@@ -1,5 +1,8 @@
 TO DO:
 
+- rename 'SwiftAutomation.framework'
+
+
 - In 10.11/Xcode7 GM, the following convenience init crashes with EXC_BAD_ACCESS immediately on returning from self.init(...):
 
         public class TextEdit: TEDRoot, ApplicationExtension {

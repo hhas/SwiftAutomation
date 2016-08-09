@@ -10,31 +10,31 @@ import AppKit
 
 // convert between 4-character strings and OSTypes (use these instead of calling UTGetOSTypeFromString/UTCopyStringFromOSType directly)
 
-func FourCharCodeUnsafe(string: String) -> OSType { // note: silently returns 0 if string is invalid; where practical, use throwing version below
+func FourCharCodeUnsafe(_ string: String) -> OSType { // note: silently returns 0 if string is invalid; where practical, use throwing version below
     return UTGetOSTypeFromString(string)
 }
 
-func FourCharCode(string: NSString) throws -> OSType { // note: use this instead of FourCharCode to get better error reporting
-    guard let data = string.dataUsingEncoding(NSMacOSRomanStringEncoding) else {
+func FourCharCode(_ string: NSString) throws -> OSType { // note: use this instead of FourCharCode to get better error reporting
+    guard let data = string.data(using: String.Encoding.macOSRoman.rawValue) else {
         throw SwiftAEError(code: 1, message: "Invalid four-char code (bad encoding): \(formatValue(string))") // TO DO: what error?
     }
-    if (data.length != 4) {
+    if (data.count != 4) {
         throw SwiftAEError(code: 1, message: "Invalid four-char code (wrong length): \(formatValue(string))")
     }
     var tmp: UInt32 = 0
-    data.getBytes(&tmp, length: 4)
+    (data as NSData).getBytes(&tmp, length: 4)
     return CFSwapInt32HostToBig(tmp)
 }
 
-func FourCharCodeString(code: OSType) -> String {
+func FourCharCodeString(_ code: OSType) -> String {
     return UTCreateStringForOSType(code).takeRetainedValue() as String
 }
 
 
 // Used in ApplicationExtension initializers
 
-public let DefaultLaunchOptions: LaunchOptions = .WithoutActivation
-public let DefaultRelaunchMode: RelaunchMode = .Limited
+public let DefaultLaunchOptions: LaunchOptions = .withoutActivation
+public let DefaultRelaunchMode: RelaunchMode = .limited
 
 
 // Indicates omitted command parameter
@@ -47,53 +47,53 @@ public let NoParameter = _NoParameter.self // TO DO: what's easiest way to creat
 // Specifiers and Symbols pack themselves
 
 public protocol SelfPacking {
-    func packSelf(appData: AppData) throws -> NSAppleEventDescriptor
+    func packSelf(_ appData: AppData) throws -> NSAppleEventDescriptor
 }
 
 
-public func URLForLocalApplication(name: String) -> NSURL? { // returns nil if not found
+public func URLForLocalApplication(_ name: String) -> URL? { // returns nil if not found
     if name.hasPrefix("/") { // full path (note: path must include .app suffix)
-        return NSURL(fileURLWithPath: name)
+        return URL(fileURLWithPath: name)
     } else { // if name is not full path, look up by name (.app suffix is optional)
-        let workspace = NSWorkspace.sharedWorkspace()
-        guard let path = workspace.fullPathForApplication(name) ?? workspace.fullPathForApplication("\(name).app") else {
+        let workspace = NSWorkspace.shared()
+        guard let path = workspace.fullPath(forApplication: name) ?? workspace.fullPath(forApplication: "\(name).app") else {
             return nil
         }
-        return NSURL(fileURLWithPath: path)
+        return URL(fileURLWithPath: path)
     }
 }
 
 // Application initializers pass application-identifying information to AppData initializer as enum according to which initializer was called
 
 public enum TargetApplication {
-    case Current
-    case Name(String) // application's name (.app suffix is optional) or full path
-    case URL(NSURL) // "file" or "eppc" URL
-    case BundleIdentifier(String, Bool) // bundleID, isDefault
-    case ProcessIdentifier(pid_t)
+    case current
+    case name(String) // application's name (.app suffix is optional) or full path
+    case url(Foundation.URL) // "file" or "eppc" URL
+    case bundleIdentifier(String, Bool) // bundleID, isDefault
+    case processIdentifier(pid_t)
     case Descriptor(NSAppleEventDescriptor) // AEAddressDesc
-    case None // used in untargeted AppData instances; sendAppleEvent() will raise ConnectionError if called
+    case none // used in untargeted AppData instances; sendAppleEvent() will raise ConnectionError if called
     
     public var isRelaunchable: Bool {
         switch self {
-        case .Name, .BundleIdentifier:
+        case .name, .bundleIdentifier:
             return true
-        case .URL(let url):
-            return url.fileURL
+        case .url(let url):
+            return url.isFileURL
         default:
             return false
         }
     }
     
     // get AEAddressDesc for target application (for local processes specified by name, url, bundleID, or PID, this is typeKernelProcessID)
-    public func descriptor(launchOptions: LaunchOptions = DefaultLaunchOptions) throws -> NSAppleEventDescriptor? {
+    public func descriptor(_ launchOptions: LaunchOptions = DefaultLaunchOptions) throws -> NSAppleEventDescriptor? {
         switch self {
-        case .Current:
+        case .current:
             return nil
-        case .Name(let name): // app name or full path
-            var url: NSURL
+        case .name(let name): // app name or full path
+            var url: Foundation.URL
             if name.hasPrefix("/") { // full path (note: path must include .app suffix)
-                url = NSURL(fileURLWithPath: name)
+                url = Foundation.URL(fileURLWithPath: name)
             } else { // if name is not full path, look up by name (.app suffix is optional)
                 guard let tmp = URLForLocalApplication(name) else {
                     throw ConnectionError(target: self, message: "Application not found: \(name)")
@@ -101,34 +101,34 @@ public enum TargetApplication {
                 url = tmp
             }
             return try self.processDescriptorForLocalApplication(url, launchOptions: launchOptions)
-        case .URL(let url): // file/eppc URL
-            if url.fileURL {
+        case .url(let url): // file/eppc URL
+            if url.isFileURL {
                 return try self.processDescriptorForLocalApplication(url, launchOptions: launchOptions)
             } else if url.scheme == "eppc" {
                 return NSAppleEventDescriptor(applicationURL: url)
             } else {
                 throw ConnectionError(target: self, message: "Invalid URL scheme (not file/eppc): \(url)")
             }
-        case .BundleIdentifier(let bundleIdentifier, _):
-            if let url = NSWorkspace.sharedWorkspace().URLForApplicationWithBundleIdentifier(bundleIdentifier) {
+        case .bundleIdentifier(let bundleIdentifier, _):
+            if let url = NSWorkspace.shared().urlForApplication(withBundleIdentifier: bundleIdentifier) {
                 return try self.processDescriptorForLocalApplication(url, launchOptions: launchOptions)
             } else {
                 throw ConnectionError(target: self, message: "Application not found: \(bundleIdentifier)")
             }
-        case .ProcessIdentifier(let pid):
+        case .processIdentifier(let pid):
             return NSAppleEventDescriptor(processIdentifier: pid)
         case .Descriptor(let desc):
             return desc
-        case .None:
-            throw ConnectionError(target: .None, message: "Untargeted specifiers can't send Apple events.")
+        case .none:
+            throw ConnectionError(target: .none, message: "Untargeted specifiers can't send Apple events.")
         }
     }
     
     // support function for above
-    public func processDescriptorForLocalApplication(url: NSURL, launchOptions: LaunchOptions) throws -> NSAppleEventDescriptor {
+    public func processDescriptorForLocalApplication(_ url: Foundation.URL, launchOptions: LaunchOptions) throws -> NSAppleEventDescriptor {
         // get a typeKernelProcessID-based AEAddressDesc for the target app, finding and launch it first if not already running;
         // if app can't be found/launched, throws an NSError instead
-        let runningProcess = try NSWorkspace.sharedWorkspace().launchApplicationAtURL(url, options: launchOptions, configuration: [:])
+        let runningProcess = try NSWorkspace.shared().launchApplication(at: url, options: launchOptions, configuration: [:])
         return NSAppleEventDescriptor(processIdentifier: runningProcess.processIdentifier)
     }
 }
@@ -136,18 +136,20 @@ public enum TargetApplication {
 
 // misc AEDesc packing functions; used internally
 
-func FourCharCodeDescriptor(type: OSType, var _ data: OSType) -> NSAppleEventDescriptor {
+func FourCharCodeDescriptor(_ type: OSType, _ data: OSType) -> NSAppleEventDescriptor {
+    var data = data
     return NSAppleEventDescriptor(descriptorType: type, bytes: &data, length: sizeofValue(data))!
 }
 
-func UInt32Descriptor(var data: UInt32) -> NSAppleEventDescriptor { // (Swift seems to ignore `const` on 'bytes' arg, so use `var` as workaround)
+func UInt32Descriptor(_ data: UInt32) -> NSAppleEventDescriptor { // (Swift seems to ignore `const` on 'bytes' arg, so use `var` as workaround)
+    var data = data
     return NSAppleEventDescriptor(descriptorType: typeUInt32, bytes: &data, length: sizeofValue(data))!
 }
 
 
 // Apple event descriptors used to terminate nested AERecord (of typeObjectSpecifier, etc) chains
 
-let AppRootDesc = NSAppleEventDescriptor.nullDescriptor() // root descriptor for all object specifiers that do not have a custom root
+let AppRootDesc = NSAppleEventDescriptor.null() // root descriptor for all object specifiers that do not have a custom root
 let ConRootDesc = NSAppleEventDescriptor(descriptorType: typeCurrentContainer, data: nil)!
 let ItsRootDesc = NSAppleEventDescriptor(descriptorType: typeObjectBeingExamined, data: nil)!
 
@@ -157,9 +159,9 @@ let ItsRootDesc = NSAppleEventDescriptor(descriptorType: typeObjectBeingExamined
 public typealias LaunchOptions = NSWorkspaceLaunchOptions
 
 public enum RelaunchMode { // if [local] target process has terminated, relaunch it automatically when sending next command to it
-    case Always
-    case Limited
-    case Never
+    case always
+    case limited
+    case never
 }
 
 
@@ -167,14 +169,14 @@ public enum RelaunchMode { // if [local] target process has terminated, relaunch
 // consids/ignores options defined in ASRegistry.h (it's crappy design and a complete mess, but what we're stuck with)
 
 public enum Considerations {
-    case Case
-    case Diacritic
-    case WhiteSpace
-    case Hyphens
-    case Expansion
-    case Punctuation
+    case `case`
+    case diacritic
+    case whiteSpace
+    case hyphens
+    case expansion
+    case punctuation
 //  case Replies // TO DO: check if this is ever supplied by AS; if it is, might be an idea to add it; if not, delete
-    case NumericStrings
+    case numericStrings
 }
 
 public typealias ConsideringOptions = Set<Considerations>

@@ -23,10 +23,10 @@ public class DefaultTerminology: ApplicationTerminology {
     public let commands: CommandTerms
 
     init(keywordConverter: KeywordConverterProtocol) {
-        self.types = self._types.map({KeywordTerm(name: keywordConverter.convertSpecifierName($0), kind: .ElementOrType, code: $1)})
-        self.enumerators = self._enumerators.map({KeywordTerm(name: keywordConverter.convertSpecifierName($0), kind: .Enumerator, code: $1)})
-        self.properties = self._properties.map({KeywordTerm(name: keywordConverter.convertSpecifierName($0), kind: .Property, code: $1)})
-        self.elements = self._elements.map({KeywordTerm(name: keywordConverter.convertSpecifierName($0), kind: .ElementOrType, code: $1)})
+        self.types = self._types.map({KeywordTerm(name: keywordConverter.convertSpecifierName($0), kind: .elementOrType, code: $1)})
+        self.enumerators = self._enumerators.map({KeywordTerm(name: keywordConverter.convertSpecifierName($0), kind: .enumerator, code: $1)})
+        self.properties = self._properties.map({KeywordTerm(name: keywordConverter.convertSpecifierName($0), kind: .property, code: $1)})
+        self.elements = self._elements.map({KeywordTerm(name: keywordConverter.convertSpecifierName($0), kind: .elementOrType, code: $1)})
         self.commands = self._commands.map({
             let term = CommandTerm(name: keywordConverter.convertSpecifierName($0), eventClass: $1, eventID: $2)
             for (name, code) in $3 { term.addParameter(keywordConverter.convertParameterName(name), code: code) }

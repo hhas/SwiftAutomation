@@ -10,7 +10,7 @@ import Carbon
 // TO DO: neither parser has been thoroughly tested to ensure correct results when multiple terminologies are given (e.g. if app also has scriptable plugins)
 
 
-public class SDEFParser: NSObject, NSXMLParserDelegate, ApplicationTerminology {
+public class SDEFParser: NSObject, XMLParserDelegate, ApplicationTerminology {
 
     public private(set) var types: KeywordTerms = []
     public private(set) var enumerators: KeywordTerms = []
@@ -29,8 +29,8 @@ public class SDEFParser: NSObject, NSXMLParserDelegate, ApplicationTerminology {
     
     // parse the given SDEF XML data
     
-    public func parse(sdef: NSData) throws {
-        let parser = NSXMLParser(data: sdef)
+    public func parse(_ sdef: Data) throws {
+        let parser = XMLParser(data: sdef)
         parser.delegate = self
         if !parser.parse() {
             throw TerminologyError("An error occurred while parsing SDEF. \(parser.parserError)")
@@ -39,7 +39,7 @@ public class SDEFParser: NSObject, NSXMLParserDelegate, ApplicationTerminology {
     
     // NSXMLParser callback; users should not call this directly
     
-    public func parser(parser: NSXMLParser, didStartElement tagName: String,
+    public func parser(_ parser: XMLParser, didStartElement tagName: String,
                                                        namespaceURI: String?,
                                                       qualifiedName: String?,
                                                          attributes: [String:String]) {
@@ -48,19 +48,19 @@ public class SDEFParser: NSObject, NSXMLParserDelegate, ApplicationTerminology {
             switch tagName {
             case "class", "record-type", "value-type":
                 let (name, code) = try self.parseKeywordTerm(tagName, attributes: attributes)
-                self.types.append(KeywordTerm(name: self.keywordConverter.convertSpecifierName(name), kind: .ElementOrType, code: code))
+                self.types.append(KeywordTerm(name: self.keywordConverter.convertSpecifierName(name), kind: .elementOrType, code: code))
                 if tagName == "class" { // use plural class name as elements name (if not given, append "s" to singular name) // TO DO: check SIG/SDEF spec, as appending 's' doesn't work so well for names already ending in 's' (e.g. 'print settings')
                     let plural = attributes["plural"] ?? ""
-                    self.elements.append(KeywordTerm(name: self.keywordConverter.convertSpecifierName(plural == "" ? "\(name)s" : plural), kind: .ElementOrType, code: code))
+                    self.elements.append(KeywordTerm(name: self.keywordConverter.convertSpecifierName(plural == "" ? "\(name)s" : plural), kind: .elementOrType, code: code))
                 }
             case "property":
                 let (name, code) = try self.parseKeywordTerm(tagName, attributes: attributes)
-                self.properties.append(KeywordTerm(name: self.keywordConverter.convertSpecifierName(name), kind: .Property, code: code))
+                self.properties.append(KeywordTerm(name: self.keywordConverter.convertSpecifierName(name), kind: .property, code: code))
             case "enumerator":
                 let (name, code) = try self.parseKeywordTerm(tagName, attributes: attributes)
-                self.enumerators.append(KeywordTerm(name: self.keywordConverter.convertSpecifierName(name), kind: .Enumerator, code: code))
+                self.enumerators.append(KeywordTerm(name: self.keywordConverter.convertSpecifierName(name), kind: .enumerator, code: code))
             case "command":
-                guard let name = attributes["name"], codeString: NSString = attributes["code"] else {
+                guard let name = attributes["name"], let codeString: NSString = attributes["code"] else {
                     throw TerminologyError("Malformed \(tagName) in SDEF: missing 'name' or 'code' attribute.")
                 }
                 if name == "" {
@@ -71,8 +71,8 @@ public class SDEFParser: NSObject, NSXMLParserDelegate, ApplicationTerminology {
                 }
                 var eventClass: OSType, eventID: OSType
                 do {
-                    eventClass = try FourCharCode(codeString.substringToIndex(4))
-                    eventID = try FourCharCode(codeString.substringFromIndex(4))
+                    eventClass = try FourCharCode(codeString.substring(to: 4))
+                    eventID = try FourCharCode(codeString.substring(from: 4))
                 } catch {
                     throw TerminologyError("Malformed \(tagName) in SDEF: invalid 'code' attribute (\(error)).")
                 }
@@ -102,8 +102,8 @@ public class SDEFParser: NSObject, NSXMLParserDelegate, ApplicationTerminology {
     }
     
     // used by parser() callback
-    func parseKeywordTerm(tagName: String, attributes: [String:String]) throws -> (String, OSType) {
-        guard let name = attributes["name"], codeString = attributes["code"] else {
+    func parseKeywordTerm(_ tagName: String, attributes: [String:String]) throws -> (String, OSType) {
+        guard let name = attributes["name"], let codeString = attributes["code"] else {
             throw TerminologyError("Malformed \(tagName) in SDEF: missing 'name' or 'code' attribute.")
         }
         if name == "" {
@@ -120,13 +120,13 @@ public class SDEFParser: NSObject, NSXMLParserDelegate, ApplicationTerminology {
 
 // convenience function
 
-public func GetScriptingDefinition(url: NSURL) throws -> NSData {
+public func GetScriptingDefinition(_ url: URL) throws -> Data {
     var sdef: Unmanaged<CFData>?
     let err = OSACopyScriptingDefinitionFromURL(url, 0, &sdef)
     if err != 0 {
         throw SwiftAEError(code: Int(err), message: "Can't retrieve SDEF.")
     }
-    return sdef!.takeRetainedValue()
+    return sdef!.takeRetainedValue() as Data
 }
 
 

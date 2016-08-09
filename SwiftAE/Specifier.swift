@@ -34,7 +34,7 @@ public class Selector: CustomStringConvertible, SelfPacking { // TO DO: Equatabl
     
     // packing
     
-    public func packSelf(appData: AppData) throws -> NSAppleEventDescriptor {
+    public func packSelf(_ appData: AppData) throws -> NSAppleEventDescriptor {
         if self.cachedDesc == nil {
             self.cachedDesc = try self.packSelf()
         }
@@ -97,12 +97,12 @@ public class Specifier: Selector, SpecifierProtocol {
             return
         }
         do {
-            let parentDesc = cachedDesc.descriptorForKeyword(keyAEContainer)!
+            let parentDesc = cachedDesc.forKeyword(keyAEContainer)!
             self._parentSelector = try appData.unpack(parentDesc, returnType: Specifier.self)
             self._parentSelector!.unpackParentSpecifiers()
         } catch {
             print("Deferred unpack parent specifier failed: \(error)") // TO DO: DEBUG; delete
-            self._parentSelector = RootSpecifier(rootObject: (cachedDesc.descriptorForKeyword(keyAEContainer))!, appData: self.appData) // TO DO: store error in RootSpecifier and raise it on packing
+            self._parentSelector = RootSpecifier(rootObject: (cachedDesc.forKeyword(keyAEContainer))!, appData: self.appData) // TO DO: store error in RootSpecifier and raise it on packing
         }
     }
     
@@ -110,17 +110,17 @@ public class Specifier: Selector, SpecifierProtocol {
     
     // TO DO: any way to support String|OSType sum type without clients having to explicitly construct it? (or is that a 'special case' that Swift only grants to Optional?)
     
-    func sendAppleEvent<T>(eventClass: OSType, _ eventID: OSType, _ parameters: [OSType:Any] = [:],
-                           waitReply: Bool = true, sendOptions: NSAppleEventSendOptions? = nil,
-                           withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+    func sendAppleEvent<T>(_ eventClass: OSType, _ eventID: OSType, _ parameters: [OSType:Any] = [:],
+                           waitReply: Bool = true, sendOptions: NSAppleEventDescriptor.SendOptions? = nil,
+                           withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(eventClass, eventID: eventID, parentSpecifier: self,
                                           parameters: parameters, waitReply: waitReply, sendOptions: sendOptions,
                                           withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     
-    func sendAppleEvent<T>(eventClass: String, _ eventID: String, _ parameters: [String:Any] = [:],
-                           waitReply: Bool = true, sendOptions: NSAppleEventSendOptions? = nil,
-                            withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+    func sendAppleEvent<T>(_ eventClass: String, _ eventID: String, _ parameters: [String:Any] = [:],
+                           waitReply: Bool = true, sendOptions: NSAppleEventDescriptor.SendOptions? = nil,
+                            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
         var params = [OSType:Any]()
         for (k, v) in parameters { params[FourCharCodeUnsafe(k)] = v }
         return try self.appData.sendAppleEvent(FourCharCodeUnsafe(eventClass), eventID: FourCharCodeUnsafe(eventID), parentSpecifier: self,
@@ -129,17 +129,17 @@ public class Specifier: Selector, SpecifierProtocol {
     }
     
     // non-generic version of the above used when T isn't already specified/inferrable, in which case Any! is used // TO DO: use 'Any' or 'Any!'?
-    func sendAppleEvent(eventClass: OSType, _ eventID: OSType, _ parameters: [OSType:Any] = [:],
-                        waitReply: Bool = true, sendOptions: NSAppleEventSendOptions? = nil,
-                        withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+    func sendAppleEvent(_ eventClass: OSType, _ eventID: OSType, _ parameters: [OSType:Any] = [:],
+                        waitReply: Bool = true, sendOptions: NSAppleEventDescriptor.SendOptions? = nil,
+                        withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(eventClass, eventID: eventID, parentSpecifier: self,
                                           parameters: parameters, waitReply: waitReply, sendOptions: sendOptions,
                                           withTimeout: withTimeout, considering: considering, returnType: Any.self)
     }
     
-    func sendAppleEvent(eventClass: String, _ eventID: String, _ parameters: [String:Any] = [:],
-                        waitReply: Bool = true, sendOptions: NSAppleEventSendOptions? = nil,
-                        withTimeout: NSTimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+    func sendAppleEvent(_ eventClass: String, _ eventID: String, _ parameters: [String:Any] = [:],
+                        waitReply: Bool = true, sendOptions: NSAppleEventDescriptor.SendOptions? = nil,
+                        withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         var params = [OSType:Any]()
         for (k, v) in parameters { params[FourCharCodeUnsafe(k)] = v }
         return try self.appData.sendAppleEvent(FourCharCodeUnsafe(eventClass), eventID: FourCharCodeUnsafe(eventID), parentSpecifier: self,
@@ -164,7 +164,7 @@ public class InsertionSpecifier: Specifier { // packSelf
     }
     
     private override func packSelf() throws -> NSAppleEventDescriptor {
-        let desc = NSAppleEventDescriptor.recordDescriptor().coerceToDescriptorType(typeInsertionLoc)!
+        let desc = NSAppleEventDescriptor.record().coerce(toDescriptorType: typeInsertionLoc)!
         desc.setDescriptor(try self.parentSelector.packSelf(self.appData), forKeyword: keyAEObject)
         desc.setDescriptor(self.insertionLocation, forKeyword: keyAEPosition)
         return desc
@@ -200,7 +200,7 @@ public class ObjectSpecifier: Specifier, ObjectSpecifierProtocol { // represents
     }
     
     private override func packSelf() throws -> NSAppleEventDescriptor {
-        let desc = NSAppleEventDescriptor.recordDescriptor().coerceToDescriptorType(typeObjectSpecifier)!
+        let desc = NSAppleEventDescriptor.record().coerce(toDescriptorType: typeObjectSpecifier)!
         desc.setDescriptor(try self.parentSelector.packSelf(self.appData), forKeyword: keyAEContainer)
         desc.setDescriptor(self.wantType, forKeyword: keyAEDesiredClass)
         desc.setDescriptor(self.selectorForm, forKeyword: keyAEKeyForm)
@@ -211,16 +211,16 @@ public class ObjectSpecifier: Specifier, ObjectSpecifierProtocol { // represents
     // Containment test constructors
     // TO DO: ideally the following should only appear on objects constructed from an Its root; however, this will make the class/protocol hierarchy more complicated, so may be more hassle than it's worth - maybe explore this later, once the current implementation is fully working
     
-    func beginsWith(value: Any) -> TestClause {
+    func beginsWith(_ value: Any) -> TestClause {
         return ComparisonTest(operatorType: gBeginsWith, operand1: self, operand2: value, appData: self.appData, cachedDesc: nil)
     }
-    func endsWith(value: Any) -> TestClause {
+    func endsWith(_ value: Any) -> TestClause {
         return ComparisonTest(operatorType: gEndsWith, operand1: self, operand2: value, appData: self.appData, cachedDesc: nil)
     }
-    func contains(value: Any) -> TestClause {
+    func contains(_ value: Any) -> TestClause {
         return ComparisonTest(operatorType: gContains, operand1: self, operand2: value, appData: self.appData, cachedDesc: nil)
     }
-    func isIn(value: Any) -> TestClause {
+    func isIn(_ value: Any) -> TestClause {
         return ComparisonTest(operatorType: gIsIn, operand1: self, operand2: value, appData: self.appData, cachedDesc: nil)
     }
 }
@@ -263,7 +263,7 @@ public struct RangeSelector: SelfPacking { // holds data for by-range selectors 
     let stop: Any
     let wantType: NSAppleEventDescriptor
     
-    private func packSelector(selectorData: Any, appData: AppData) throws -> NSAppleEventDescriptor {
+    private func packSelector(_ selectorData: Any, appData: AppData) throws -> NSAppleEventDescriptor {
         var selectorForm: NSAppleEventDescriptor
         switch selectorData {
         case is NSAppleEventDescriptor:
@@ -272,7 +272,7 @@ public struct RangeSelector: SelfPacking { // holds data for by-range selectors 
             return try (selectorData as! Specifier).packSelf(appData)
         default: // pack anything else as a by-name or by-index specifier
             selectorForm = selectorData is String ? gNameForm : gAbsolutePositionForm
-            let desc = NSAppleEventDescriptor.recordDescriptor().coerceToDescriptorType(typeObjectSpecifier)!
+            let desc = NSAppleEventDescriptor.record().coerce(toDescriptorType: typeObjectSpecifier)!
             desc.setDescriptor(ConRootDesc, forKeyword: keyAEContainer)
             desc.setDescriptor(self.wantType, forKeyword: keyAEDesiredClass)
             desc.setDescriptor(selectorForm, forKeyword: keyAEKeyForm)
@@ -288,7 +288,7 @@ public struct RangeSelector: SelfPacking { // holds data for by-range selectors 
     }
     
     init(appData: AppData, desc: NSAppleEventDescriptor) throws {
-        guard let startDesc = desc.descriptorForKeyword(keyAERangeStart), stopDesc = desc.descriptorForKeyword(keyAERangeStop) else {
+        guard let startDesc = desc.forKeyword(keyAERangeStart), let stopDesc = desc.forKeyword(keyAERangeStop) else {
             throw UnpackError(appData: appData, descriptor: desc, type: RangeSelector.self, message: "Missing start/stop specifier in by-range specifier.")
         }
         do {
@@ -300,9 +300,9 @@ public struct RangeSelector: SelfPacking { // holds data for by-range selectors 
         }
     }
     
-    public func packSelf(appData: AppData) throws -> NSAppleEventDescriptor {
+    public func packSelf(_ appData: AppData) throws -> NSAppleEventDescriptor {
         // note: the returned desc will be cached by the ElementsSpecifier, so no need to cache it here
-        let desc = NSAppleEventDescriptor.recordDescriptor().coerceToDescriptorType(typeRangeDescriptor)!
+        let desc = NSAppleEventDescriptor.record().coerce(toDescriptorType: typeRangeDescriptor)!
         desc.setDescriptor(try self.packSelector(self.start, appData: appData), forKeyword: keyAERangeStart)
         desc.setDescriptor(try self.packSelector(self.stop, appData: appData), forKeyword: keyAERangeStop)
         return desc
@@ -338,7 +338,7 @@ public class ComparisonTest: TestClause {
         if self.operatorType === gNE { // AEM doesn't support a 'kAENotEqual' enum...
             return try (!(self.operand1 == self.operand2)).packSelf(self.appData) // so convert to kAEEquals+kAENOT
         } else {
-            let desc = NSAppleEventDescriptor.recordDescriptor().coerceToDescriptorType(typeCompDescriptor)!
+            let desc = NSAppleEventDescriptor.record().coerce(toDescriptorType: typeCompDescriptor)!
             let opDesc1 = try self.appData.pack(self.operand1)
             let opDesc2 = try self.appData.pack(self.operand2)
             if self.operatorType === gIsIn { // AEM doesn't support a 'kAEIsIn' enum...
@@ -374,7 +374,7 @@ public class LogicalTest: TestClause {
     }
     
     private override func packSelf() throws -> NSAppleEventDescriptor {
-        let desc = NSAppleEventDescriptor.recordDescriptor().coerceToDescriptorType(typeLogicalDescriptor)!
+        let desc = NSAppleEventDescriptor.record().coerce(toDescriptorType: typeLogicalDescriptor)!
         let opDesc = try self.appData.pack(self.operands)
         desc.setDescriptor(self.operatorType, forKeyword: keyAELogicalOperator)
         desc.setDescriptor(opDesc, forKeyword: keyAELogicalTerms)
@@ -410,8 +410,8 @@ public class RootSpecifier: ObjectSpecifier { // app, con, its, custom root (not
     
     public required init(rootObject: Any, appData: AppData) {
         // rootObject is either one of the three standard AEDescs indicating app/con/its root, or an arbitrary object supplied by caller (e.g. an AEAddressDesc if constructing a fully qualified specifier)
-        super.init(wantType: NSAppleEventDescriptor.nullDescriptor(),
-                   selectorForm: NSAppleEventDescriptor.nullDescriptor(), selectorData: rootObject,
+        super.init(wantType: NSAppleEventDescriptor.null(),
+                   selectorForm: NSAppleEventDescriptor.null(), selectorData: rootObject,
                    parentSelector: nil, appData: appData, cachedDesc: rootObject as? NSAppleEventDescriptor)
     }
 
