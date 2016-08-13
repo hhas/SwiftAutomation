@@ -187,9 +187,9 @@ public class CommandError: SwiftAEError {
             replyEvent: NSAppleEventDescriptor? = nil,
             commandInfo: Any? = nil,
             parentError: Error? = nil, // TO DO: rename
-            message: String = "Command failed.")
+            message: String? = nil)
     {
-        var message = message
+        var message = message ?? "Command failed."
         self.appData = appData
         self.event = event
         self.replyEvent = replyEvent
@@ -199,11 +199,11 @@ public class CommandError: SwiftAEError {
         
         var errorNumber = 0
         if let error = parentError {
-            print("SwiftAE/AEM error: \(error)")
+            print("! SwiftAE/AEM error: \(error)")
             errorNumber = error._code
         } else if let reply = replyEvent {
-            print("App reply event: \(reply)")
-            if let appError = reply.forKeyword(keyErrorNumber) {
+            print("! App reply event: \(reply)")
+            if let appError = reply.forKeyword(SwiftAE_keyErrorNumber) {
                 errorNumber = Int(appError.int32Value)
                 // TO DO: [lazily] unpack any other available error info
             }

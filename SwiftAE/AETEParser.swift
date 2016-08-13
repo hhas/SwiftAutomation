@@ -42,7 +42,7 @@ public class AETEParser: ApplicationTerminology {
     
     public func parse(_ descriptor: NSAppleEventDescriptor) throws { // accepts AETE/AEUT or AEList of AETE/AEUTs
         switch descriptor.descriptorType {
-        case typeAETE, typeAEUT:
+        case SwiftAE_typeAETE, SwiftAE_typeAEUT:
             self.aeteData = descriptor.data
             self.cursor = 6 // skip version, language, script integers
             let n = self.short()
@@ -296,7 +296,7 @@ public class AETEParser: ApplicationTerminology {
 extension AEApplication { // TO DO: extend AppData first, with convenience methods on AEApplication?
 
     public func getAETE() throws -> NSAppleEventDescriptor {
-        return try self.sendAppleEvent(kASAppleScriptSuite, kGetAETE, [keyDirectObject:0]) as NSAppleEventDescriptor
+        return try self.sendAppleEvent(SwiftAE_kASAppleScriptSuite, SwiftAE_kGetAETE, [keyDirectObject:0]) as NSAppleEventDescriptor
     }
     
     public func parseAETE(_ keywordConverter: KeywordConverterProtocol = gSwiftAEKeywordConverter) throws -> AETEParser {

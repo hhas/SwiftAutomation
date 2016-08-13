@@ -9,7 +9,7 @@ import Foundation
 
 
 public class TerminologyError: SwiftAEError {
-    init(_ message: String) {
+    public init(_ message: String) {
         super.init(code: errOSACorruptTerminology, message: message)
     }
 }

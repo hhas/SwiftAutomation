@@ -133,36 +133,36 @@ public class SpecifierFormatter {
         let form = specifier.selectorForm.enumCodeValue
         var result = self.format(specifier.parentSelector)
         switch form {
-        case formPropertyID:
+        case SwiftAE_formPropertyID:
             // kludge, seld is either desc or symbol, depending on whether constructed or unpacked; TO DO: eliminate?
             if let desc = specifier.selectorData as? NSAppleEventDescriptor, let propertyDesc = desc.coerce(toDescriptorType: typeType) {
                 return result + formatPropertyVar(propertyDesc.typeCodeValue)
             } else if let symbol = specifier.selectorData as? Symbol {
                 return result + formatPropertyVar(symbol.code)
             } // else malformed desc
-        case formUserPropertyID:
+        case SwiftAE_formUserPropertyID:
             return "\(result).userProperty(\(formatValue(specifier.selectorData)))"
         default:
             result += formatElementsVar(specifier.wantType.typeCodeValue)
-            if let desc = specifier.selectorData as? NSAppleEventDescriptor, desc.typeCodeValue == kAEAll { // TO DO: check this is right (replaced `where` with `,`)
+            if let desc = specifier.selectorData as? NSAppleEventDescriptor, desc.typeCodeValue == SwiftAE_kAEAll { // TO DO: check this is right (replaced `where` with `,`)
                 return result
             }
             switch form {
-            case formAbsolutePosition: // specifier[IDX] or specifier.first/middle/last/any
+            case SwiftAE_formAbsolutePosition: // specifier[IDX] or specifier.first/middle/last/any
                 if let desc = specifier.selectorData as? NSAppleEventDescriptor, // ObjectSpecifier.unpackSelf does not unpack ordinals
-                        let ordinal = [kAEFirst: "first", kAEMiddle: "middle", kAELast: "last", kAEAny: "any"][desc.enumCodeValue] {
+                        let ordinal = [SwiftAE_kAEFirst: "first", SwiftAE_kAEMiddle: "middle", SwiftAE_kAELast: "last", SwiftAE_kAEAny: "any"][desc.enumCodeValue] {
                     return "\(result).\(ordinal)"
                 } else {
                     return "\(result)[\(formatValue(specifier.selectorData))]"
                 }
-            case formName: // specifier[NAME] or specifier.named(NAME)
+            case SwiftAE_formName: // specifier[NAME] or specifier.named(NAME)
                 return specifier.selectorData is Int ? "\(result).named(\(formatValue(specifier.selectorData)))"
                                                      : "\(result)[\(formatValue(specifier.selectorData))]"
-            case formUniqueID: // specifier.ID(UID)
+            case SwiftAE_formUniqueID: // specifier.ID(UID)
                 return "\(result).ID(\(self.format(specifier.selectorData)))"
-            case formRelativePosition: // specifier.previous/next(SYMBOL)
+            case SwiftAE_formRelativePosition: // specifier.previous/next(SYMBOL)
                 if let seld = specifier.selectorData as? NSAppleEventDescriptor, // ObjectSpecifier.unpackSelf does not unpack ordinals
-                    let name = [kAEPrevious: "previous", kAENext: "next"][seld.enumCodeValue],
+                    let name = [SwiftAE_kAEPrevious: "previous", SwiftAE_kAENext: "next"][seld.enumCodeValue],
                     let parent = specifier.parentSelector as? ObjectSpecifier {
                         if specifier.wantType.typeCodeValue == parent.wantType.typeCodeValue {
                             return "\(result).\(name)()" // use shorthand form for neatness
@@ -170,11 +170,11 @@ public class SpecifierFormatter {
                             return "\(result).\(name)(\(self.formatSymbol(specifier.wantType.typeCodeValue)))"
                         }
                 }
-            case formRange: // specifier[FROM,TO]
+            case SwiftAE_formRange: // specifier[FROM,TO]
                 if let seld = specifier.selectorData as? RangeSelector {
                     return "\(result)[\(self.format(seld.start)), \(self.format(seld.stop))]" // TO DO: app-based specifiers should use generic 'App' root; con-based specifiers should be reduced to minimal representation if their wantType == specifier.wantType
                 }
-            case formTest: // specifier[TEST]
+            case SwiftAE_formTest: // specifier[TEST]
                 return "\(result)[\(self.format(specifier.selectorData))]"
             default:
                 break
@@ -199,11 +199,11 @@ public class SpecifierFormatter {
     func formatLogicalTest(_ specifier: LogicalTest) -> String {
         let operands = specifier.operands.map({formatValue($0)})
         let opcode = specifier.operatorType.enumCodeValue
-        if let name = [kAEAND: "&&", kAEOR: "||"][opcode] {
+        if let name = [SwiftAE_kAEAND: "&&", SwiftAE_kAEOR: "||"][opcode] {
             if operands.count > 1 {
                 return operands.joined(separator: " \(name) ")
             }
-        } else if opcode == kAENOT && operands.count == 1 {
+        } else if opcode == SwiftAE_kAENOT && operands.count == 1 {
             return "!(\(operands[0]))"
         }
         return "<\(specifier.dynamicType)(logc:\(specifier.operatorType),term:\(formatValue(operands)))>"

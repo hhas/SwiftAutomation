@@ -7,70 +7,100 @@ enabling it to control "AppleScriptable" OS X applications directly.
 
 For example:
 
-  tell application "TextEdit" to get text of document 1
+tell application "TextEdit" to get text of document 1
 
-  let result = try TextEdit().documents[1].text.get() as! String
+let result = try TextEdit().documents[1].text.get() as! String
 
+SwiftAE is an in-progress effort to develop a first-class Apple event brige for
+the Swift language, giving it application scripting capabilites, equal in
+capability and compatibility to AppleScript's own. Its design descends from
+appscript (http://appscript.sourceforge.net) and spinoff AppleEventBridge
+(https://bitbucket.org/hhas/appleeventbridge/) projects, reworked into a
+smaller simpler implementation, and adapted to integrate effectively with
+Swift's static type system and syntax.
+
+SwiftAE provides a number of base classes providing common functionality for
+constructing object specifiers, converting between Swift and Apple event
+data types, and packing, sending, and unpacking Apple events. These base
+classes are tied together by generated glue modules. A default AEApplication
+glue is included as standard, allowing Apple events to be constructed and
+sent using raw four-char codes (OSTypes). Additional application-specific
+glues can be generated using the included aeglue command-line tool, allowing
+specifiers and commands to be written using the application's own
+dictionary-defined terminology.
 
 ## Status
 
-SwiftAE is an in-progress port/rewrite of the AppleEventBridge framework's
-prototype Swift-AE support (https://bitbucket.org/hhas/appleeventbridge).
-SwiftAE's objective is to provide the Swift language with first-class
-application scripting support, equal in capability and compatibility to
-AppleScript, efficiently integrated with Swift's static type system.
+SwiftAE is alpha status: most of the implementation is sufficiently complete to
+allow testing and experimentation; however, further progress is currently
+blocked due to significant difficulties in bridging Swift's Array and
+Dictionary types to their Apple event equivalents. For details, see the
+following unpack<T> methods in AppData.swift:
 
-The Specifier classes are more or less complete, though due to bugs and
-vagaries of swiftc, these classes cannot be used directly but only as
-part of a generated glue; a default AEApplicationGlue is included for
-convenience. Apple event dispatch works, though has yet to be fully tested,
-and bugs may still exist in both.
+func unpack<T>(_ desc: NSAppleEventDescriptor, returnType: T.Type) throws -> T
 
-Type bridging is far from complete, and various issues have yet to be
-resolved, particularly coercion and casting. Arrays and Dictionaries
-currently cannot be used in application commands, and command methods
-always return Any (specializing return types via generics is proving
-tricky to implement reliably).
+func unpack<T: Sequence, U where T.Iterator.Element == U>
+(_ desc: NSAppleEventDescriptor, returnType: T.Type) throws -> [U]
 
-A rough draft of the SwiftAE documentation (ported from AppleEventBridge)
-is included. Expect errors, omissions, etc.
+func unpack<K: Symbol, V, T: Sequence where T.Iterator.Element == (K, V)>
+(_ desc: NSAppleEventDescriptor, returnType: T.Type) throws -> [K: V]
+
+Unfortunately, when T is a Sequence type, e.g. Array<String>, the Swift
+compiler binds to the first method (the least specific) instead of the most
+specific (the second for Array types, the third for Dictionary types). As a
+result, SwiftAE is unable to unpack Apple events to the type specified by the
+calling code when that type is a Sequence, e.g.:
+
+let names = try TextEdit().documents.name.get() as! Array<String>
+
+will fail with a "SwiftAE doesn't support this Swift type." error, not because
+Array<String> is not supported but because the Swift compiler incorrectly bound
+to the first unpack<T> method which only knows how to unpack atomic types
+(typeInteger, typeUnicodeText, typeLongDateTime, etc), not collection types
+(typeAEList, typeAERecord).
+
+A rough draft of the SwiftAE documentation (ported from AppleEventBridge) is
+included. Expect errors, omissions, etc.
 
 ## Get it
 
 To clone the SwiftAE Xcode project to your own machine:
 
-    git clone https://bitbucket.org/hhas/swiftae.git
+git clone https://bitbucket.org/hhas/swiftae.git
 
-The project's SwiftAE target is currently configured to build a CLI
-executable for testing (see test/main.swift). Building an embeddable
-SwiftAE framework will be added once it's ready for general use. Building
-a standalone SwiftAE framework will also be supported once Swift itself
-supports this.
+The project's SwiftAE target is not yet configured to build an embeddable/
+standalone framework. This will be addressed if/when the above blocking issue
+is rectified, allowing the implementation to be completed and the project to
+move to beta status. To run simple examples of use (see test/main.swift), build
+and run the `test` target.
 
-For convenience, glue files for TextEdit, Finder, and iTunes are included
-in the project. Additional glues can be generated by building the `aeglue`
-target and running the resulting `aeglue` command line tool in Terminal.
-For example, to generate a SwiftAE glue and documentation for Photos.app:
+For convenience, glue files for TextEdit, Finder, and iTunes are included in the
+project. Additional glues can be generated by building the `aeglue` target
+and running the resulting `aeglue` command line tool in Terminal. For
+example, to generate a SwiftAE glue and documentation for Photos.app:
 
-    /path/to/aeglue -o ~/Desktop Photos
+/path/to/aeglue -o ~/Desktop Photos
 
-A basic translation tool, SwiftAETranslate, that converts application
-commands from AppleScript to Swift syntax is also included. To use it,
-build and run the SwiftAETranslate target. Type an AppleScript command
-into the top text pane and click the Run button to display the equivalent
-Swift syntax in the bottom pane. If the 'Send Apple events' checkbox is
-selected, the command will also be sent to the target application and its
-result displayed as well.
+A basic translation tool, SwiftAETranslate, that converts application commands
+from AppleScript to Swift syntax is also included. To use it, build and run
+the SwiftAETranslate target. Type an AppleScript command into the top text
+pane and click the Run button to display the equivalent Swift syntax in the
+bottom pane. If the 'Send Apple events' checkbox is selected, the command
+will also be sent to the target application and its result displayed as
+well. (Note that list/record results currently display as raw descriptors,
+not formatted Swift code, due to the Sequence unpacking issues above. Atomic
+results - boolean/number/string/specifier/etc - should display in correct Swift
+syntax, caveat any bugs.)
 
 Note that `aeglue` and SwiftAETranslate normally retrieve application
 terminology using `ascrgdte` ('get dynamic terminology') events. Some
 applications (e.g. Finder) have faulty `ascrgdte` handlers that fail to
 return correct terminology, in which case use the `-o` or 'Use SDEF
-terminology' options instead. (Be aware that SDEF-based terminology may
-also contain bugs and omissions, in which case use raw four-char codes
-or correct generated glue code by hand.)
+terminology' options instead. (Be aware that SDEF-based terminology may also
+contain bugs and omissions, in which case use raw four-char codes or correct
+generated glue code by hand.)
 
-SwiftAE requires OS X 10.11 and Swift 2.0 and Xcode 7 GM or later.
+SwiftAE requires OS X 10.11 and Swift 3.0 and Xcode 8b4 or later.
 
 
 ## Etc.

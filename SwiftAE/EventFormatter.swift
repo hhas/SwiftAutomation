@@ -181,7 +181,7 @@ public struct AppleEventDescription { // TO DO: split AE unpacking from CommandT
         self.eventID = eventID
         var commandInfo = appData.glueTable.commandsByCode[CommandTermKey(eventClass, eventID)]
         // unpack subject attribute and/or direct parameter, if given
-        if let desc = event.attributeDescriptor(forKeyword: keySubjectAttr) {
+        if let desc = event.attributeDescriptor(forKeyword: SwiftAE_keySubjectAttr) {
             if desc.descriptorType != typeNull { // typeNull = root application object
                 self.subject = try? appData.unpack(desc) ?? desc
             }
@@ -231,7 +231,7 @@ public struct AppleEventDescription { // TO DO: split AE unpacking from CommandT
                 self.withTimeout = Double(timeoutInTicks) / 60.0
             }
         }
-        if let considersAndIgnoresDesc = event.attributeDescriptor(forKeyword: enumConsidsAndIgnores) {
+        if let considersAndIgnoresDesc = event.attributeDescriptor(forKeyword: SwiftAE_enumConsidsAndIgnores) {
             var considersAndIgnores: UInt32 = 0
             (considersAndIgnoresDesc.data as NSData).getBytes(&considersAndIgnores, length: sizeof(UInt32.self))
             if considersAndIgnores != gDefaultConsidersIgnoresMask {

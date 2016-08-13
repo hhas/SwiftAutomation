@@ -143,7 +143,7 @@ func FourCharCodeDescriptor(_ type: OSType, _ data: OSType) -> NSAppleEventDescr
 
 func UInt32Descriptor(_ data: UInt32) -> NSAppleEventDescriptor { // (Swift seems to ignore `const` on 'bytes' arg, so use `var` as workaround)
     var data = data
-    return NSAppleEventDescriptor(descriptorType: typeUInt32, bytes: &data, length: sizeofValue(data))!
+    return NSAppleEventDescriptor(descriptorType: SwiftAE_typeUInt32, bytes: &data, length: sizeofValue(data))!
 }
 
 

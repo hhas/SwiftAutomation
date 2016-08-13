@@ -62,7 +62,7 @@ public class Symbol: Hashable, Equatable, CustomStringConvertible, SelfPacking {
     
     public var hashValue: Int {return Int(self.code)}
     
-    //    public let missingValue = Symbol(name: "missingValue", code: cMissingValue, type: typeType) // TO DO: use this or nil? (since this bridge is Swift-only, and idiomatic Swift APIs use Error, not nil, to indicate errors, inclined to use nil)
+    //    public let missingValue = Symbol(name: "missingValue", code: SwiftAE_cMissingValue, type: typeType) // TO DO: use this or nil? (since this bridge is Swift-only, and idiomatic Swift APIs use Error, not nil, to indicate errors, inclined to use nil)
     
 }
 
