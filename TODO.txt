@@ -15,6 +15,9 @@ TO DO:
 - rename SwiftAETranslate (AppleScriptToSwift?)
 
 
+- where should aeglue go in framework bundle?
+
+
 
 - include tutorial playground? (see manual ch.4) Q. just how predictable is playground-based execution when performing commands with side effects?
 
