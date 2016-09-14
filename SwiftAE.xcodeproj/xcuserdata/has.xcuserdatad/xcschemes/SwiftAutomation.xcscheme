@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "4F63C4231B7CF06E000D74EE"
-               BuildableName = "SwiftAE"
-               BlueprintName = "SwiftAE"
+               BlueprintIdentifier = "4FFF5D231D899F0D008ED4F5"
+               BuildableName = "SwiftAutomation.framework"
+               BlueprintName = "SwiftAutomation"
                ReferencedContainer = "container:SwiftAE.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -29,15 +29,6 @@
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
       </Testables>
-      <MacroExpansion>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "4F63C4231B7CF06E000D74EE"
-            BuildableName = "SwiftAE"
-            BlueprintName = "SwiftAE"
-            ReferencedContainer = "container:SwiftAE.xcodeproj">
-         </BuildableReference>
-      </MacroExpansion>
       <AdditionalOptions>
       </AdditionalOptions>
    </TestAction>
@@ -51,16 +42,15 @@
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
+      <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "4F63C4231B7CF06E000D74EE"
-            BuildableName = "SwiftAE"
-            BlueprintName = "SwiftAE"
+            BlueprintIdentifier = "4FFF5D231D899F0D008ED4F5"
+            BuildableName = "SwiftAutomation.framework"
+            BlueprintName = "SwiftAutomation"
             ReferencedContainer = "container:SwiftAE.xcodeproj">
          </BuildableReference>
-      </BuildableProductRunnable>
+      </MacroExpansion>
       <AdditionalOptions>
       </AdditionalOptions>
    </LaunchAction>
@@ -70,16 +60,15 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
+      <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "4F63C4231B7CF06E000D74EE"
-            BuildableName = "SwiftAE"
-            BlueprintName = "SwiftAE"
+            BlueprintIdentifier = "4FFF5D231D899F0D008ED4F5"
+            BuildableName = "SwiftAutomation.framework"
+            BlueprintName = "SwiftAutomation"
             ReferencedContainer = "container:SwiftAE.xcodeproj">
          </BuildableReference>
-      </BuildableProductRunnable>
+      </MacroExpansion>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">

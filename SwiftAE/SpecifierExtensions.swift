@@ -34,13 +34,13 @@ public extension ObjectSpecifierExtension {
     public func userProperty(_ name: String) -> ObjectSpecifierType {
         return ObjectSpecifierType(wantType: gPropertyType,
 				selectorForm: gUserPropertyForm, selectorData: NSAppleEventDescriptor(string: name),
-				parentSelector: (self as! Selector), appData: self.appData, cachedDesc: nil)
+				parentQuery: (self as! Query), appData: self.appData, cachedDesc: nil)
     }
 
     public func property(_ code: OSType) -> ObjectSpecifierType {
 		return ObjectSpecifierType(wantType: gPropertyType,
 				selectorForm: gPropertyForm, selectorData: NSAppleEventDescriptor(typeCode: code),
-				parentSelector: (self as! Selector), appData: self.appData, cachedDesc: nil)
+				parentQuery: (self as! Query), appData: self.appData, cachedDesc: nil)
     }
     
     public func property(_ code: String) -> ObjectSpecifierType { // caution: string must be valid four-char code; if not, 0x00000000 is used
@@ -50,7 +50,7 @@ public extension ObjectSpecifierExtension {
     public func elements(_ code: OSType) -> ElementsSpecifierType {
         return ElementsSpecifierType(wantType: NSAppleEventDescriptor(typeCode: code),
                 selectorForm: gAbsolutePositionForm, selectorData: gAll,
-                parentSelector: (self as! Selector), appData: self.appData, cachedDesc: nil)
+                parentQuery: (self as! Query), appData: self.appData, cachedDesc: nil)
     }
     
     public func elements(_ code: String) -> ElementsSpecifierType { // caution: string must be valid four-char code; if not, 0x00000000 is used
@@ -62,27 +62,27 @@ public extension ObjectSpecifierExtension {
     public func previous(_ elementClass: Symbol? = nil) -> ObjectSpecifierType {
         return ObjectSpecifierType(wantType: elementClass == nil ? self.wantType : elementClass!.descriptor,
 				selectorForm: gRelativePositionForm, selectorData: gPrevious,
-				parentSelector: (self as! Selector), appData: self.appData, cachedDesc: nil)
+				parentQuery: (self as! Query), appData: self.appData, cachedDesc: nil)
     }
     
     public func next(_ elementClass: Symbol? = nil) -> ObjectSpecifierType {
         return ObjectSpecifierType(wantType: elementClass == nil ? self.wantType : elementClass!.descriptor,
 				selectorForm: gRelativePositionForm, selectorData: gNext,
-				parentSelector: (self as! Selector), appData: self.appData, cachedDesc: nil)
+				parentQuery: (self as! Query), appData: self.appData, cachedDesc: nil)
     }
     
     // insertion specifiers
     public var beginning: InsertionSpecifierType {
-        return InsertionSpecifierType(insertionLocation: gBeginning, parentSelector: (self as! Selector), appData: self.appData, cachedDesc: nil)
+        return InsertionSpecifierType(insertionLocation: gBeginning, parentQuery: (self as! Query), appData: self.appData, cachedDesc: nil)
     }
     public var end: InsertionSpecifierType {
-        return InsertionSpecifierType(insertionLocation: gEnd, parentSelector: (self as! Selector), appData: self.appData, cachedDesc: nil)
+        return InsertionSpecifierType(insertionLocation: gEnd, parentQuery: (self as! Query), appData: self.appData, cachedDesc: nil)
     }
     public var before: InsertionSpecifierType {
-        return InsertionSpecifierType(insertionLocation: gBefore, parentSelector: (self as! Selector), appData: self.appData, cachedDesc: nil)
+        return InsertionSpecifierType(insertionLocation: gBefore, parentQuery: (self as! Query), appData: self.appData, cachedDesc: nil)
     }
     public var after: InsertionSpecifierType {
-        return InsertionSpecifierType(insertionLocation: gAfter, parentSelector: (self as! Selector), appData: self.appData, cachedDesc: nil)
+        return InsertionSpecifierType(insertionLocation: gAfter, parentQuery: (self as! Query), appData: self.appData, cachedDesc: nil)
     }
 }
 
@@ -95,8 +95,8 @@ public protocol ElementsSpecifierExtension: ObjectSpecifierExtension {}
 extension ElementsSpecifierExtension {
 
     // Note: calling an element[s] selector on an all-elements specifier effectively replaces its original gAll selector data with the new selector data, instead of extending the specifier chain. This ensures that applying any selector to `elements[all]` produces `elements[selector]` (effectively replacing the existing selector), while applying a second selector to `elements[selector]` produces `elements[selector][selector2]` (appending the second selection to the first) as normal; e.g. `first document whose modified is true` would be written as `documents[Its.modified==true].first`.
-    var baseQuery: Selector {
-        return self.selectorData as? NSAppleEventDescriptor === gAll ? self.parentSelector : (self as! Selector)
+    var baseQuery: Query {
+        return self.selectorData as? NSAppleEventDescriptor === gAll ? self.parentQuery : (self as! Query)
     } // TO DO: fix (Q. is this TODO still relevant?)
     
     // by-index, by-name, by-test
@@ -112,45 +112,45 @@ extension ElementsSpecifierExtension {
             form = gAbsolutePositionForm
         }
         return ObjectSpecifierType(wantType: self.wantType, selectorForm: form, selectorData: index,
-            parentSelector: self.baseQuery, appData: self.appData, cachedDesc: nil)
+            parentQuery: self.baseQuery, appData: self.appData, cachedDesc: nil)
     }
 
     public subscript(test: TestClause) -> ElementsSpecifierType {
         return ElementsSpecifierType(wantType: self.wantType, selectorForm: gTestForm, selectorData: test,
-            parentSelector: self.baseQuery, appData: self.appData, cachedDesc: nil)
+            parentQuery: self.baseQuery, appData: self.appData, cachedDesc: nil)
     }
     
     // by-name, by-id, by-range
     public func named(_ name: Any) -> ObjectSpecifierType { // use this if name is not a String, else use subscript // TO DO: trying to think of a use case where this has been found necessary
         return ObjectSpecifierType(wantType: self.wantType, selectorForm: gNameForm, selectorData: name,
-            parentSelector: self.baseQuery, appData: self.appData, cachedDesc: nil)
+            parentQuery: self.baseQuery, appData: self.appData, cachedDesc: nil)
     }
     public func ID(_ id: Any) -> ObjectSpecifierType {
         return ObjectSpecifierType(wantType: self.wantType, selectorForm: gUniqueIDForm, selectorData: id,
-            parentSelector: self.baseQuery, appData: self.appData, cachedDesc: nil)
+            parentQuery: self.baseQuery, appData: self.appData, cachedDesc: nil)
     }
     public subscript(from: Any, to: Any) -> ElementsSpecifierType {
         return ElementsSpecifierType(wantType: self.wantType, selectorForm: gRangeForm,
             selectorData: RangeSelector(start: from, stop: to, wantType: self.wantType),
-            parentSelector: self.baseQuery, appData: self.appData, cachedDesc: nil)
+            parentQuery: self.baseQuery, appData: self.appData, cachedDesc: nil)
     }
     
     // by-ordinal
     public var first: ObjectSpecifierType {
         return ObjectSpecifierType(wantType: self.wantType, selectorForm: gAbsolutePositionForm, selectorData: gFirst,
-                parentSelector: self.baseQuery, appData: self.appData, cachedDesc: nil)
+                parentQuery: self.baseQuery, appData: self.appData, cachedDesc: nil)
     }
     public var middle: ObjectSpecifierType {
         return ObjectSpecifierType(wantType: self.wantType, selectorForm: gAbsolutePositionForm, selectorData: gMiddle,
-                parentSelector: self.baseQuery, appData: self.appData, cachedDesc: nil)
+                parentQuery: self.baseQuery, appData: self.appData, cachedDesc: nil)
     }
     public var last: ObjectSpecifierType {
         return ObjectSpecifierType(wantType: self.wantType, selectorForm: gAbsolutePositionForm, selectorData: gLast,
-                parentSelector: self.baseQuery, appData: self.appData, cachedDesc: nil)
+                parentQuery: self.baseQuery, appData: self.appData, cachedDesc: nil)
     }
     public var any: ObjectSpecifierType {
         return ObjectSpecifierType(wantType: self.wantType, selectorForm: gAbsolutePositionForm, selectorData: gAny,
-                parentSelector: self.baseQuery, appData: self.appData, cachedDesc: nil)
+                parentQuery: self.baseQuery, appData: self.appData, cachedDesc: nil)
     }
 }
 

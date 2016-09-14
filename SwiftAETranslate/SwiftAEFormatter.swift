@@ -8,6 +8,7 @@
 
 import Foundation
 
+import SwiftAutomation
 
 
 @objc public class SwiftAEFormatter: NSObject {

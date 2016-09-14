@@ -11,7 +11,7 @@ import Foundation
 //import SwiftAE
 
 
-let te = TextEdit(name:"TextEdit")
+let te = TextEdit()
 
 /*
 do {
@@ -37,22 +37,24 @@ print("\n\n")
 
 do {
     
-//print(TEDApp.documents[1].text)
-//print(te.documents[1].text)
+    print("// \(TEDApp.documents[1].text)")
+    print("// \(te.documents[1].text)")
 
     // send `open` and `get` AEs using raw four-char codes
     //let result = try te.sendAppleEvent(kCoreEventClass, kAEOpenDocuments, [keyDirectObject:NSURL.fileURLWithPath("/Users/has/todos.txt")])
     //print(result)
 
-    /*
     
-    let result1 = try te.make(new: TED.document, withProperties: [TED.text: "Hello World!"])
+    // make new document with properties {text: "Hello World!"}
+    
+    let teDocRef: TEDObject = try te.make(new: TED.document, withProperties: [TED.text: "Hello World!"])
         
-    print(result1) // TO DO: resulting specifier shows a 'TEDApp' root but needs to show 'TextEdit()' root; see TODO in SpecifierFormatter
+    print(teDocRef) // TO DO: resulting specifier shows a 'TEDApp' root but needs to show 'TextEdit()' root; see TODO in SpecifierFormatter
     
-    print(try (result1 as! TEDObject).text.get())
+    // get text of teDocRef
+    
+    print(try teDocRef.text.get())
 
-    */
     
     // get name of document 1
     
@@ -97,11 +99,16 @@ do {
     print("=> \(result4a)")
     
     print("\nTEST: Finder().home.folders[\"Documents\"].files[FINIts.nameExtension == \"txt\"].properties.get()")
-    let result4c = try Finder().home.folders["Documents"].files[FINIts.nameExtension == "txt"].properties.get() as [[Symbol:Any]]
+    let result4c = try Finder().home.folders["Documents"].files[FINIts.nameExtension == "txt"].properties.get() as [[FINSymbol:Any]]
     print("=> \(result4c)")
     
 
 //    try te.documents.close(saving: TED.no) // close every document saving no
+    
+    //
+    try teDocRef.close(saving: TED.no)
+    
+    try ITunes().play()
 
 } catch {
     print("ERROR: \(error)")

@@ -3,13 +3,33 @@
 //  SwiftAE
 //
 //
+//  Base classes for constructing AE queries
+//
+//  Notes: An AE query is represented as a linked list of AEDescs, primarily AERecordDescs of typeObjectSpecifier. Each object specifier record has four properties:
+//
+//      'want' -- the type of element to identify (or 'prop' when identifying a property)
+//      'form', 'seld' -- the reference form and selector data identifying the element(s) or property
+//      'from' -- the parent descriptor in the linked list
+//
+//  For example:
+//
+//      name of document "ReadMe" [of application "TextEdit"]
+//
+//  is represented by the following chain of AEDescs:
+//
+//      {want:'prop', form:'prop', seld:'pnam', from:{want:'docu', form:'name', seld:"ReadMe", from:null}}
+//
+//  Additional AERecord types (typeInsertionLocation, typeRangeDescriptor, typeCompDescriptor, typeLogicalDescriptor) are also used to construct specialized query forms describing insertion points before/after existing elements, element ranges, and test clauses.
+//
+// Atomic AEDescs of typeNull, typeCurrentContainer, and typeObjectBeingExamined are used to terminate the linked list.
+//
 
 import Foundation
 import AppKit
 
-// TO DO: underscore-prefix private/internal properties and methods to reduce risk of terminology clashes
+// TO DO: underscore-prefix private/internal properties and methods to reduce risk of terminology clashes; what about 
 
-// TO DO: make sure KeywordConverter lists _all_ Specifier members (e.g. `appData` currently isn't included)
+// TO DO: make sure KeywordConverter lists _all_ Specifier members
 
 
 /******************************************************************************/
@@ -18,7 +38,7 @@ import AppKit
 private let gUntargetedAppData = AppData() // dummy instance to keep compiler happy; glues will define their own private gUntargetedAppData constants containing an untargeted AppData instance
 
 
-public class Selector: CustomStringConvertible, SelfPacking { // TO DO: Equatable?
+public class Query: CustomStringConvertible, SelfPacking { // TO DO: Equatable?
     
     public let appData: AppData
     internal private(set) var cachedDesc: NSAppleEventDescriptor?
@@ -47,7 +67,8 @@ public class Selector: CustomStringConvertible, SelfPacking { // TO DO: Equatabl
     
     // misc
     
-    var parentSelector: Selector { return self } // this implementation should never be called; subclasses must override this
+    // return the next ObjectSpecifier/TestClause in query chain
+    var parentQuery: Query { return self } // this implementation should never be called; subclasses must override this
     
     public var rootSpecifier: RootSpecifier { return gUntargetedAppData.rootObjects.app } // this implementation should never be called; subclasses must override this
     
@@ -64,45 +85,45 @@ public class Selector: CustomStringConvertible, SelfPacking { // TO DO: Equatabl
 
 public protocol SpecifierProtocol {
     var appData: AppData {get}
-    var parentSelector: Selector {get}
+    var parentQuery: Query {get}
     var rootSpecifier: RootSpecifier {get}
 }
 
-public class Specifier: Selector, SpecifierProtocol {
+public class Specifier: Query, SpecifierProtocol {
 
     // An object specifier is constructed as a linked list of AERecords of typeObjectSpecifier, terminated by a root descriptor (e.g. a null descriptor represents the root node of the app's Apple event object graph). The topmost node may also be an insertion location specifier, represented by an AERecord of typeInsertionLoc. The abstract Specifier class implements functionality common to both object and insertion specifiers.
     
-    private var _parentSelector: Selector? // note: object specifiers are lazily unpacked for efficiency, so this is nil if Specifier hasn't been fully unpacked yet (or if class is RootSpecifier, in which case it's unused)
+    private var _parentQuery: Query? // note: object specifiers are lazily unpacked for efficiency, so this is nil if Specifier hasn't been fully unpacked yet (or if class is RootSpecifier, in which case it's unused)
 
-    public init(parentSelector: Selector?, appData: AppData, cachedDesc: NSAppleEventDescriptor?) {
-        self._parentSelector = parentSelector
+    public init(parentQuery: Query?, appData: AppData, cachedDesc: NSAppleEventDescriptor?) {
+        self._parentQuery = parentQuery
         super.init(appData: appData, cachedDesc: cachedDesc)
     }
     
-    public override var parentSelector: Selector { // 'from' in object specifier, or 'kobj' in insertion specifier
-        if self._parentSelector == nil {
+    public override var parentQuery: Query { // 'from' in object specifier, or 'kobj' in insertion specifier
+        if self._parentQuery == nil {
             self.unpackParentSpecifiers()
         }
-        return self._parentSelector!
+        return self._parentQuery!
     }
     
-    public override var rootSpecifier: RootSpecifier { return self.parentSelector.rootSpecifier }
+    public override var rootSpecifier: RootSpecifier { return self.parentQuery.rootSpecifier }
     
     // unpacking
     
     override func unpackParentSpecifiers() {
         guard let cachedDesc = self.cachedDesc else {
             print("Can't unpack parent specifiers as cached descriptor don't exist (this isn't supposed to happen).") // TO DO: DEBUG; delete
-            self._parentSelector = RootSpecifier(rootObject: SwiftAEError(code: 1, message: "Can't unpack parent specifiers as cached AppData and/or AEDesc don't exist (this isn't supposed to happen)."), appData: self.appData) // TO DO: implement ErrorSpecifier subclass that takes error info and always raises on use
+            self._parentQuery = RootSpecifier(rootObject: SwiftAEError(code: 1, message: "Can't unpack parent specifiers as cached AppData and/or AEDesc don't exist (this isn't supposed to happen)."), appData: self.appData) // TO DO: implement ErrorSpecifier subclass that takes error info and always raises on use
             return
         }
         do {
             let parentDesc = cachedDesc.forKeyword(SwiftAE_keyAEContainer)!
-            self._parentSelector = try appData.unpack(parentDesc, returnType: Specifier.self)
-            self._parentSelector!.unpackParentSpecifiers()
+            self._parentQuery = try appData.unpack(parentDesc, returnType: Specifier.self)
+            self._parentQuery!.unpackParentSpecifiers()
         } catch {
             print("Deferred unpack parent specifier failed: \(error)") // TO DO: DEBUG; delete
-            self._parentSelector = RootSpecifier(rootObject: (cachedDesc.forKeyword(SwiftAE_keyAEContainer))!, appData: self.appData) // TO DO: store error in RootSpecifier and raise it on packing
+            self._parentQuery = RootSpecifier(rootObject: (cachedDesc.forKeyword(SwiftAE_keyAEContainer))!, appData: self.appData) // TO DO: store error in RootSpecifier and raise it on packing
         }
     }
     
@@ -114,8 +135,8 @@ public class Specifier: Selector, SpecifierProtocol {
                            waitReply: Bool = true, sendOptions: NSAppleEventDescriptor.SendOptions? = nil,
                            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(eventClass, eventID: eventID, parentSpecifier: self,
-                                          parameters: parameters, waitReply: waitReply, sendOptions: sendOptions,
-                                          withTimeout: withTimeout, considering: considering, returnType: T.self)
+                                               parameters: parameters, waitReply: waitReply, sendOptions: sendOptions,
+                                               withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     
     func sendAppleEvent<T>(_ eventClass: String, _ eventID: String, _ parameters: [String:Any] = [:],
@@ -124,17 +145,18 @@ public class Specifier: Selector, SpecifierProtocol {
         var params = [OSType:Any]()
         for (k, v) in parameters { params[FourCharCodeUnsafe(k)] = v }
         return try self.appData.sendAppleEvent(FourCharCodeUnsafe(eventClass), eventID: FourCharCodeUnsafe(eventID), parentSpecifier: self,
-                                          parameters: params, waitReply: waitReply, sendOptions: sendOptions,
-                                          withTimeout: withTimeout, considering: considering, returnType: T.self)
+                                               parameters: params, waitReply: waitReply, sendOptions: sendOptions,
+                                               withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     
-    // non-generic version of the above used when T isn't already specified/inferrable, in which case Any! is used // TO DO: use 'Any' or 'Any!'?
+    // non-generic versions of the above methods; these are bound when T can't be inferred (either because caller doesn't use the return value or didn't declare a specific type for it, e.g. `let result = cmd.call()`), in which case Any is used
+    
     func sendAppleEvent(_ eventClass: OSType, _ eventID: OSType, _ parameters: [OSType:Any] = [:],
                         waitReply: Bool = true, sendOptions: NSAppleEventDescriptor.SendOptions? = nil,
                         withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(eventClass, eventID: eventID, parentSpecifier: self,
-                                          parameters: parameters, waitReply: waitReply, sendOptions: sendOptions,
-                                          withTimeout: withTimeout, considering: considering, returnType: Any.self)
+                                               parameters: parameters, waitReply: waitReply, sendOptions: sendOptions,
+                                               withTimeout: withTimeout, considering: considering, returnType: Any.self)
     }
     
     func sendAppleEvent(_ eventClass: String, _ eventID: String, _ parameters: [String:Any] = [:],
@@ -143,8 +165,8 @@ public class Specifier: Selector, SpecifierProtocol {
         var params = [OSType:Any]()
         for (k, v) in parameters { params[FourCharCodeUnsafe(k)] = v }
         return try self.appData.sendAppleEvent(FourCharCodeUnsafe(eventClass), eventID: FourCharCodeUnsafe(eventID), parentSpecifier: self,
-                                          parameters: params, waitReply: waitReply, sendOptions: sendOptions,
-                                          withTimeout: withTimeout, considering: considering, returnType: Any.self)
+                                               parameters: params, waitReply: waitReply, sendOptions: sendOptions,
+                                               withTimeout: withTimeout, considering: considering, returnType: Any.self)
     }
 }
 
@@ -158,14 +180,14 @@ public class InsertionSpecifier: Specifier { // SwiftAE_packSelf
     public let insertionLocation: NSAppleEventDescriptor
 
     required public init(insertionLocation: NSAppleEventDescriptor,
-                parentSelector: Selector?, appData: AppData, cachedDesc: NSAppleEventDescriptor?) {
+                parentQuery: Query?, appData: AppData, cachedDesc: NSAppleEventDescriptor?) {
         self.insertionLocation = insertionLocation
-        super.init(parentSelector: parentSelector, appData: appData, cachedDesc: cachedDesc)
+        super.init(parentQuery: parentQuery, appData: appData, cachedDesc: cachedDesc)
     }
     
     override func SwiftAE_packSelf() throws -> NSAppleEventDescriptor {
         let desc = NSAppleEventDescriptor.record().coerce(toDescriptorType: typeInsertionLoc)!
-        desc.setDescriptor(try self.parentSelector.SwiftAE_packSelf(self.appData), forKeyword: keyAEObject)
+        desc.setDescriptor(try self.parentQuery.SwiftAE_packSelf(self.appData), forKeyword: keyAEObject)
         desc.setDescriptor(self.insertionLocation, forKeyword: keyAEPosition)
         return desc
     }
@@ -192,16 +214,16 @@ public class ObjectSpecifier: Specifier, ObjectSpecifierProtocol { // represents
     // TO DO: ideally want a wantName:String? arg that takes human-readable name, if available, for display purposes (see also previous/next)
     
     required public init(wantType: NSAppleEventDescriptor, selectorForm: NSAppleEventDescriptor, selectorData: Any,
-            parentSelector: Selector?, appData: AppData, cachedDesc: NSAppleEventDescriptor?) {
+            parentQuery: Query?, appData: AppData, cachedDesc: NSAppleEventDescriptor?) {
         self.wantType = wantType
         self.selectorForm = selectorForm
         self.selectorData = selectorData
-        super.init(parentSelector: parentSelector, appData: appData, cachedDesc: cachedDesc)
+        super.init(parentQuery: parentQuery, appData: appData, cachedDesc: cachedDesc)
     }
     
     override func SwiftAE_packSelf() throws -> NSAppleEventDescriptor {
         let desc = NSAppleEventDescriptor.record().coerce(toDescriptorType: typeObjectSpecifier)!
-        desc.setDescriptor(try self.parentSelector.SwiftAE_packSelf(self.appData), forKeyword: SwiftAE_keyAEContainer)
+        desc.setDescriptor(try self.parentQuery.SwiftAE_packSelf(self.appData), forKeyword: SwiftAE_keyAEContainer)
         desc.setDescriptor(self.wantType, forKeyword: SwiftAE_keyAEDesiredClass)
         desc.setDescriptor(self.selectorForm, forKeyword: SwiftAE_keyAEKeyForm)
         desc.setDescriptor(try self.appData.pack(self.selectorData), forKeyword: SwiftAE_keyAEKeyData)
@@ -316,9 +338,9 @@ public struct RangeSelector: SelfPacking { // holds data for by-range selectors 
 // note: glues don't define their own TestClause subclasses as tests don't implement any app-specific vars/methods, only the logical operators defined below, and there's little point doing so for static typechecking purposes as any values not handled by ElementsSpecifierExtension's subscript(test:TestClause) are accepted by its subscript(index:Any), so still wouldn't be caught at runtime (OTOH, it'd be worth considering should subscript(test:) need to be replaced with a separate byTest() method for any reason)
 
 
-// TO DO: currently, TestClauses can be constructed from any root, though only those constructed from Its roots are actually valid; checking this at compile-time would require a more complex class/protocol structure; checking this at runtime would require calling Selector.rootSpecifier.rootObject and checking object is 'its' descriptor
+// TO DO: currently, TestClauses can be constructed from any root, though only those constructed from Its roots are actually valid; checking this at compile-time would require a more complex class/protocol structure; checking this at runtime would require calling Query.rootSpecifier.rootObject and checking object is 'its' descriptor
 
-public class TestClause: Selector { // AND, OR, and NOT are implemented as &&, ||, and ! operator overrides
+public class TestClause: Query { // AND, OR, and NOT are implemented as &&, ||, and ! operator overrides
     // TO DO: AND and OR could also be implemented as vararg funcs, but am inclined just to stick to two-arg operators and chain those when unpacking if >2
 }
 
@@ -354,7 +376,7 @@ public class ComparisonTest: TestClause {
         }
     }
     
-    public override var parentSelector: Selector {
+    public override var parentQuery: Query {
         return self.operand1
     }
     
@@ -412,11 +434,11 @@ public class RootSpecifier: ObjectSpecifier { // app, con, its, custom root (not
         // rootObject is either one of the three standard AEDescs indicating app/con/its root, or an arbitrary object supplied by caller (e.g. an AEAddressDesc if constructing a fully qualified specifier)
         super.init(wantType: NSAppleEventDescriptor.null(),
                    selectorForm: NSAppleEventDescriptor.null(), selectorData: rootObject,
-                   parentSelector: nil, appData: appData, cachedDesc: rootObject as? NSAppleEventDescriptor)
+                   parentQuery: nil, appData: appData, cachedDesc: rootObject as? NSAppleEventDescriptor)
     }
 
-    public required init(wantType: NSAppleEventDescriptor, selectorForm: NSAppleEventDescriptor, selectorData: Any, parentSelector: Selector?, appData: AppData, cachedDesc: NSAppleEventDescriptor?) {
-        super.init(wantType: wantType, selectorForm: selectorForm, selectorData: selectorData, parentSelector: parentSelector, appData: appData, cachedDesc: cachedDesc)
+    public required init(wantType: NSAppleEventDescriptor, selectorForm: NSAppleEventDescriptor, selectorData: Any, parentQuery: Query?, appData: AppData, cachedDesc: NSAppleEventDescriptor?) {
+        super.init(wantType: wantType, selectorForm: selectorForm, selectorData: selectorData, parentQuery: parentQuery, appData: appData, cachedDesc: cachedDesc)
         
     }
     
@@ -428,9 +450,9 @@ public class RootSpecifier: ObjectSpecifier { // app, con, its, custom root (not
     class var untargetedAppData: AppData { return gUntargetedAppData }
 
 
-    // TO DO: subclassing ObjectSpecifier is slightly risky, since accidental recursion in the following does very bad things, so it's essential that all Selector/Specifier/ObjectSpecifier methods that operate on parent specifier are overridden here:
+    // TO DO: subclassing ObjectSpecifier is slightly risky, since accidental recursion in the following does very bad things, so it's essential that all Query/Specifier/ObjectSpecifier methods that operate on parent specifier are overridden here:
     
-    override public var parentSelector: Selector { return self }
+    override public var parentQuery: Query { return self }
     
     override public var rootSpecifier: RootSpecifier { return self }
     

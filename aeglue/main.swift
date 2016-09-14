@@ -78,8 +78,8 @@ var useSDEF = false
 var applicationURLs: [URL?] = []
 var outDir: URL?
 
-// TO DO: would wrapping C getopts() be simpler?
 var optArgs = ProcessInfo.processInfo.arguments.reversed() as [String] // bug workaround: popping/inserting at start of Array[Slice] is buggy, so reverse it and work from end
+
 let _ = optArgs.popLast() // skip path to this executable
 
 if optArgs.count == 0 {

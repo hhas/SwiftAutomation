@@ -124,14 +124,14 @@ public class SpecifierFormatter {
     func formatInsertionSpecifier(_ specifier: InsertionSpecifier) -> String {
         if let name = [kAEBeginning: "beginning",
                        kAEEnd: "end", kAEBefore: "before", kAEAfter: "after"][specifier.insertionLocation.enumCodeValue] {
-            return "\(self.format(specifier.parentSelector)).\(name)"
+            return "\(self.format(specifier.parentQuery)).\(name)"
         }
-        return "<\(type(of: specifier))(kpos:\(specifier.insertionLocation),kobj:\(self.format(specifier.parentSelector)))>"
+        return "<\(type(of: specifier))(kpos:\(specifier.insertionLocation),kobj:\(self.format(specifier.parentQuery)))>"
     }
     
     func formatObjectSpecifier(_ specifier: ObjectSpecifier) -> String {
         let form = specifier.selectorForm.enumCodeValue
-        var result = self.format(specifier.parentSelector)
+        var result = self.format(specifier.parentQuery)
         switch form {
         case SwiftAE_formPropertyID:
             // kludge, seld is either desc or symbol, depending on whether constructed or unpacked; TO DO: eliminate?
@@ -163,7 +163,7 @@ public class SpecifierFormatter {
             case SwiftAE_formRelativePosition: // specifier.previous/next(SYMBOL)
                 if let seld = specifier.selectorData as? NSAppleEventDescriptor, // ObjectSpecifier.unpackSelf does not unpack ordinals
                     let name = [SwiftAE_kAEPrevious: "previous", SwiftAE_kAENext: "next"][seld.enumCodeValue],
-                    let parent = specifier.parentSelector as? ObjectSpecifier {
+                    let parent = specifier.parentQuery as? ObjectSpecifier {
                         if specifier.wantType.typeCodeValue == parent.wantType.typeCodeValue {
                             return "\(result).\(name)()" // use shorthand form for neatness
                         } else {
@@ -180,7 +180,7 @@ public class SpecifierFormatter {
                 break
             }
         }
-        return "<\(type(of: specifier))(want:\(specifier.wantType),form:\(specifier.selectorForm),seld:\(formatValue(specifier.selectorData)),from:\(self.format(specifier.parentSelector)))>"
+        return "<\(type(of: specifier))(want:\(specifier.wantType),form:\(specifier.selectorForm),seld:\(formatValue(specifier.selectorData)),from:\(self.format(specifier.parentQuery)))>"
     }
     
     func formatComparisonTest(_ specifier: ComparisonTest) -> String {
@@ -216,6 +216,9 @@ public class SpecifierFormatter {
 
 func formatValue(_ value: Any) -> String { // TO DO: while this function can be used standalone, might be cleanest just to make it a member of SpecifierFormatter
     // formats AE-bridged Swift types as literal syntax; other Swift types will show their default description (unfortunately debugDescription doesn't provide usable literal representations - e.g. String doesn't show tabs in escaped form, Cocoa classes return their [non-literal] description string instead, and reliable representations of Bool/Int/Double are a dead loss as soon as NSNumber gets involved)
+    
+    // TO DO: how practical to use Mirror?
+    
     switch value {
     case let obj as NSArray: // HACK; see also AppData.pack()
         return "[" + obj.map({formatValue($0)}).joined(separator: ", ") + "]"

@@ -84,14 +84,8 @@ public class StaticGlueTemplate {
     public var string: String { return self._template.copy() as! String }
     
     
-    public init(string: NSString? = nil) { // if nil, uses SwiftAEGlueTemplate
-        var string = string
-        if string == nil {
-            // TO DO: temp kludge; eventually use NSBundle.pathForResource(_:ofType:inDirectory:) to look up in SwiftAE.framework
-            let url = URLComponents(string:"SwiftAEGlueTemplate.txt")!.url(relativeTo: URL(fileURLWithPath: #file))!
-            string = try! NSString(contentsOf: url, encoding: String.Encoding.utf8.rawValue)
-        }
-        self._template = NSMutableString(string: string!)
+    public init(string: String = SwiftAEGlueTemplate) {
+        self._template = NSMutableString(string: string)
     }
     
     private func subRender<T>(_ newContents: T, renderer: (StaticGlueTemplate, T) -> ()) -> String {
@@ -112,7 +106,7 @@ public class StaticGlueTemplate {
             var result = ""
             if newContents.count > 0 {
                 for newContent in newContents { // TO DO: if newContents is generator, make sure this doesn't exhaust it (as in python)
-                    result += StaticGlueTemplate(string: subString as NSString?).subRender(newContent, renderer: renderer)
+                    result += StaticGlueTemplate(string: subString).subRender(newContent, renderer: renderer)
                 }
             }else {
                 result = emptyContent // e.g. empty dictionary literals require ':'
@@ -165,10 +159,10 @@ public class StaticGlueTemplate {
 /******************************************************************************/
 // glue renderer
 
-public func renderStaticGlueTemplate(_ glueSpec: GlueSpec, extraTags: [String:String] = [:], templateString: String? = nil) throws -> String {
+public func renderStaticGlueTemplate(_ glueSpec: GlueSpec, extraTags: [String:String] = [:], templateString: String = SwiftAEGlueTemplate) throws -> String {
     // note: SwiftAEGlueTemplate requires additional values for extraTags: ["AEGLUE_COMMAND": shellCommand,"GLUE_NAME": glueFileName]
     let glueTable = try glueSpec.buildGlueTable()
-    let template = StaticGlueTemplate(string: templateString as NSString?)
+    let template = StaticGlueTemplate(string: templateString)
     template.insertString("PREFIX", glueSpec.classNamePrefix)
     template.insertString("APPLICATION_CLASS_NAME", glueSpec.applicationClassName)
     template.insertString("FRAMEWORK_NAME", glueSpec.frameworkName)

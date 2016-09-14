@@ -47,6 +47,10 @@ public let kSwiftAESpecifierMethods: Set<String> = [ // TO DO: review
     "customRoot",
     // sendAppleEvent(eventClass:eventID:...
     "currentApplication",
+    "appData",
+    "cachedDesc",
+    "parentQuery",
+    "rootSpecifier",
     // element(s) selectors
     "ID",
     "beginning",

@@ -12,25 +12,9 @@ import AppKit
 
 // TO DO: what about 'missing value'? for a pure Swift bridge, might be better to use nil rather than Symbol.missingValue; note that Swift's compile-time/run-time treatment of `Any` and `nil` is inconsistent (either flawed or buggy)
 
-
-// TO DO: also, what about supporting arbitrary sum types, e.g. if a command returns either a number or a string? (note that this is much less common than returning missing value; so may be simplest just to unpack as Any)
-
-
-
-// TO DO: improve packing of Arrays and Dictionarys; currently pack() casts to NSArray/NSDictionary, but this fails when object's dynamicType is (e.g.) [Any] (only [AnyObject] is allowed) (it also and screws up type information on Bool, Int, Double values, since Swift's NSNumber bridging is dreadful, though this should be dealt with now by special-case handling of NSNumber instances in pack method) -- TO DO: best may be to implement SelfPacking protocol on Set, Array, and Dictionary extensions, and let them pack themselves
-
-
-// TO DO: how to allow mixed Symbol/String keys in Dictionarys? (simplest would be for Symbol to represent both, e.g. with [Code]Symbol and UserSymbol subclasses, although that's not entirely elegant)
-
-// TO DO: what about an option to unpack AERecords as glue-defined structs? (this would be fragile, since dictionary-defined class info isn't accurate, but even if it only works half the time it might be useful enough to justify having it as an option on glue generator)
-
-
 // TO DO: split into untargeted and targeted classes? or is current arrangement good enough? (mostly it's about returning appropriate app root in unpack)
 
 // TO DO: when unpacking specifiers, may want to use Application instance, not untargeted AppRoot, as their app root (while ObjSpec, etc. instances contain AppData, AppRoot does not, so won't display itself as Application and can't be extracted and used as-is); this will require Application to pass itself as weak-ref to AppData's init
-
-
-// TO DO: how to support sum types? (suspect this will require better type introspection support in Swift); for now, client code will have to use `Any` and switch on type itself - one possibility would be to define a standard enum that's a sum of all supported types, then use type info to determine which of those cases are allowed when unpacking (that does, however, create a problem where T arg != T result, since enums don't support generics; it would have to be done using a class, but that creates question of how to do varargs); another possibility might be to have an explicit arg that takes set of accepted types, ensuring result's type is always one of those, then return Any; Q. could a user-defined enum that adheres to a framework defined protocol do it? (again, we'd still need to introspect, unless it calls unpack<T> itself - although that prob. wouldn't help since we don't want to coerce unless we have to, otherwise typeType descs could end up as Strings)
 
 // TO DO: option for caller to pass their own 'customUnpack' func via command, to be called when standard unpack fails (either due to unrecognized AE type or inability to coerce to specified Swift type); this would prob. be done as trailing closure, which takes an AEDesc, required Type, and AppData as arguments and throws or returns value of that type (note that when unpacking list/record, this may be called multiple times, e.g. for the list/record and/or for each item in it)
 
@@ -53,17 +37,16 @@ public struct GlueInfo { // Glue-defined specifier, symbol, and formatter classe
 
 
 /******************************************************************************/
-// note: not very happy about extending Swift's own structs/classes, but with shoddy generics and shoddier introspection it seems to be the only way to make the problem tractable
-
-
-protocol SelfUnpacking {
-    
-    static func SwiftAE_unpackSelf(_ desc: NSAppleEventDescriptor, appData: AppData) throws -> Self
-    
-}
+// extend Swift's standard collection types to pack and unpack themselves
 
 
 extension Set : SelfPacking, SelfUnpacking {
+    
+    public func SwiftAE_packSelf(_ appData: AppData) throws -> NSAppleEventDescriptor {
+        let desc = NSAppleEventDescriptor.list()
+        for item in self { desc.insert(try appData.pack(item), at: 0) }
+        return desc
+    }
     
     static func SwiftAE_unpackSelf(_ desc: NSAppleEventDescriptor, appData: AppData) throws -> Set<Element> {
         var result = Set<Element>()
@@ -81,16 +64,16 @@ extension Set : SelfPacking, SelfUnpacking {
         }
         return result
     }
+}
+
+
+extension Array : SelfPacking, SelfUnpacking {
     
     public func SwiftAE_packSelf(_ appData: AppData) throws -> NSAppleEventDescriptor {
         let desc = NSAppleEventDescriptor.list()
         for item in self { desc.insert(try appData.pack(item), at: 0) }
         return desc
     }
-}
-
-
-extension Array : SelfPacking, SelfUnpacking {
     
     static func SwiftAE_unpackSelf(_ desc: NSAppleEventDescriptor, appData: AppData) throws -> [Element] {
         switch desc.descriptorType {
@@ -124,16 +107,30 @@ extension Array : SelfPacking, SelfUnpacking {
             return [try appData.unpack(desc, returnType: Element.self)]
         }
     }
-    
-    public func SwiftAE_packSelf(_ appData: AppData) throws -> NSAppleEventDescriptor {
-        let desc = NSAppleEventDescriptor.list()
-        for item in self { desc.insert(try appData.pack(item), at: 0) }
-        return desc
-    }
 }
 
 
 extension Dictionary : SelfPacking, SelfUnpacking {
+    
+    public func SwiftAE_packSelf(_ appData: AppData) throws -> NSAppleEventDescriptor {
+        let desc = NSAppleEventDescriptor.record()
+        var userProperties: NSAppleEventDescriptor?
+        for (key, value) in self {
+            guard let keySymbol = key as? Symbol else {
+                throw PackError(object: key, message: "Can't pack non-Symbol dictionary key of type: \(type(of: key))")
+            }
+            if keySymbol.nameOnly {
+                if userProperties == nil {
+                    userProperties = NSAppleEventDescriptor.list()
+                }
+                userProperties?.insert(try appData.pack(keySymbol), at: 0)
+                userProperties?.insert(try appData.pack(value), at: 0)
+            } else {
+                desc.setDescriptor(try appData.pack(value), forKeyword: keySymbol.code)
+            }
+        }
+        return desc
+    }
     
     static func SwiftAE_unpackSelf(_ desc: NSAppleEventDescriptor, appData: AppData) throws -> [Key:Value] {
         guard let recordDesc = desc.coerce(toDescriptorType: typeAERecord) else {
@@ -141,35 +138,52 @@ extension Dictionary : SelfPacking, SelfUnpacking {
         }
         var result = [Key:Value]()
         for i in 1..<(recordDesc.numberOfItems+1) {
-            guard let key = appData.unpackAEProperty(recordDesc.keywordForDescriptor(at: i)) as? Key else { // TO DO: FIX (part of the problem is that record keys may be 4CCs [typeProperty] or strings [to be implemented]; since Swift enums can't auto-box, simplest may be for Symbol class to encompass both)
-                throw UnpackError(appData: appData, descriptor: desc, type: Key.self,
-                                  message: "Can't unpack record key as \(Key.self).")
-            }
-            do {
-                result[key] = try appData.unpack(recordDesc.atIndex(i)!, returnType: Value.self)
-            } catch {
-                throw UnpackError(appData: appData, descriptor: desc, type: Value.self,
-                                  message: "Can't unpack \(key) property of record descriptor as \(Value.self).")
+            let property = recordDesc.keywordForDescriptor(at: i)
+            if property == SwiftAE_keyASUserRecordFields {
+                // unpack record properties whose keys are identifiers (represented as AEList of form: [key1,value1,key2,value2,...])
+                let userProperties = recordDesc.atIndex(i)!
+                if userProperties.descriptorType == typeAEList && userProperties.numberOfItems % 2 == 0 {
+                    for j in stride(from:1, to: userProperties.numberOfItems, by: 2) {
+                        let keyDesc = userProperties.atIndex(j)!
+                        guard let keyString = keyDesc.stringValue else {
+                            throw UnpackError(appData: appData, descriptor: desc, type: Key.self, message: "Malformed record key.")
+                        }
+                        guard let key = appData.glueInfo.symbolType.init(name: keyString, code: NoOSType,
+                                                                         type: NoOSType, cachedDesc: keyDesc) as? Key else {
+                            throw UnpackError(appData: appData, descriptor: desc, type: Key.self,
+                                              message: "Can't unpack record keys as non-Symbol type: \(Key.self)")
+                        }
+                        do {
+                            result[key] = try appData.unpack(recordDesc.atIndex(j+1)!, returnType: Value.self)
+                        } catch {
+                            throw UnpackError(appData: appData, descriptor: desc, type: Value.self,
+                                              message: "Can't unpack value of record's \(key) property as Swift type: \(Value.self)")
+                        }
+                    }
+                } else {
+                    
+                }
+            } else {
+                // unpack record property whose key is a four-char code (typically corresponding to a dictionary-defined property name)
+                guard let key = appData.unpackAEProperty(property) as? Key else {
+                    throw UnpackError(appData: appData, descriptor: desc, type: Key.self,
+                                      message: "Can't unpack record keys as non-Symbol type: \(Key.self)")
+                }
+                do {
+                    result[key] = try appData.unpack(recordDesc.atIndex(i)!, returnType: Value.self)
+                } catch {
+                    throw UnpackError(appData: appData, descriptor: desc, type: Value.self,
+                                      message: "Can't unpack value of record's \(key) property as Swift type: \(Value.self)")
+                }
             }
         }
         return result
-    }
-    
-    public func SwiftAE_packSelf(_ appData: AppData) throws -> NSAppleEventDescriptor {
-        let desc = NSAppleEventDescriptor.record()
-        for (key, value) in self {
-            if let keySymbol = key as? Symbol {
-                desc.setDescriptor(try appData.pack(value), forKeyword: keySymbol.code)
-            } else {
-                throw NotImplementedError(message: "non-Symbol Dictionary keys are currently not supported.") // for now, only Symbol keys are supported (still to decide how string keys should be dealt with)
-            }
-        }
-        return desc
     }
 }
 
 
 /******************************************************************************/
+// AppData converts values between Swift and AE types, holds target process information, and provides methods for sending Apple events
 
 
 public class AppData {
@@ -294,24 +308,16 @@ public class AppData {
         case let obj as Date:
           return NSAppleEventDescriptor(date: obj)
         case let obj as URL:
-          return NSAppleEventDescriptor(fileURL: obj)
+          return NSAppleEventDescriptor(fileURL: obj) // TO DO: what about packing as typeAlias if it's a bookmark URL?
             
             
         // TO DO: will following cases still be needed? (depends on how transparent Swift's ObjC bridging is)
-        case let obj as NSArray: // HACK; TO DO: 'let obj as [Any]' doesn't work (Swift refuses to cast from Any to [Any] for some reason); note: casting to NSArray/NSDictionary will screw up Bool/Int/Double representations (which get bridged to NSNumber, though hopefully the above NSNumber-specific logic addresses that now), and will fail to match if object's dynamic type is `[Any]` (since non-objects can't cross Swift-ObjC bridge), so this isn't a permanent solution
-            let desc = NSAppleEventDescriptor.list()
-            for item in obj { desc.insert(try self.pack(item), at: 0) }
-            return desc
-        case let obj as NSDictionary: // HACK; TO DO: `let obj as [Symbol:Any]` doesn't won't work either
-            let desc = NSAppleEventDescriptor.record()
-            for (key, value) in obj {
-                if let keySymbol = key as? Symbol {
-                    desc.setDescriptor(try self.pack(value), forKeyword: keySymbol.code)
-                } else {
-                    throw NotImplementedError(message: "non-Symbol Dictionary keys are currently not supported.") // for now, only Symbol keys are supported (still to decide how string keys should be dealt with)
-                }
-            }
-            return desc
+        case let obj as NSArray:
+            return try (obj as Array).SwiftAE_packSelf(self)
+        case let obj as NSDictionary:
+            return try (obj as Dictionary).SwiftAE_packSelf(self)
+            
+        
         case var val as UInt:
             if val <= UInt(Int32.max) {
                 return NSAppleEventDescriptor(int32: Int32(val))
@@ -387,7 +393,7 @@ public class AppData {
             }
         } else if let t = T.self as? SelfUnpacking.Type { // Array, Dictionary
             return try t.SwiftAE_unpackSelf(desc, appData: self) as! T
-        } else if T.self is Selector.Type { // note: user typically specifies exact class ([PREFIX][Object|Elements]Specifier)
+        } else if T.self is Query.Type { // note: user typically specifies exact class ([PREFIX][Object|Elements]Specifier)
             if let result = try self.unpack(desc) as? T { // specifiers can be composed of several AE types, so unpack first then check type
                 return result
             }
@@ -489,7 +495,7 @@ public class AppData {
                 throw UnpackError(appData: self, descriptor: desc, type: self.glueInfo.insertionSpecifierType,
                     message: "Can't unpack malformed insertion specifier.")
         }
-        return self.glueInfo.insertionSpecifierType.init(insertionLocation: insertionLocation, parentSelector: nil, appData: self, cachedDesc: desc)
+        return self.glueInfo.insertionSpecifierType.init(insertionLocation: insertionLocation, parentQuery: nil, appData: self, cachedDesc: desc)
     }
     
     // TO DO: compatibility option for fully unpacking and repacking object specifiers without caching original desc (i.e. mimic AS behavior exactly)
@@ -511,10 +517,10 @@ public class AppData {
             // TO DO: need 'strict AS emulation' option to fully unpack and repack specifiers, re-setting cachedDesc (TBH, only app that ever had this problem was iView Media Pro, since it takes a double whammy of app bugs to cause an app to puke on receiving objspecs it previously created itself)
             if formCode == SwiftAE_formRange || formCode == SwiftAE_formTest || (formCode == SwiftAE_formAbsolutePosition && selectorDesc.enumCodeValue == SwiftAE_kAEAll) {
                 return self.glueInfo.elementsSpecifierType.init(wantType: wantType, selectorForm: selectorForm, selectorData: selectorData,
-                    parentSelector: nil, appData: self, cachedDesc: desc)
+                    parentQuery: nil, appData: self, cachedDesc: desc)
             } else {
                 return self.glueInfo.objectSpecifierType.init(wantType: wantType, selectorForm: selectorForm, selectorData: selectorData,
-                    parentSelector: nil, appData: self, cachedDesc: desc)
+                    parentQuery: nil, appData: self, cachedDesc: desc)
             }
         } catch {
             throw UnpackError(appData: self, descriptor: desc, type: self.glueInfo.objectSpecifierType,
@@ -576,7 +582,7 @@ public class AppData {
     let DefaultSendMode = NSAppleEventDescriptor.SendOptions.canSwitchLayer
     let DefaultConsiderations = packConsideringAndIgnoringFlags([.case])
     
-    let NoResult = Symbol(name: "missingValue", code: SwiftAE_cMissingValue)
+    let NoResult = Symbol(name: "missingValue", code: SwiftAE_cMissingValue) // TO DO: get rid of this if mapping cMissingValue to nil
     
     // if target process is no longer running, Apple Event Manager will return an error when an event is sent to it
     let RelaunchableErrorCodes: Set<Int> = [-600, -609]

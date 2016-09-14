@@ -4,6 +4,12 @@
 //
 //  Standard terminology selectively taken from AppleScript's AEUT resource
 //
+//  Notes: 
+//
+//  - this list should be updated if/when new terms are added to AS's dictionary
+//
+//  - old/obsolete terms are retained for sake of compatibility with older Carbon apps' AETEs, which may still use them
+//
 
 import Foundation
 

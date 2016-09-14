@@ -1,7 +1,5 @@
 TO DO:
 
-- rename 'SwiftAutomation.framework'
-
 
 - In 10.11/Xcode7 GM, the following convenience init crashes with EXC_BAD_ACCESS immediately on returning from self.init(...):
 
@@ -14,20 +12,24 @@ TO DO:
     Looks like problem is with calling inits in TextEdit class's protocol extension from TextEdit class's own init; calling super.init() works. File bug report, and use workaround in glue template for now.
 
 
+- rename SwiftAETranslate (AppleScriptToSwift?)
 
-- framework target
+
 
 - include tutorial playground? (see manual ch.4) Q. just how predictable is playground-based execution when performing commands with side effects?
 
+
+
+- while identifiers that differ only in single character are generally poor practice, it may be better to use `PREFIXObject` and `PREFIXObjects` rather than `PREFIXObject` and `PREFIXElements`
+
+
+- To what extent can Cocoa-based apps' SDEFs be relied on to provide reliable (if not always complete) type information? (AppleScript completely ignores AETE/SDEF-supplied 'type' information, so Carbon apps that use aetes can't be trusted at all since Carbon apps' AE handling is purely code driven; therefore, any property and parameter types declared in AETE are provided soley as user documentation, so AETE can declare property and parameter types that are total fiction/absolute garbage and neither AS nor the app will care or complain. OTOH, CocoaScripting.framework is largely driven by SDEF-supplied data, so incorrect type info in SDEF may [always?] cause application's scripting interface to break during testing, thus forcing developers to ensure that information is 100% accurate [if not always 100% comprehensive]. Main problem may be in distinguishing a single value from a list of values [or list of list of values, etc] in a command, as that'd require command to understand how to translate target specifier to type information according to how it's composed of single-item specifiers and/or multi-item specifiers - and even then it can't always assume that specifier is the direct parameter [e.g. in `add` command, it's the `to` parameter that provides the target specifier, not the direct parameter]). TBH, trying to supply more detailed type info on the glue is almost certainly going to be a clusterfuck, given what a PITA it already is to pack and unpack command results given an _explicit_ return type. (It'd basically require all specifier classes to be generic, so that one class can be declared for each property and element name with the corresponding return type declared as associated type, and even then composing them will be a total bastard since each parent specifier will determine whether the final specifier is T, or [T], or [[T]], or... etc.) Realistically can't see this ever working, so probably best to kill this thought with fire and never, EVER speak of it again (it is included here solely to record that it has been considered, and discarded for good reason).
 
 
 - explicit 'asType:Symbol' (requestType:? as_:?) parameter on command methods? keyAERequestedType can't always be inferred from return type, plus it should prob. only be passed when user explicitly states it; note that while some apps may explicitly define `as` param for `get` command, it's something AS will add regardless (TODO: need to check this is true), so it might make more sense to make it a fixed param in glue (so that it appears on _all_ commands) and ignore it in commandInfo (so that it doesn't appear more than once). Might be wise to look at commands that already contain this param, e.g. `get` and `dataSize` in Finder (though note that Finder's dictionary doesn't explicitly define `get`, at least not in SDEF [which is what we're stuck with these days]) (what else? e.g. StdAdds has `read...as...`, which isn't directly relevant but may provide some clue as to how consistently it's named)
 
     As an example of why this option is needed, in Python app('Finder').files.get(returntype=k.alias) is used to return a list of aliases; in Swift, this is not inferrable from static type Array<NSURL> since 1. NSURL type declaration can't distinguish bookmark-style from path-style, and 2. it would need to ignore the Array part of the type (since types expressed as typeType descs can't be parameterized) which is a major assumption to which other apps may not hold so could well backfire in practice;
 
-
-
-- extra problem with Dictionary unpack: returnType: currently only accepts [Symbol:U], not Symbol subclasses (e.g. AESymbol) // TO DO: check if this is fixed now
 
 
 
@@ -39,7 +41,7 @@ TO DO:
 
 
 
-- how to support sum types for return values? (this will be problematic given poor type introspection support in Swift3)
+- how to support sum types for return values? (this will be problematic given poor type introspection support in Swift3); best option is probably to include `--enum` option in aeglue that takes a description of [self-packing+self-unpacking] enums that user wants to have available and includes them in glue, similar to how `--struct` option might create custom structs based on dictionary's class/record types (note that some of these enums might be generated automatically, based on known aete and sdef-defined 'sum types')
 
 
 
@@ -78,4 +80,4 @@ TO DO:
 - need to check how (e.g) iTunes handles 'rawData' property vs elements; it's possible both need to be supported (see also text vs text) (note: tdta is defined by iTunes hidden types suite solely for use as `rawData` property's declared type - it doesn't actually appear as an element; other apps with conflicting keywords may be different, however)
 
 
-- check why iTunes, etc. activates when getting aete
+

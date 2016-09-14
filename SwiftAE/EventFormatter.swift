@@ -14,6 +14,8 @@
 
 // TO DO: Application object should hide url arg for display purposes
 
+// TO DO: Symbols aren't displaying correctly (currently appear as `Symbol.NAME` instead of `PREFIX.NAME`)
+
 
 import Foundation
 import AppKit
