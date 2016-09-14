@@ -7,7 +7,7 @@
 
 
 import Foundation
-//import SwiftAE
+//import SwiftAutomation
 
 
 /******************************************************************************/
@@ -201,7 +201,7 @@ private let gSpecifierFormatter = SpecifierFormatter(applicationClassName: "Find
 
 public class FINSymbol: Symbol {
 
-    override var typeAliasName: String {return "FIN"}
+    override public var typeAliasName: String {return "FIN"}
 
     public override class func symbol(_ code: OSType, type: OSType = typeType, descriptor: NSAppleEventDescriptor? = nil) -> FINSymbol {
         switch (code) {

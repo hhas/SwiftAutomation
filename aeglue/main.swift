@@ -10,7 +10,12 @@
 
 
 import Foundation
-//import SwiftAE
+//import SwiftAutomation // note: the `aeglue` target currently bakes everything into CLI executable
+
+
+// TO DO: need option for excluding `import SwiftAutomation` from glue?
+
+// TO DO: what about adding an option for building glues as importable modules?
 
 
 let gHelp = [
@@ -70,6 +75,7 @@ public var errStream = StderrStream()
 
 // parse ARGV
 
+var frameworkImport = "import SwiftAutomation"
 var applicationClassName: String?
 var classNamePrefix: String?
 var writeDefaultGlue = false
@@ -96,6 +102,7 @@ while let opt = optArgs.popLast() {
     switch(opt) {
     case "-d":
         writeDefaultGlue = true
+        frameworkImport = ""
     case "-h":
         print(gHelp, to: &errStream)
         exit(0)
@@ -186,7 +193,8 @@ for applicationURL in applicationURLs {
     // generate SwiftAE glue file
     do {
         let code = try renderStaticGlueTemplate(glueSpec, extraTags: ["AEGLUE_COMMAND": shellCommand,
-                                                                      "GLUE_NAME":      glueFileName])
+                                                                      "GLUE_NAME":      glueFileName,
+                                                                      "IMPORT_SWIFTAE": frameworkImport])
         guard let data = code.data(using: String.Encoding.utf8) else {
             throw TerminologyError("Invalid UTF8 data.")
         }

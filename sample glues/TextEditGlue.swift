@@ -7,7 +7,7 @@
 
 
 import Foundation
-//import SwiftAE
+//import SwiftAutomation
 
 
 /******************************************************************************/
@@ -85,7 +85,7 @@ private let gSpecifierFormatter = SpecifierFormatter(applicationClassName: "Text
 
 public class TEDSymbol: Symbol {
 
-    override var typeAliasName: String {return "TED"}
+    override public var typeAliasName: String {return "TED"}
 
     public override class func symbol(_ code: OSType, type: OSType = typeType, descriptor: NSAppleEventDescriptor? = nil) -> TEDSymbol {
         switch (code) {

@@ -27,12 +27,12 @@ public typealias RootObjects = (app: RootSpecifier, con: RootSpecifier, its: Roo
 
 
 public struct GlueInfo { // Glue-defined specifier, symbol, and formatter classes; used in (e.g.) AppData.unpack()
-    let insertionSpecifierType: InsertionSpecifier.Type
-    let objectSpecifierType: ObjectSpecifier.Type
-    let elementsSpecifierType: ObjectSpecifier.Type
-    let rootSpecifierType: RootSpecifier.Type
-    let symbolType: Symbol.Type
-    let formatter: SpecifierFormatter
+    public let insertionSpecifierType: InsertionSpecifier.Type
+    public let objectSpecifierType: ObjectSpecifier.Type
+    public let elementsSpecifierType: ObjectSpecifier.Type
+    public let rootSpecifierType: RootSpecifier.Type
+    public let symbolType: Symbol.Type
+    public let formatter: SpecifierFormatter
 }
 
 
@@ -205,8 +205,8 @@ public class AppData {
     
     public private(set) var rootObjects: RootObjects! // note: this will be set by main initializer, but needs to be [implicitly] optional var otherwise compiler will complain about self being used before it's fully initialized
     
-    public required init(target: TargetApplication,
-                         launchOptions: LaunchOptions, relaunchMode: RelaunchMode, glueInfo: GlueInfo, rootObjects: RootObjects?) { // should be private, but targetedCopy requires it to be required, which in turn requires it to be public
+    public required init(target: TargetApplication, launchOptions: LaunchOptions,
+                         relaunchMode: RelaunchMode, glueInfo: GlueInfo, rootObjects: RootObjects?) { // should be private, but targetedCopy requires it to be required, which in turn requires it to be public; it should not be called directly, however (if an AppData instance is required for standalone use, instantiate the Application class from the default AEApplicationGlue or an application-specific glue, then get its appData property instead)
         self.target = target
         self.launchOptions = launchOptions
         self.relaunchMode = relaunchMode

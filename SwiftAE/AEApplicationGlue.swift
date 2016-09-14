@@ -40,7 +40,7 @@ private let gSpecifierFormatter = SpecifierFormatter(applicationClassName: "AEAp
 
 public class AESymbol: Symbol {
 
-    override var typeAliasName: String {return "AE"}
+    override public var typeAliasName: String {return "AE"}
 
     public override class func symbol(_ code: OSType, type: OSType = typeType, descriptor: NSAppleEventDescriptor? = nil) -> AESymbol {
         switch (code) {

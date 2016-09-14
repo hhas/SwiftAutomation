@@ -23,7 +23,7 @@ public class Symbol: Hashable, Equatable, CustomStringConvertible, SelfPacking {
     private var cachedDesc: NSAppleEventDescriptor?
     public let name: String?, code: OSType, type: OSType
     
-    var typeAliasName: String {return "Symbol"} // provides prefix used in description var; glue subclasses override this with their own strings (e.g. "FIN" for Finder)
+    public var typeAliasName: String {return "Symbol"} // provides prefix used in description var; glue subclasses override this with their own strings (e.g. "FIN" for Finder)
     
     // important: if type=0 and name!=nil, treat as name-only symbol (used to represent a string-based record key)
     
