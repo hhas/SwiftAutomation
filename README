@@ -9,7 +9,7 @@ For example:
 
 tell application "TextEdit" to get text of document 1
 
-let result = try TextEdit().documents[1].text.get() as! String
+let result = try TextEdit().documents[1].text.get() as String
 
 SwiftAutomation is a native Apple event bridge for the Swift language, giving it
 desktop automation capabilites equal to AppleScript's own. Its design is based 
@@ -19,7 +19,8 @@ implementation, and tailored to Swift syntax and static type system.
 The SwiftAutomation framework defines the basic functionality for building 
 object specifiers, converting data between Swift and AE types, and sending 
 Apple events to running applications. Generated Swift modules provide the glue
-code for controlling specific applications using dictionary-defined syntax.
+code for controlling individual applications using their dictionary-defined 
+syntax.
 
 ## Status
 
