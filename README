@@ -2,19 +2,29 @@
 
 ## About
 
-SwiftAutomation provides client-side Apple event bindings for Apple's Swift 
-language, enabling it to control "AppleScriptable" OS X applications directly.
+SwiftAutomation is an Apple event bridge that allows Apple's Swift language 
+to control "AppleScriptable" macOS applications directly. For example:
 
-For example:
+  // tell application "iTunes" to play
+  try ITunes().play()
 
-tell application "TextEdit" to get text of document 1
+  // tell application "Finder" to set fileNames to name of every file of home
+  let fileNames = try Finder().home.files.name.get() as [String]
 
-let result = try TextEdit().documents[1].text.get() as String
 
-SwiftAutomation is a native Apple event bridge for the Swift language, giving it
-desktop automation capabilites equal to AppleScript's own. Its design is based 
-on appscript (http://appscript.sourceforge.net), reworked into a smaller simpler 
-implementation, and tailored to Swift syntax and static type system.
+  // tell application "TextEdit" to make new document ¬
+  //                                     with properties {text:"Hello World!"}
+  try TextEdit().make(new: TED.document, 
+                      withProperties: {TED.text: "Hello World!"})
+
+
+SwiftAutomation's goal is to provide better than 99.9% compatibility across the 
+wide range of real-world "AppleScriptable" macOS applications available today.
+Unlike macOS's own ORM-style ScriptingBridge, which is crippled by numerous 
+broken/missing features and application incompatibilities, SwiftAutomation's 
+design is derived from the proven appscript (http://appscript.sourceforge.net) 
+library's RPC + query-builder architecture, reworked into a tighter, simpler 
+implementation and tailored to Swift syntax and static type system.
 
 The SwiftAutomation framework defines the basic functionality for building 
 object specifiers, converting data between Swift and AE types, and sending 
@@ -33,7 +43,7 @@ and omissions, use at own risk, etc.
 
 To clone the Xcode project to your own machine:
 
-git clone https://bitbucket.org/hhas/swiftae.git
+  git clone https://bitbucket.org/hhas/swiftae.git
 
 The project includes a `SwiftAutomation.framework` target for embedded use. 
 
@@ -45,24 +55,24 @@ and running the resulting `aeglue` command line tool in Terminal. For example,
 to generate a Swift glue and accompanying documentation for macOS's Photos 
 application:
 
-/path/to/aeglue -o ~/Desktop Photos
+  /path/to/aeglue -o ~/Desktop Photos
 
-A basic translation tool, SwiftAETranslate, that converts application commands
+A basic translation tool, AppleScriptToSwift, that converts application commands
 from AppleScript to Swift syntax is also included. To use it, build and run the 
-SwiftAETranslate target. Type an AppleScript command into the top text pane and 
-click the Run button to view the equivalent Swift syntax in the bottom pane. 
+AppleScriptToSwift target. Type an AppleScript command into the top text pane
+and click the Run button to view the equivalent Swift syntax in the bottom pane.
 (If the 'Send Apple events' checkbox is selected, the command is also sent to
 the target application and its result displayed too.)
 
-Note that `aeglue` and SwiftAETranslate normally retrieve application
-terminology using `ascrgdte` ('get dynamic terminology') events. Some
-applications (e.g. Finder) have faulty `ascrgdte` handlers that fail to
-return correct terminology, in which case use the `-o` or 'Use SDEF
-terminology' options instead. (Be aware that SDEF-based terminology may also
-contain bugs and omissions, in which case use raw four-char codes or correct
-generated glue code by hand.)
+Note that `aeglue` and AppleScriptToSwift.app normally retrieve application 
+terminology using `ascrgdte` ('get dynamic terminology') Apple events. Some 
+applications (e.g. Finder) have faulty `ascrgdte` handlers that fail to return
+correct terminology, in which case use the `-s` or 'Use SDEF terminology' 
+options instead. (Be aware that SDEF-based terminology may also contain bugs 
+and omissions, in which case use raw four-char codes or correct generated glue 
+code by hand.)
 
-SwiftAutomation requires OS X 10.11 and Swift 3.0 and Xcode 8.0 or later.
+SwiftAutomation requires macOS 10.11 and Swift 3.0 and Xcode 8.0 or later.
 
 
 ## Etc.

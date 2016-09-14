@@ -39,7 +39,7 @@
 <pre><code>  open -a 'Script Editor' ~/Desktop/TEGlue/TextEditGlue.swift.sdef
 </code></pre>
 
-<p>Refer to this documentation when using SwiftAE glues in your own code, as it shows element, property, command, etc. names as they appear in the generated glue classes. (Make sure Script Editor's dictionary viewer is set to "AppleScript" language; other formats are for use with OS X's Scripting Bridge/JavaScript for Automation bridges only.)</p>
+<p>Refer to this documentation when using SwiftAE glues in your own code, as it shows element, property, command, etc. names as they appear in the generated glue classes. (Make sure Script Editor's dictionary viewer is set to "AppleScript" language; other formats are for use with macOS's Scripting Bridge/JavaScript for Automation bridges only.)</p>
 
 <p>If an identically named folder already exists at the same location, <code>aeglue</code> will normally fail with a "path already exists" error. If you wish to force it to overwrite the existing folder without warning, add an <code>-r</code> option:</p>
 
@@ -51,7 +51,7 @@
 <pre><code>  aeglue -s Finder
 </code></pre>
 
-<p>(Be aware that OS X's AETE-to-SDEF converter is not 100% reliable; for example, some four-char codes may fail to translate, in which case <code>aeglue</code> will warn of their omission. You'll have to correct the glue files manually should you need to use the affected features, or use SwiftAE's' <code>OSType</code>-based APIs instead.)</p>
+<p>(Be aware that macOS's AETE-to-SDEF converter is not 100% reliable; for example, some four-char codes may fail to translate, in which case <code>aeglue</code> will warn of their omission. You'll have to correct the glue files manually should you need to use the affected features, or use SwiftAE's' <code>OSType</code>-based APIs instead.)</p>
 
 <h2>Using a glue</h2>
 

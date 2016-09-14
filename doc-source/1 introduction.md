@@ -2,7 +2,7 @@
 
 ## What is SwiftAE?
 
-SwiftAE allows you to control Apple event-aware ("AppleScriptable") Mac OS X applications from Swift programs.
+SwiftAE allows you to control Apple event-aware ("AppleScriptable") macOS applications from Swift programs.
 
 For example, to get the value of the first paragraph of the topmost document in TextEdit:
 

@@ -1,6 +1,6 @@
 //
 //  main.m
-//  SwiftAETranslate
+//  AppleScriptToSwift
 //
 //
 

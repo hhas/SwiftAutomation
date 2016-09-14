@@ -162,7 +162,7 @@ Finally, each window object has a one-to-one relationship to the document object
 
 ## How SwiftAE works
 
-SwiftAE is a high-level pure-Swift wrapper for Mac OS X's lower-level Apple Event Manager APIs (`NSAppleEventDescriptor`). 
+SwiftAE is a high-level pure-Swift wrapper for macOS's lower-level Apple Event Manager APIs (`NSAppleEventDescriptor`). 
 
 The SwiftAE architecture consists of two parts:
 

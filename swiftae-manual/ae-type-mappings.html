@@ -70,7 +70,7 @@
 
 <p>Note that while the CoreServices framework's <code>AEDataModel.h</code> header states that <code>typeUnicodeText</code> is deprecated in favor <code>typeUTF8Text</code> and <code>typeUTF16ExternalRepresentation</code>, it remains in widespread use; therefore SwiftAE continues to use <code>typeUnicodeText</code> to ensure the broadest compatibility with existing scriptable applications.</p>
 
-<p>Some older applications may return text values as descriptors of <code>typeChar</code>, <code>typeIntlText</code>, or <code>typeStyledText</code>. These types are long-deprecated and their use strongly discouraged in Mac OS X. SwiftAE will coerce these descriptors to <code>typeUnicodeText</code> before unpacking them, or throw an <code>UnpackError</code> if the coercion fails.</p>
+<p>Some older applications may return text values as descriptors of <code>typeChar</code>, <code>typeIntlText</code>, or <code>typeStyledText</code>. These types are long-deprecated and their use strongly discouraged in macOS. SwiftAE will coerce these descriptors to <code>typeUnicodeText</code> before unpacking them, or throw an <code>UnpackError</code> if the coercion fails.</p>
 
 <h3>File system references</h3>
 
@@ -80,7 +80,7 @@
 
 <p>SwiftAE unpacks all file system descriptors as <code>AEURL</code> instances. SwiftAE defines <code>AEURL</code> as  a subclass of <code>NSURL</code>, so <code>AEURL</code> instances should be accepted by any Cocoa API that uses <code>NSURL</code>. Unlike <code>NSURL</code>, however, an <code>AEURL</code> instance retains the original Apple event descriptor from which it was created, allowing descriptors to be fully round-tripped. For example, if an application comman returns a <code>typeAlias</code> descriptor, then the resulting <code>AEURL</code> will re-pack as the same <code>typeAlias</code> descriptor when used in another command.</p>
 
-<p>While OS X has deprecated HFS path strings in favor of POSIX, some older Carbon applications may still occasionally require these. <code>AEURL</code> provides the following compatibility methods for converting to and from HFS path strings:</p>
+<p>While macOS has deprecated HFS path strings in favor of POSIX, some older Carbon applications may still occasionally require these. <code>AEURL</code> provides the following compatibility methods for converting to and from HFS path strings:</p>
 
 <pre><code>init(HFSPath: String)
 var HFSPath {get}

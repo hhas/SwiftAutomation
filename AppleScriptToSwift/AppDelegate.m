@@ -1,6 +1,6 @@
 //
 //  AppDelegate.m
-//  SwiftAETranslate
+//  AppleScriptToSwift
 //
 
 #import "AppDelegate.h"
@@ -97,7 +97,7 @@
 
 
 -(IBAction)openHelp:(id)sender {
-    NSLog(@"Not implemented.");
+    NSLog(@"Not implemented."); // TO DO: should docs be embedded in SwiftAutomation.framework?
 //    NSString *frameworkPath = [NSBundle bundleForClass: DynamicAppData.class].bundlePath;
 //    NSURL *url = [[NSBundle bundleWithPath: frameworkPath] URLForResource: @"index" withExtension: @"html" subdirectory: @"swift-manual"];
 //    [[NSWorkspace sharedWorkspace] openURL: url];

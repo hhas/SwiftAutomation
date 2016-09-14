@@ -21,6 +21,7 @@ import AppKit
 // TO DO: add `var unpackParentSpecifiers: Bool = false` compatibility flag; note that the simplest and safest (if not the most efficient) way to do this is to call the specifier's `unpackParentSpecifiers(clearCachedDesc:true)` method immediately after unpacking it, though since this option should almost never be needed efficiency isn't a concern (the unpack...Specifier methods could also unroll the specifier chain, of course, but then there'd be two code paths for doing the same thing which isn't ideal maintenance-wise)
 
 
+
 public typealias KeywordParameters = [(name: String?, code: OSType, value: Any)]
 
 public typealias RootObjects = (app: RootSpecifier, con: RootSpecifier, its: RootSpecifier)
@@ -113,7 +114,14 @@ extension Array : SelfPacking, SelfUnpacking {
 extension Dictionary : SelfPacking, SelfUnpacking {
     
     public func SwiftAE_packSelf(_ appData: AppData) throws -> NSAppleEventDescriptor {
-        let desc = NSAppleEventDescriptor.record()
+        var desc = NSAppleEventDescriptor.record()
+        var isCustomRecordType: Bool = false
+        if let key = AESymbol.symbol(SwiftAE_pClass) as? Key, let recordClass = self[key] as? Symbol {
+            if !recordClass.nameOnly {
+                desc = desc.coerce(toDescriptorType: recordClass.code)!
+                isCustomRecordType = true
+            }
+        }
         var userProperties: NSAppleEventDescriptor?
         for (key, value) in self {
             guard let keySymbol = key as? Symbol else {
@@ -125,7 +133,7 @@ extension Dictionary : SelfPacking, SelfUnpacking {
                 }
                 userProperties?.insert(try appData.pack(keySymbol), at: 0)
                 userProperties?.insert(try appData.pack(value), at: 0)
-            } else {
+            } else if !(keySymbol.code == SwiftAE_pClass && isCustomRecordType) {
                 desc.setDescriptor(try appData.pack(value), forKeyword: keySymbol.code)
             }
         }
@@ -133,28 +141,33 @@ extension Dictionary : SelfPacking, SelfUnpacking {
     }
     
     static func SwiftAE_unpackSelf(_ desc: NSAppleEventDescriptor, appData: AppData) throws -> [Key:Value] {
-        guard let recordDesc = desc.coerce(toDescriptorType: typeAERecord) else {
+        if !desc.isRecordDescriptor {
             throw UnpackError(appData: appData, descriptor: desc, type: self, message: "Not a record.")
         }
         var result = [Key:Value]()
-        for i in 1..<(recordDesc.numberOfItems+1) {
-            let property = recordDesc.keywordForDescriptor(at: i)
+        if desc.descriptorType != typeAERecord {
+            if let key = appData.glueInfo.symbolType.symbol(SwiftAE_pClass) as? Key,
+                    let value = appData.glueInfo.symbolType.symbol(desc.descriptorType) as? Value {
+                result[key] = value
+            }
+        }
+        for i in 1..<(desc.numberOfItems+1) {
+            let property = desc.keywordForDescriptor(at: i)
             if property == SwiftAE_keyASUserRecordFields {
                 // unpack record properties whose keys are identifiers (represented as AEList of form: [key1,value1,key2,value2,...])
-                let userProperties = recordDesc.atIndex(i)!
+                let userProperties = desc.atIndex(i)!
                 if userProperties.descriptorType == typeAEList && userProperties.numberOfItems % 2 == 0 {
                     for j in stride(from:1, to: userProperties.numberOfItems, by: 2) {
                         let keyDesc = userProperties.atIndex(j)!
                         guard let keyString = keyDesc.stringValue else {
                             throw UnpackError(appData: appData, descriptor: desc, type: Key.self, message: "Malformed record key.")
                         }
-                        guard let key = appData.glueInfo.symbolType.init(name: keyString, code: NoOSType,
-                                                                         type: NoOSType, cachedDesc: keyDesc) as? Key else {
+                        guard let key = appData.glueInfo.symbolType.string(keyString, descriptor: keyDesc) as? Key else {
                             throw UnpackError(appData: appData, descriptor: desc, type: Key.self,
                                               message: "Can't unpack record keys as non-Symbol type: \(Key.self)")
                         }
                         do {
-                            result[key] = try appData.unpack(recordDesc.atIndex(j+1)!, returnType: Value.self)
+                            result[key] = try appData.unpack(desc.atIndex(j+1)!, returnType: Value.self)
                         } catch {
                             throw UnpackError(appData: appData, descriptor: desc, type: Value.self,
                                               message: "Can't unpack value of record's \(key) property as Swift type: \(Value.self)")
@@ -170,7 +183,7 @@ extension Dictionary : SelfPacking, SelfUnpacking {
                                       message: "Can't unpack record keys as non-Symbol type: \(Key.self)")
                 }
                 do {
-                    result[key] = try appData.unpack(recordDesc.atIndex(i)!, returnType: Value.self)
+                    result[key] = try appData.unpack(desc.atIndex(i)!, returnType: Value.self)
                 } catch {
                     throw UnpackError(appData: appData, descriptor: desc, type: Value.self,
                                       message: "Can't unpack value of record's \(key) property as Swift type: \(Value.self)")
@@ -371,6 +384,7 @@ public class AppData {
     // Convert an Apple event descriptor to the specified Swift type, coercing it as necessary
     
     public func unpack<T>(_ desc: NSAppleEventDescriptor, returnType: T.Type) throws -> T {
+        // TO DO: will these tests also match NSString, NSDate, NSArray, etc, or do those need tested for separately?
         if T.self == Any.self || T.self == AnyObject.self {
             return try self.unpack(desc) as! T
         } else if T.self == Bool.self {
@@ -471,6 +485,9 @@ public class AppData {
         case typeQDPoint, typeQDRectangle, typeRGBColor:
             return try self.unpack(desc, returnType: [Int].self)
         default:
+            if desc.isRecordDescriptor {
+                return try Dictionary.SwiftAE_unpackSelf(desc, appData: self) as [Symbol:Any]
+            }
             return desc
         }
     }

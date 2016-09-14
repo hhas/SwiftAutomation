@@ -12,8 +12,6 @@ TO DO:
     Looks like problem is with calling inits in TextEdit class's protocol extension from TextEdit class's own init; calling super.init() works. File bug report, and use workaround in glue template for now.
 
 
-- rename SwiftAETranslate (AppleScriptToSwift?)
-
 
 - where should aeglue go in framework bundle?
 
@@ -45,14 +43,6 @@ TO DO:
 
 
 - how to support sum types for return values? (this will be problematic given poor type introspection support in Swift3); best option is probably to include `--enum` option in aeglue that takes a description of [self-packing+self-unpacking] enums that user wants to have available and includes them in glue, similar to how `--struct` option might create custom structs based on dictionary's class/record types (note that some of these enums might be generated automatically, based on known aete and sdef-defined 'sum types')
-
-
-
-- need to check app commands will reliably match on return type (e.g. one potential problem is that swiftc complains unless type is already inferrable)
-
-
-
-- 'class' property support for Dictionary-AERecord mapping (i.e. AERecords with custom descriptorType need to unpack that type as dict's' 'Symbol.class_' key, and vice-versa when packing); also, support glue option for unpacking as structs based on dictionary '[record] class' definitions (this will be unreliable since app terminology is often flaky/incomplete/incorrect, so unpacking records as dicts would remain the default behavior, but on occasions where it does work would be convenient for users; '[PREFIX][CLASSNAME]' struct types would need to implement their own 'unpack-self' initializer and be passed via glue info, probably also define a 'Record' protocol)
 
 
 

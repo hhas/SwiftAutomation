@@ -5,7 +5,7 @@
 //  Format an AppleEvent descriptor as Swift source code. Enables user tools
 //  to translate application commands from AppleScript to Swift syntax simply
 //  by installing a custom SendProc into an AS component instance to intercept
-//  outgoing AEs, pass them to SwiftAETranslateAppleEvent(), and print the result.
+//  outgoing AEs, pass them to SwiftAEFormatAppleEvent(), and print the result.
 //
 //
 

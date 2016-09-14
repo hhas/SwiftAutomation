@@ -1,12 +1,12 @@
 //
 //  AppDelegate.h
-//  SwiftAETranslate
+//  AppleScriptToSwift
 //
 
 #import <Cocoa/Cocoa.h>
 #import "SAELanguageInstance.h"
 #import "SAEEventSniffer.h"
-#import "SwiftAETranslate-Swift.h"
+#import "AppleScriptToSwift-Swift.h"
 
 
 @interface AppDelegate : NSObject <NSApplicationDelegate> {

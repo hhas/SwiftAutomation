@@ -64,10 +64,12 @@ When packing and unpacking `String` values, SwiftAE uses the `NSAppleEventDescri
 
 Note that while the CoreServices framework's `AEDataModel.h` header states that `typeUnicodeText` is deprecated in favor `typeUTF8Text` and `typeUTF16ExternalRepresentation`, it remains in widespread use; therefore SwiftAE continues to use `typeUnicodeText` to ensure the broadest compatibility with existing scriptable applications.
 
-Some older applications may return text values as descriptors of `typeChar`, `typeIntlText`, or `typeStyledText`. These types are long-deprecated and their use strongly discouraged in Mac OS X. SwiftAE will coerce these descriptors to `typeUnicodeText` before unpacking them, or throw an `UnpackError` if the coercion fails.
+Some older applications may return text values as descriptors of `typeChar`, `typeIntlText`, or `typeStyledText`. These types are long-deprecated and their use strongly discouraged in macOS. SwiftAE will coerce these descriptors to `typeUnicodeText` before unpacking them, or throw an `UnpackError` if the coercion fails.
 
 
 ### File system references
+
+// TO DO: SwiftAutomation currently uses Swift's URL struct, which doesn't provide the extra descriptor caching or explicit coercion methods (it also currently doesn't distinguish between path-style URLs and bookmark-style URLs, and treats everything as typeFileURL, which might cause problems on any older, poorly designed Carbon apps that explicitly typecheck their params as typeAlias instead of coercing them to that type as they're supposed to)
 
 The Apple Event Manager defines a number of modern (`typeFileURL`, `typeBookmarkData`), legacy (`typeAlias`), and deprecated (`typeFSRef`, `typeFSS`) descriptor types for identifying file system objects. Object specifiers of form `{want:file,from:null,form:name,seld:"HFS:PATH:STRING"}` (an AppleScript-ism) are also recognized by most applications. Fortunately, the Apple Event Manager also implements a number of coercion handlers for coercing between these types, so when interacting with most applications you should not need to know or care exactly which of these types are used: the application should coerce supplied values to whichever type(s) it requires.
 
@@ -75,7 +77,7 @@ SwiftAE always packs `NSURL` instances containing `file://` URLs as descriptors 
 
 SwiftAE unpacks all file system descriptors as `AEURL` instances. SwiftAE defines `AEURL` as  a subclass of `NSURL`, so `AEURL` instances should be accepted by any Cocoa API that uses `NSURL`. Unlike `NSURL`, however, an `AEURL` instance retains the original Apple event descriptor from which it was created, allowing descriptors to be fully round-tripped. For example, if an application comman returns a `typeAlias` descriptor, then the resulting `AEURL` will re-pack as the same `typeAlias` descriptor when used in another command.
 
-While OS X has deprecated HFS path strings in favor of POSIX, some older Carbon applications may still occasionally require these. `AEURL` provides the following compatibility methods for converting to and from HFS path strings:
+While macOS has deprecated HFS path strings in favor of POSIX, some older Carbon applications may still occasionally require these. `AEURL` provides the following compatibility methods for converting to and from HFS path strings:
 
   init(HFSPath: String)
   var HFSPath {get}
@@ -88,7 +90,7 @@ The `descType` argument should be one of the following: `typeAlias`, `typeFileUR
 
 For example, if an application requires a `typeAlias` descriptor but doesn't coerce the given value itself:
 
-  let url = AEMURL(path:"/path/to...").coerceToDescriptorType(typeAlias)
+  let url = AEMURL(path:"/path/to...").coerce(toDescriptorType:typeAlias)
 
 Be aware when specifying a command's required/result type, you must specify the exact AE type (`AEMSymbol.alias`/`typeAlias`, `AEMSymbol.fileURL`/`typeFileURL`, etc). For example, the Finder normally returns file system references as object specifiers:
 

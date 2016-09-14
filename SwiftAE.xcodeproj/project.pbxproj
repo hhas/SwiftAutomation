@@ -200,7 +200,7 @@
 		4F0E39A01BAF7A7400FF2A96 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		4F0E39A31BAF7A7400FF2A96 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		4F0E39A51BAF7A7400FF2A96 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		4F0E39C91BB008A400FF2A96 /* SwiftAETranslate-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SwiftAETranslate-Bridging-Header.h"; sourceTree = "<group>"; };
+		4F0E39C91BB008A400FF2A96 /* AppleScriptToSwift-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "AppleScriptToSwift-Bridging-Header.h"; sourceTree = "<group>"; };
 		4F0E39CA1BB008A400FF2A96 /* SAELanguageInstance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SAELanguageInstance.h; sourceTree = "<group>"; };
 		4F0E39CB1BB008A400FF2A96 /* SAELanguageInstance.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SAELanguageInstance.m; sourceTree = "<group>"; };
 		4F0E39CD1BB008B400FF2A96 /* SAEEventSniffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SAEEventSniffer.h; sourceTree = "<group>"; };
@@ -341,7 +341,6 @@
 				4F0E39951BADD58500FF2A96 /* EventFormatter.swift */,
 				4FFF5D491D89A26C008ED4F5 /* SwiftAEGlueTemplate.swift */,
 				4F0E396D1BAA9BA700FF2A96 /* StaticGlueBuilder.swift */,
-				4F2645AB1BA4F27700256402 /* AEApplicationGlue.swift */,
 			);
 			name = "terminology support";
 			sourceTree = "<group>";
@@ -369,7 +368,7 @@
 			name = bridge;
 			sourceTree = "<group>";
 		};
-		4F0E399D1BAF7A7400FF2A96 /* SwiftAETranslate */ = {
+		4F0E399D1BAF7A7400FF2A96 /* AppleScriptToSwift */ = {
 			isa = PBXGroup;
 			children = (
 				4F0E39D51BB0504D00FF2A96 /* main.m */,
@@ -383,9 +382,9 @@
 				4F0E39A01BAF7A7400FF2A96 /* Assets.xcassets */,
 				4F0E39A21BAF7A7400FF2A96 /* MainMenu.xib */,
 				4F0E39A51BAF7A7400FF2A96 /* Info.plist */,
-				4F0E39C91BB008A400FF2A96 /* SwiftAETranslate-Bridging-Header.h */,
+				4F0E39C91BB008A400FF2A96 /* AppleScriptToSwift-Bridging-Header.h */,
 			);
-			path = SwiftAETranslate;
+			path = AppleScriptToSwift;
 			sourceTree = "<group>";
 		};
 		4F2645A31BA37C2B00256402 /* Frameworks */ = {
@@ -433,7 +432,7 @@
 				4F2645B31BA59A2000256402 /* sample glues */,
 				4F0E39661BAA98A900FF2A96 /* aeglue */,
 				4F63C4321B7CF13E000D74EE /* test */,
-				4F0E399D1BAF7A7400FF2A96 /* SwiftAETranslate */,
+				4F0E399D1BAF7A7400FF2A96 /* AppleScriptToSwift */,
 				4F2645A31BA37C2B00256402 /* Frameworks */,
 				4F63C4251B7CF06E000D74EE /* Products */,
 			);
@@ -456,6 +455,7 @@
 				4FFF5D261D899F0D008ED4F5 /* SwiftAutomation.h */,
 				4FFF5D271D899F0D008ED4F5 /* Info.plist */,
 				4F63C4271B7CF06E000D74EE /* main.swift */,
+				4F2645AB1BA4F27700256402 /* AEApplicationGlue.swift */,
 				4F0E396C1BAA98D700FF2A96 /* bridge */,
 				4F0E39471BA86B6800FF2A96 /* terminology support */,
 			);
@@ -502,9 +502,9 @@
 			productReference = 4F0E39651BAA98A900FF2A96 /* aeglue */;
 			productType = "com.apple.product-type.tool";
 		};
-		4F0E399B1BAF7A7400FF2A96 /* SwiftAETranslate */ = {
+		4F0E399B1BAF7A7400FF2A96 /* AppleScriptToSwift */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 4F0E39A61BAF7A7400FF2A96 /* Build configuration list for PBXNativeTarget "SwiftAETranslate" */;
+			buildConfigurationList = 4F0E39A61BAF7A7400FF2A96 /* Build configuration list for PBXNativeTarget "AppleScriptToSwift" */;
 			buildPhases = (
 				4F0E39981BAF7A7400FF2A96 /* Sources */,
 				4F0E39991BAF7A7400FF2A96 /* Frameworks */,
@@ -516,7 +516,7 @@
 			dependencies = (
 				4FFF5D2A1D899F0D008ED4F5 /* PBXTargetDependency */,
 			);
-			name = SwiftAETranslate;
+			name = AppleScriptToSwift;
 			productName = SwiftAETranslate;
 			productReference = 4F0E399C1BAF7A7400FF2A96 /* SwiftAETranslate.app */;
 			productType = "com.apple.product-type.application";
@@ -600,7 +600,7 @@
 			targets = (
 				4FFF5D231D899F0D008ED4F5 /* SwiftAutomation */,
 				4F0E39641BAA98A900FF2A96 /* aeglue */,
-				4F0E399B1BAF7A7400FF2A96 /* SwiftAETranslate */,
+				4F0E399B1BAF7A7400FF2A96 /* AppleScriptToSwift */,
 				4F9AFB351D5B58EB00A71890 /* test */,
 			);
 		};
@@ -771,12 +771,12 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
-				INFOPLIST_FILE = SwiftAETranslate/Info.plist;
+				INFOPLIST_FILE = "$(TARGET_NAME)/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = org.bitbucket.hhas.SwiftAETranslate;
+				PRODUCT_BUNDLE_IDENTIFIER = "org.bitbucket.hhas.$(TARGET_NAME)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_INSTALL_OBJC_HEADER = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = "SwiftAETranslate/SwiftAETranslate-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "$(TARGET_NAME)/AppleScriptToSwift-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 3.0;
 			};
@@ -790,12 +790,12 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
-				INFOPLIST_FILE = SwiftAETranslate/Info.plist;
+				INFOPLIST_FILE = "$(TARGET_NAME)/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = org.bitbucket.hhas.SwiftAETranslate;
+				PRODUCT_BUNDLE_IDENTIFIER = "org.bitbucket.hhas.$(TARGET_NAME)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_INSTALL_OBJC_HEADER = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = "SwiftAETranslate/SwiftAETranslate-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "$(TARGET_NAME)/AppleScriptToSwift-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 3.0;
 			};
@@ -975,7 +975,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		4F0E39A61BAF7A7400FF2A96 /* Build configuration list for PBXNativeTarget "SwiftAETranslate" */ = {
+		4F0E39A61BAF7A7400FF2A96 /* Build configuration list for PBXNativeTarget "AppleScriptToSwift" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				4F0E39A71BAF7A7400FF2A96 /* Debug */,

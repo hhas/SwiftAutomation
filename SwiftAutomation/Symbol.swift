@@ -27,7 +27,7 @@ public class Symbol: Hashable, Equatable, CustomStringConvertible, SelfPacking {
     
     // important: if type=0 and name!=nil, treat as name-only symbol (used to represent a string-based record key)
     
-    public required init(name: String?, code: OSType, type: OSType = typeType, cachedDesc: NSAppleEventDescriptor? = nil) {
+    public required init(name: String?, code: OSType, type: OSType = typeType, cachedDesc: NSAppleEventDescriptor? = nil) { // TO DO: for naming consistency, rename cachedDesc: to descriptor:
         self.name = name
         self.code = code
         self.type = type
@@ -40,6 +40,10 @@ public class Symbol: Hashable, Equatable, CustomStringConvertible, SelfPacking {
     
     public convenience init(string: String, cachedDesc: NSAppleEventDescriptor? = nil) { // TO DO: omit `string` label so users can write `Symbol("foo")`?
         self.init(name: string, code: NoOSType, type: NoOSType, cachedDesc: cachedDesc)
+    }
+    
+    public class func string(_ string: String, descriptor: NSAppleEventDescriptor? = nil) -> Symbol {
+        return self.init(name: string, code: NoOSType, type: NoOSType, cachedDesc: descriptor)
     }
     
     // convenience constructors for creating Symbols using raw four-char codes

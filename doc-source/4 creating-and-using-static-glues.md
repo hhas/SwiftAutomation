@@ -24,7 +24,7 @@ The `aeglue` tool also creates an `.sdef` file containing the application's dict
 
     open -a 'Script Editor' ~/Desktop/TEGlue/TextEditGlue.swift.sdef
 
-Refer to this documentation when using SwiftAE glues in your own code, as it shows element, property, command, etc. names as they appear in the generated glue classes. (Make sure Script Editor's dictionary viewer is set to "AppleScript" language; other formats are for use with OS X's Scripting Bridge/JavaScript for Automation bridges only.)
+Refer to this documentation when using SwiftAE glues in your own code, as it shows element, property, command, etc. names as they appear in the generated glue classes. (Make sure Script Editor's dictionary viewer is set to "AppleScript" language; other formats are for use with macOS's Scripting Bridge/JavaScript for Automation bridges only.)
 
 If an identically named folder already exists at the same location, `aeglue` will normally fail with a "path already exists" error. If you wish to force it to overwrite the existing folder without warning, add an `-r` option:
 
@@ -34,7 +34,7 @@ For compatibility, `aeglue` normally sends the application an `ascr/gdte` event 
 
     aeglue -s Finder
 
-(Be aware that OS X's AETE-to-SDEF converter is not 100% reliable; for example, some four-char codes may fail to translate, in which case `aeglue` will warn of their omission. You'll have to correct the glue files manually should you need to use the affected features, or use SwiftAE's' `OSType`-based APIs instead.)
+(Be aware that macOS's AETE-to-SDEF converter is not 100% reliable; for example, some four-char codes may fail to translate, in which case `aeglue` will warn of their omission. You'll have to correct the glue files manually should you need to use the affected features, or use SwiftAE's' `OSType`-based APIs instead.)
 
 
 ## Using a glue
