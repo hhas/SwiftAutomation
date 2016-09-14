@@ -64,8 +64,6 @@ public let kSwiftAESpecifierMethods: Set<String> = [ // TO DO: review
     "endsWith",
     "contains",
     "isIn",
-    // used by Symbol, Specifier
-    "packSelf",
     // currently unused
     "help", // TO DO: uppercase?
     "its",
@@ -89,7 +87,7 @@ public let kSwiftAEParameterNames: Set<String> = [
 ]
 
 
-public let kReservedPrefixes: Set<String> = ["NS", "AE"] // TO DO: decide
+public let kReservedPrefixes: Set<String> = ["NS", "AE", "SwiftAE_"] // TO DO: decide
 
 
 public let kWordSeparators = CharacterSet(charactersIn: " -/")
@@ -124,8 +122,8 @@ public class KeywordConverter {
             // convert keyword to camelcase, e.g. "audio CD playlist" -> "audioCDPlaylist"
             for i in (0..<tmp.length).reversed() {
                 let c = tmp.character(at: i)
-                if !kLegalOtherChars.contains(UnicodeScalar(c)) {
-                    if kWordSeparators.contains(UnicodeScalar(c)) { // remove word separator character and capitalize next word
+                if !kLegalOtherChars.contains(UnicodeScalar(c)!) {
+                    if kWordSeparators.contains(UnicodeScalar(c)!) { // remove word separator character and capitalize next word
                         tmp.replaceCharacters(in: NSMakeRange(i,2), with: tmp.substring(with: NSMakeRange(i+1,1)).uppercased())
                     } else if c == 38 { // replace "&" with "And"
                         tmp.replaceCharacters(in: NSMakeRange(i,1), with: "And")
@@ -135,7 +133,7 @@ public class KeywordConverter {
                 }
             }
             // sanity check: if first character is digit (which it shouldn't ever be), prefix with underscore
-            if !kLegalFirstChars.contains(UnicodeScalar(tmp.character(at: 0))) {
+            if !kLegalFirstChars.contains(UnicodeScalar(tmp.character(at: 0))!) {
                 tmp.insert("_", at: 0)
             }
             result = tmp.copy() as! String // TO DO: check
@@ -167,7 +165,7 @@ public class KeywordConverter {
                                         options: .regularExpression, range: NSMakeRange(0, tmp.length))
         tmp.replaceOccurrences(of: "[ _-]+", with: " ",
                                         options: .regularExpression, range: NSMakeRange(0, tmp.length))
-        let words: [NSString] = tmp.trimmingCharacters(in: CharacterSet.whitespaces).components(separatedBy: " ")
+        let words = tmp.trimmingCharacters(in: CharacterSet.whitespaces).components(separatedBy: " ") as [NSString]
         // assemble 3-character prefix, padding with 'X's if fewer than 3 suitable characters are found
         var result: String
         if words.count == 1 { // use first 3 chars of word, e.g. Finder->FIN
@@ -208,10 +206,10 @@ public class SwiftKeywordConverter: KeywordConverter, KeywordConverterProtocol {
     private static var _defaultTerminology: ApplicationTerminology?
     
     public var defaultTerminology: ApplicationTerminology { // initialized on first use
-        if self.dynamicType._defaultTerminology == nil {
-            self.dynamicType._defaultTerminology = DefaultTerminology(keywordConverter: self)
+        if type(of: self)._defaultTerminology == nil {
+            type(of: self)._defaultTerminology = DefaultTerminology(keywordConverter: self)
         }
-        return self.dynamicType._defaultTerminology!
+        return type(of: self)._defaultTerminology!
     }
     
     private let reservedSpecifierWords = kSwiftKeywords.union(kSwiftAESpecifierMethods)

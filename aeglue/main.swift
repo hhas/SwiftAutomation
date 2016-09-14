@@ -10,7 +10,8 @@
 
 
 import Foundation
-import SwiftAE
+//import SwiftAE
+
 
 let gHelp = [
     "Generate SwiftAE glue classes and SDEF documentation for controlling",
@@ -78,7 +79,7 @@ var applicationURLs: [URL?] = []
 var outDir: URL?
 
 // TO DO: would wrapping C getopts() be simpler?
-var optArgs = Array(Process.arguments.reversed()) // bug workaround: popping/inserting at start of Array[Slice] is buggy, so reverse it and work from end
+var optArgs = ProcessInfo.processInfo.arguments.reversed() as [String] // bug workaround: popping/inserting at start of Array[Slice] is buggy, so reverse it and work from end
 let _ = optArgs.popLast() // skip path to this executable
 
 if optArgs.count == 0 {
@@ -190,7 +191,7 @@ for applicationURL in applicationURLs {
             throw TerminologyError("Invalid UTF8 data.")
         }
         let outGlueURL = outDir!.appendingPathComponent(glueFileName)
-        try writeData(data, toURL: outGlueURL, overwriting: canOverwrite)
+        try writeData(data as NSData, toURL: outGlueURL, overwriting: canOverwrite)
         print(outGlueURL.path)
     } catch {
         print("Couldn't generate glue: \(error.localizedDescription)", to: &errStream) // TO DO: check this works with non-NSErrors too
@@ -201,7 +202,7 @@ for applicationURL in applicationURLs {
         do {
             let sdef = try translateScriptingDefinition(try GetScriptingDefinition(appURL), glueSpec: glueSpec)
             let outSDEFURL = outDir!.appendingPathComponent("\(glueFileName).sdef")
-            try writeData(sdef, toURL: outSDEFURL, overwriting: canOverwrite)
+            try writeData(sdef as NSData, toURL: outSDEFURL, overwriting: canOverwrite)
             print(outSDEFURL.path)
         } catch {
             print("Couldn't write SDEF: \(error.localizedDescription)", to: &errStream)

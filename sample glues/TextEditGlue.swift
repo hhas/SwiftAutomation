@@ -2,7 +2,7 @@
 //  TextEditGlue.swift
 //  TextEdit.app 1.11
 //  SwiftAE.framework 0.1.0
-//  `aeglue -rd TextEdit.app`
+//  `aeglue -r TextEdit.app`
 //
 
 
@@ -399,6 +399,8 @@ public typealias TED = TEDSymbol // allows symbols to be written as (e.g.) TED.n
 
 public protocol TEDCommand: SpecifierProtocol {} // provides AE dispatch methods
 
+// Command->Any will be bound when return type can't be inferred, else Command->T
+
 extension TEDCommand {
     public func activate(_ directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
@@ -783,16 +785,23 @@ extension TEDQuery {
 /******************************************************************************/
 // Specifier subclasses add app-specific extensions
 
+// beginning/end/before/after
 public class TEDInsertion: InsertionSpecifier, TEDCommand {}
 
+
+// by index/name/id/previous/next
+// first/middle/last/any
 public class TEDObject: ObjectSpecifier, TEDQuery {
     public typealias InsertionSpecifierType = TEDInsertion
     public typealias ObjectSpecifierType = TEDObject
     public typealias ElementsSpecifierType = TEDElements
 }
 
+// by range/test
+// all
 public class TEDElements: TEDObject, ElementsSpecifierExtension {}
 
+// App/Con/Its
 public class TEDRoot: RootSpecifier, TEDQuery, RootSpecifierExtension {
     public typealias InsertionSpecifierType = TEDInsertion
     public typealias ObjectSpecifierType = TEDObject
@@ -800,10 +809,11 @@ public class TEDRoot: RootSpecifier, TEDQuery, RootSpecifierExtension {
     public override class var untargetedAppData: AppData { return gUntargetedAppData }
 }
 
+// application
 public class TextEdit: TEDRoot, ApplicationExtension {
     public convenience init(launchOptions: LaunchOptions = DefaultLaunchOptions, relaunchMode: RelaunchMode = DefaultRelaunchMode) {
-        self.init(rootObject: AppRootDesc, appData: self.dynamicType.untargetedAppData.targetedCopy(
-                                .bundleIdentifier("com.apple.TextEdit", true), launchOptions: launchOptions, relaunchMode: relaunchMode))
+        self.init(rootObject: AppRootDesc, appData: type(of:self).untargetedAppData.targetedCopy(
+                .bundleIdentifier("com.apple.TextEdit", true), launchOptions: launchOptions, relaunchMode: relaunchMode))
     }
 }
 

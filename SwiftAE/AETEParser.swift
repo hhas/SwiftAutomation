@@ -43,7 +43,7 @@ public class AETEParser: ApplicationTerminology {
     public func parse(_ descriptor: NSAppleEventDescriptor) throws { // accepts AETE/AEUT or AEList of AETE/AEUTs
         switch descriptor.descriptorType {
         case SwiftAE_typeAETE, SwiftAE_typeAEUT:
-            self.aeteData = descriptor.data
+            self.aeteData = descriptor.data as NSData
             self.cursor = 6 // skip version, language, script integers
             let n = self.short()
             do {
@@ -90,22 +90,22 @@ public class AETEParser: ApplicationTerminology {
     
     func short() -> UInt16 { // unsigned short (2 bytes)
         var value: UInt16 = 0
-        self.aeteData.getBytes(&value, range: NSMakeRange(self.cursor,sizeof(UInt16.self)))
-        self.cursor += sizeof(UInt16.self)
+        self.aeteData.getBytes(&value, range: NSMakeRange(self.cursor,MemoryLayout<UInt16>.size))
+        self.cursor += MemoryLayout<UInt16>.size
         return value
     }
     
     func code() -> OSType { // (4 bytes)
         var value: OSType = 0
-        self.aeteData.getBytes(&value, range: NSMakeRange(self.cursor,sizeof(OSType.self)))
-        self.cursor += sizeof(OSType.self)
+        self.aeteData.getBytes(&value, range: NSMakeRange(self.cursor,MemoryLayout<OSType>.size))
+        self.cursor += MemoryLayout<OSType>.size
         return value
     }
     
     func string() -> String {
         var length: UInt8 = 0 // Pascal string = 1-byte length (unsigned char) followed by 0-255 MacRoman chars
-        self.aeteData.getBytes(&length, range: NSMakeRange(self.cursor,sizeof(UInt8.self)))
-        self.cursor += sizeof(UInt8.self)
+        self.aeteData.getBytes(&length, range: NSMakeRange(self.cursor,MemoryLayout<UInt8>.size))
+        self.cursor += MemoryLayout<UInt8>.size
         let value = length == 0 ? "" : NSString(data: aeteData.subdata(with: NSMakeRange(self.cursor,Int(length))),
                                                 encoding: String.Encoding.macOSRoman.rawValue) as! String
         self.cursor += Int(length)
@@ -115,15 +115,15 @@ public class AETEParser: ApplicationTerminology {
     // skip unneeded aete data
     
     func skipShort() {
-        self.cursor += sizeof(UInt16.self)
+        self.cursor += MemoryLayout<UInt16>.size
     }
     func skipCode() {
-        self.cursor += sizeof(OSType.self)
+        self.cursor += MemoryLayout<OSType>.size
     }
     func skipString() {
         var len: UInt8 = 0
-        self.aeteData.getBytes(&len, range: NSMakeRange(self.cursor,sizeof(UInt8.self)))
-        self.cursor += sizeof(UInt8.self) + Int(len)
+        self.aeteData.getBytes(&len, range: NSMakeRange(self.cursor,MemoryLayout<UInt8>.size))
+        self.cursor += MemoryLayout<UInt8>.size + Int(len)
     }
     func alignCursor() { // realign aete data cursor on even byte after reading strings
         if self.cursor % 2 != 0 {

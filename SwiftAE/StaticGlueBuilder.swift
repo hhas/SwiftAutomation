@@ -33,7 +33,7 @@ public class GlueSpec {
         self.applicationURL = applicationURL
         self.keywordConverter = keywordConverter
         self.useSDEF = useSDEF
-        let bundleInfo: BundleInfoType = (applicationURL == nil) ? [:] : Bundle(url: applicationURL!)?.infoDictionary ?? [:]
+        let bundleInfo = ((applicationURL == nil) ? [:] : Bundle(url: applicationURL!)?.infoDictionary ?? [:]) as BundleInfoType
         self.bundleInfo = bundleInfo
         if applicationURL == nil {
             self.classNamePrefix = "AE"
@@ -112,7 +112,7 @@ public class StaticGlueTemplate {
             var result = ""
             if newContents.count > 0 {
                 for newContent in newContents { // TO DO: if newContents is generator, make sure this doesn't exhaust it (as in python)
-                    result += StaticGlueTemplate(string: subString).subRender(newContent, renderer: renderer)
+                    result += StaticGlueTemplate(string: subString as NSString?).subRender(newContent, renderer: renderer)
                 }
             }else {
                 result = emptyContent // e.g. empty dictionary literals require ':'
@@ -168,7 +168,7 @@ public class StaticGlueTemplate {
 public func renderStaticGlueTemplate(_ glueSpec: GlueSpec, extraTags: [String:String] = [:], templateString: String? = nil) throws -> String {
     // note: SwiftAEGlueTemplate requires additional values for extraTags: ["AEGLUE_COMMAND": shellCommand,"GLUE_NAME": glueFileName]
     let glueTable = try glueSpec.buildGlueTable()
-    let template = StaticGlueTemplate(string: templateString)
+    let template = StaticGlueTemplate(string: templateString as NSString?)
     template.insertString("PREFIX", glueSpec.classNamePrefix)
     template.insertString("APPLICATION_CLASS_NAME", glueSpec.applicationClassName)
     template.insertString("FRAMEWORK_NAME", glueSpec.frameworkName)
@@ -240,7 +240,7 @@ public func translateScriptingDefinition(_ data: Data, glueSpec: GlueSpec) throw
         }
         for valueType in suite.elements(forName: "value-type") { convertNode(valueType) }
     }
-    return xml.xmlData(withOptions: (1 << 18)) // XMLNode.Options.nodePrettyPrint|XMLNode.Options.documentIncludeContentTypeDeclaration
+    return xml.xmlData(withOptions: (1 << 17 | 1 << 18)) // [XMLNode.Options.nodePrettyPrint,XMLNode.Options.documentIncludeContentTypeDeclaration]
 }
 
 

@@ -126,7 +126,7 @@ public class SpecifierFormatter {
                        kAEEnd: "end", kAEBefore: "before", kAEAfter: "after"][specifier.insertionLocation.enumCodeValue] {
             return "\(self.format(specifier.parentSelector)).\(name)"
         }
-        return "<\(specifier.dynamicType)(kpos:\(specifier.insertionLocation),kobj:\(self.format(specifier.parentSelector)))>"
+        return "<\(type(of: specifier))(kpos:\(specifier.insertionLocation),kobj:\(self.format(specifier.parentSelector)))>"
     }
     
     func formatObjectSpecifier(_ specifier: ObjectSpecifier) -> String {
@@ -172,7 +172,7 @@ public class SpecifierFormatter {
                 }
             case SwiftAE_formRange: // specifier[FROM,TO]
                 if let seld = specifier.selectorData as? RangeSelector {
-                    return "\(result)[\(self.format(seld.start)), \(self.format(seld.stop))]" // TO DO: app-based specifiers should use generic 'App' root; con-based specifiers should be reduced to minimal representation if their wantType == specifier.wantType
+                    return "\(result)[\(self.format(seld.start)), \(self.format(seld.stop))]" // TO DO: app-based specifiers should use untargeted 'App' root; con-based specifiers should be reduced to minimal representation if their wantType == specifier.wantType
                 }
             case SwiftAE_formTest: // specifier[TEST]
                 return "\(result)[\(self.format(specifier.selectorData))]"
@@ -180,7 +180,7 @@ public class SpecifierFormatter {
                 break
             }
         }
-        return "<\(specifier.dynamicType)(want:\(specifier.wantType),form:\(specifier.selectorForm),seld:\(formatValue(specifier.selectorData)),from:\(self.format(specifier.parentSelector)))>"
+        return "<\(type(of: specifier))(want:\(specifier.wantType),form:\(specifier.selectorForm),seld:\(formatValue(specifier.selectorData)),from:\(self.format(specifier.parentSelector)))>"
     }
     
     func formatComparisonTest(_ specifier: ComparisonTest) -> String {
@@ -193,7 +193,7 @@ public class SpecifierFormatter {
                               kAEContains: "contains", kSAEIsIn: "isIn"][opcode] {
             return "\(operand1).\(name)(\(operand2))"
         }
-        return "<\(specifier.dynamicType)(relo:\(specifier.operatorType),obj1:\(formatValue(operand1)),obj2:\(formatValue(operand2)))>"
+        return "<\(type(of: specifier))(relo:\(specifier.operatorType),obj1:\(formatValue(operand1)),obj2:\(formatValue(operand2)))>"
     }
     
     func formatLogicalTest(_ specifier: LogicalTest) -> String {
@@ -206,7 +206,7 @@ public class SpecifierFormatter {
         } else if opcode == SwiftAE_kAENOT && operands.count == 1 {
             return "!(\(operands[0]))"
         }
-        return "<\(specifier.dynamicType)(logc:\(specifier.operatorType),term:\(formatValue(operands)))>"
+        return "<\(type(of: specifier))(logc:\(specifier.operatorType),term:\(formatValue(operands)))>"
     }
 }
 

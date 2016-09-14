@@ -49,8 +49,8 @@ public class GlueTable {
     public var specifiersByName: [String:Term] {
         if self._specifiersByName == nil {
             self._specifiersByName = [String:Term]()
-            for termsByName in [elementsByName, propertiesByName, commandsByName] {
-                for (key, value) in termsByName as! [String:Term] { self._specifiersByName![key] = value }
+            for termsByName in [elementsByName, propertiesByName, commandsByName] as [[String:Term]] {
+                for (key, value) in termsByName { self._specifiersByName![key] = value }
             }
         }
         return self._specifiersByName!
@@ -105,7 +105,7 @@ public class GlueTable {
                     }
                 }
                 // add item
-                self.typesByName[name] = NSAppleEventDescriptor(descriptorType: descriptorType, bytes: &code, length: sizeofValue(code))
+                self.typesByName[name] = NSAppleEventDescriptor(descriptorType: descriptorType, bytes: &code, length: MemoryLayout<OSType>.size)
             }
         }
     }

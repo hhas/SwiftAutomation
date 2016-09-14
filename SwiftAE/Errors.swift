@@ -8,7 +8,7 @@ import Foundation
 // TO DO: how best to compose/chain exceptions?
 
 
-// TO DO: can/should Errors be implemented as enums? TBH, only error user should see directly is CommandError (though currently sendAppleEvent throws non-CommandError if called on generic specifier); specific errors (which may be SwiftAE or NSError [sub]classes) should be encapsulated in that, and are really only included for informational purposes. Any specialized error handling would be decided according to OSStatus code (which cannot be defined as an enum as it's completely arbitrary) so will require a switch block instead.
+// TO DO: can/should Errors be implemented as enums? TBH, only error user should see directly is CommandError (though currently sendAppleEvent throws non-CommandError if called on untargeted specifier); specific errors (which may be SwiftAE or NSError [sub]classes) should be encapsulated in that, and are really only included for informational purposes. Any specialized error handling would be decided according to OSStatus code (which cannot be defined as an enum as it's completely arbitrary) so will require a switch block instead.
 
 
 let gDescriptionForError: [Int:String] = [ // error descriptions from ASLG/MacErrors.h

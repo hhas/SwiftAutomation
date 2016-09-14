@@ -30,18 +30,18 @@ public class Selector: CustomStringConvertible, SelfPacking { // TO DO: Equatabl
     
     // unpacking
     
-    private func unpackParentSpecifiers() {} // ObjectSpecifier overrides this to recursively unpack its 'from' desc only when needed
+    func unpackParentSpecifiers() {} // ObjectSpecifier overrides this to recursively unpack its 'from' desc only when needed
     
     // packing
     
-    public func packSelf(_ appData: AppData) throws -> NSAppleEventDescriptor {
+    public func SwiftAE_packSelf(_ appData: AppData) throws -> NSAppleEventDescriptor {
         if self.cachedDesc == nil {
-            self.cachedDesc = try self.packSelf()
+            self.cachedDesc = try self.SwiftAE_packSelf()
         }
         return self.cachedDesc!
     }
     
-    private func packSelf() throws -> NSAppleEventDescriptor { // this implementation should never be called; subclasses must override this to pack themselves
+    func SwiftAE_packSelf() throws -> NSAppleEventDescriptor { // this implementation should never be called; subclasses must override this to pack themselves
         throw NotImplementedError()
     }
     
@@ -59,7 +59,7 @@ public class Selector: CustomStringConvertible, SelfPacking { // TO DO: Equatabl
 // abstract base class for all object and insertion specifiers
 // app-specific glues should subclass this and add command methods via protocol extension (mixin) to it and all of its subclasses too
 
-// TO DO: is it practical to prevent commands appearing on generic specifiers? (it ought to be doable as long as subclasses and mixins can provide the right class hooks; the main issue is how crazy mad the typing gets)
+// TO DO: is it practical to prevent commands appearing on untargeted specifiers? (it ought to be doable as long as subclasses and mixins can provide the right class hooks; the main issue is how crazy mad the typing gets)
 
 
 public protocol SpecifierProtocol {
@@ -90,7 +90,7 @@ public class Specifier: Selector, SpecifierProtocol {
     
     // unpacking
     
-    private override func unpackParentSpecifiers() {
+    override func unpackParentSpecifiers() {
         guard let cachedDesc = self.cachedDesc else {
             print("Can't unpack parent specifiers as cached descriptor don't exist (this isn't supposed to happen).") // TO DO: DEBUG; delete
             self._parentSelector = RootSpecifier(rootObject: SwiftAEError(code: 1, message: "Can't unpack parent specifiers as cached AppData and/or AEDesc don't exist (this isn't supposed to happen)."), appData: self.appData) // TO DO: implement ErrorSpecifier subclass that takes error info and always raises on use
@@ -152,7 +152,7 @@ public class Specifier: Selector, SpecifierProtocol {
 /******************************************************************************/
 // insertion location specifier
 
-public class InsertionSpecifier: Specifier { // packSelf
+public class InsertionSpecifier: Specifier { // SwiftAE_packSelf
     
     // 'insl'
     public let insertionLocation: NSAppleEventDescriptor
@@ -163,9 +163,9 @@ public class InsertionSpecifier: Specifier { // packSelf
         super.init(parentSelector: parentSelector, appData: appData, cachedDesc: cachedDesc)
     }
     
-    private override func packSelf() throws -> NSAppleEventDescriptor {
+    override func SwiftAE_packSelf() throws -> NSAppleEventDescriptor {
         let desc = NSAppleEventDescriptor.record().coerce(toDescriptorType: typeInsertionLoc)!
-        desc.setDescriptor(try self.parentSelector.packSelf(self.appData), forKeyword: keyAEObject)
+        desc.setDescriptor(try self.parentSelector.SwiftAE_packSelf(self.appData), forKeyword: keyAEObject)
         desc.setDescriptor(self.insertionLocation, forKeyword: keyAEPosition)
         return desc
     }
@@ -199,9 +199,9 @@ public class ObjectSpecifier: Specifier, ObjectSpecifierProtocol { // represents
         super.init(parentSelector: parentSelector, appData: appData, cachedDesc: cachedDesc)
     }
     
-    private override func packSelf() throws -> NSAppleEventDescriptor {
+    override func SwiftAE_packSelf() throws -> NSAppleEventDescriptor {
         let desc = NSAppleEventDescriptor.record().coerce(toDescriptorType: typeObjectSpecifier)!
-        desc.setDescriptor(try self.parentSelector.packSelf(self.appData), forKeyword: SwiftAE_keyAEContainer)
+        desc.setDescriptor(try self.parentSelector.SwiftAE_packSelf(self.appData), forKeyword: SwiftAE_keyAEContainer)
         desc.setDescriptor(self.wantType, forKeyword: SwiftAE_keyAEDesiredClass)
         desc.setDescriptor(self.selectorForm, forKeyword: SwiftAE_keyAEKeyForm)
         desc.setDescriptor(try self.appData.pack(self.selectorData), forKeyword: SwiftAE_keyAEKeyData)
@@ -269,7 +269,7 @@ public struct RangeSelector: SelfPacking { // holds data for by-range selectors 
         case is NSAppleEventDescriptor:
             return selectorData as! NSAppleEventDescriptor
         case is Specifier: // technically, only ObjectSpecifier makes sense here, tho AS prob. doesn't prevent insertion loc or multi-element specifier being passed instead
-            return try (selectorData as! Specifier).packSelf(appData)
+            return try (selectorData as! Specifier).SwiftAE_packSelf(appData)
         default: // pack anything else as a by-name or by-index specifier
             selectorForm = selectorData is String ? gNameForm : gAbsolutePositionForm
             let desc = NSAppleEventDescriptor.record().coerce(toDescriptorType: typeObjectSpecifier)!
@@ -300,7 +300,7 @@ public struct RangeSelector: SelfPacking { // holds data for by-range selectors 
         }
     }
     
-    public func packSelf(_ appData: AppData) throws -> NSAppleEventDescriptor {
+    public func SwiftAE_packSelf(_ appData: AppData) throws -> NSAppleEventDescriptor {
         // note: the returned desc will be cached by the ElementsSpecifier, so no need to cache it here
         let desc = NSAppleEventDescriptor.record().coerce(toDescriptorType: typeRangeDescriptor)!
         desc.setDescriptor(try self.packSelector(self.start, appData: appData), forKeyword: keyAERangeStart)
@@ -334,9 +334,9 @@ public class ComparisonTest: TestClause {
         super.init(appData: appData, cachedDesc: cachedDesc)
     }
     
-    private override func packSelf() throws -> NSAppleEventDescriptor {
+    override func SwiftAE_packSelf() throws -> NSAppleEventDescriptor {
         if self.operatorType === gNE { // AEM doesn't support a 'kAENotEqual' enum...
-            return try (!(self.operand1 == self.operand2)).packSelf(self.appData) // so convert to kAEEquals+kAENOT
+            return try (!(self.operand1 == self.operand2)).SwiftAE_packSelf(self.appData) // so convert to kAEEquals+kAENOT
         } else {
             let desc = NSAppleEventDescriptor.record().coerce(toDescriptorType: typeCompDescriptor)!
             let opDesc1 = try self.appData.pack(self.operand1)
@@ -373,7 +373,7 @@ public class LogicalTest: TestClause {
         super.init(appData: appData, cachedDesc: cachedDesc)
     }
     
-    private override func packSelf() throws -> NSAppleEventDescriptor {
+    override func SwiftAE_packSelf() throws -> NSAppleEventDescriptor {
         let desc = NSAppleEventDescriptor.record().coerce(toDescriptorType: typeLogicalDescriptor)!
         let opDesc = try self.appData.pack(self.operands)
         desc.setDescriptor(self.operatorType, forKeyword: SwiftAE_keyAELogicalOperator)
@@ -404,7 +404,7 @@ prefix func !(lhs: TestClause) -> TestClause {
 /******************************************************************************/
 // Specifier roots (all Specifier chains must be terminated by one of these)
 
-// note: app glues will also define their own generic App, Con, and Its roots
+// note: app glues will also define their own untargeted App, Con, and Its roots
 
 public class RootSpecifier: ObjectSpecifier { // app, con, its, custom root (note: this is a bit sloppy; `con` based specifiers are only for use in by-range selectors, and only `its` based specifiers should support comparison and logic tests; only targeted absolute (app-based/customroot-based) specifiers should implement commands, although single `app` root doesn't distinguish untargeted from targeted since that's determined by absence/presence of AppData object)
     
@@ -420,7 +420,7 @@ public class RootSpecifier: ObjectSpecifier { // app, con, its, custom root (not
         
     }
     
-    public override func packSelf() throws -> NSAppleEventDescriptor {
+    public override func SwiftAE_packSelf() throws -> NSAppleEventDescriptor {
         return try self.appData.pack(self.selectorData)
     }
     
@@ -436,7 +436,7 @@ public class RootSpecifier: ObjectSpecifier { // app, con, its, custom root (not
     
     public var rootObject: Any { return self.selectorData } // the objspec chain's terminal 'from' object; this is usually AppRootDesc/ConRootDesc/ItsRootDesc, but not always (e.g. 'fully qualified' specifiers are terminated by an AEAddressDesc)
     
-    private override func unpackParentSpecifiers() {}
+    override func unpackParentSpecifiers() {}
 }
 
 

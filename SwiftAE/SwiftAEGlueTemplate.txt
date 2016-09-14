@@ -7,7 +7,7 @@
 
 
 import Foundation
-import SwiftAE
+//import SwiftAE
 
 
 /******************************************************************************/
@@ -64,6 +64,8 @@ public typealias «PREFIX» = «PREFIX»Symbol // allows symbols to be written a
 
 public protocol «PREFIX»Command: SpecifierProtocol {} // provides AE dispatch methods
 
+// Command->Any will be bound when return type can't be inferred, else Command->T
+
 extension «PREFIX»Command {«+COMMAND»
     public func «COMMAND_NAME»(_ directParameter: Any = NoParameter,«+PARAMETER»
             «NAME»: Any = NoParameter,«-PARAMETER»
@@ -101,16 +103,23 @@ extension «PREFIX»Query {
 /******************************************************************************/
 // Specifier subclasses add app-specific extensions
 
+// beginning/end/before/after
 public class «PREFIX»Insertion: InsertionSpecifier, «PREFIX»Command {}
 
+
+// by index/name/id/previous/next
+// first/middle/last/any
 public class «PREFIX»Object: ObjectSpecifier, «PREFIX»Query {
     public typealias InsertionSpecifierType = «PREFIX»Insertion
     public typealias ObjectSpecifierType = «PREFIX»Object
     public typealias ElementsSpecifierType = «PREFIX»Elements
 }
 
+// by range/test
+// all
 public class «PREFIX»Elements: «PREFIX»Object, ElementsSpecifierExtension {}
 
+// App/Con/Its
 public class «PREFIX»Root: RootSpecifier, «PREFIX»Query, RootSpecifierExtension {
     public typealias InsertionSpecifierType = «PREFIX»Insertion
     public typealias ObjectSpecifierType = «PREFIX»Object
@@ -118,10 +127,11 @@ public class «PREFIX»Root: RootSpecifier, «PREFIX»Query, RootSpecifierExtens
     public override class var untargetedAppData: AppData { return gUntargetedAppData }
 }
 
+// application
 public class «APPLICATION_CLASS_NAME»: «PREFIX»Root, ApplicationExtension {«+DEFAULT_INIT»
     public convenience init(launchOptions: LaunchOptions = DefaultLaunchOptions, relaunchMode: RelaunchMode = DefaultRelaunchMode) {
-        self.init(rootObject: AppRootDesc, appData: self.dynamicType.untargetedAppData.targetedCopy(
-                                .bundleIdentifier("«BUNDLE_IDENTIFIER»", true), launchOptions: launchOptions, relaunchMode: relaunchMode))
+        self.init(rootObject: AppRootDesc, appData: type(of:self).untargetedAppData.targetedCopy(
+                .bundleIdentifier("«BUNDLE_IDENTIFIER»", true), launchOptions: launchOptions, relaunchMode: relaunchMode))
     }
 «-DEFAULT_INIT»}
 

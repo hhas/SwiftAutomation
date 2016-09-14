@@ -11,7 +11,7 @@ import AppKit
 // convert between 4-character strings and OSTypes (use these instead of calling UTGetOSTypeFromString/UTCopyStringFromOSType directly)
 
 func FourCharCodeUnsafe(_ string: String) -> OSType { // note: silently returns 0 if string is invalid; where practical, use throwing version below
-    return UTGetOSTypeFromString(string)
+    return UTGetOSTypeFromString(string as CFString)
 }
 
 func FourCharCode(_ string: NSString) throws -> OSType { // note: use this instead of FourCharCode to get better error reporting
@@ -39,15 +39,17 @@ public let DefaultRelaunchMode: RelaunchMode = .limited
 
 // Indicates omitted command parameter
 
-public class _NoParameter {}
+public enum Parameters {
+    case none
+}
 
-public let NoParameter = _NoParameter.self // TO DO: what's easiest way to create unique symbol? (i.e. not sure about using nil to indicate omission of directParameter [or any other parameter] in commands, as that can't be distinguished from nil values returned by Cocoa APIs to signal a runtime error; what's recommended current best practice for Swift APIs?)
+public let NoParameter = Parameters.none // TO DO: what's easiest way to create unique symbol? (i.e. not sure about using nil to indicate omission of directParameter [or any other parameter] in commands, as that can't be distinguished from nil values returned by Cocoa APIs to signal a runtime error; what's recommended current best practice for Swift APIs?) // TO DO: actually, could use nil as long as glue commands don't accept it (caveat: raw 4CC APIs must reject it)
 
 
 // Specifiers and Symbols pack themselves
 
-public protocol SelfPacking {
-    func packSelf(_ appData: AppData) throws -> NSAppleEventDescriptor
+public protocol SelfPacking { // TO DO: does this need to be public
+    func SwiftAE_packSelf(_ appData: AppData) throws -> NSAppleEventDescriptor
 }
 
 
@@ -138,12 +140,12 @@ public enum TargetApplication {
 
 func FourCharCodeDescriptor(_ type: OSType, _ data: OSType) -> NSAppleEventDescriptor {
     var data = data
-    return NSAppleEventDescriptor(descriptorType: type, bytes: &data, length: sizeofValue(data))!
+    return NSAppleEventDescriptor(descriptorType: type, bytes: &data, length: MemoryLayout<OSType>.size)!
 }
 
 func UInt32Descriptor(_ data: UInt32) -> NSAppleEventDescriptor { // (Swift seems to ignore `const` on 'bytes' arg, so use `var` as workaround)
     var data = data
-    return NSAppleEventDescriptor(descriptorType: SwiftAE_typeUInt32, bytes: &data, length: sizeofValue(data))!
+    return NSAppleEventDescriptor(descriptorType: SwiftAE_typeUInt32, bytes: &data, length: MemoryLayout<UInt32>.size)!
 }
 
 

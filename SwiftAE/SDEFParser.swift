@@ -60,7 +60,7 @@ public class SDEFParser: NSObject, XMLParserDelegate, ApplicationTerminology {
                 let (name, code) = try self.parseKeywordTerm(tagName, attributes: attributes)
                 self.enumerators.append(KeywordTerm(name: self.keywordConverter.convertSpecifierName(name), kind: .enumerator, code: code))
             case "command":
-                guard let name = attributes["name"], let codeString: NSString = attributes["code"] else {
+                guard let name = attributes["name"], let codeString = attributes["code"] as NSString? else {
                     throw TerminologyError("Malformed \(tagName) in SDEF: missing 'name' or 'code' attribute.")
                 }
                 if name == "" {
@@ -71,8 +71,8 @@ public class SDEFParser: NSObject, XMLParserDelegate, ApplicationTerminology {
                 }
                 var eventClass: OSType, eventID: OSType
                 do {
-                    eventClass = try FourCharCode(codeString.substring(to: 4))
-                    eventID = try FourCharCode(codeString.substring(from: 4))
+                    eventClass = try FourCharCode(codeString.substring(to: 4) as NSString)
+                    eventID = try FourCharCode(codeString.substring(from: 4) as NSString)
                 } catch {
                     throw TerminologyError("Malformed \(tagName) in SDEF: invalid 'code' attribute (\(error)).")
                 }
@@ -103,7 +103,7 @@ public class SDEFParser: NSObject, XMLParserDelegate, ApplicationTerminology {
     
     // used by parser() callback
     func parseKeywordTerm(_ tagName: String, attributes: [String:String]) throws -> (String, OSType) {
-        guard let name = attributes["name"], let codeString = attributes["code"] else {
+        guard let name = attributes["name"], let codeString = attributes["code"] as NSString? else {
             throw TerminologyError("Malformed \(tagName) in SDEF: missing 'name' or 'code' attribute.")
         }
         if name == "" {
@@ -122,7 +122,7 @@ public class SDEFParser: NSObject, XMLParserDelegate, ApplicationTerminology {
 
 public func GetScriptingDefinition(_ url: URL) throws -> Data {
     var sdef: Unmanaged<CFData>?
-    let err = OSACopyScriptingDefinitionFromURL(url, 0, &sdef)
+    let err = OSACopyScriptingDefinitionFromURL(url as NSURL, 0, &sdef)
     if err != 0 {
         throw SwiftAEError(code: Int(err), message: "Can't retrieve SDEF.")
     }

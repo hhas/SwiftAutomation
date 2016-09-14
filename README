@@ -32,32 +32,7 @@ dictionary-defined terminology.
 ## Status
 
 SwiftAE is alpha status: most of the implementation is sufficiently complete to
-allow testing and experimentation; however, further progress is currently
-blocked due to significant difficulties in bridging Swift's Array and
-Dictionary types to their Apple event equivalents. For details, see the
-following unpack<T> methods in AppData.swift:
-
-func unpack<T>(_ desc: NSAppleEventDescriptor, returnType: T.Type) throws -> T
-
-func unpack<T: Sequence, U where T.Iterator.Element == U>
-(_ desc: NSAppleEventDescriptor, returnType: T.Type) throws -> [U]
-
-func unpack<K: Symbol, V, T: Sequence where T.Iterator.Element == (K, V)>
-(_ desc: NSAppleEventDescriptor, returnType: T.Type) throws -> [K: V]
-
-Unfortunately, when T is a Sequence type, e.g. Array<String>, the Swift
-compiler binds to the first method (the least specific) instead of the most
-specific (the second for Array types, the third for Dictionary types). As a
-result, SwiftAE is unable to unpack Apple events to the type specified by the
-calling code when that type is a Sequence, e.g.:
-
-let names = try TextEdit().documents.name.get() as! Array<String>
-
-will fail with a "SwiftAE doesn't support this Swift type." error, not because
-Array<String> is not supported but because the Swift compiler incorrectly bound
-to the first unpack<T> method which only knows how to unpack atomic types
-(typeInteger, typeUnicodeText, typeLongDateTime, etc), not collection types
-(typeAEList, typeAERecord).
+allow testing and experimentation.
 
 A rough draft of the SwiftAE documentation (ported from AppleEventBridge) is
 included. Expect errors, omissions, etc.
@@ -100,7 +75,7 @@ terminology' options instead. (Be aware that SDEF-based terminology may also
 contain bugs and omissions, in which case use raw four-char codes or correct
 generated glue code by hand.)
 
-SwiftAE requires OS X 10.11 and Swift 3.0 and Xcode 8b4 or later.
+SwiftAE requires OS X 10.11 and Swift 3.0 and Xcode 8.0 or later.
 
 
 ## Etc.

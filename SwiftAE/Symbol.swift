@@ -17,7 +17,7 @@ public class Symbol: Hashable, Equatable, CustomStringConvertible, SelfPacking {
     
     var typeAliasName: String {return "Symbol"}
     
-    public required init(name: String?, code: OSType, type: OSType = typeType, cachedDesc: NSAppleEventDescriptor? = nil) { // TO DO: optional prefix? or is that something for glue subclasses to do? TO DO: name should also be optional, to allow raw codes; Q. should code be optional, to allow Symbol class to be used as-is in dynamic bridges? (problem here would be that initializer requires one or both; if neither given, an error must be raised; might be safest to provide separate convenience initializers for this, or poss. use a subclass that overrides packSelf for dynamic use; also see TODO on descriptor var below - suggest dynamic bridging is best ignored until it's time to cross it)
+    public required init(name: String?, code: OSType, type: OSType = typeType, cachedDesc: NSAppleEventDescriptor? = nil) { // TO DO: optional prefix? or is that something for glue subclasses to do? TO DO: name should also be optional, to allow raw codes; Q. should code be optional, to allow Symbol class to be used as-is in dynamic bridges? (problem here would be that initializer requires one or both; if neither given, an error must be raised; might be safest to provide separate convenience initializers for this, or poss. use a subclass that overrides SwiftAE_packSelf for dynamic use; also see TODO on descriptor var below - suggest dynamic bridging is best ignored until it's time to cross it)
         self.name = name
         self.code = code
         self.type = type
@@ -27,7 +27,7 @@ public class Symbol: Hashable, Equatable, CustomStringConvertible, SelfPacking {
     // convenience constructors for creating Symbols using raw four-char codes
     
     public convenience init(code: String, type: String = "type") {
-        self.init(name: nil, code: UTGetOSTypeFromString(code), type: UTGetOSTypeFromString(type))
+        self.init(name: nil, code: UTGetOSTypeFromString(code as CFString), type: UTGetOSTypeFromString(type as CFString))
     }
     
     public convenience init(code: OSType, type: OSType = typeType) {
@@ -43,17 +43,17 @@ public class Symbol: Hashable, Equatable, CustomStringConvertible, SelfPacking {
         if let name = self.name {
             return "\(self.typeAliasName).\(name)"
         } else {
-            return "\(self.dynamicType)(code:\(formatFourCharCodeString(self.code)),type:\(formatFourCharCodeString(self.type)))"
+            return "\(type(of: self))(code:\(formatFourCharCodeString(self.code)),type:\(formatFourCharCodeString(self.type)))"
         }
     }
     
     // TO DO: implement overrideable class method for unpacking descs as glue-defined (and/or standard) Symbols
     
-    public func packSelf(_ appData: AppData) throws -> NSAppleEventDescriptor {
+    public func SwiftAE_packSelf(_ appData: AppData) throws -> NSAppleEventDescriptor {
         return self.descriptor
     }
     
-    public var descriptor: NSAppleEventDescriptor { // TO DO: problem is ObjectSpecifier.previous()/.next() methods require a 4CC to construct themselves, so they can't call packSelf as they may not have an AppData object to give, nor can they throw errors themselves if packing fails; a solution might be for prev/next specifiers to cache the original Symbol instance themselves, and use that
+    public var descriptor: NSAppleEventDescriptor { // TO DO: problem is ObjectSpecifier.previous()/.next() methods require a 4CC to construct themselves, so they can't call SwiftAE_packSelf as they may not have an AppData object to give, nor can they throw errors themselves if packing fails; a solution might be for prev/next specifiers to cache the original Symbol instance themselves, and use that
         if cachedDesc == nil {
             cachedDesc = FourCharCodeDescriptor(type, code)
         }

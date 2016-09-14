@@ -27,11 +27,11 @@ TO DO:
 
 
 
-- extra problem with Dictionary unpack: returnType: currently only accepts [Symbol:U], not Symbol subclasses (e.g. AESymbol)
+- extra problem with Dictionary unpack: returnType: currently only accepts [Symbol:U], not Symbol subclasses (e.g. AESymbol) // TO DO: check if this is fixed now
 
 
 
-- SpecifierFormatter.format() currently never shows Application(...) root as returned specifiers use generic AppRoot which never contains appData. This doesn't affect subsequent use of those specifiers, since the rest of the specifier consists of SpecifierNodes that do retain the AppData used to unpack them, but does screw up introspection a bit. Simplest fix here might be to pass existing appData as [optional] arg to SpecifierFormatter.format(). Best solution may be for Application constructors to pass weakrefd self to AppData constructor, so that returned specifiers always have targeted absolute root, and rely purely on formatter to deal with abbreviating nested specifiers. (Note: AppleEventBridge never had this issue since all nodes including root were represented by single wrapper class.)
+- SpecifierFormatter.format() currently never shows Application(...) root as returned specifiers use untargeted AppRoot which never contains appData. This doesn't affect subsequent use of those specifiers, since the rest of the specifier consists of SpecifierNodes that do retain the AppData used to unpack them, but does screw up introspection a bit. Simplest fix here might be to pass existing appData as [optional] arg to SpecifierFormatter.format(). Best solution may be for Application constructors to pass weakrefd self to AppData constructor, so that returned specifiers always have targeted absolute root, and rely purely on formatter to deal with abbreviating nested specifiers. (Note: AppleEventBridge never had this issue since all nodes including root were represented by single wrapper class.)
 
 
 
@@ -39,7 +39,7 @@ TO DO:
 
 
 
-- how to support sum types for return values? (this will be problematic given poor type introspection support in Swift2)
+- how to support sum types for return values? (this will be problematic given poor type introspection support in Swift3)
 
 
 

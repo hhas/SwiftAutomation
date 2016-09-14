@@ -95,7 +95,9 @@ public protocol ElementsSpecifierExtension: ObjectSpecifierExtension {}
 extension ElementsSpecifierExtension {
 
     // Note: calling an element[s] selector on an all-elements specifier effectively replaces its original gAll selector data with the new selector data, instead of extending the specifier chain. This ensures that applying any selector to `elements[all]` produces `elements[selector]` (effectively replacing the existing selector), while applying a second selector to `elements[selector]` produces `elements[selector][selector2]` (appending the second selection to the first) as normal; e.g. `first document whose modified is true` would be written as `documents[Its.modified==true].first`.
-    var baseQuery: Selector { return self.selectorData as? AnyObject === gAll ? self.parentSelector : (self as! Selector) } // TO DO: fix (Q. is this TODO still relevant?)
+    var baseQuery: Selector {
+        return self.selectorData as? NSAppleEventDescriptor === gAll ? self.parentSelector : (self as! Selector)
+    } // TO DO: fix (Q. is this TODO still relevant?)
     
     // by-index, by-name, by-test
     public subscript(index: Any) -> ObjectSpecifierType { // TO DO: make sure this doesn't receive TestClause
@@ -199,7 +201,7 @@ extension ApplicationExtension {
     }
     
     public func customRoot(_ object: Any) -> Self { // TO DO: should AppData also provide an option to set default app root object, to be used in building and unpacking _all_ object specifiers?
-        return self.dynamicType.init(rootObject: object, appData: self.appData)
+        return type(of: self).init(rootObject: object, appData: self.appData)
     }
 }
 

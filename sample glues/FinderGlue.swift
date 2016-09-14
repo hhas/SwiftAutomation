@@ -1,6 +1,6 @@
 //
 //  FinderGlue.swift
-//  Finder.app 10.11
+//  Finder.app 10.11.4
 //  SwiftAE.framework 0.1.0
 //  `aeglue -rs Finder.app`
 //
@@ -868,6 +868,8 @@ public typealias FIN = FINSymbol // allows symbols to be written as (e.g.) FIN.n
 
 public protocol FINCommand: SpecifierProtocol {} // provides AE dispatch methods
 
+// Command->Any will be bound when return type can't be inferred, else Command->T
+
 extension FINCommand {
     public func activate(_ directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
@@ -1568,16 +1570,23 @@ extension FINQuery {
 /******************************************************************************/
 // Specifier subclasses add app-specific extensions
 
+// beginning/end/before/after
 public class FINInsertion: InsertionSpecifier, FINCommand {}
 
+
+// by index/name/id/previous/next
+// first/middle/last/any
 public class FINObject: ObjectSpecifier, FINQuery {
     public typealias InsertionSpecifierType = FINInsertion
     public typealias ObjectSpecifierType = FINObject
     public typealias ElementsSpecifierType = FINElements
 }
 
+// by range/test
+// all
 public class FINElements: FINObject, ElementsSpecifierExtension {}
 
+// App/Con/Its
 public class FINRoot: RootSpecifier, FINQuery, RootSpecifierExtension {
     public typealias InsertionSpecifierType = FINInsertion
     public typealias ObjectSpecifierType = FINObject
@@ -1585,10 +1594,11 @@ public class FINRoot: RootSpecifier, FINQuery, RootSpecifierExtension {
     public override class var untargetedAppData: AppData { return gUntargetedAppData }
 }
 
+// application
 public class Finder: FINRoot, ApplicationExtension {
     public convenience init(launchOptions: LaunchOptions = DefaultLaunchOptions, relaunchMode: RelaunchMode = DefaultRelaunchMode) {
-        self.init(rootObject: AppRootDesc, appData: self.dynamicType.untargetedAppData.targetedCopy(
-                                .bundleIdentifier("com.apple.finder", true), launchOptions: launchOptions, relaunchMode: relaunchMode))
+        self.init(rootObject: AppRootDesc, appData: type(of:self).untargetedAppData.targetedCopy(
+                .bundleIdentifier("com.apple.finder", true), launchOptions: launchOptions, relaunchMode: relaunchMode))
     }
 }
 

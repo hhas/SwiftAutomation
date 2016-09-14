@@ -9,8 +9,6 @@ import Foundation
 import AppKit
 
 
-// TO DO: Given the need to feed glue-based command methods solid type info for generics to chew on, might an intermediate class that mediates between glue commands and AppData help solve the type-driven unpacking problem? Or is there anything in conditional protocol mixins that might do the trick? Basically, we need a way to dissect a command method's return type at compile-time, converting that into a set of 'instructions' for constructing user-specified composite types (Array<>, Dictionary<>) given only an NSAppleEventDesccriptor. All the intermediate needs to do is call one of three(?) AppData methods that tell it to unpack the AEDesc as an atom, array, or key-value collection; AppData shouldn't need to know or care about generics or Array/Dictionary element types at all. (The shim might even be passed in to call the appropriate AppData.unpackAs methods recursively and gather the results as it goes through an untyped 'addAny' API.)
-
 
 // TO DO: what about 'missing value'? for a pure Swift bridge, might be better to use nil rather than Symbol.missingValue; note that Swift's compile-time/run-time treatment of `Any` and `nil` is inconsistent (either flawed or buggy)
 
@@ -19,30 +17,24 @@ import AppKit
 
 
 
-// TO DO: improve packing of Arrays and Dictionarys; currently pack() casts to NSArray/NSDictionary, but this fails when object's dynamicType is (e.g.) [Any] (only [AnyObject] is allowed) (it also and screws up type information on Bool, Int, Double values, since Swift's NSNumber bridging is dreadful, though this should be dealt with now by special-case handling of NSNumber instances in pack method)
-
-
- // TO DO: how to handle String keys as well as Symbols in Dictionaries (e.g. define an AERecord<T> type specifically for the task, or subclass/modify Symbol to hold String-based names only as an alternative to OSType-based)?
-
-
-
-// TO DO: split into untargeted and targeted classes? or is current arrangement good enough? (mostly it's about returning appropriate app root in unpack)
+// TO DO: improve packing of Arrays and Dictionarys; currently pack() casts to NSArray/NSDictionary, but this fails when object's dynamicType is (e.g.) [Any] (only [AnyObject] is allowed) (it also and screws up type information on Bool, Int, Double values, since Swift's NSNumber bridging is dreadful, though this should be dealt with now by special-case handling of NSNumber instances in pack method) -- TO DO: best may be to implement SelfPacking protocol on Set, Array, and Dictionary extensions, and let them pack themselves
 
 
 // TO DO: how to allow mixed Symbol/String keys in Dictionarys? (simplest would be for Symbol to represent both, e.g. with [Code]Symbol and UserSymbol subclasses, although that's not entirely elegant)
 
-
-
-// TO DO: when unpacking specifiers, may want to use Application instance, not generic AppRoot, as their app root (while ObjSpec, etc. instances contain AppData, AppRoot does not, so won't display itself as Application and can't be extracted and used as-is); this will require Application to pass itself as weak-ref to AppData's init
-
-
 // TO DO: what about an option to unpack AERecords as glue-defined structs? (this would be fragile, since dictionary-defined class info isn't accurate, but even if it only works half the time it might be useful enough to justify having it as an option on glue generator)
+
+
+// TO DO: split into untargeted and targeted classes? or is current arrangement good enough? (mostly it's about returning appropriate app root in unpack)
+
+// TO DO: when unpacking specifiers, may want to use Application instance, not untargeted AppRoot, as their app root (while ObjSpec, etc. instances contain AppData, AppRoot does not, so won't display itself as Application and can't be extracted and used as-is); this will require Application to pass itself as weak-ref to AppData's init
+
 
 // TO DO: how to support sum types? (suspect this will require better type introspection support in Swift); for now, client code will have to use `Any` and switch on type itself - one possibility would be to define a standard enum that's a sum of all supported types, then use type info to determine which of those cases are allowed when unpacking (that does, however, create a problem where T arg != T result, since enums don't support generics; it would have to be done using a class, but that creates question of how to do varargs); another possibility might be to have an explicit arg that takes set of accepted types, ensuring result's type is always one of those, then return Any; Q. could a user-defined enum that adheres to a framework defined protocol do it? (again, we'd still need to introspect, unless it calls unpack<T> itself - although that prob. wouldn't help since we don't want to coerce unless we have to, otherwise typeType descs could end up as Strings)
 
-// TO DO: option for caller to pass their own 'customUnpack' func via command, to be called when standard unpack fails (either due to unrecognized AE type or inability to coerce to specified Swift type)
+// TO DO: option for caller to pass their own 'customUnpack' func via command, to be called when standard unpack fails (either due to unrecognized AE type or inability to coerce to specified Swift type); this would prob. be done as trailing closure, which takes an AEDesc, required Type, and AppData as arguments and throws or returns value of that type (note that when unpacking list/record, this may be called multiple times, e.g. for the list/record and/or for each item in it)
 
-// TO DO: add `var unpackParentSpecifiers: Bool = false` compatibility flag; note that the simplest and safest (if not the most efficient) way to do this is to call `unpackParentSpecifiers(clearCachedDesc:true)` immediately after unpacking a specifier, though since this option should almost never be needed efficiency isn't a concern (the unpack...Specifier methods could also unroll the specifier chain, of course, but then there'd be two code paths for doing the same thing which isn't ideal maintenance-wise)
+// TO DO: add `var unpackParentSpecifiers: Bool = false` compatibility flag; note that the simplest and safest (if not the most efficient) way to do this is to call the specifier's `unpackParentSpecifiers(clearCachedDesc:true)` method immediately after unpacking it, though since this option should almost never be needed efficiency isn't a concern (the unpack...Specifier methods could also unroll the specifier chain, of course, but then there'd be two code paths for doing the same thing which isn't ideal maintenance-wise)
 
 
 public typealias KeywordParameters = [(name: String?, code: OSType, value: Any)]
@@ -57,6 +49,123 @@ public struct GlueInfo { // Glue-defined specifier, symbol, and formatter classe
     let rootSpecifierType: RootSpecifier.Type
     let symbolType: Symbol.Type
     let formatter: SpecifierFormatter
+}
+
+
+/******************************************************************************/
+// note: not very happy about extending Swift's own structs/classes, but with shoddy generics and shoddier introspection it seems to be the only way to make the problem tractable
+
+
+protocol SelfUnpacking {
+    
+    static func SwiftAE_unpackSelf(_ desc: NSAppleEventDescriptor, appData: AppData) throws -> Self
+    
+}
+
+
+extension Set : SelfPacking, SelfUnpacking {
+    
+    static func SwiftAE_unpackSelf(_ desc: NSAppleEventDescriptor, appData: AppData) throws -> Set<Element> {
+        var result = Set<Element>()
+        switch desc.descriptorType {
+        case typeAEList:
+            for i in 1..<(desc.numberOfItems+1) { // bug workaround for zero-length range: 1...0 throws error, but 1..<1 doesn't
+                do {
+                    result.insert(try appData.unpack(desc.atIndex(i)!, returnType: Element.self))
+                } catch {
+                    throw UnpackError(appData: appData, descriptor: desc, type: self, message: "Can't unpack item \(i) of list descriptor.")
+                }
+            }
+        default:
+            result.insert(try appData.unpack(desc, returnType: Element.self))
+        }
+        return result
+    }
+    
+    public func SwiftAE_packSelf(_ appData: AppData) throws -> NSAppleEventDescriptor {
+        let desc = NSAppleEventDescriptor.list()
+        for item in self { desc.insert(try appData.pack(item), at: 0) }
+        return desc
+    }
+}
+
+
+extension Array : SelfPacking, SelfUnpacking {
+    
+    static func SwiftAE_unpackSelf(_ desc: NSAppleEventDescriptor, appData: AppData) throws -> [Element] {
+        switch desc.descriptorType {
+        case typeAEList:
+            var result = [Element]()
+            for i in 1..<(desc.numberOfItems+1) { // bug workaround for zero-length range: 1...0 throws error, but 1..<1 doesn't
+                do {
+                    result.append(try appData.unpack(desc.atIndex(i)!, returnType: Element.self))
+                } catch {
+                    throw UnpackError(appData: appData, descriptor: desc, type: self,
+                                      message: "Can't unpack item \(i) of list descriptor.")
+                }
+            }
+            return result
+        case typeQDPoint, typeQDRectangle, typeRGBColor: // short[2], short[4], unsigned short[3] (used by older Carbon apps; Cocoa apps use lists)
+            // note: coercing these types to typeAEList and unpacking those would be simpler, but while AEM provides coercion handlers for coercing e.g. typeAEList to typeQDPoint, it doesn't provide handlers for the reverse (coercing a typeQDPoint desc to typeAEList merely produces a single-item AEList containing the original typeQDPoint, not a 2-item AEList of typeSInt16)
+            if Element.self == Int.self { // common case
+                var result = [Element]()
+                let data = desc.data
+                for i in 0..<([typeQDPoint:2, typeQDRectangle:4, typeRGBColor:3][desc.descriptorType]!) {
+                    var n: Int16 = 0
+                    (data as NSData).getBytes(&n, range: NSRange(location: i*MemoryLayout<Int16>.size, length: MemoryLayout<Int16>.size))
+                    result.append(Int(n) as! Element) // note: can't use Element(n) here as Swift doesn't define integer constructors in IntegerType protocol (but does for FloatingPointType)
+                }
+                return result
+            } else { // for any other Element, unpack as Int then repack as AEList of typeSInt32, and [try to] unpack that as [Element] (bit lazy, but will do)
+                let array = try appData.unpack(desc, returnType: [Int].self)
+                return try self.SwiftAE_unpackSelf(try appData.pack(array), appData: appData)
+            }
+        default:
+            return [try appData.unpack(desc, returnType: Element.self)]
+        }
+    }
+    
+    public func SwiftAE_packSelf(_ appData: AppData) throws -> NSAppleEventDescriptor {
+        let desc = NSAppleEventDescriptor.list()
+        for item in self { desc.insert(try appData.pack(item), at: 0) }
+        return desc
+    }
+}
+
+
+extension Dictionary : SelfPacking, SelfUnpacking {
+    
+    static func SwiftAE_unpackSelf(_ desc: NSAppleEventDescriptor, appData: AppData) throws -> [Key:Value] {
+        guard let recordDesc = desc.coerce(toDescriptorType: typeAERecord) else {
+            throw UnpackError(appData: appData, descriptor: desc, type: self, message: "Not a record.")
+        }
+        var result = [Key:Value]()
+        for i in 1..<(recordDesc.numberOfItems+1) {
+            guard let key = appData.unpackAEProperty(recordDesc.keywordForDescriptor(at: i)) as? Key else { // TO DO: FIX (part of the problem is that record keys may be 4CCs [typeProperty] or strings [to be implemented]; since Swift enums can't auto-box, simplest may be for Symbol class to encompass both)
+                throw UnpackError(appData: appData, descriptor: desc, type: Key.self,
+                                  message: "Can't unpack record key as \(Key.self).")
+            }
+            do {
+                result[key] = try appData.unpack(recordDesc.atIndex(i)!, returnType: Value.self)
+            } catch {
+                throw UnpackError(appData: appData, descriptor: desc, type: Value.self,
+                                  message: "Can't unpack \(key) property of record descriptor as \(Value.self).")
+            }
+        }
+        return result
+    }
+    
+    public func SwiftAE_packSelf(_ appData: AppData) throws -> NSAppleEventDescriptor {
+        let desc = NSAppleEventDescriptor.record()
+        for (key, value) in self {
+            if let keySymbol = key as? Symbol {
+                desc.setDescriptor(try appData.pack(value), forKeyword: keySymbol.code)
+            } else {
+                throw NotImplementedError(message: "non-Symbol Dictionary keys are currently not supported.") // for now, only Symbol keys are supported (still to decide how string keys should be dealt with)
+            }
+        }
+        return desc
+    }
 }
 
 
@@ -107,7 +216,7 @@ public class AppData {
     
     // create a targeted copy of a [typically untargeted] AppData instance; Application inits should always use this to create targeted AppData instances
     public func targetedCopy(_ target: TargetApplication, launchOptions: LaunchOptions, relaunchMode: RelaunchMode) -> Self {
-        return self.dynamicType.init(target: target, launchOptions: launchOptions, relaunchMode: relaunchMode,
+        return type(of: self).init(target: target, launchOptions: launchOptions, relaunchMode: relaunchMode,
                                                         glueInfo: self.glueInfo, rootObjects: self.rootObjects)
     }
     
@@ -117,8 +226,8 @@ public class AppData {
     
     let MissingValueDesc = NSAppleEventDescriptor(typeCode: SwiftAE_cMissingValue)
     
-    private let nsBooleanType = NSNumber(value: true).dynamicType
-    private let nsNumberType = NSNumber(value: 1).dynamicType
+    private let nsBooleanType = type(of: NSNumber(value: true))
+    private let nsNumberType = type(of: NSNumber(value: 1))
     
    
     
@@ -126,12 +235,12 @@ public class AppData {
 //        print("PACKING: \(object) \(object.dynamicType)")
         
         // note: Swift's Bool/Int/Double<->NSNumber bridging sucks, so if an NSNumber instance is received it must be dealt with specially
-        if value.dynamicType == self.nsBooleanType || value is DarwinBoolean { // test for NSNumber(bool:) or Swift Bool (true/false)
+        if type(of: value) == self.nsBooleanType || value is DarwinBoolean { // test for NSNumber(bool:) or Swift Bool (true/false)
             // important: 
             // - the first test assumes NSNumber class cluster always returns an instance of __NSCFBooleanType (or at least something that can be distinguished from all other NSNumbers)
             // - `value is Bool/Int/Double` always returns true for any NSNumber, so must not be used; however, checking for BooleanType returns true only for Bool (or other Swift types that implement BooleanType protocol) so should be safe
             return NSAppleEventDescriptor(boolean: value as! Bool)
-        } else if value.dynamicType == self.nsNumberType { // test for any other NSNumber (but not Swift numeric types as those will be dealt with below)
+        } else if type(of: value) == self.nsNumberType { // test for any other NSNumber (but not Swift numeric types as those will be dealt with below)
             let numberObj = value as! NSNumber
             switch numberObj.objCType.pointee as Int8 {
             case 98, 99, 67, 115, 83, 105: // (b, c, C, s, S, i) anything that will fit into SInt32 is packed as typeSInt32 for compatibility
@@ -139,21 +248,21 @@ public class AppData {
             case 73: // (I) UInt32
                 var val = numberObj.uint32Value
                 if self.isInt64Compatible {
-                    return NSAppleEventDescriptor(descriptorType: typeUInt32, bytes: &val, length: sizeofValue(val))!
+                    return NSAppleEventDescriptor(descriptorType: typeUInt32, bytes: &val, length: MemoryLayout<UInt32>.size)!
                 } else if val <= UInt32(Int32.max) {
                     return NSAppleEventDescriptor(int32: Int32(val))
                 } // else pack as double
             case 108, 113: // (l, q) SInt64
                 var val = numberObj.int64Value
                 if self.isInt64Compatible {
-                    return NSAppleEventDescriptor(descriptorType: typeSInt64, bytes: &val, length: sizeofValue(val))!
+                    return NSAppleEventDescriptor(descriptorType: typeSInt64, bytes: &val, length: MemoryLayout<Int64>.size)!
                 } else if val >= Int64(Int32.min) && val <= Int64(Int32.max) {
                     return NSAppleEventDescriptor(int32: Int32(val))
                 } // else pack as double, possibly with some loss of precision
             case 76, 81: // (L, Q) UInt64
                 var val = numberObj.uint64Value
                 if self.isInt64Compatible {
-                    return NSAppleEventDescriptor(descriptorType: typeUInt64, bytes: &val, length: sizeofValue(val))!
+                    return NSAppleEventDescriptor(descriptorType: typeUInt64, bytes: &val, length: MemoryLayout<UInt64>.size)!
                 } else if val <= UInt64(Int32.max) {
                     return NSAppleEventDescriptor(int32: Int32(val))
                 } // else pack as double, possibly with some loss of precision
@@ -169,12 +278,12 @@ public class AppData {
         case let obj as NSAppleEventDescriptor:
             return obj
         case let val as SelfPacking:
-            return try val.packSelf(self)
+            return try val.SwiftAE_packSelf(self)
         case var val as Int:
             if Int(Int32.min) <= val && val <= Int(Int32.max) {
                 return NSAppleEventDescriptor(int32: Int32(val))
             } else if self.isInt64Compatible {
-                return NSAppleEventDescriptor(descriptorType: typeSInt64, bytes: &val, length: sizeofValue(val))!
+                return NSAppleEventDescriptor(descriptorType: typeSInt64, bytes: &val, length: MemoryLayout<Int>.size)!
             } else {
                 return NSAppleEventDescriptor(double: Double(val)) // caution: may be some loss of precision
             }
@@ -186,6 +295,9 @@ public class AppData {
           return NSAppleEventDescriptor(date: obj)
         case let obj as URL:
           return NSAppleEventDescriptor(fileURL: obj)
+            
+            
+        // TO DO: will following cases still be needed? (depends on how transparent Swift's ObjC bridging is)
         case let obj as NSArray: // HACK; TO DO: 'let obj as [Any]' doesn't work (Swift refuses to cast from Any to [Any] for some reason); note: casting to NSArray/NSDictionary will screw up Bool/Int/Double representations (which get bridged to NSNumber, though hopefully the above NSNumber-specific logic addresses that now), and will fail to match if object's dynamic type is `[Any]` (since non-objects can't cross Swift-ObjC bridge), so this isn't a permanent solution
             let desc = NSAppleEventDescriptor.list()
             for item in obj { desc.insert(try self.pack(item), at: 0) }
@@ -204,7 +316,7 @@ public class AppData {
             if val <= UInt(Int32.max) {
                 return NSAppleEventDescriptor(int32: Int32(val))
             } else if self.isInt64Compatible {
-                return NSAppleEventDescriptor(descriptorType: typeUInt32, bytes: &val, length: sizeofValue(val))!
+                return NSAppleEventDescriptor(descriptorType: typeUInt32, bytes: &val, length: MemoryLayout<UInt>.size)!
             } else {
                 return NSAppleEventDescriptor(double: Double(val))
             }
@@ -220,7 +332,7 @@ public class AppData {
             return NSAppleEventDescriptor(int32: Int32(val))
         case var val as UInt32:
             if self.isInt64Compatible {
-                return NSAppleEventDescriptor(descriptorType: typeUInt32, bytes: &val, length: sizeofValue(val))!
+                return NSAppleEventDescriptor(descriptorType: typeUInt32, bytes: &val, length: MemoryLayout<UInt32>.size)!
             } else if val <= UInt32(Int32.max) {
                 return NSAppleEventDescriptor(int32: Int32(val))
             } else {
@@ -228,7 +340,7 @@ public class AppData {
             }
         case var val as Int64:
             if self.isInt64Compatible {
-                return NSAppleEventDescriptor(descriptorType: typeSInt64, bytes: &val, length: sizeofValue(val))!
+                return NSAppleEventDescriptor(descriptorType: typeSInt64, bytes: &val, length: MemoryLayout<Int64>.size)!
             } else if val >= Int64(Int32.min) && val <= Int64(Int32.max) {
                 return NSAppleEventDescriptor(int32: Int32(val))
             } else {
@@ -236,7 +348,7 @@ public class AppData {
             }
         case var val as UInt64:
             if self.isInt64Compatible {
-                return NSAppleEventDescriptor(descriptorType: typeUInt64, bytes: &val, length: sizeofValue(val))!
+                return NSAppleEventDescriptor(descriptorType: typeUInt64, bytes: &val, length: MemoryLayout<UInt64>.size)!
             } else if val <= UInt64(Int32.max) {
                 return NSAppleEventDescriptor(int32: Int32(val))
             } else {
@@ -252,64 +364,7 @@ public class AppData {
     /******************************************************************************/
     // Convert an Apple event descriptor to the specified Swift type, coercing it as necessary
     
-    // TO DO: FIX!!!! (how? Swift generics are dumb as dirt and refuse to cooperate)
-    
-    // unpack descriptor as Array
-    public func unpack<T: Sequence, U where T.Iterator.Element == U>(_ desc: NSAppleEventDescriptor, returnType: T.Type) throws -> [U] {
-        // TO DO: using `returnType:[T].Type`, `returnType:[Symbol:T].Type`, etc. in overloads doesn't work, as swiftc seems to choose the least-specific signature instead of the most-specific; thus when caller requests e.g. Array<…>, the compiler dispatches to `unpack<T>(desc: NSAppleEventDescriptor, returnType: T.Type) throws -> T` instead. Using an identical `returnType:T.Type` parameter in all overloads and using constraints to differentiate does seem to work to some extent, with the compiler choosing the most specific option, when the call specifies the type itself, e.g. `unpack(desc,returnType:[String].self)` will dispatch to this method; however, `unpack(desc,returnType:X.self)` always dispatches to `unpack<T>(...,returnType:T.Type)->T` even when X is a Sequence type.
-        print("* unpack<T:SequenceType of U>(desc,T.Type)->[U]; T = \(T.self)")
-        switch desc.descriptorType {
-        case typeAEList:
-            var result = [U]()
-            for i in 1..<(desc.numberOfItems+1) { // bug workaround for zero-length range: 1...0 throws error, but 1..<1 doesn't
-                do {
-                    result.append(try self.unpack(desc.atIndex(i)!, returnType: U.self))
-                } catch {
-                    throw UnpackError(appData: self, descriptor: desc, type: [U].self, message: "Can't unpack item \(index).")
-                }
-            }
-            return result
-        case typeQDPoint, typeQDRectangle, typeRGBColor: // short[2], short[4], unsigned short[3] (used by older Carbon apps; Cocoa apps use lists)
-            // note: coercing these types to typeAEList and unpacking those would be simpler, but while AEM provides coercion handlers for coercing e.g. typeAEList to typeQDPoint, it doesn't provide handlers for the reverse (coercing a typeQDPoint desc to typeAEList merely produces a single-item AEList containing the original typeQDPoint, not a 2-item AEList of typeSInt16)
-            if U.self == Int.self { // common case
-                var result = [U]()
-                let data = desc.data
-                for i in 0..<([typeQDPoint:2, typeQDRectangle:4, typeRGBColor:3][desc.descriptorType]!) {
-                    var n: Int16 = 0
-                    (data as NSData).getBytes(&n, range: NSRange(location: i*sizeofValue(n), length: sizeofValue(n)))
-                    result.append(Int(n) as! U) // note: can't use U(n) here as Swift doesn't define integer constructors in IntegerType protocol (but does for FloatingPointType)
-                }
-                return result
-            } else { // for any other U, repack as AEList of typeSInt32, and [try to] unpack that as [U]
-                return try unpack(try pack(try unpack(desc, returnType: [Int].self)), returnType: [U].self)
-            }
-        default:
-            return [try self.unpack(desc, returnType: U.self)]
-        }
-    }
-    
-    // unpack descriptor as Dictionary
-    public func unpack<K: Symbol, V, T: Sequence where T.Iterator.Element == (K, V)>(_ desc: NSAppleEventDescriptor, returnType: T.Type) throws -> [K: V] {
-        print("* unpack<K:Symbol, V, T:SequenceType of (K,V)>(desc,T.Type)->[K,V]; T = \(T.self)")
-        if let recordDesc = desc.coerce(toDescriptorType: typeAERecord) {
-            var result = [K:V]()
-            for i in 1..<(recordDesc.numberOfItems+1) {
-                let key = self.unpackAEProperty(recordDesc.keywordForDescriptor(at: i)) as! K
-                do {
-                    result[key] = try self.unpack(recordDesc.atIndex(i)!, returnType: V.self)
-                } catch {
-                    throw UnpackError(appData: self, descriptor: desc, type: T.self, message: "Can't unpack item \(index).")
-                }
-            }
-            return result
-        } else {
-            throw UnpackError(appData: self, descriptor: desc, type: T.self, message: "Not a record.")
-        }
-    }
-    
-            
-    public func unpack<T>(_ desc: NSAppleEventDescriptor, returnType: T.Type) throws -> T { // unpack desc as atomic type (Int, String, Specifier, etc)
-        print("* unpack<T>(desc,T.Type)->T; T = \(T.self)")
+    public func unpack<T>(_ desc: NSAppleEventDescriptor, returnType: T.Type) throws -> T {
         if T.self == Any.self || T.self == AnyObject.self {
             return try self.unpack(desc) as! T
         } else if T.self == Bool.self {
@@ -319,7 +374,7 @@ public class AppData {
                 return Int(desc.int32Value) as! T
             } else if let intDesc = desc.coerce(toDescriptorType: typeSInt64) {
                 var result: Int64 = 0
-                (intDesc.data as NSData).getBytes(&result, length: sizeofValue(result))
+                (intDesc.data as NSData).getBytes(&result, length: MemoryLayout<Int64>.size)
                 return Int(result) as! T
             }
         } else if T.self == Double.self { // TO DO: what about Float (typeIEEE32BitFloatingPoint)?
@@ -330,14 +385,17 @@ public class AppData {
             if let result = desc.stringValue { // TO DO: fail if desc is typeType, typeEnumerated, etc.? or convert to name [if known] and return that? (i.e. typeType, etc. can always coerce to typeUnicodeText, but this is misleading and could cause problems e.g. when a value may be string or missingValue)
                 return result as! T
             }
+        } else if let t = T.self as? SelfUnpacking.Type { // Array, Dictionary
+            return try t.SwiftAE_unpackSelf(desc, appData: self) as! T
         } else if T.self is Selector.Type { // note: user typically specifies exact class ([PREFIX][Object|Elements]Specifier)
             if let result = try self.unpack(desc) as? T { // specifiers can be composed of several AE types, so unpack first then check type
                 return result
             }
         } else if T.self is Symbol.Type {
-            if desc.coerce(toDescriptorType: typeType) != nil { // AEM happily coerces between typeType, typeEnum, typeProperty, etc., so use that to check suitability rather than check for specific hardcoded descriptorTypes
-                return self.unpackSymbol(desc) as! T
+            if desc.coerce(toDescriptorType: typeType) == nil { // AEM happily coerces between typeType, typeEnum, typeProperty, etc., so use that to check suitability rather than check for specific hardcoded descriptorTypes
+                throw UnpackError(appData: self, descriptor: desc, type: T.self, message: "Can't coerce descriptor to symbol: \(desc)")
             }
+            return self.unpackSymbol(desc) as! T
         } else if T.self == Date.self {
              if let result = desc.dateValue {
                  return result as! T
@@ -348,11 +406,9 @@ public class AppData {
              }
         } else if T.self == NSAppleEventDescriptor.self {
             return desc as! T
-        } else {
-//            print(T.self)
-            throw UnpackError(appData: self, descriptor: desc, type: T.self, message: "SwiftAE doesn't support this Swift type.")
         }
-        throw UnpackError(appData: self, descriptor: desc, type: T.self) // desc couldn't be coerced to the specified type
+        // desc couldn't be coerced to the specified type
+        throw UnpackError(appData: self, descriptor: desc, type: T.self, message: "SwiftAE doesn't support type \(T.self).")
     }
     
     
@@ -360,7 +416,6 @@ public class AppData {
     // Convert an Apple event descriptor to its preferred Swift type, as determined by its descriptorType
     
     public func unpack(_ desc: NSAppleEventDescriptor) throws -> Any { // TO DO: make sure Optional(VALUE) isn't returned, as that allows the possibility of .None (i.e. nil) as well; whereas nil should only be returned if 'cMissingValue' is mapped to nil (and that has yet to be decided on); e.g. use Any!, or will that mess up type signatures elsewhere?
-        print("* unpack(desc)->Any \(formatFourCharCodeString(desc.descriptorType))")
         switch desc.descriptorType {
             // common AE types
         case typeTrue, typeFalse, typeBoolean:
@@ -374,10 +429,9 @@ public class AppData {
         case typeLongDateTime:
             return desc.dateValue ?? desc // ditto
         case typeAEList:
-            print("* `unpack(desc)->Any` is calling `unpack<T>(desc,[Any].self) as [Any]`")
-            return try self.unpack(desc, returnType: [Any].self) as [Any]
+            return try Array.SwiftAE_unpackSelf(desc, appData: self) as [Any]
         case typeAERecord:
-            return try self.unpack(desc, returnType: [Symbol:Any].self)
+            return try Dictionary.SwiftAE_unpackSelf(desc, appData: self) as [Symbol:Any]
         case typeAlias, typeBookmarkData, typeFileURL, typeFSRef, SwiftAE_typeFSS:
             return desc.fileURLValue ?? desc // ditto
         case typeType, typeEnumerated, typeProperty, typeKeyword:
@@ -402,11 +456,11 @@ public class AppData {
             // less common types
         case typeSInt64:
             var result: Int64 = 0
-            (desc.data as NSData).getBytes(&result, length: sizeofValue(result))
+            (desc.data as NSData).getBytes(&result, length: MemoryLayout<Int64>.size)
             return Int(result)
         case typeUInt64, typeUInt32, typeUInt16:
             var result: UInt64 = 0
-            (desc.coerce(toDescriptorType: typeUInt64)!.data as NSData).getBytes(&result, length: sizeofValue(result))
+            (desc.coerce(toDescriptorType: typeUInt64)!.data as NSData).getBytes(&result, length: MemoryLayout<UInt64>.size)
             return UInt(result)
         case typeQDPoint, typeQDRectangle, typeRGBColor:
             return try self.unpack(desc, returnType: [Int].self)
@@ -562,13 +616,13 @@ public class AppData {
                                            returnID: AEReturnID(kAutoGenerateReturnID), transactionID: AETransactionID(kAnyTransactionID)) // workarounds: Carbon constants are incorrectly mapped to Int, and NSAppleEventDescriptor.h currently doesn't define its own
         // pack its keyword parameters
         for (_, code, value) in keywordParameters {
-            if value as? AnyObject !== NoParameter {
+            if value as? Parameters != NoParameter {
                 // TO DO: catch pack errors and report (simplest to capture all input and error info in CommandError, and only process/format if displayed)
                 event.setDescriptor(try self.pack(value), forKeyword: code)
             }
         }
         // pack event's direct parameter and/or subject attribute
-        let hasDirectParameter = (directParameter as? AnyObject) !== NoParameter
+        let hasDirectParameter = directParameter as? Parameters != NoParameter
         if hasDirectParameter { // if the command includes a direct parameter, pack that normally as its direct param
             event.setParam(try self.pack(directParameter), forKeyword: keyDirectObject)
         }
@@ -640,11 +694,10 @@ public class AppData {
             // if rawReply && (T.self is NSAppleEventDescriptor.Type || T.self is Any.Type) { // TO DO: need explicit 'rawReply' arg/flag
             //    return replyEvent as! T
             // }
-            if replyEvent.paramDescriptor(forKeyword: keyErrorNumber) ?? 0 != 0 { // check if an application error occurred
+            if replyEvent.paramDescriptor(forKeyword: keyErrorNumber)?.int32Value ?? 0 != 0 { // check if an application error occurred
                 throw CommandError(appData: self, event: event, replyEvent: replyEvent)
             } else if let resultDesc = replyEvent.paramDescriptor(forKeyword: keyDirectObject) {
                 do {
-                    print("* Unpacking reply as \(T.self)")
                     return try self.unpack(resultDesc, returnType: T.self) // TO DO: if this fails, rethrow as CommandError
                 } catch {
                     throw CommandError(appData: self, event: event, replyEvent: replyEvent, parentError: error)

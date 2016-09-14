@@ -98,7 +98,7 @@ public class DynamicAppData: AppData {
             throw TerminologyError("Unsupported address type: \(formatFourCharCodeString(addressDesc.descriptorType))")
         }
         var pid: pid_t = 0
-        (addressDesc.data as NSData).getBytes(&pid, length: sizeof(pid_t.self))
+        (addressDesc.data as NSData).getBytes(&pid, length: MemoryLayout<pid_t>.size)
         guard let applicationURL = NSRunningApplication(processIdentifier: pid)?.bundleURL else {
             throw TerminologyError("Can't get path to application bundle (PID: \(pid)).")
         }
@@ -127,7 +127,7 @@ public class DynamicAppData: AppData {
     }
     
     public override func targetedCopy(_ target: TargetApplication, launchOptions: LaunchOptions, relaunchMode: RelaunchMode) -> Self {
-        let appData = self.dynamicType.init(target: target, launchOptions: launchOptions, relaunchMode: relaunchMode,
+        let appData = type(of: self).init(target: target, launchOptions: launchOptions, relaunchMode: relaunchMode,
                                             glueInfo: self.glueInfo, rootObjects: self.rootObjects)
         appData.glueSpec = self.glueSpec
         appData.glueTable = self.glueTable
@@ -183,22 +183,22 @@ public struct AppleEventDescription { // TO DO: split AE unpacking from CommandT
         // unpack subject attribute and/or direct parameter, if given
         if let desc = event.attributeDescriptor(forKeyword: SwiftAE_keySubjectAttr) {
             if desc.descriptorType != typeNull { // typeNull = root application object
-                self.subject = try? appData.unpack(desc) ?? desc
+                self.subject = (try? appData.unpack(desc)) ?? desc
             }
         }
         if let desc = event.paramDescriptor(forKeyword: keyDirectObject) {
-            self.directParameter = try? appData.unpack(desc) ?? desc
+            self.directParameter = (try? appData.unpack(desc)) ?? desc
         }
         // unpack `as` parameter, if given // TO DO: commands currently don't support this as std arg
         if let desc = event.paramDescriptor(forKeyword: keyAERequestedType) {
-            self.requestedType = try? appData.unpack(desc) ?? desc
+            self.requestedType = (try? appData.unpack(desc)) ?? desc
         }
         // unpack keyword parameters
         if commandInfo != nil {
             self.keywordParameters = []
             for paramInfo in commandInfo!.orderedParameters { // this ignores parameters that don't have a keyword name
                 if let desc = event.paramDescriptor(forKeyword: paramInfo.code) {
-                    let value = formatValue(try? appData.unpack(desc) ?? desc)
+                    let value = formatValue((try? appData.unpack(desc)) ?? desc)
                     self.keywordParameters!.append((paramInfo.name, value))
                 }
             }
@@ -212,7 +212,7 @@ public struct AppleEventDescription { // TO DO: split AE unpacking from CommandT
             for i in 1..<(event.numberOfItems+1) {
                 let desc = event.atIndex(i)!
                 //if ![keyDirectObject, keyAERequestedType].contains(desc.descriptorType) {
-                self.rawParameters[event.keywordForDescriptor(at: i)] = try? appData.unpack(desc) ?? desc
+                self.rawParameters[event.keywordForDescriptor(at: i)] = (try? appData.unpack(desc)) ?? desc
                 //}
             }
         } else {
@@ -233,7 +233,7 @@ public struct AppleEventDescription { // TO DO: split AE unpacking from CommandT
         }
         if let considersAndIgnoresDesc = event.attributeDescriptor(forKeyword: SwiftAE_enumConsidsAndIgnores) {
             var considersAndIgnores: UInt32 = 0
-            (considersAndIgnoresDesc.data as NSData).getBytes(&considersAndIgnores, length: sizeof(UInt32.self))
+            (considersAndIgnoresDesc.data as NSData).getBytes(&considersAndIgnores, length: MemoryLayout<UInt32>.size)
             if considersAndIgnores != gDefaultConsidersIgnoresMask {
                 for (option, _, considersFlag, ignoresFlag) in gConsiderationsTable {
                     if option == .case {
@@ -255,7 +255,7 @@ public struct AppleEventDescription { // TO DO: split AE unpacking from CommandT
 extension SpecifierFormatter {
     
     public func formatAppleEvent(_ eventDescription: AppleEventDescription, applicationObject: RootSpecifier) -> String {
-        var parentSpecifier = String(applicationObject)
+        var parentSpecifier = String(describing: applicationObject)
         var args: [String] = []
         if let commandName = eventDescription.name {
             if eventDescription.subject != nil && eventDescription.directParameter != nil {

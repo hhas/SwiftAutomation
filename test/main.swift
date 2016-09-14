@@ -8,7 +8,7 @@
 //
 
 import Foundation
-import SwiftAE
+//import SwiftAE
 
 
 let te = TextEdit(name:"TextEdit")
@@ -52,49 +52,53 @@ do {
     
     print(try (result1 as! TEDObject).text.get())
 
+    */
     
     // get name of document 1
     
     // - using four-char code strings
-    //let result2 = try te.sendAppleEvent("core", "getd", ["----": te.elements("docu")[1].property("pnam")])
-    //print(result2)
+    let result2 = try te.sendAppleEvent("core", "getd", ["----": te.elements("docu")[1].property("pnam")])
+    print(result2)
     
     // - using glue-defined terminology
     let result3 = try te.get(TEDApp.documents[1].name)
     print(result3)
-    */
     
-//    let result3a: Any = try te.documents[1].name.get() // convenience syntax for the above
-//    print(result3a)
+    let result3a: Any = try te.documents[1].name.get() // convenience syntax for the above
+    print(result3a)
     
     
     // get name of document 1 -- this works, returning a string value
     print("\nTEST: TextEdit().documents[1].name.get() as String")
-    let result5: String = try te.documents[1].name.get() // unpack get command's result as String; note: generic versions of commands are currently disabled as they don't yet work correctly
+    let result5: String = try te.documents[1].name.get()
     print("=> \(result5)")
     
-    // get name of every document (note: currently this example is only good for demo purposes: the `get` method result's dynamicType is Array<String>, but its static type is Any, and  Swift can't cast Any to Array<...> without falling over, so this result can't be used for anything useful; this is another reason why generic versions of commands are needed, but getting those to work right is a whole 'nother problem again...)
+    // get name of every document
     
-//    print("\nTEST: TextEdit().documents.name.get() as Any")
-//    let result4b = try te.documents.name.get() as Any
-//    print("=> \(result4b)")
+    print("\nTEST: TextEdit().documents.name.get() as Any")
+    let result4b = try te.documents.name.get() as Any
+    print("=> \(result4b)")
     
-    // get name of every document -- this fails, as Swift's crappy generics bind the wrong unpack<> method
+    // get name of every document
     print("\nTEST: TextEdit().documents.name.get() as [String]")
     let result4 = try te.documents.name.get() as [String] // unpack the `get` command's result as Array of String
     print("=> \(result4)")
     
     // same as above
-//    let result6: [String] = try te.documents.name.get() // note: same as above (AppData currently can't unpack collections correctly due to crappy generics)
-//    print("=> \(result6)")
+    let result6: [String] = try te.documents.name.get()
+    print("=> \(result6)")
     
     
     // get every file of folder "Documents" of home whose name extension is "txt"
     print("\nTEST: Finder().home.folders[\"Documents\"].files[FINIts.nameExtension == \"txt\"].name.get()")
     let q = Finder().home.folders["Documents"].files[FINIts.nameExtension == "txt"].name
-    print(q)
+    print("// \(q)")
     let result4a = try q.get()
     print("=> \(result4a)")
+    
+    print("\nTEST: Finder().home.folders[\"Documents\"].files[FINIts.nameExtension == \"txt\"].properties.get()")
+    let result4c = try Finder().home.folders["Documents"].files[FINIts.nameExtension == "txt"].properties.get() as [[Symbol:Any]]
+    print("=> \(result4c)")
     
 
 //    try te.documents.close(saving: TED.no) // close every document saving no
@@ -235,5 +239,7 @@ do {
 }
 
 */
+
+print()
 
 
