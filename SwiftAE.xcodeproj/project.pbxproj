@@ -341,6 +341,7 @@
 				4F0E39951BADD58500FF2A96 /* EventFormatter.swift */,
 				4FFF5D491D89A26C008ED4F5 /* SwiftAEGlueTemplate.swift */,
 				4F0E396D1BAA9BA700FF2A96 /* StaticGlueBuilder.swift */,
+				4F2645AB1BA4F27700256402 /* AEApplicationGlue.swift */,
 			);
 			name = "terminology support";
 			sourceTree = "<group>";
@@ -428,12 +429,11 @@
 				4F0E38FF1BA76C8300FF2A96 /* doc-source */,
 				4F0E39311BA864A400FF2A96 /* swiftae-manual */,
 				4F2645A61BA3F58F00256402 /* bin */,
-				4F63C4261B7CF06E000D74EE /* SwiftAE */,
+				4F63C4261B7CF06E000D74EE /* SwiftAutomation */,
 				4F2645B31BA59A2000256402 /* sample glues */,
 				4F0E39661BAA98A900FF2A96 /* aeglue */,
 				4F63C4321B7CF13E000D74EE /* test */,
 				4F0E399D1BAF7A7400FF2A96 /* SwiftAETranslate */,
-				4FFF5D251D899F0D008ED4F5 /* SwiftAutomation */,
 				4F2645A31BA37C2B00256402 /* Frameworks */,
 				4F63C4251B7CF06E000D74EE /* Products */,
 			);
@@ -450,15 +450,16 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		4F63C4261B7CF06E000D74EE /* SwiftAE */ = {
+		4F63C4261B7CF06E000D74EE /* SwiftAutomation */ = {
 			isa = PBXGroup;
 			children = (
+				4FFF5D261D899F0D008ED4F5 /* SwiftAutomation.h */,
+				4FFF5D271D899F0D008ED4F5 /* Info.plist */,
 				4F63C4271B7CF06E000D74EE /* main.swift */,
 				4F0E396C1BAA98D700FF2A96 /* bridge */,
 				4F0E39471BA86B6800FF2A96 /* terminology support */,
-				4F2645AB1BA4F27700256402 /* AEApplicationGlue.swift */,
 			);
-			path = SwiftAE;
+			path = SwiftAutomation;
 			sourceTree = "<group>";
 		};
 		4F63C4321B7CF13E000D74EE /* test */ = {
@@ -468,15 +469,6 @@
 			);
 			name = test;
 			path = SwiftAE;
-			sourceTree = "<group>";
-		};
-		4FFF5D251D899F0D008ED4F5 /* SwiftAutomation */ = {
-			isa = PBXGroup;
-			children = (
-				4FFF5D261D899F0D008ED4F5 /* SwiftAutomation.h */,
-				4FFF5D271D899F0D008ED4F5 /* Info.plist */,
-			);
-			path = SwiftAutomation;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -1017,6 +1009,7 @@
 				4FFF5D2F1D899F0D008ED4F5 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
