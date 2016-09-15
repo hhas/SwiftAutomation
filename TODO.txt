@@ -1,40 +1,21 @@
 TO DO:
 
 
-- In 10.11/Xcode7 GM, the following convenience init crashes with EXC_BAD_ACCESS immediately on returning from self.init(...):
+- For convenience, generated glues include a convenience initializer containing the bundleID for the target application, allowing user to write [e.g.] `TextEdit()` as shorthand for `TextEdit(bundleIndentifier: "com.apple.TextEdit")`. However, in Swift3/Xcode8, if the glue's application class uses the following convenience initializer, it crashes with EXC_BAD_ACCESS, presumably due to a Swift bug:
 
         public class TextEdit: TEDRoot, ApplicationExtension {
+
             public convenience init(launchOptions: LaunchOptions = DefaultLaunchOptions, relaunchMode: RelaunchMode = DefaultRelaunchMode) {
-                self.init(bundleIdentifier: "com.apple.TextEdit", launchOptions: launchOptions, relaunchMode: relaunchMode)
+                // call the by-bundleID convenience initializer defined in ApplicationExtension
+                self.init(bundleIdentifier: "com.apple.TextEdit", launchOptions: launchOptions, relaunchMode: relaunchMode) // CRASHES
             }
         }
 
-    Looks like problem is with calling inits in TextEdit class's protocol extension from TextEdit class's own init; calling super.init() works. File bug report, and use workaround in glue template for now.
+    For now, the workaround is for the initializer to call the superclass's required initializer `RootSpecifier.init(rootObject:appData:)` directly.
 
 
 
-- where should aeglue go in framework bundle?
-
-
-
-- include tutorial playground? (see manual ch.4) Q. just how predictable is playground-based execution when performing commands with side effects?
-
-
-
-- while identifiers that differ only in single character are generally poor practice, it may be better to use `PREFIXObject` and `PREFIXObjects` rather than `PREFIXObject` and `PREFIXElements`
-
-
-- To what extent can Cocoa-based apps' SDEFs be relied on to provide reliable (if not always complete) type information? (AppleScript completely ignores AETE/SDEF-supplied 'type' information, so Carbon apps that use aetes can't be trusted at all since Carbon apps' AE handling is purely code driven; therefore, any property and parameter types declared in AETE are provided soley as user documentation, so AETE can declare property and parameter types that are total fiction/absolute garbage and neither AS nor the app will care or complain. OTOH, CocoaScripting.framework is largely driven by SDEF-supplied data, so incorrect type info in SDEF may [always?] cause application's scripting interface to break during testing, thus forcing developers to ensure that information is 100% accurate [if not always 100% comprehensive]. Main problem may be in distinguishing a single value from a list of values [or list of list of values, etc] in a command, as that'd require command to understand how to translate target specifier to type information according to how it's composed of single-item specifiers and/or multi-item specifiers - and even then it can't always assume that specifier is the direct parameter [e.g. in `add` command, it's the `to` parameter that provides the target specifier, not the direct parameter]). TBH, trying to supply more detailed type info on the glue is almost certainly going to be a clusterfuck, given what a PITA it already is to pack and unpack command results given an _explicit_ return type. (It'd basically require all specifier classes to be generic, so that one class can be declared for each property and element name with the corresponding return type declared as associated type, and even then composing them will be a total bastard since each parent specifier will determine whether the final specifier is T, or [T], or [[T]], or... etc.) Realistically can't see this ever working, so probably best to kill this thought with fire and never, EVER speak of it again (it is included here solely to record that it has been considered, and discarded for good reason).
-
-
-- explicit 'asType:Symbol' (requestType:? as_:?) parameter on command methods? keyAERequestedType can't always be inferred from return type, plus it should prob. only be passed when user explicitly states it; note that while some apps may explicitly define `as` param for `get` command, it's something AS will add regardless (TODO: need to check this is true), so it might make more sense to make it a fixed param in glue (so that it appears on _all_ commands) and ignore it in commandInfo (so that it doesn't appear more than once). Might be wise to look at commands that already contain this param, e.g. `get` and `dataSize` in Finder (though note that Finder's dictionary doesn't explicitly define `get`, at least not in SDEF [which is what we're stuck with these days]) (what else? e.g. StdAdds has `read...as...`, which isn't directly relevant but may provide some clue as to how consistently it's named)
-
-    As an example of why this option is needed, in Python app('Finder').files.get(returntype=k.alias) is used to return a list of aliases; in Swift, this is not inferrable from static type Array<NSURL> since 1. NSURL type declaration can't distinguish bookmark-style from path-style, and 2. it would need to ignore the Array part of the type (since types expressed as typeType descs can't be parameterized) which is a major assumption to which other apps may not hold so could well backfire in practice;
-
-
-
-
-- SpecifierFormatter.format() currently never shows Application(...) root as returned specifiers use untargeted AppRoot which never contains appData. This doesn't affect subsequent use of those specifiers, since the rest of the specifier consists of SpecifierNodes that do retain the AppData used to unpack them, but does screw up introspection a bit. Simplest fix here might be to pass existing appData as [optional] arg to SpecifierFormatter.format(). Best solution may be for Application constructors to pass weakrefd self to AppData constructor, so that returned specifiers always have targeted absolute root, and rely purely on formatter to deal with abbreviating nested specifiers. (Note: AppleEventBridge never had this issue since all nodes including root were represented by single wrapper class.)
+- SpecifierFormatter.format() currently never shows Application(...) root as returned specifiers use untargeted AppRoot which never contains appData. This doesn't affect subsequent use of those specifiers, since the rest of the specifier consists of SpecifierNodes that do retain the AppData used to unpack them, but does screw up introspection a bit. Simplest fix here might be to pass existing appData as [optional] arg to SpecifierFormatter.format(). Best solution may be for Application constructors to pass weakrefd self to AppData constructor, so that returned specifiers always have targeted absolute root, and rely purely on formatter to deal with abbreviating nested specifiers. (Note: AppleEventBridge never had this issue since all specifiers were represented by single wrapper class that held both AppData and low-level AEM specifier.)
 
 
 
@@ -46,7 +27,6 @@ TO DO:
 
 
 
-- if nil is not used as missingValue, should command args use Any! rather than Any (or AnyObject! rather than AnyObject) in order to implicitly unwrap optionals? (this'd save users having to unwrap optionals themselves, but would raise exception if a param wasn't nil); need to give more thought to supporting sum types in general
 
 - one problem with T coercion is that cMissingType can coerce to typeUnicodeText, giving "msng" - this is arguably unsafe, since it can't be distinguished from actual string results, and should either be treated as a Symbol or nil (in which case an error will be raised unless an appropriate sum type is specified)
 
@@ -56,7 +36,7 @@ TO DO:
 
 
 
-- option to disable desc caching in specifiers (i.e. emulate exactly how AS does it)? (actually, it's not caching that's the issue so much as unpacking; it would be sufficient to do a full unpack, then repack as cachedDesc - a little inefficent if the objspec won't be re-sent to app, but since it's an extremely rare problem case this won't matter); option to enable 64-bit integer pack/unpack
+- option to disable desc caching in specifiers (i.e. emulate exactly how AS does it)? (actually, it's not caching that's the issue so much as unpacking; it would be sufficient to do a full unpack, then repack as cachedDesc - a little inefficent if the objspec won't be re-sent to app, but since it's an extremely rare problem case this won't matter)
 
 
 - by-test selector currently doesn't confirm ITS-based root before packing test clause; similarly, by-range selector doesn't confirm APP/CON-based roots for start+stop specifiers; implementing this either means extra mixin subclasses (so type system can enforce it) or pack-time checking (so it can be reported as a command error) - though whether it's worth doing has yet to be decided (having a complete set of specifier variants just for constructing `its` based specifiers will add code complexity and would be problematic for unpacking since objspecs need to be fully unpacked to determine root type but standard behavior is to shallow unpack objspecs for efficiency and only fully unpack when necessary)
@@ -68,9 +48,6 @@ TO DO:
 
 
 - check Symbol.symbol() lookup performance on on very large switches [e.g. InDesign]; if noticeable, a dictionary could be used to cache previous lookups
-
-
-- need to check how (e.g) iTunes handles 'rawData' property vs elements; it's possible both need to be supported (see also text vs text) (note: tdta is defined by iTunes hidden types suite solely for use as `rawData` property's declared type - it doesn't actually appear as an element; other apps with conflicting keywords may be different, however)
 
 
 

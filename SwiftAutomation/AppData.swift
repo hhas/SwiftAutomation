@@ -747,8 +747,8 @@ open class AppData {
     
     // convenience shortcut for dispatching events using raw OSType codes only
     
-    public func sendAppleEvent<T>(_ eventClass: OSType, eventID: OSType, parentSpecifier: Specifier,
-                                  parameters: [OSType:Any] = [:], waitReply: Bool, sendOptions: NSAppleEventDescriptor.SendOptions?,
+    public func sendAppleEvent<T>(_ eventClass: OSType, eventID: OSType, parentSpecifier: Specifier, parameters: [OSType:Any] = [:],
+                                  requestedType: Symbol? = nil, waitReply: Bool, sendOptions: NSAppleEventDescriptor.SendOptions?,
                                   withTimeout: TimeInterval?, considering: ConsideringOptions?, returnType: T.Type) throws -> T
     {
         var parameters = parameters
@@ -756,7 +756,7 @@ open class AppData {
         let keywordParameters: KeywordParameters = parameters.map({(name: nil, code: $0, value: $1)})
         return try self.sendAppleEvent(nil, eventClass: eventClass, eventID: eventID,
             parentSpecifier: parentSpecifier, directParameter: directParameter,
-            keywordParameters: keywordParameters, requestedType: nil, waitReply: waitReply,
+            keywordParameters: keywordParameters, requestedType: requestedType, waitReply: waitReply,
             sendOptions: sendOptions, withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
 

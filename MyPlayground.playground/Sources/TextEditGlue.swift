@@ -403,135 +403,151 @@ public protocol TEDCommand: SpecifierProtocol {} // provides AE dispatch methods
 
 extension TEDCommand {
     @discardableResult public func activate(_ directParameter: Any = NoParameter,
-            waitReply: Bool = true, withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+            resultType: Symbol? = nil, waitReply: Bool = true,
+            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("activate", eventClass: 0x6d697363, eventID: 0x61637476, // "misc"/"actv"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: Any.self)
     }
     public func activate<T>(_ directParameter: Any = NoParameter,
-            waitReply: Bool = true, withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+            resultType: Symbol? = nil, waitReply: Bool = true,
+            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent("activate", eventClass: 0x6d697363, eventID: 0x61637476, // "misc"/"actv"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     @discardableResult public func close(_ directParameter: Any = NoParameter,
             saving: Any = NoParameter,
             savingIn: Any = NoParameter,
-            waitReply: Bool = true, withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+            resultType: Symbol? = nil, waitReply: Bool = true,
+            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("close", eventClass: 0x636f7265, eventID: 0x636c6f73, // "core"/"clos"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("saving", 0x7361766f, saving), // "savo"
                     ("savingIn", 0x6b66696c, savingIn), // "kfil"
-                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: Any.self)
     }
     public func close<T>(_ directParameter: Any = NoParameter,
             saving: Any = NoParameter,
             savingIn: Any = NoParameter,
-            waitReply: Bool = true, withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+            resultType: Symbol? = nil, waitReply: Bool = true,
+            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent("close", eventClass: 0x636f7265, eventID: 0x636c6f73, // "core"/"clos"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("saving", 0x7361766f, saving), // "savo"
                     ("savingIn", 0x6b66696c, savingIn), // "kfil"
-                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     @discardableResult public func count(_ directParameter: Any = NoParameter,
             each: Any = NoParameter,
-            waitReply: Bool = true, withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+            resultType: Symbol? = nil, waitReply: Bool = true,
+            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("count", eventClass: 0x636f7265, eventID: 0x636e7465, // "core"/"cnte"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("each", 0x6b6f636c, each), // "kocl"
-                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: Any.self)
     }
     public func count<T>(_ directParameter: Any = NoParameter,
             each: Any = NoParameter,
-            waitReply: Bool = true, withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+            resultType: Symbol? = nil, waitReply: Bool = true,
+            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent("count", eventClass: 0x636f7265, eventID: 0x636e7465, // "core"/"cnte"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("each", 0x6b6f636c, each), // "kocl"
-                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     @discardableResult public func delete(_ directParameter: Any = NoParameter,
-            waitReply: Bool = true, withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+            resultType: Symbol? = nil, waitReply: Bool = true,
+            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("delete", eventClass: 0x636f7265, eventID: 0x64656c6f, // "core"/"delo"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: Any.self)
     }
     public func delete<T>(_ directParameter: Any = NoParameter,
-            waitReply: Bool = true, withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+            resultType: Symbol? = nil, waitReply: Bool = true,
+            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent("delete", eventClass: 0x636f7265, eventID: 0x64656c6f, // "core"/"delo"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     @discardableResult public func duplicate(_ directParameter: Any = NoParameter,
             to: Any = NoParameter,
             withProperties: Any = NoParameter,
-            waitReply: Bool = true, withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+            resultType: Symbol? = nil, waitReply: Bool = true,
+            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("duplicate", eventClass: 0x636f7265, eventID: 0x636c6f6e, // "core"/"clon"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("to", 0x696e7368, to), // "insh"
                     ("withProperties", 0x70726474, withProperties), // "prdt"
-                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: Any.self)
     }
     public func duplicate<T>(_ directParameter: Any = NoParameter,
             to: Any = NoParameter,
             withProperties: Any = NoParameter,
-            waitReply: Bool = true, withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+            resultType: Symbol? = nil, waitReply: Bool = true,
+            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent("duplicate", eventClass: 0x636f7265, eventID: 0x636c6f6e, // "core"/"clon"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("to", 0x696e7368, to), // "insh"
                     ("withProperties", 0x70726474, withProperties), // "prdt"
-                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     @discardableResult public func exists(_ directParameter: Any = NoParameter,
-            waitReply: Bool = true, withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+            resultType: Symbol? = nil, waitReply: Bool = true,
+            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("exists", eventClass: 0x636f7265, eventID: 0x646f6578, // "core"/"doex"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: Any.self)
     }
     public func exists<T>(_ directParameter: Any = NoParameter,
-            waitReply: Bool = true, withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+            resultType: Symbol? = nil, waitReply: Bool = true,
+            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent("exists", eventClass: 0x636f7265, eventID: 0x646f6578, // "core"/"doex"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     @discardableResult public func get(_ directParameter: Any = NoParameter,
-            waitReply: Bool = true, withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+            resultType: Symbol? = nil, waitReply: Bool = true,
+            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("get", eventClass: 0x636f7265, eventID: 0x67657464, // "core"/"getd"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: Any.self)
     }
     public func get<T>(_ directParameter: Any = NoParameter,
-            waitReply: Bool = true, withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+            resultType: Symbol? = nil, waitReply: Bool = true,
+            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent("get", eventClass: 0x636f7265, eventID: 0x67657464, // "core"/"getd"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     @discardableResult public func launch(_ directParameter: Any = NoParameter,
-            waitReply: Bool = true, withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+            resultType: Symbol? = nil, waitReply: Bool = true,
+            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("launch", eventClass: 0x61736372, eventID: 0x6e6f6f70, // "ascr"/"noop"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: Any.self)
     }
     public func launch<T>(_ directParameter: Any = NoParameter,
-            waitReply: Bool = true, withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+            resultType: Symbol? = nil, waitReply: Bool = true,
+            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent("launch", eventClass: 0x61736372, eventID: 0x6e6f6f70, // "ascr"/"noop"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     @discardableResult public func make(_ directParameter: Any = NoParameter,
@@ -539,14 +555,15 @@ extension TEDCommand {
             at: Any = NoParameter,
             withData: Any = NoParameter,
             withProperties: Any = NoParameter,
-            waitReply: Bool = true, withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+            resultType: Symbol? = nil, waitReply: Bool = true,
+            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("make", eventClass: 0x636f7265, eventID: 0x6372656c, // "core"/"crel"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("new", 0x6b6f636c, new), // "kocl"
                     ("at", 0x696e7368, at), // "insh"
                     ("withData", 0x64617461, withData), // "data"
                     ("withProperties", 0x70726474, withProperties), // "prdt"
-                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: Any.self)
     }
     public func make<T>(_ directParameter: Any = NoParameter,
@@ -554,172 +571,191 @@ extension TEDCommand {
             at: Any = NoParameter,
             withData: Any = NoParameter,
             withProperties: Any = NoParameter,
-            waitReply: Bool = true, withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+            resultType: Symbol? = nil, waitReply: Bool = true,
+            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent("make", eventClass: 0x636f7265, eventID: 0x6372656c, // "core"/"crel"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("new", 0x6b6f636c, new), // "kocl"
                     ("at", 0x696e7368, at), // "insh"
                     ("withData", 0x64617461, withData), // "data"
                     ("withProperties", 0x70726474, withProperties), // "prdt"
-                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     @discardableResult public func move(_ directParameter: Any = NoParameter,
             to: Any = NoParameter,
-            waitReply: Bool = true, withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+            resultType: Symbol? = nil, waitReply: Bool = true,
+            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("move", eventClass: 0x636f7265, eventID: 0x6d6f7665, // "core"/"move"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("to", 0x696e7368, to), // "insh"
-                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: Any.self)
     }
     public func move<T>(_ directParameter: Any = NoParameter,
             to: Any = NoParameter,
-            waitReply: Bool = true, withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+            resultType: Symbol? = nil, waitReply: Bool = true,
+            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent("move", eventClass: 0x636f7265, eventID: 0x6d6f7665, // "core"/"move"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("to", 0x696e7368, to), // "insh"
-                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     @discardableResult public func open(_ directParameter: Any = NoParameter,
-            waitReply: Bool = true, withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+            resultType: Symbol? = nil, waitReply: Bool = true,
+            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("open", eventClass: 0x61657674, eventID: 0x6f646f63, // "aevt"/"odoc"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: Any.self)
     }
     public func open<T>(_ directParameter: Any = NoParameter,
-            waitReply: Bool = true, withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+            resultType: Symbol? = nil, waitReply: Bool = true,
+            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent("open", eventClass: 0x61657674, eventID: 0x6f646f63, // "aevt"/"odoc"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     @discardableResult public func openLocation(_ directParameter: Any = NoParameter,
             window: Any = NoParameter,
-            waitReply: Bool = true, withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+            resultType: Symbol? = nil, waitReply: Bool = true,
+            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("openLocation", eventClass: 0x4755524c, eventID: 0x4755524c, // "GURL"/"GURL"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("window", 0x57494e44, window), // "WIND"
-                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: Any.self)
     }
     public func openLocation<T>(_ directParameter: Any = NoParameter,
             window: Any = NoParameter,
-            waitReply: Bool = true, withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+            resultType: Symbol? = nil, waitReply: Bool = true,
+            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent("openLocation", eventClass: 0x4755524c, eventID: 0x4755524c, // "GURL"/"GURL"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("window", 0x57494e44, window), // "WIND"
-                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     @discardableResult public func print(_ directParameter: Any = NoParameter,
             printDialog: Any = NoParameter,
             withProperties: Any = NoParameter,
-            waitReply: Bool = true, withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+            resultType: Symbol? = nil, waitReply: Bool = true,
+            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("print", eventClass: 0x61657674, eventID: 0x70646f63, // "aevt"/"pdoc"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("printDialog", 0x70646c67, printDialog), // "pdlg"
                     ("withProperties", 0x70726474, withProperties), // "prdt"
-                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: Any.self)
     }
     public func print<T>(_ directParameter: Any = NoParameter,
             printDialog: Any = NoParameter,
             withProperties: Any = NoParameter,
-            waitReply: Bool = true, withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+            resultType: Symbol? = nil, waitReply: Bool = true,
+            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent("print", eventClass: 0x61657674, eventID: 0x70646f63, // "aevt"/"pdoc"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("printDialog", 0x70646c67, printDialog), // "pdlg"
                     ("withProperties", 0x70726474, withProperties), // "prdt"
-                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     @discardableResult public func quit(_ directParameter: Any = NoParameter,
             saving: Any = NoParameter,
-            waitReply: Bool = true, withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+            resultType: Symbol? = nil, waitReply: Bool = true,
+            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("quit", eventClass: 0x61657674, eventID: 0x71756974, // "aevt"/"quit"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("saving", 0x7361766f, saving), // "savo"
-                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: Any.self)
     }
     public func quit<T>(_ directParameter: Any = NoParameter,
             saving: Any = NoParameter,
-            waitReply: Bool = true, withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+            resultType: Symbol? = nil, waitReply: Bool = true,
+            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent("quit", eventClass: 0x61657674, eventID: 0x71756974, // "aevt"/"quit"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("saving", 0x7361766f, saving), // "savo"
-                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     @discardableResult public func reopen(_ directParameter: Any = NoParameter,
-            waitReply: Bool = true, withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+            resultType: Symbol? = nil, waitReply: Bool = true,
+            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("reopen", eventClass: 0x61657674, eventID: 0x72617070, // "aevt"/"rapp"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: Any.self)
     }
     public func reopen<T>(_ directParameter: Any = NoParameter,
-            waitReply: Bool = true, withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+            resultType: Symbol? = nil, waitReply: Bool = true,
+            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent("reopen", eventClass: 0x61657674, eventID: 0x72617070, // "aevt"/"rapp"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     @discardableResult public func run(_ directParameter: Any = NoParameter,
-            waitReply: Bool = true, withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+            resultType: Symbol? = nil, waitReply: Bool = true,
+            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("run", eventClass: 0x61657674, eventID: 0x6f617070, // "aevt"/"oapp"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: Any.self)
     }
     public func run<T>(_ directParameter: Any = NoParameter,
-            waitReply: Bool = true, withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+            resultType: Symbol? = nil, waitReply: Bool = true,
+            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent("run", eventClass: 0x61657674, eventID: 0x6f617070, // "aevt"/"oapp"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     @discardableResult public func save(_ directParameter: Any = NoParameter,
             as_: Any = NoParameter,
             in_: Any = NoParameter,
-            waitReply: Bool = true, withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+            resultType: Symbol? = nil, waitReply: Bool = true,
+            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("save", eventClass: 0x636f7265, eventID: 0x73617665, // "core"/"save"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("as_", 0x666c7470, as_), // "fltp"
                     ("in_", 0x6b66696c, in_), // "kfil"
-                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: Any.self)
     }
     public func save<T>(_ directParameter: Any = NoParameter,
             as_: Any = NoParameter,
             in_: Any = NoParameter,
-            waitReply: Bool = true, withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+            resultType: Symbol? = nil, waitReply: Bool = true,
+            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent("save", eventClass: 0x636f7265, eventID: 0x73617665, // "core"/"save"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("as_", 0x666c7470, as_), // "fltp"
                     ("in_", 0x6b66696c, in_), // "kfil"
-                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     @discardableResult public func set(_ directParameter: Any = NoParameter,
             to: Any = NoParameter,
-            waitReply: Bool = true, withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+            resultType: Symbol? = nil, waitReply: Bool = true,
+            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("set", eventClass: 0x636f7265, eventID: 0x73657464, // "core"/"setd"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("to", 0x64617461, to), // "data"
-                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: Any.self)
     }
     public func set<T>(_ directParameter: Any = NoParameter,
             to: Any = NoParameter,
-            waitReply: Bool = true, withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+            resultType: Symbol? = nil, waitReply: Bool = true,
+            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent("set", eventClass: 0x636f7265, eventID: 0x73657464, // "core"/"setd"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("to", 0x64617461, to), // "data"
-                ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
+                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
 }

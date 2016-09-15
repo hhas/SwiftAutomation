@@ -28,7 +28,7 @@ try doc.name.get() as String
 
 
 
-try finder.home.get() // as URL
+try finder.home.get(resultType: FIN.alias) as URL
 
 
 

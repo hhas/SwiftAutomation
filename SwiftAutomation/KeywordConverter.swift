@@ -88,6 +88,7 @@ public let kSwiftAEParameterNames: Set<String> = [
     "waitReply",
     "withTimeout",
     "considering",
+    "resultType",
 ]
 
 
