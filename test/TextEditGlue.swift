@@ -1,7 +1,7 @@
 //
 //  TextEditGlue.swift
 //  TextEdit.app 1.11
-//  SwiftAE.framework 0.1.0
+//  SwiftAutomation.framework 0.1.0
 //  `aeglue -r TextEdit.app`
 //
 
@@ -14,8 +14,8 @@ import Foundation
 // Untargeted AppData instance used in App, Con, Its roots; also used by Application constructors to create their own targeted AppData instances
 
 private let gUntargetedAppData = AppData(glueInfo: GlueInfo(insertionSpecifierType: TEDInsertion.self,
-                                                            objectSpecifierType: TEDObject.self,
-                                                            elementsSpecifierType: TEDElements.self,
+                                                            objectSpecifierType: TEDItem.self,
+                                                            multiObjectSpecifierType: TEDItems.self,
                                                             rootSpecifierType: TEDRoot.self,
                                                             symbolType: TEDSymbol.self,
                                                             formatter: gSpecifierFormatter))
@@ -87,7 +87,7 @@ public class TEDSymbol: Symbol {
 
     override public var typeAliasName: String {return "TED"}
 
-    public override class func symbol(_ code: OSType, type: OSType = typeType, descriptor: NSAppleEventDescriptor? = nil) -> TEDSymbol {
+    public override class func symbol(code: OSType, type: OSType = typeType, descriptor: NSAppleEventDescriptor? = nil) -> TEDSymbol {
         switch (code) {
         case 0x616c6973: return self.alias // "alis"
         case 0x2a2a2a2a: return self.anything // "****"
@@ -235,7 +235,7 @@ public class TEDSymbol: Symbol {
         case 0x79657320: return self.yes // "yes "
         case 0x69737a6d: return self.zoomable // "iszm"
         case 0x707a756d: return self.zoomed // "pzum"
-        default: return super.symbol(code, type: type, descriptor: descriptor) as! TEDSymbol
+        default: return super.symbol(code: code, type: type, descriptor: descriptor) as! TEDSymbol
         }
     }
 
@@ -730,55 +730,55 @@ public protocol TEDQuery: ObjectSpecifierExtension, TEDCommand {} // provides va
 extension TEDQuery {
     
     // Properties
-    public var bounds: TEDObject {return self.property(0x70626e64) as! TEDObject} // "pbnd"
-    public var class_: TEDObject {return self.property(0x70636c73) as! TEDObject} // "pcls"
-    public var closeable: TEDObject {return self.property(0x68636c62) as! TEDObject} // "hclb"
-    public var collating: TEDObject {return self.property(0x6c77636c) as! TEDObject} // "lwcl"
-    public var color: TEDObject {return self.property(0x636f6c72) as! TEDObject} // "colr"
-    public var copies: TEDObject {return self.property(0x6c776370) as! TEDObject} // "lwcp"
-    public var document: TEDObject {return self.property(0x646f6375) as! TEDObject} // "docu"
-    public var endingPage: TEDObject {return self.property(0x6c776c70) as! TEDObject} // "lwlp"
-    public var errorHandling: TEDObject {return self.property(0x6c776568) as! TEDObject} // "lweh"
-    public var faxNumber: TEDObject {return self.property(0x6661786e) as! TEDObject} // "faxn"
-    public var fileName: TEDObject {return self.property(0x6174666e) as! TEDObject} // "atfn"
-    public var floating: TEDObject {return self.property(0x6973666c) as! TEDObject} // "isfl"
-    public var font: TEDObject {return self.property(0x666f6e74) as! TEDObject} // "font"
-    public var frontmost: TEDObject {return self.property(0x70697366) as! TEDObject} // "pisf"
-    public var id: TEDObject {return self.property(0x49442020) as! TEDObject} // "ID  "
-    public var index: TEDObject {return self.property(0x70696478) as! TEDObject} // "pidx"
-    public var miniaturizable: TEDObject {return self.property(0x69736d6e) as! TEDObject} // "ismn"
-    public var miniaturized: TEDObject {return self.property(0x706d6e64) as! TEDObject} // "pmnd"
-    public var modal: TEDObject {return self.property(0x706d6f64) as! TEDObject} // "pmod"
-    public var modified: TEDObject {return self.property(0x696d6f64) as! TEDObject} // "imod"
-    public var name: TEDObject {return self.property(0x706e616d) as! TEDObject} // "pnam"
-    public var pagesAcross: TEDObject {return self.property(0x6c776c61) as! TEDObject} // "lwla"
-    public var pagesDown: TEDObject {return self.property(0x6c776c64) as! TEDObject} // "lwld"
-    public var path: TEDObject {return self.property(0x70707468) as! TEDObject} // "ppth"
-    public var properties: TEDObject {return self.property(0x70414c4c) as! TEDObject} // "pALL"
-    public var requestedPrintTime: TEDObject {return self.property(0x6c777174) as! TEDObject} // "lwqt"
-    public var resizable: TEDObject {return self.property(0x7072737a) as! TEDObject} // "prsz"
-    public var size: TEDObject {return self.property(0x7074737a) as! TEDObject} // "ptsz"
-    public var startingPage: TEDObject {return self.property(0x6c776670) as! TEDObject} // "lwfp"
-    public var targetPrinter: TEDObject {return self.property(0x74727072) as! TEDObject} // "trpr"
-    public var titled: TEDObject {return self.property(0x70746974) as! TEDObject} // "ptit"
-    public var version: TEDObject {return self.property(0x76657273) as! TEDObject} // "vers"
-    public var visible: TEDObject {return self.property(0x70766973) as! TEDObject} // "pvis"
-    public var zoomable: TEDObject {return self.property(0x69737a6d) as! TEDObject} // "iszm"
-    public var zoomed: TEDObject {return self.property(0x707a756d) as! TEDObject} // "pzum"
+    public var bounds: TEDItem {return self.property(0x70626e64) as! TEDItem} // "pbnd"
+    public var class_: TEDItem {return self.property(0x70636c73) as! TEDItem} // "pcls"
+    public var closeable: TEDItem {return self.property(0x68636c62) as! TEDItem} // "hclb"
+    public var collating: TEDItem {return self.property(0x6c77636c) as! TEDItem} // "lwcl"
+    public var color: TEDItem {return self.property(0x636f6c72) as! TEDItem} // "colr"
+    public var copies: TEDItem {return self.property(0x6c776370) as! TEDItem} // "lwcp"
+    public var document: TEDItem {return self.property(0x646f6375) as! TEDItem} // "docu"
+    public var endingPage: TEDItem {return self.property(0x6c776c70) as! TEDItem} // "lwlp"
+    public var errorHandling: TEDItem {return self.property(0x6c776568) as! TEDItem} // "lweh"
+    public var faxNumber: TEDItem {return self.property(0x6661786e) as! TEDItem} // "faxn"
+    public var fileName: TEDItem {return self.property(0x6174666e) as! TEDItem} // "atfn"
+    public var floating: TEDItem {return self.property(0x6973666c) as! TEDItem} // "isfl"
+    public var font: TEDItem {return self.property(0x666f6e74) as! TEDItem} // "font"
+    public var frontmost: TEDItem {return self.property(0x70697366) as! TEDItem} // "pisf"
+    public var id: TEDItem {return self.property(0x49442020) as! TEDItem} // "ID  "
+    public var index: TEDItem {return self.property(0x70696478) as! TEDItem} // "pidx"
+    public var miniaturizable: TEDItem {return self.property(0x69736d6e) as! TEDItem} // "ismn"
+    public var miniaturized: TEDItem {return self.property(0x706d6e64) as! TEDItem} // "pmnd"
+    public var modal: TEDItem {return self.property(0x706d6f64) as! TEDItem} // "pmod"
+    public var modified: TEDItem {return self.property(0x696d6f64) as! TEDItem} // "imod"
+    public var name: TEDItem {return self.property(0x706e616d) as! TEDItem} // "pnam"
+    public var pagesAcross: TEDItem {return self.property(0x6c776c61) as! TEDItem} // "lwla"
+    public var pagesDown: TEDItem {return self.property(0x6c776c64) as! TEDItem} // "lwld"
+    public var path: TEDItem {return self.property(0x70707468) as! TEDItem} // "ppth"
+    public var properties: TEDItem {return self.property(0x70414c4c) as! TEDItem} // "pALL"
+    public var requestedPrintTime: TEDItem {return self.property(0x6c777174) as! TEDItem} // "lwqt"
+    public var resizable: TEDItem {return self.property(0x7072737a) as! TEDItem} // "prsz"
+    public var size: TEDItem {return self.property(0x7074737a) as! TEDItem} // "ptsz"
+    public var startingPage: TEDItem {return self.property(0x6c776670) as! TEDItem} // "lwfp"
+    public var targetPrinter: TEDItem {return self.property(0x74727072) as! TEDItem} // "trpr"
+    public var titled: TEDItem {return self.property(0x70746974) as! TEDItem} // "ptit"
+    public var version: TEDItem {return self.property(0x76657273) as! TEDItem} // "vers"
+    public var visible: TEDItem {return self.property(0x70766973) as! TEDItem} // "pvis"
+    public var zoomable: TEDItem {return self.property(0x69737a6d) as! TEDItem} // "iszm"
+    public var zoomed: TEDItem {return self.property(0x707a756d) as! TEDItem} // "pzum"
 
     // Elements
-    public var applications: TEDElements {return self.elements(0x63617070) as! TEDElements} // "capp"
-    public var attachment: TEDElements {return self.elements(0x61747473) as! TEDElements} // "atts"
-    public var attributeRuns: TEDElements {return self.elements(0x63617472) as! TEDElements} // "catr"
-    public var characters: TEDElements {return self.elements(0x63686120) as! TEDElements} // "cha "
-    public var colors: TEDElements {return self.elements(0x636f6c72) as! TEDElements} // "colr"
-    public var documents: TEDElements {return self.elements(0x646f6375) as! TEDElements} // "docu"
-    public var items: TEDElements {return self.elements(0x636f626a) as! TEDElements} // "cobj"
-    public var paragraphs: TEDElements {return self.elements(0x63706172) as! TEDElements} // "cpar"
-    public var printSettings: TEDElements {return self.elements(0x70736574) as! TEDElements} // "pset"
-    public var text: TEDElements {return self.elements(0x63747874) as! TEDElements} // "ctxt"
-    public var windows: TEDElements {return self.elements(0x6377696e) as! TEDElements} // "cwin"
-    public var words: TEDElements {return self.elements(0x63776f72) as! TEDElements} // "cwor"
+    public var applications: TEDItems {return self.elements(0x63617070) as! TEDItems} // "capp"
+    public var attachment: TEDItems {return self.elements(0x61747473) as! TEDItems} // "atts"
+    public var attributeRuns: TEDItems {return self.elements(0x63617472) as! TEDItems} // "catr"
+    public var characters: TEDItems {return self.elements(0x63686120) as! TEDItems} // "cha "
+    public var colors: TEDItems {return self.elements(0x636f6c72) as! TEDItems} // "colr"
+    public var documents: TEDItems {return self.elements(0x646f6375) as! TEDItems} // "docu"
+    public var items: TEDItems {return self.elements(0x636f626a) as! TEDItems} // "cobj"
+    public var paragraphs: TEDItems {return self.elements(0x63706172) as! TEDItems} // "cpar"
+    public var printSettings: TEDItems {return self.elements(0x70736574) as! TEDItems} // "pset"
+    public var text: TEDItems {return self.elements(0x63747874) as! TEDItems} // "ctxt"
+    public var windows: TEDItems {return self.elements(0x6377696e) as! TEDItems} // "cwin"
+    public var words: TEDItems {return self.elements(0x63776f72) as! TEDItems} // "cwor"
 }
 
 
@@ -791,21 +791,21 @@ public class TEDInsertion: InsertionSpecifier, TEDCommand {}
 
 // by index/name/id/previous/next
 // first/middle/last/any
-public class TEDObject: ObjectSpecifier, TEDQuery {
+public class TEDItem: ObjectSpecifier, TEDQuery {
     public typealias InsertionSpecifierType = TEDInsertion
-    public typealias ObjectSpecifierType = TEDObject
-    public typealias ElementsSpecifierType = TEDElements
+    public typealias ObjectSpecifierType = TEDItem
+    public typealias MultipleObjectSpecifierType = TEDItems
 }
 
 // by range/test
 // all
-public class TEDElements: TEDObject, ElementsSpecifierExtension {}
+public class TEDItems: TEDItem, ElementsSpecifierExtension {}
 
 // App/Con/Its
 public class TEDRoot: RootSpecifier, TEDQuery, RootSpecifierExtension {
     public typealias InsertionSpecifierType = TEDInsertion
-    public typealias ObjectSpecifierType = TEDObject
-    public typealias ElementsSpecifierType = TEDElements
+    public typealias ObjectSpecifierType = TEDItem
+    public typealias MultipleObjectSpecifierType = TEDItems
     public override class var untargetedAppData: AppData { return gUntargetedAppData }
 }
 

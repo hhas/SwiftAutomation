@@ -1,6 +1,6 @@
 //
 //  SAELanguageInstance.h
-//  SwiftAE
+//  AppleScriptToSwift
 //
 //
 

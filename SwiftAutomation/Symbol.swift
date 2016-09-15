@@ -1,6 +1,6 @@
 //
 //  Symbol.swift
-//  SwiftAE
+//  SwiftAutomation
 //
 //
 
@@ -18,12 +18,12 @@ import Foundation
 let NoOSType: OSType = 0 // valid OSTypes should always be non-zero, so just use 0 instead of nil to indicate omitted OSType and avoid the extra Optional<OSType> boxing/unboxing
 
 
-public class Symbol: Hashable, Equatable, CustomStringConvertible, SelfPacking {
+open class Symbol: Hashable, Equatable, CustomStringConvertible, SelfPacking {
     
     private var cachedDesc: NSAppleEventDescriptor?
     public let name: String?, code: OSType, type: OSType
     
-    public var typeAliasName: String {return "Symbol"} // provides prefix used in description var; glue subclasses override this with their own strings (e.g. "FIN" for Finder)
+    open var typeAliasName: String {return "Symbol"} // provides prefix used in description var; glue subclasses override this with their own strings (e.g. "FIN" for Finder)
     
     // important: if type=0 and name!=nil, treat as name-only symbol (used to represent a string-based record key)
     
@@ -38,12 +38,8 @@ public class Symbol: Hashable, Equatable, CustomStringConvertible, SelfPacking {
     
     // TO DO: this might also be of use when implementing dynamic bridges, where only the name is given upon instantiation, and the AE type and code are looked up in DynamicAppData when Symbol is packed
     
-    public convenience init(string: String, cachedDesc: NSAppleEventDescriptor? = nil) { // TO DO: omit `string` label so users can write `Symbol("foo")`?
+    public convenience init(_ string: String, cachedDesc: NSAppleEventDescriptor? = nil) {
         self.init(name: string, code: NoOSType, type: NoOSType, cachedDesc: cachedDesc)
-    }
-    
-    public class func string(_ string: String, descriptor: NSAppleEventDescriptor? = nil) -> Symbol {
-        return self.init(name: string, code: NoOSType, type: NoOSType, cachedDesc: descriptor)
     }
     
     // convenience constructors for creating Symbols using raw four-char codes
@@ -57,15 +53,20 @@ public class Symbol: Hashable, Equatable, CustomStringConvertible, SelfPacking {
     }
     
     // this is called by AppData when unpacking typeType, typeEnumerated, etc; glue-defined symbol subclasses should override to return glue-defined symbols where available
-    public class func symbol(_ code: OSType, type: OSType = typeType, descriptor: NSAppleEventDescriptor? = nil) -> Symbol {
+    open class func symbol(code: OSType, type: OSType = typeType, descriptor: NSAppleEventDescriptor? = nil) -> Symbol {
         return self.init(name: nil, code: code, type: type, cachedDesc: descriptor)
+    }
+    
+    // this is called by AppData when unpacking string-based record keys
+    public class func symbol(string: String, descriptor: NSAppleEventDescriptor? = nil) -> Symbol {
+        return self.init(name: string, code: NoOSType, type: NoOSType, cachedDesc: descriptor)
     }
     
     public var description: String {
         if let name = self.name {
-            return self.nameOnly ? "Symbol(string:\(formatValue(name)))" : "\(self.typeAliasName).\(name)"
+            return self.nameOnly ? "\(self.typeAliasName)(\(formatValue(name)))" : "\(self.typeAliasName).\(name)"
         } else {
-            return "\(type(of: self))(code:\(formatFourCharCodeString(self.code)),type:\(formatFourCharCodeString(self.type)))"
+            return "\(self.typeAliasName)(code:\(formatFourCharCodeString(self.code)),type:\(formatFourCharCodeString(self.type)))"
         }
     }
     

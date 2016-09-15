@@ -1,6 +1,6 @@
 //
 //  SpecifierExtensions.swift
-//  SwiftAE
+//  SwiftAutomation
 //
 //  Protocol extension-based workaround for generic class bug where SourceKit and swiftc crash when using subclass 
 //  types as types parameters.
@@ -26,7 +26,7 @@ import Foundation
 public protocol ObjectSpecifierExtension: ObjectSpecifierProtocol {
     associatedtype InsertionSpecifierType: InsertionSpecifier
     associatedtype ObjectSpecifierType: ObjectSpecifier
-    associatedtype ElementsSpecifierType: ObjectSpecifier
+    associatedtype MultipleObjectSpecifierType: ObjectSpecifier
 }
 
 public extension ObjectSpecifierExtension {
@@ -47,13 +47,13 @@ public extension ObjectSpecifierExtension {
 		return self.property(FourCharCodeUnsafe(code)) // TO DO: use FourCharCode()throws, capturing error in custom root specifier to be rethrown if/when specifier is used in a command?
     }
     
-    public func elements(_ code: OSType) -> ElementsSpecifierType {
-        return ElementsSpecifierType(wantType: NSAppleEventDescriptor(typeCode: code),
+    public func elements(_ code: OSType) -> MultipleObjectSpecifierType {
+        return MultipleObjectSpecifierType(wantType: NSAppleEventDescriptor(typeCode: code),
                 selectorForm: gAbsolutePositionForm, selectorData: gAll,
                 parentQuery: (self as! Query), appData: self.appData, cachedDesc: nil)
     }
     
-    public func elements(_ code: String) -> ElementsSpecifierType { // caution: string must be valid four-char code; if not, 0x00000000 is used
+    public func elements(_ code: String) -> MultipleObjectSpecifierType { // caution: string must be valid four-char code; if not, 0x00000000 is used
         return self.elements(FourCharCodeUnsafe(code)) // TO DO: ditto?
     }
 
@@ -115,8 +115,8 @@ extension ElementsSpecifierExtension {
             parentQuery: self.baseQuery, appData: self.appData, cachedDesc: nil)
     }
 
-    public subscript(test: TestClause) -> ElementsSpecifierType {
-        return ElementsSpecifierType(wantType: self.wantType, selectorForm: gTestForm, selectorData: test,
+    public subscript(test: TestClause) -> MultipleObjectSpecifierType {
+        return MultipleObjectSpecifierType(wantType: self.wantType, selectorForm: gTestForm, selectorData: test,
             parentQuery: self.baseQuery, appData: self.appData, cachedDesc: nil)
     }
     
@@ -129,8 +129,8 @@ extension ElementsSpecifierExtension {
         return ObjectSpecifierType(wantType: self.wantType, selectorForm: gUniqueIDForm, selectorData: id,
             parentQuery: self.baseQuery, appData: self.appData, cachedDesc: nil)
     }
-    public subscript(from: Any, to: Any) -> ElementsSpecifierType {
-        return ElementsSpecifierType(wantType: self.wantType, selectorForm: gRangeForm,
+    public subscript(from: Any, to: Any) -> MultipleObjectSpecifierType {
+        return MultipleObjectSpecifierType(wantType: self.wantType, selectorForm: gRangeForm,
             selectorData: RangeSelector(start: from, stop: to, wantType: self.wantType),
             parentQuery: self.baseQuery, appData: self.appData, cachedDesc: nil)
     }

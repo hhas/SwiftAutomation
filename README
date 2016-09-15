@@ -9,7 +9,7 @@ to control "AppleScriptable" macOS applications directly. For example:
   try ITunes().play()
 
   // tell application "Finder" to set fileNames to name of every file of home
-  let fileNames = try Finder().home.files.name.get() as [String]
+  let fileNames: [String] = try Finder().home.files.name.get()
 
 
   // tell application "TextEdit" to make new document ¬
@@ -20,17 +20,17 @@ to control "AppleScriptable" macOS applications directly. For example:
 
 SwiftAutomation's goal is to provide better than 99.9% compatibility across the 
 wide range of real-world "AppleScriptable" macOS applications available today.
-Unlike macOS's own ORM-style ScriptingBridge, which is crippled by numerous 
+Unlike macOS's own ORM-style ScriptingBridge, which is crippled by numerous
 broken/missing features and application incompatibilities, SwiftAutomation's 
 design is derived from the proven appscript (http://appscript.sourceforge.net) 
 library's RPC + query-builder architecture, reworked into a tighter, simpler 
 implementation and tailored to Swift syntax and static type system.
 
-The SwiftAutomation framework defines the basic functionality for building 
+The SwiftAutomation framework defines the basic functionality for constructing
 object specifiers, converting data between Swift and AE types, and sending 
-Apple events to running applications. Generated Swift modules provide the glue
-code for controlling individual applications using their dictionary-defined 
-syntax.
+Apple events to running applications. Generated Swift files supply the glue
+code for controlling individual applications using human-readable terminology.
+
 
 ## Status
 
@@ -38,6 +38,7 @@ SwiftAutomation is alpha status: it is sufficiently complete to allow testing
 and experimentation, but some functionality is missing/incomplete/buggy. A 
 rough draft of the SwiftAutomation documentation is included. Expect errors 
 and omissions, use at own risk, etc.
+
 
 ## Get it
 

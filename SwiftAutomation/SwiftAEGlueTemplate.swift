@@ -1,6 +1,6 @@
 //
 //  SwiftAEGlueTemplate.swift
-//  SwiftAE
+//  SwiftAutomation
 //
 //
 
@@ -22,8 +22,8 @@ let SwiftAEGlueTemplate = [
 "// Untargeted AppData instance used in App, Con, Its roots; also used by Application constructors to create their own targeted AppData instances",
 "",
 "private let gUntargetedAppData = AppData(glueInfo: GlueInfo(insertionSpecifierType: «PREFIX»Insertion.self,",
-"                                                            objectSpecifierType: «PREFIX»Object.self,",
-"                                                            elementsSpecifierType: «PREFIX»Elements.self,",
+"                                                            objectSpecifierType: «PREFIX»Item.self,",
+"                                                            multiObjectSpecifierType: «PREFIX»Items.self,",
 "                                                            rootSpecifierType: «PREFIX»Root.self,",
 "                                                            symbolType: «PREFIX»Symbol.self,",
 "                                                            formatter: gSpecifierFormatter))",
@@ -49,10 +49,10 @@ let SwiftAEGlueTemplate = [
 "",
 "    override public var typeAliasName: String {return \"«PREFIX»\"}",
 "",
-"    public override class func symbol(_ code: OSType, type: OSType = typeType, descriptor: NSAppleEventDescriptor? = nil) -> «PREFIX»Symbol {",
+"    public override class func symbol(code: OSType, type: OSType = typeType, descriptor: NSAppleEventDescriptor? = nil) -> «PREFIX»Symbol {",
 "        switch (code) {«+SYMBOL_SWITCH»",
 "        case «CODE»: return self.«NAME» // «CODE_STR»«-SYMBOL_SWITCH»",
-"        default: return super.symbol(code, type: type, descriptor: descriptor) as! «PREFIX»Symbol",
+"        default: return super.symbol(code: code, type: type, descriptor: descriptor) as! «PREFIX»Symbol",
 "        }",
 "    }",
 "",
@@ -101,10 +101,10 @@ let SwiftAEGlueTemplate = [
 "extension «PREFIX»Query {",
 "    ",
 "    // Properties«+PROPERTY_SPECIFIER»",
-"    public var «NAME»: «PREFIX»Object {return self.property(«CODE») as! «PREFIX»Object} // «CODE_STR»«-PROPERTY_SPECIFIER»",
+"    public var «NAME»: «PREFIX»Item {return self.property(«CODE») as! «PREFIX»Item} // «CODE_STR»«-PROPERTY_SPECIFIER»",
 "",
 "    // Elements«+ELEMENTS_SPECIFIER»",
-"    public var «NAME»: «PREFIX»Elements {return self.elements(«CODE») as! «PREFIX»Elements} // «CODE_STR»«-ELEMENTS_SPECIFIER»",
+"    public var «NAME»: «PREFIX»Items {return self.elements(«CODE») as! «PREFIX»Items} // «CODE_STR»«-ELEMENTS_SPECIFIER»",
 "}",
 "",
 "",
@@ -117,21 +117,21 @@ let SwiftAEGlueTemplate = [
 "",
 "// by index/name/id/previous/next",
 "// first/middle/last/any",
-"public class «PREFIX»Object: ObjectSpecifier, «PREFIX»Query {",
+"public class «PREFIX»Item: ObjectSpecifier, «PREFIX»Query {",
 "    public typealias InsertionSpecifierType = «PREFIX»Insertion",
-"    public typealias ObjectSpecifierType = «PREFIX»Object",
-"    public typealias ElementsSpecifierType = «PREFIX»Elements",
+"    public typealias ObjectSpecifierType = «PREFIX»Item",
+"    public typealias MultipleObjectSpecifierType = «PREFIX»Items",
 "}",
 "",
 "// by range/test",
 "// all",
-"public class «PREFIX»Elements: «PREFIX»Object, ElementsSpecifierExtension {}",
+"public class «PREFIX»Items: «PREFIX»Item, ElementsSpecifierExtension {}",
 "",
 "// App/Con/Its",
 "public class «PREFIX»Root: RootSpecifier, «PREFIX»Query, RootSpecifierExtension {",
 "    public typealias InsertionSpecifierType = «PREFIX»Insertion",
-"    public typealias ObjectSpecifierType = «PREFIX»Object",
-"    public typealias ElementsSpecifierType = «PREFIX»Elements",
+"    public typealias ObjectSpecifierType = «PREFIX»Item",
+"    public typealias MultipleObjectSpecifierType = «PREFIX»Items",
 "    public override class var untargetedAppData: AppData { return gUntargetedAppData }",
 "}",
 "",
@@ -148,6 +148,7 @@ let SwiftAEGlueTemplate = [
 "public let «PREFIX»App = gUntargetedAppData.rootObjects.app as! «PREFIX»Root",
 "public let «PREFIX»Con = gUntargetedAppData.rootObjects.con as! «PREFIX»Root",
 "public let «PREFIX»Its = gUntargetedAppData.rootObjects.its as! «PREFIX»Root",
+"",
 ""
 ].joined(separator: "\n")
 

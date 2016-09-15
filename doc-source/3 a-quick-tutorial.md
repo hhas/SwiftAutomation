@@ -6,16 +6,16 @@
 
 [TO DO: TextEdit now returns by-name document specifiers; update code examples accordingly]
 
-The following tutorial provides a practical taste of application scripting with Swift and SwiftAE. Later chapters cover the technical details of SwiftAE usage that are mostly skimmed over here.
+The following tutorial provides a practical taste of application scripting with Swift and SwiftAutomation. Later chapters cover the technical details of SwiftAutomation usage that are mostly skimmed over here.
 
 ## 'Hello World' tutorial
 
 
-This tutorial uses SwiftAE, TextEdit and the interactive command line `swift` interpreter to perform a simple 'Hello World' exercise.
+This tutorial uses SwiftAutomation, TextEdit and the interactive command line `swift` interpreter to perform a simple 'Hello World' exercise.
 
 <p class="hilitebox">Caution: It is recommended that you do not have any other documents open in TextEdit during this tutorial, as accidental modifications are easy to make and changes to existing documents are not undoable.</p>
 
-[TO DO: using interactive `swift` in Terminal will only work if SwiftAE framework and static glues can be passed via -framework and -F options; need to see if shared workspace+playground will be a better option.  OTOH, if interactive `swift` is a possibility, it would make sense to wrap it in a custom shell script that passes required options automatically, and also takes a list of scriptable apps for which to generate glues if they don't already exist]
+[TO DO: using interactive `swift` in Terminal will only work if SwiftAutomation framework and static glues can be passed via -framework and -F options; need to see if shared workspace+playground will be a better option.  OTOH, if interactive `swift` is a possibility, it would make sense to wrap it in a custom shell script that passes required options automatically, and also takes a list of scriptable apps for which to generate glues if they don't already exist]
 
 To begin, launch Terminal.app and type `swift` followed by a newline to launch the `swift` interpreter:
 
@@ -62,7 +62,7 @@ Setting a property's value is done using the `set()` command. The `set()` comman
 
 The front TextEdit document should now contain the text "Hello World".
 
-Because the above expression is a bit unwieldy to write, SwiftAE allows it to be written in a more elegant OO-like format as a special case, where the `set()` command is called upon the document's object specifier:
+Because the above expression is a bit unwieldy to write, SwiftAutomation allows it to be written in a more elegant OO-like format as a special case, where the `set()` command is called upon the document's object specifier:
 
     doc.text.set(to: "Hello World")
 
@@ -76,7 +76,7 @@ Retrieving the document's text is done using the `get()` command:
     doc.text.get()
     // "Hello World"
 
-This may seem counter-intuitive if you're used to dealing with AppleScript or Swift, where evaluating a literal reference returns the _value_ identified by that reference. However, SwiftAE only uses object-oriented references to construct object specifiers, not to resolve them. Always remember that an object specifier is really a first-class query object, so while the syntax may look similar to that of an object-oriented reference, its behavior is very different. For example, when evaluating the literal reference:
+This may seem counter-intuitive if you're used to dealing with AppleScript or Swift, where evaluating a literal reference returns the _value_ identified by that reference. However, SwiftAutomation only uses object-oriented references to construct object specifiers, not to resolve them. Always remember that an object specifier is really a first-class query object, so while the syntax may look similar to that of an object-oriented reference, its behavior is very different. For example, when evaluating the literal reference:
 
     textedit.documents[1].text
 
@@ -85,7 +85,7 @@ the result is an object specifier, `TextEdit().documents[1].text`, not the value
     textedit.get(doc.text)
     // "Hello World!"
 
-As before, SwiftAE provides alternative convenience forms that allow the above command to be written more neatly as this:
+As before, SwiftAutomation provides alternative convenience forms that allow the above command to be written more neatly as this:
 
     doc.text.get()
 

@@ -1,8 +1,8 @@
 //
 //  StaticGlueBuilder.swift
-//  SwiftAE
+//  SwiftAutomation
 //
-//  Generate SwiftAE glue code and documentation.
+//  Generate SwiftAutomation glue file and SDEF documentation.
 //
 //
 
@@ -23,8 +23,8 @@ public class GlueSpec {
     public var applicationName: String? { return self.bundleInfo["CFBundleName"] as? String }
     public var applicationVersion: String? { return self.bundleInfo["CFBundleShortVersionString"] as? String }
     public var bundleIdentifier: String? { return self.bundleInfo["CFBundleIdentifier"] as? String }
-    // TO DO: eventually get following values from SwiftAE.framework bundle
-    public var frameworkName: String { return "SwiftAE.framework" }
+    // TO DO: eventually get following values from SwiftAutomation.framework bundle
+    public var frameworkName: String { return "SwiftAutomation.framework" }
     public var frameworkVersion: String { return "0.1.0" }
     
     // create GlueSpec for specified application (applicationURL is typically a file:// URL, or nil to create default glue)

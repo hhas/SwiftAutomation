@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
     <head>
-        <title>SwiftAE | Optimizing performance</title>
+        <title>SwiftAutomation | Optimizing performance</title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <style type="text/css" media="all"><!--@import url(full.css);--></style>
     </head>
@@ -36,8 +36,8 @@ let contacts = Contacts()
 let desiredEmail = "sam.brown@example.com"
 
 var foundNames: [String] = []
-for person in contacts.people.get() as! [CONSpecifier] {
-    for email in people.emails.get() as! [CONSpecifier] {
+for person in contacts.people.get() as [CONItem] {
+    for email in people.emails.get() as [CONItem] {
         if email.value.get() == desiredEmail {
             foundNames += person.name.get()
         }
@@ -60,7 +60,7 @@ print(foundNames)
 
 let desiredEmail = "sam.brown@example.com"
 
-let foundNames = contacts.people[CONIts.emails.value.contains(desiredEmail)].name.get() as! [String]
+let foundNames = contacts.people[CONIts.emails.value.contains(desiredEmail)].name.get() as [String]
 
 print(foundNames)
 </code></pre>
@@ -82,10 +82,10 @@ print(foundNames)
 let desiredDomain = "@example.com"
 
 // get a list of name strings
-let names = contacts.people.name.get() as! [String]
+let names = contacts.people.name.get() as [String]
 
 // get a list of lists of email strings
-let emails = contacts.people.emails.value.get() as! [[String]]
+let emails = contacts.people.emails.value.get() as [[String]]
 
 var foundNames = []
 for i in (0 ... names.count) { // TO DO: how does zipping both lists and iterating over that compare?

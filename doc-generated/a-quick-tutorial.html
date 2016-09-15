@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
     <head>
-        <title>SwiftAE | A quick tutorial</title>
+        <title>SwiftAutomation | A quick tutorial</title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <style type="text/css" media="all"><!--@import url(full.css);--></style>
     </head>
@@ -16,15 +16,15 @@
 
 <p>[TO DO: TextEdit now returns by-name document specifiers; update code examples accordingly]</p>
 
-<p>The following tutorial provides a practical taste of application scripting with Swift and SwiftAE. Later chapters cover the technical details of SwiftAE usage that are mostly skimmed over here.</p>
+<p>The following tutorial provides a practical taste of application scripting with Swift and SwiftAutomation. Later chapters cover the technical details of SwiftAutomation usage that are mostly skimmed over here.</p>
 
 <h2>'Hello World' tutorial</h2>
 
-<p>This tutorial uses SwiftAE, TextEdit and the interactive command line <code>swift</code> interpreter to perform a simple 'Hello World' exercise.</p>
+<p>This tutorial uses SwiftAutomation, TextEdit and the interactive command line <code>swift</code> interpreter to perform a simple 'Hello World' exercise.</p>
 
 <p class="hilitebox">Caution: It is recommended that you do not have any other documents open in TextEdit during this tutorial, as accidental modifications are easy to make and changes to existing documents are not undoable.</p>
 
-<p>[TO DO: using interactive <code>swift</code> in Terminal will only work if SwiftAE framework and static glues can be passed via -framework and -F options; need to see if shared workspace+playground will be a better option.  OTOH, if interactive <code>swift</code> is a possibility, it would make sense to wrap it in a custom shell script that passes required options automatically, and also takes a list of scriptable apps for which to generate glues if they don't already exist]</p>
+<p>[TO DO: using interactive <code>swift</code> in Terminal will only work if SwiftAutomation framework and static glues can be passed via -framework and -F options; need to see if shared workspace+playground will be a better option.  OTOH, if interactive <code>swift</code> is a possibility, it would make sense to wrap it in a custom shell script that passes required options automatically, and also takes a list of scriptable apps for which to generate glues if they don't already exist]</p>
 
 <p>To begin, launch Terminal.app and type <code>swift</code> followed by a newline to launch the <code>swift</code> interpreter:</p>
 
@@ -74,7 +74,7 @@
 
 <p>The front TextEdit document should now contain the text "Hello World".</p>
 
-<p>Because the above expression is a bit unwieldy to write, SwiftAE allows it to be written in a more elegant OO-like format as a special case, where the <code>set()</code> command is called upon the document's object specifier:</p>
+<p>Because the above expression is a bit unwieldy to write, SwiftAutomation allows it to be written in a more elegant OO-like format as a special case, where the <code>set()</code> command is called upon the document's object specifier:</p>
 
 <pre><code>  doc.text.set(to: "Hello World")
 </code></pre>
@@ -89,7 +89,7 @@
   // "Hello World"
 </code></pre>
 
-<p>This may seem counter-intuitive if you're used to dealing with AppleScript or Swift, where evaluating a literal reference returns the <em>value</em> identified by that reference. However, SwiftAE only uses object-oriented references to construct object specifiers, not to resolve them. Always remember that an object specifier is really a first-class query object, so while the syntax may look similar to that of an object-oriented reference, its behavior is very different. For example, when evaluating the literal reference:</p>
+<p>This may seem counter-intuitive if you're used to dealing with AppleScript or Swift, where evaluating a literal reference returns the <em>value</em> identified by that reference. However, SwiftAutomation only uses object-oriented references to construct object specifiers, not to resolve them. Always remember that an object specifier is really a first-class query object, so while the syntax may look similar to that of an object-oriented reference, its behavior is very different. For example, when evaluating the literal reference:</p>
 
 <pre><code>  textedit.documents[1].text
 </code></pre>
@@ -100,7 +100,7 @@
   // "Hello World!"
 </code></pre>
 
-<p>As before, SwiftAE provides alternative convenience forms that allow the above command to be written more neatly as this:</p>
+<p>As before, SwiftAutomation provides alternative convenience forms that allow the above command to be written more neatly as this:</p>
 
 <pre><code>  doc.text.get()
 </code></pre>

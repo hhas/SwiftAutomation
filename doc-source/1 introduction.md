@@ -1,12 +1,12 @@
 # Introduction
 
-## What is SwiftAE?
+## What is SwiftAutomation?
 
-SwiftAE allows you to control Apple event-aware ("AppleScriptable") macOS applications from Swift programs.
+SwiftAutomation allows you to control Apple event-aware ("AppleScriptable") macOS applications from Swift programs.
 
 For example, to get the value of the first paragraph of the topmost document in TextEdit:
 
-    let result = try TextEdit().documents[1].paragraphs[1].get() as! String
+    let result = try TextEdit().documents[1].paragraphs[1].get() as String
 
 This is equivalent to the AppleScript statement:
 
@@ -15,7 +15,7 @@ This is equivalent to the AppleScript statement:
 
 ## "Hello World!" example
 
-The following example uses SwiftAE to create a new "Hello World!" document in TextEdit:
+The following example uses SwiftAutomation to create a new "Hello World!" document in TextEdit:
 
     let textedit = TextEdit()
 

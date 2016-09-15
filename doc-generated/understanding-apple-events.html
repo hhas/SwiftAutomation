@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
     <head>
-        <title>SwiftAE | Understanding Apple events</title>
+        <title>SwiftAutomation | Understanding Apple events</title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <style type="text/css" media="all"><!--@import url(full.css);--></style>
     </head>
@@ -55,7 +55,7 @@
 <p>A scriptable application also contains a built-in definition of its scripting interface in the form of an <code>aete</code> or <code>sdef</code> resource. This resource can be obtained programmatically and used:</p>
 
 <ul>
-<li><p>to support automatic translation of human-readable terminology to four-letter codes in high-level bridges such as AppleScript and SwiftAE</p></li>
+<li><p>to support automatic translation of human-readable terminology to four-letter codes in high-level bridges such as AppleScript and SwiftAutomation</p></li>
 <li><p>to generate basic human-readable documentation by applications such as AppleScript Editor.</p></li>
 </ul>
 
@@ -171,11 +171,11 @@
 
 <p>Finally, each window object has a one-to-one relationship to the document object whose content it displays.</p>
 
-<h2>How SwiftAE works</h2>
+<h2>How SwiftAutomation works</h2>
 
-<p>SwiftAE is a high-level pure-Swift wrapper for macOS's lower-level Apple Event Manager APIs (<code>NSAppleEventDescriptor</code>). </p>
+<p>SwiftAutomation is a high-level pure-Swift wrapper for macOS's lower-level Apple Event Manager APIs (<code>NSAppleEventDescriptor</code>). </p>
 
-<p>The SwiftAE architecture consists of two parts:</p>
+<p>The SwiftAutomation architecture consists of two parts:</p>
 
 <ul>
 <li><p>a collection of abstract classes and protocol extensions, providing an object-oriented API for building relational AEOM queries (object specifiers) and dispatching Apple events (commands)</p></li>
@@ -191,7 +191,7 @@
   end tell
 </code></pre>
 
-<p>Here is the equivalent Swift code using SwiftAE's default <code>AE</code> glue:</p>
+<p>Here is the equivalent Swift code using SwiftAutomation's default <code>AE</code> glue:</p>
 
 <pre><code>  let textedit = AEApplication(bundleIdentifier: "com.apple.TextEdit")
 

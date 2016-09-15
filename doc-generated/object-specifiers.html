@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
     <head>
-        <title>SwiftAE | Object specifiers</title>
+        <title>SwiftAutomation | Object specifiers</title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <style type="text/css" media="all"><!--@import url(full.css);--></style>
     </head>
@@ -32,7 +32,7 @@
 
 <h3>Property</h3>
 
-<pre><code>var PROPERTY: <var>PREFIX</var>Object</code> {get}</pre>
+<pre><code>var PROPERTY: <var>PREFIX</var>Item</code> {get}</pre>
 
 <p>Syntax:</p>
 
@@ -46,7 +46,7 @@ finder.<strong>home</strong>.files.<strong>name</strong></code></pre>
 
 <h3>All elements</h3>
 
-<pre><code>var ELEMENTS: <var>PREFIX</var>Elements {get}</code></pre>
+<pre><code>var ELEMENTS: <var>PREFIX</var>Items {get}</code></pre>
 
 <p>Syntax:</p>
 
@@ -60,7 +60,7 @@ textedit.<strong>documents</strong>.<strong>paragraphs</strong>.<strong>words</s
 
 <h3>Element by index</h3>
 
-<pre><code>subscript(index: Any) -> <var>PREFIX</var>Object</code></pre>
+<pre><code>subscript(index: Any) -> <var>PREFIX</var>Item</code></pre>
 
 <p>Syntax:</p>
 
@@ -82,8 +82,8 @@ items[-1]
 
 <h3>Element by name</h3>
 
-<pre><code>subscript(index: String) -> <var>PREFIX</var>Object
-func named(name: Any) -> <var>PREFIX</var>Object</code></pre>
+<pre><code>subscript(index: String) -> <var>PREFIX</var>Item
+func named(name: Any) -> <var>PREFIX</var>Item</code></pre>
 
 <p>Specifies the first element with the given name. (The subscript syntax is preferred; the <code>named</code> method would only need used if a non-string value was required.)</p>
 
@@ -102,7 +102,7 @@ files["index.html"]
 
 <h3>Element by ID</h3>
 
-<pre><code>func ID(elementID:Any) -&gt; &lt;var&gt;PREFIX&lt;/var&gt;Object
+<pre><code>func ID(elementID:Any) -&gt; &lt;var&gt;PREFIX&lt;/var&gt;Item
 </code></pre>
 
 <p>Syntax:</p>
@@ -117,10 +117,10 @@ files["index.html"]
 
 <h3>Element by absolute position</h3>
 
-<pre><code>var first: &lt;var&gt;PREFIX&lt;/var&gt;Object {get}
-var middle: &lt;var&gt;PREFIX&lt;/var&gt;Object {get}
-var last: &lt;var&gt;PREFIX&lt;/var&gt;Object {get}
-var any: &lt;var&gt;PREFIX&lt;/var&gt;Object {get}
+<pre><code>var first: &lt;var&gt;PREFIX&lt;/var&gt;Item {get}
+var middle: &lt;var&gt;PREFIX&lt;/var&gt;Item {get}
+var last: &lt;var&gt;PREFIX&lt;/var&gt;Item {get}
+var any: &lt;var&gt;PREFIX&lt;/var&gt;Item {get}
 </code></pre>
 
 <p>Syntax:</p>
@@ -139,8 +139,8 @@ files.any
 
 <h3>Element by relative position</h3>
 
-<pre><code>func previous(elementClass: Symbol? = nil) -&gt; &lt;var&gt;PREFIX&lt;/var&gt;Object
-func next(elementClass: Symbol? = nil) -&gt; &lt;var&gt;PREFIX&lt;/var&gt;Object
+<pre><code>func previous(elementClass: Symbol? = nil) -&gt; &lt;var&gt;PREFIX&lt;/var&gt;Item
+func next(elementClass: Symbol? = nil) -&gt; &lt;var&gt;PREFIX&lt;/var&gt;Item
 </code></pre>
 
 <p>Syntax:</p>
@@ -162,14 +162,14 @@ paragraphs[-1].previous(TED.character) // the last character before the last par
 
 <h3>Elements by range</h3>
 
-<pre><code>subscript(from: Any, to: Any) -&gt; &lt;var&gt;PREFIX&lt;/var&gt;Elements
+<pre><code>subscript(from: Any, to: Any) -&gt; &lt;var&gt;PREFIX&lt;/var&gt;Items
 </code></pre>
 
 <p>Syntax:</p>
 
 <pre><code>elements<strong>[</strong><var>start</var><strong>,</strong> <var>end</var><strong>]</strong>
-        <var>start</var> : Int | String | <var>PREFIX</var>Object -- start of range
-        <var>end</var> : Int | String | <var>PREFIX</var>Object -- end of range</code></pre>
+        <var>start</var> : Int | String | <var>PREFIX</var>Item -- start of range
+        <var>end</var> : Int | String | <var>PREFIX</var>Item -- end of range</code></pre>
 
 <p>Range references select all elements between and including two object specifiers indicating the start and end of the range. The start and end specifiers are normally declared relative to the container of the elements being selected. </p>
 
@@ -202,7 +202,7 @@ text[TEPCon.characters[5], TEPCon.words[-2]]
 
 <h3>Elements by test</h3>
 
-<pre><code>subscript(test: TestClause) -&gt; &lt;var&gt;PREFIX&lt;/var&gt;Elements
+<pre><code>subscript(test: TestClause) -&gt; &lt;var&gt;PREFIX&lt;/var&gt;Items
 </code></pre>
 
 <p>A specifier to each element that satisfies one or more conditions specified by a test specifier:</p>

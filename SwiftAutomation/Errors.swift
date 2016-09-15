@@ -1,6 +1,6 @@
 //
 //  Errors.swift
-//  SwiftAE
+//  SwiftAutomation
 //
 
 import Foundation
@@ -8,7 +8,7 @@ import Foundation
 // TO DO: how best to compose/chain exceptions?
 
 
-// TO DO: can/should Errors be implemented as enums? TBH, only error user should see directly is CommandError (though currently sendAppleEvent throws non-CommandError if called on untargeted specifier); specific errors (which may be SwiftAE or NSError [sub]classes) should be encapsulated in that, and are really only included for informational purposes. Any specialized error handling would be decided according to OSStatus code (which cannot be defined as an enum as it's completely arbitrary) so will require a switch block instead.
+// TO DO: can/should Errors be implemented as enums? TBH, only error user should see directly is CommandError (though currently sendAppleEvent throws non-CommandError if called on untargeted specifier); specific errors (which may be SwiftAutomation or NSError [sub]classes) should be encapsulated in that, and are really only included for informational purposes. Any specialized error handling would be decided according to OSStatus code (which cannot be defined as an enum as it's completely arbitrary) so will require a switch block instead.
 
 
 let gDescriptionForError: [Int:String] = [ // error descriptions from ASLG/MacErrors.h
@@ -105,7 +105,7 @@ let gDescriptionForError: [Int:String] = [ // error descriptions from ASLG/MacEr
 // errors
 
 public class SwiftAEError: Error, CustomStringConvertible { // TO DO: should all errors be chained? or just CommandError?
-    public let _domain = "SwiftAE"
+    public let _domain = "SwiftAutomation"
     public let _code: Int // TO DO: use custom codes for error types, or standard OSStatus codes?
     public let message: String?
     
@@ -199,7 +199,7 @@ public class CommandError: SwiftAEError {
         
         var errorNumber = 0
         if let error = parentError {
-            print("! SwiftAE/AEM error: \(error)")
+            print("! SwiftAutomation/AppleEventManager error: \(error)")
             errorNumber = error._code
         } else if let reply = replyEvent {
             print("! App reply event: \(reply)")

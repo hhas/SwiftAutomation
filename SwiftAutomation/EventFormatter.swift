@@ -1,6 +1,6 @@
 //
 //  AppleEventFormatter.swift
-//  SwiftAE
+//  SwiftAutomation
 //
 //  Format an AppleEvent descriptor as Swift source code. Enables user tools
 //  to translate application commands from AppleScript to Swift syntax simply
@@ -15,6 +15,8 @@
 // TO DO: Application object should hide url arg for display purposes
 
 // TO DO: Symbols aren't displaying correctly (currently appear as `Symbol.NAME` instead of `PREFIX.NAME`)
+
+// TO DO: Symbols currently appear quoted in commands, e.g. `TextEdit(name: "/Applications/TextEdit.app").documents.close(saving: "Symbol.no")`
 
 
 import Foundation
@@ -84,7 +86,7 @@ private func appDataForAppleEvent(_ event: NSAppleEventDescriptor, useTerminolog
 // extend standard AppData to include terminology translation
 
 
-public class DynamicAppData: AppData {
+public class DynamicAppData: AppData { // TO DO: can this be used as-is/with modifications as base class for dynamic bridges? if so, move to its own file as it's not specific to formatting; if not, rename it
     
     public internal(set) var glueSpec: GlueSpec! // TO DO: initializing these is messy, due to AppData.init() being required; any cleaner solution?
     public internal(set) var glueTable: GlueTable!
@@ -113,12 +115,12 @@ public class DynamicAppData: AppData {
         } else {
             glueTable = try glueSpec.buildGlueTable()
             specifierFormatter = SpecifierFormatter(applicationClassName: glueSpec.applicationClassName,
-                classNamePrefix: glueSpec.classNamePrefix,
-                propertyNames: glueTable.propertiesByCode,
-                elementsNames: glueTable.elementsByCode)
+                                                    classNamePrefix: glueSpec.classNamePrefix,
+                                                    propertyNames: glueTable.propertiesByCode,
+                                                    elementsNames: glueTable.elementsByCode)
         }
-        let glueInfo = GlueInfo(insertionSpecifierType: AEInsertion.self, objectSpecifierType: AEObject.self,
-                                elementsSpecifierType: AEElements.self, rootSpecifierType: AERoot.self,
+        let glueInfo = GlueInfo(insertionSpecifierType: AEInsertion.self, objectSpecifierType: AEItem.self,
+                                multiObjectSpecifierType: AEItems.self, rootSpecifierType: AERoot.self,
                                 symbolType: Symbol.self, formatter: specifierFormatter)
         // TO DO: this is going to leak memory on root objects; how to clean up? (explicit 'releaseRoots' method?)
         let appData = self.init(target: TargetApplication.url(applicationURL), launchOptions: DefaultLaunchOptions,
@@ -130,7 +132,7 @@ public class DynamicAppData: AppData {
     
     public override func targetedCopy(_ target: TargetApplication, launchOptions: LaunchOptions, relaunchMode: RelaunchMode) -> Self {
         let appData = type(of: self).init(target: target, launchOptions: launchOptions, relaunchMode: relaunchMode,
-                                            glueInfo: self.glueInfo, rootObjects: self.rootObjects)
+                                          glueInfo: self.glueInfo, rootObjects: self.rootObjects)
         appData.glueSpec = self.glueSpec
         appData.glueTable = self.glueTable
         return appData      

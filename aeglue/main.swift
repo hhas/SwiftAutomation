@@ -2,9 +2,9 @@
 //  main.swift
 //  aeglue
 //
-//  Generate application-specific glue files for SwiftAE.
+//  Generate application-specific glue files for SwiftAutomation.
 //
-//  Note: the undocumented -d option is used to [re]generate the SwiftAE framework's AEApplicationGlue.swift file.
+//  Note: the undocumented -d option is used to [re]generate the SwiftAutomation framework's AEApplicationGlue.swift file.
 //  TO DO: would it be simpler just to generate default glue if no apps specified? (if so, -np options should be allowed, so users can create their own default glues)
 //
 
@@ -19,8 +19,8 @@ import Foundation
 
 
 let gHelp = [
-    "Generate SwiftAE glue classes and SDEF documentation for controlling",
-    "an \"AppleScriptable\" application from Swift.",
+    "Generate SwiftAutomation glue classes and SDEF documentation for",
+    " controllingan \"AppleScriptable\" application from Swift.",
     "",
     "Usage:",
     "",
@@ -45,7 +45,8 @@ let gHelp = [
     "    -r             Overwrite existing files.",
     "    -s             Use SDEF terminology instead of AETE, e.g. if",
     "                       application's ascr/gdte handler is broken.",
-    "    -v             Output the SwiftAE framework's version and exit.",
+    "    -v             Output the SwiftAutomation framework's version",
+    "                       and exit.",
     "",
     "Examples:",
     "",
@@ -134,7 +135,7 @@ while let opt = optArgs.popLast() {
     case "-s":
         useSDEF = true
     case "-v":
-        print("0.0.0") // TO DO: print SwiftAE.framework bundle version
+        print("0.0.0") // TO DO: print SwiftAutomation.framework bundle version
         exit(0)
     case "--": // explicit options/arguments separator, so treat remaining items as arguments
         applicationPaths = optArgs
@@ -190,7 +191,7 @@ for applicationURL in applicationURLs {
                             applicationClassName: applicationClassName, useSDEF: useSDEF)
     let shellCommand = "aeglue " + (foundOpts + (applicationURL == nil ? [] : [applicationURL!.lastPathComponent])).joined(separator: " ")
     let glueFileName = "\(glueSpec.applicationClassName)Glue.swift"
-    // generate SwiftAE glue file
+    // generate SwiftAutomation glue file
     do {
         let code = try renderStaticGlueTemplate(glueSpec, extraTags: ["AEGLUE_COMMAND": shellCommand,
                                                                       "GLUE_NAME":      glueFileName,

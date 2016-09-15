@@ -1,6 +1,6 @@
 //
 //  DefaultTerminology.swift
-//  SwiftAE
+//  SwiftAutomation
 //
 //  Standard terminology selectively taken from AppleScript's AEUT resource
 //

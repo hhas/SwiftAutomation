@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
     <head>
-        <title>SwiftAE | Introduction</title>
+        <title>SwiftAutomation | Introduction</title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <style type="text/css" media="all"><!--@import url(full.css);--></style>
     </head>
@@ -10,13 +10,13 @@
             <div id="main">
                 <h1>Introduction</h1>
                 <div class="navbar"><a href="index.html">index</a> | <a href="understanding-apple-events.html">next</a></div>
-                <h2>What is SwiftAE?</h2>
+                <h2>What is SwiftAutomation?</h2>
 
-<p>SwiftAE allows you to control Apple event-aware ("AppleScriptable") macOS applications from Swift programs.</p>
+<p>SwiftAutomation allows you to control Apple event-aware ("AppleScriptable") macOS applications from Swift programs.</p>
 
 <p>For example, to get the value of the first paragraph of the topmost document in TextEdit:</p>
 
-<pre><code>  let result = try TextEdit().documents[1].paragraphs[1].get() as! String
+<pre><code>  let result = try TextEdit().documents[1].paragraphs[1].get() as String
 </code></pre>
 
 <p>This is equivalent to the AppleScript statement:</p>
@@ -26,7 +26,7 @@
 
 <h2>"Hello World!" example</h2>
 
-<p>The following example uses SwiftAE to create a new "Hello World!" document in TextEdit:</p>
+<p>The following example uses SwiftAutomation to create a new "Hello World!" document in TextEdit:</p>
 
 <pre><code>  let textedit = TextEdit()
 

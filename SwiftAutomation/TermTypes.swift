@@ -1,6 +1,6 @@
 //
 //  TermTypes.swift
-//  SwiftAE
+//  SwiftAutomation
 //
 //
 

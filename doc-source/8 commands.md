@@ -4,11 +4,11 @@
 
 ## Syntax
 
-For convenience, SwiftAE makes application commands available as methods on every object specifier. (Note: due to the limitations of aete-based terminology, the user must determine for themselves which commands can operate on a particular reference. Some applications document this information separately.) All application commands have the same basic structure: a single, optional direct parameter, followed by zero or more named parameters specific to that command, followed by zero or more event attributes that determine how the Apple event is processed:
+For convenience, SwiftAutomation makes application commands available as methods on every object specifier. (Note: due to the limitations of aete-based terminology, the user must determine for themselves which commands can operate on a particular reference. Some applications document this information separately.) All application commands have the same basic structure: a single, optional direct parameter, followed by zero or more named parameters specific to that command, followed by zero or more event attributes that determine how the Apple event is processed:
 
-<pre><code>func <var>commandName</var>(directParameter: AnyObject = NoParameter,
-                 <var>namedParameter1:</var> AnyObject = NoParameter,
-                 <var>namedParameter2:</var> AnyObject = NoParameter,
+<pre><code>func <var>commandName</var>(directParameter: Any = NoParameter,
+                 <var>namedParameter1:</var> Any = NoParameter,
+                 <var>namedParameter2:</var> Any = NoParameter,
                  ...
                  waitReply:       Bool                = true,
                  withTimeout:     NSTimeInterval?     = nil,
@@ -65,7 +65,7 @@ The following special-case behaviours are implemented for convenience:
 
         application.command(specifier, namedParameter1: someValue, namedParameter2: someValue, ...)
 
-The two forms are equivalent (SwiftAE converts the first form to the second behind the scenes) although the first form is preferred for conciseness. [TO DO: note that the first form only works when specifier has a targeted application object as its root; if the specifier is constructed from an untargeted `App` root, the second form must be used]
+The two forms are equivalent (SwiftAutomation converts the first form to the second behind the scenes) although the first form is preferred for conciseness. [TO DO: note that the first form only works when specifier has a targeted application object as its root; if the specifier is constructed from an untargeted `App` root, the second form must be used]
 
 
 * If a command that already has a direct parameter is called on a specifier, i.e.:
@@ -75,7 +75,7 @@ The two forms are equivalent (SwiftAE converts the first form to the second behi
 the specifier upon which it is called will be packed as the Apple event's "subject" attribute (`keySubjectAttr`).
 
 
-* If the `make` command is called on an insertion location specifier (`before`/`after`/`beginning`/`end`), SwiftAE will pack that specifier as the Apple event's `at:` parameter if it doesn't already have one; i.e.:
+* If the `make` command is called on an insertion location specifier (`before`/`after`/`beginning`/`end`), SwiftAutomation will pack that specifier as the Apple event's `at:` parameter if it doesn't already have one; i.e.:
 
         insertionSpecifier.make(new: className)
 
@@ -83,14 +83,14 @@ the specifier upon which it is called will be packed as the Apple event's "subje
 
         application.make(new: className, at: insertionSpecifier)
 
-   If the `make` command is called on an object specifier, SwiftAE will pack that specifier as the Apple event's "subject" attribute. Be aware that some applications may not handle this attribute correctly, in which case the specifier should be passed via the `make` command's `at:` parameter. [TO DO: clarify this; also, note again that the convenience form only works when specifier is constructed from a targeted Application object]
+   If the `make` command is called on an object specifier, SwiftAutomation will pack that specifier as the Apple event's "subject" attribute. Be aware that some applications may not handle this attribute correctly, in which case the specifier should be passed via the `make` command's `at:` parameter. [TO DO: clarify this; also, note again that the convenience form only works when specifier is constructed from a targeted Application object]
 
 
 ## Command errors
 
 [TO DO: Error class implementation is not yet finalized; update this section when done]
 
-If a command fails due to an error raised by the target application or Apple Event Manager, or if a given parameter or attribute was not of a [supported type](objc-ae-type-mappings.html), a `CommandError` is thrown. SwiftAE errors have the domain `SwiftAEErrorDomain`, an error code that is typically an `OSStatus` value or custom value defined by the target application, and a `userInfo` dictionary containing a standard `NSLocalizedDescription` key containing the error description string, plus zero or more of the following SwiftAE-defined keys:
+If a command fails due to an error raised by the target application or Apple Event Manager, or if a given parameter or attribute was not of a [supported type](objc-ae-type-mappings.html), a `CommandError` is thrown. SwiftAutomation errors have the domain `SwiftAutomationErrorDomain`, an error code that is typically an `OSStatus` value or custom value defined by the target application, and a `userInfo` dictionary containing a standard `NSLocalizedDescription` key containing the error description string, plus zero or more of the following SwiftAutomation-defined keys:
 
 * Standard Apple event/OSA error information:
 
@@ -98,7 +98,7 @@ If a command fails due to an error raised by the target application or Apple Eve
   * `errorMessage` – the error message (`String`) provided by the application, if any, otherwise a default description if the error number is a standard AE error code
   * `errorBriefMessage` – short version of the above; not normally used by applications, but included here for completeness
   * `errorExpectedType` – if a coercion error (-1700) occurred, a `Symbol` describing the type of value that was required
-  * `errorOffendingObject` – the parameter (`AnyObject`) that caused the error, where relevant
+  * `errorOffendingObject` – the parameter (`Any`) that caused the error, where relevant
 
 * Additional error information: 
 
@@ -108,7 +108,7 @@ If a command fails due to an error raised by the target application or Apple Eve
 
 ## Note to AppleScript users
 
-Unlike AppleScript, which implicitly sends a `get` command to any unresolved application object references at the end of evaluating an expression, SwiftAE only resolves a reference when it receives an appropriate command. For example:
+Unlike AppleScript, which implicitly sends a `get` command to any unresolved application object references at the end of evaluating an expression, SwiftAutomation only resolves a reference when it receives an appropriate command. For example:
 
   let o = TextEdit().documents
 
@@ -127,11 +127,11 @@ This "implicit `get`" behavior is built directly into the AppleScript interprete
 -- every document of application "TextEdit"</code></pre>
 
 
-In contrast, SwiftAE has no invisible "magic" behaviors attempting to infer your actual intent: it only ever sends an Apple event when you _explicitly_ instruct it to do so:
+In contrast, SwiftAutomation has no invisible "magic" behaviors attempting to infer your actual intent: it only ever sends an Apple event when you _explicitly_ instruct it to do so:
 
 <pre><code>let o = TextEdit().documents<strong>.get()</strong>
 print(o)
 // [TextEdit().documents["Untitled"], TextEdit().documents["Untitled 2"]]</code></pre>
 
-New users coming from AppleScript or OO language backgrounds may find this unintuitive at first, but SwiftAE's clean separation between query construction and event dispatch ensures SwiftAE's behavior is completely straightforward and predictable, and avoids the hidden gotchas that can bite AppleScript users in various unexpected and confusing ways.
+New users coming from AppleScript or OO language backgrounds may find this unintuitive at first, but SwiftAutomation's clean separation between query construction and event dispatch ensures SwiftAutomation's behavior is completely straightforward and predictable, and avoids the hidden gotchas that can bite AppleScript users in various unexpected and confusing ways.
 

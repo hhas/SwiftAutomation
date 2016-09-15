@@ -1,20 +1,21 @@
 //
 //  AEApplicationGlue.swift
 //  built-in 
-//  SwiftAE.framework 0.1.0
-//  `aeglue -rd`
+//  SwiftAutomation.framework 0.1.0
+//  `aeglue -d`
 //
 
 
 import Foundation
 
 
+
 /******************************************************************************/
 // Untargeted AppData instance used in App, Con, Its roots; also used by Application constructors to create their own targeted AppData instances
 
 private let gUntargetedAppData = AppData(glueInfo: GlueInfo(insertionSpecifierType: AEInsertion.self,
-                                                            objectSpecifierType: AEObject.self,
-                                                            elementsSpecifierType: AEElements.self,
+                                                            objectSpecifierType: AEItem.self,
+                                                            multiObjectSpecifierType: AEItems.self,
                                                             rootSpecifierType: AERoot.self,
                                                             symbolType: AESymbol.self,
                                                             formatter: gSpecifierFormatter))
@@ -42,7 +43,7 @@ public class AESymbol: Symbol {
 
     override public var typeAliasName: String {return "AE"}
 
-    public override class func symbol(_ code: OSType, type: OSType = typeType, descriptor: NSAppleEventDescriptor? = nil) -> AESymbol {
+    public override class func symbol(code: OSType, type: OSType = typeType, descriptor: NSAppleEventDescriptor? = nil) -> AESymbol {
         switch (code) {
         case 0x616c6973: return self.alias // "alis"
         case 0x2a2a2a2a: return self.anything // "****"
@@ -148,7 +149,7 @@ public class AESymbol: Symbol {
         case 0x77686974: return self.whitespace // "whit"
         case 0x70736374: return self.writingCode // "psct"
         case 0x79657320: return self.yes // "yes "
-        default: return super.symbol(code, type: type, descriptor: descriptor) as! AESymbol
+        default: return super.symbol(code: code, type: type, descriptor: descriptor) as! AESymbol
         }
     }
 
@@ -270,8 +271,10 @@ public typealias AE = AESymbol // allows symbols to be written as (e.g.) AE.name
 
 public protocol AECommand: SpecifierProtocol {} // provides AE dispatch methods
 
+// Command->Any will be bound when return type can't be inferred, else Command->T
+
 extension AECommand {
-    public func activate(_ directParameter: Any = NoParameter,
+    @discardableResult public func activate(_ directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("activate", eventClass: 0x6d697363, eventID: 0x61637476, // "misc"/"actv"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
@@ -285,7 +288,7 @@ extension AECommand {
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
-    public func get(_ directParameter: Any = NoParameter,
+    @discardableResult public func get(_ directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("get", eventClass: 0x636f7265, eventID: 0x67657464, // "core"/"getd"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
@@ -299,7 +302,7 @@ extension AECommand {
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
-    public func launch(_ directParameter: Any = NoParameter,
+    @discardableResult public func launch(_ directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("launch", eventClass: 0x61736372, eventID: 0x6e6f6f70, // "ascr"/"noop"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
@@ -313,7 +316,7 @@ extension AECommand {
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
-    public func open(_ directParameter: Any = NoParameter,
+    @discardableResult public func open(_ directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("open", eventClass: 0x61657674, eventID: 0x6f646f63, // "aevt"/"odoc"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
@@ -327,7 +330,7 @@ extension AECommand {
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
-    public func openLocation(_ directParameter: Any = NoParameter,
+    @discardableResult public func openLocation(_ directParameter: Any = NoParameter,
             window: Any = NoParameter,
             waitReply: Bool = true, withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("openLocation", eventClass: 0x4755524c, eventID: 0x4755524c, // "GURL"/"GURL"
@@ -345,7 +348,7 @@ extension AECommand {
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
-    public func print(_ directParameter: Any = NoParameter,
+    @discardableResult public func print(_ directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("print", eventClass: 0x61657674, eventID: 0x70646f63, // "aevt"/"pdoc"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
@@ -359,7 +362,7 @@ extension AECommand {
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
-    public func quit(_ directParameter: Any = NoParameter,
+    @discardableResult public func quit(_ directParameter: Any = NoParameter,
             saving: Any = NoParameter,
             waitReply: Bool = true, withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("quit", eventClass: 0x61657674, eventID: 0x71756974, // "aevt"/"quit"
@@ -377,7 +380,7 @@ extension AECommand {
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
-    public func reopen(_ directParameter: Any = NoParameter,
+    @discardableResult public func reopen(_ directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("reopen", eventClass: 0x61657674, eventID: 0x72617070, // "aevt"/"rapp"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
@@ -391,7 +394,7 @@ extension AECommand {
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
-    public func run(_ directParameter: Any = NoParameter,
+    @discardableResult public func run(_ directParameter: Any = NoParameter,
             waitReply: Bool = true, withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("run", eventClass: 0x61657674, eventID: 0x6f617070, // "aevt"/"oapp"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
@@ -405,7 +408,7 @@ extension AECommand {
                 ], requestedType: nil, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
-    public func set(_ directParameter: Any = NoParameter,
+    @discardableResult public func set(_ directParameter: Any = NoParameter,
             to: Any = NoParameter,
             waitReply: Bool = true, withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent("set", eventClass: 0x636f7265, eventID: 0x73657464, // "core"/"setd"
@@ -431,35 +434,43 @@ public protocol AEQuery: ObjectSpecifierExtension, AECommand {} // provides vars
 extension AEQuery {
     
     // Properties
-    public var class_: AEObject {return self.property(0x70636c73) as! AEObject} // "pcls"
-    public var id: AEObject {return self.property(0x49442020) as! AEObject} // "ID  "
-    public var properties: AEObject {return self.property(0x70414c4c) as! AEObject} // "pALL"
+    public var class_: AEItem {return self.property(0x70636c73) as! AEItem} // "pcls"
+    public var id: AEItem {return self.property(0x49442020) as! AEItem} // "ID  "
+    public var properties: AEItem {return self.property(0x70414c4c) as! AEItem} // "pALL"
 
     // Elements
-    public var items: AEElements {return self.elements(0x636f626a) as! AEElements} // "cobj"
+    public var items: AEItems {return self.elements(0x636f626a) as! AEItems} // "cobj"
 }
 
 
 /******************************************************************************/
 // Specifier subclasses add app-specific extensions
 
+// beginning/end/before/after
 public class AEInsertion: InsertionSpecifier, AECommand {}
 
-public class AEObject: ObjectSpecifier, AEQuery {
+
+// by index/name/id/previous/next
+// first/middle/last/any
+public class AEItem: ObjectSpecifier, AEQuery {
     public typealias InsertionSpecifierType = AEInsertion
-    public typealias ObjectSpecifierType = AEObject
-    public typealias ElementsSpecifierType = AEElements
+    public typealias ObjectSpecifierType = AEItem
+    public typealias MultipleObjectSpecifierType = AEItems
 }
 
-public class AEElements: AEObject, ElementsSpecifierExtension {}
+// by range/test
+// all
+public class AEItems: AEItem, ElementsSpecifierExtension {}
 
+// App/Con/Its
 public class AERoot: RootSpecifier, AEQuery, RootSpecifierExtension {
     public typealias InsertionSpecifierType = AEInsertion
-    public typealias ObjectSpecifierType = AEObject
-    public typealias ElementsSpecifierType = AEElements
+    public typealias ObjectSpecifierType = AEItem
+    public typealias MultipleObjectSpecifierType = AEItems
     public override class var untargetedAppData: AppData { return gUntargetedAppData }
 }
 
+// application
 public class AEApplication: AERoot, ApplicationExtension {}
 
 // App/Con/Its root objects used to construct untargeted specifiers; these can be used to construct specifiers for use in commands, though cannot send commands themselves
@@ -467,4 +478,3 @@ public class AEApplication: AERoot, ApplicationExtension {}
 public let AEApp = gUntargetedAppData.rootObjects.app as! AERoot
 public let AECon = gUntargetedAppData.rootObjects.con as! AERoot
 public let AEIts = gUntargetedAppData.rootObjects.its as! AERoot
-

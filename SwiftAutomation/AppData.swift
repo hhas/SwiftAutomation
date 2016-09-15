@@ -1,6 +1,6 @@
 //
 //  AppData.swift
-//  SwiftAE
+//  SwiftAutomation
 //
 //  Swift-AE type conversion and Apple event dispatch
 //
@@ -10,7 +10,7 @@ import AppKit
 
 
 
-// TO DO: what about 'missing value'? for a pure Swift bridge, might be better to use nil rather than Symbol.missingValue; note that Swift's compile-time/run-time treatment of `Any` and `nil` is inconsistent (either flawed or buggy)
+// TO DO: what about 'missing value'? for a pure Swift bridge, might be better to use nil rather than Symbol.missingValue; note that Swift's compile-time/run-time treatment of `Any` and `nil` is inconsistent (either flawed or buggy). Q. How will this affect pack/unpack; presumably Optional will need extended same as collections to do its own unpacking?
 
 // TO DO: split into untargeted and targeted classes? or is current arrangement good enough? (mostly it's about returning appropriate app root in unpack)
 
@@ -28,12 +28,24 @@ public typealias RootObjects = (app: RootSpecifier, con: RootSpecifier, its: Roo
 
 
 public struct GlueInfo { // Glue-defined specifier, symbol, and formatter classes; used in (e.g.) AppData.unpack()
-    public let insertionSpecifierType: InsertionSpecifier.Type
-    public let objectSpecifierType: ObjectSpecifier.Type
-    public let elementsSpecifierType: ObjectSpecifier.Type
-    public let rootSpecifierType: RootSpecifier.Type
-    public let symbolType: Symbol.Type
-    public let formatter: SpecifierFormatter
+    let insertionSpecifierType: InsertionSpecifier.Type
+    let objectSpecifierType: ObjectSpecifier.Type
+    let multiObjectSpecifierType: ObjectSpecifier.Type
+    let rootSpecifierType: RootSpecifier.Type
+    let symbolType: Symbol.Type
+    let formatter: SpecifierFormatter
+    
+    public init(insertionSpecifierType: InsertionSpecifier.Type,
+                objectSpecifierType: ObjectSpecifier.Type, multiObjectSpecifierType: ObjectSpecifier.Type,
+                rootSpecifierType: RootSpecifier.Type, symbolType: Symbol.Type, formatter: SpecifierFormatter) {
+    self.insertionSpecifierType = insertionSpecifierType
+    self.objectSpecifierType = objectSpecifierType
+    self.multiObjectSpecifierType = multiObjectSpecifierType
+    self.rootSpecifierType = rootSpecifierType
+    self.symbolType = symbolType
+    self.formatter = formatter
+
+    }
 }
 
 
@@ -116,7 +128,7 @@ extension Dictionary : SelfPacking, SelfUnpacking {
     public func SwiftAE_packSelf(_ appData: AppData) throws -> NSAppleEventDescriptor {
         var desc = NSAppleEventDescriptor.record()
         var isCustomRecordType: Bool = false
-        if let key = AESymbol.symbol(SwiftAE_pClass) as? Key, let recordClass = self[key] as? Symbol {
+        if let key = AESymbol(code: SwiftAE_pClass) as? Key, let recordClass = self[key] as? Symbol { // TO DO: confirm this works
             if !recordClass.nameOnly {
                 desc = desc.coerce(toDescriptorType: recordClass.code)!
                 isCustomRecordType = true
@@ -146,8 +158,8 @@ extension Dictionary : SelfPacking, SelfUnpacking {
         }
         var result = [Key:Value]()
         if desc.descriptorType != typeAERecord {
-            if let key = appData.glueInfo.symbolType.symbol(SwiftAE_pClass) as? Key,
-                    let value = appData.glueInfo.symbolType.symbol(desc.descriptorType) as? Value {
+            if let key = appData.glueInfo.symbolType.symbol(code: SwiftAE_pClass) as? Key,
+                    let value = appData.glueInfo.symbolType.symbol(code: desc.descriptorType) as? Value {
                 result[key] = value
             }
         }
@@ -162,7 +174,7 @@ extension Dictionary : SelfPacking, SelfUnpacking {
                         guard let keyString = keyDesc.stringValue else {
                             throw UnpackError(appData: appData, descriptor: desc, type: Key.self, message: "Malformed record key.")
                         }
-                        guard let key = appData.glueInfo.symbolType.string(keyString, descriptor: keyDesc) as? Key else {
+                        guard let key = appData.glueInfo.symbolType.symbol(string: keyString, descriptor: keyDesc) as? Key else {
                             throw UnpackError(appData: appData, descriptor: desc, type: Key.self,
                                               message: "Can't unpack record keys as non-Symbol type: \(Key.self)")
                         }
@@ -199,7 +211,7 @@ extension Dictionary : SelfPacking, SelfUnpacking {
 // AppData converts values between Swift and AE types, holds target process information, and provides methods for sending Apple events
 
 
-public class AppData {
+open class AppData {
     
     // Note: the `isInt64Compatible` flag is currently `true` by default on the assumption that most apps will do the right thing upon receiving `typeUInt32`/`typeSInt64`/`typeUInt64` descriptors (i.e. coerce them to whatever type[s] they actually need), and apps like Excel which only accept `SInt32` and `Double` (which are what AppleScript uses) and fail on anything else are in the minority. If that assumption turns out to be wrong, this flag will need to be made `false` by default (i.e. emulate AppleScript's behavior).
     
@@ -232,7 +244,7 @@ public class AppData {
     
     public convenience init() { // used in Specifier file to keep compiler happy (note: this will leak memory each time it's used, and returned Specifiers will be minimally functional; for general programming tasks, use AEApplication.untargetedAppData instead)
         self.init(glueInfo: GlueInfo(insertionSpecifierType: InsertionSpecifier.self, objectSpecifierType: ObjectSpecifier.self,
-                                     elementsSpecifierType: ObjectSpecifier.self, rootSpecifierType: RootSpecifier.self,
+                                     multiObjectSpecifierType: ObjectSpecifier.self, rootSpecifierType: RootSpecifier.self,
                                      symbolType: Symbol.self, formatter: SpecifierFormatter())) // TO DO: use AE classes?
     }
     
@@ -300,7 +312,7 @@ public class AppData {
         }
         switch value {
         // what to use for date, file? NSDate, NSURL/SwiftAEURL?
-        // what to use for typeNull? (don't want to use nil; NSNull?) Q. is there any use case where passing AEApp (which always packs itself as typeNull and should always be included in SwiftAE) wouldn't be sufficient?
+        // what to use for typeNull? (don't want to use nil; NSNull?) Q. is there any use case where passing AEApp (which always packs itself as typeNull and should always be included in SwiftAutomation) wouldn't be sufficient?
         // what about cMissingValue? (currently Symbol) (TBH, deciding optimal representation for 'missing value' is a somewhat intractable problem since app commands that return Any? will be much more annoying than if they return Any - which is already annoying enough)
         case let obj as NSAppleEventDescriptor:
             return obj
@@ -412,10 +424,9 @@ public class AppData {
                 return result
             }
         } else if T.self is Symbol.Type {
-            if desc.coerce(toDescriptorType: typeType) == nil { // AEM happily coerces between typeType, typeEnum, typeProperty, etc., so use that to check suitability rather than check for specific hardcoded descriptorTypes
-                throw UnpackError(appData: self, descriptor: desc, type: T.self, message: "Can't coerce descriptor to symbol: \(desc)")
+            if SymbolTypes.contains(desc.descriptorType) {
+                return self.unpackSymbol(desc) as! T
             }
-            return self.unpackSymbol(desc) as! T
         } else if T.self == Date.self {
              if let result = desc.dateValue {
                  return result as! T
@@ -428,7 +439,7 @@ public class AppData {
             return desc as! T
         }
         // desc couldn't be coerced to the specified type
-        throw UnpackError(appData: self, descriptor: desc, type: T.self, message: "SwiftAE doesn't support type \(T.self).")
+        throw UnpackError(appData: self, descriptor: desc, type: T.self, message: "Can't coerce descriptor to Swift type: \(T.self)")
     }
     
     
@@ -497,11 +508,11 @@ public class AppData {
     // Supporting methods for unpacking symbols and specifiers
     
     func unpackSymbol(_ desc: NSAppleEventDescriptor) -> Symbol {
-        return self.glueInfo.symbolType.symbol(desc.typeCodeValue, type: desc.descriptorType, descriptor: desc)
+        return self.glueInfo.symbolType.symbol(code: desc.typeCodeValue, type: desc.descriptorType, descriptor: desc)
     }
     
     func unpackAEProperty(_ code: OSType) -> Symbol { // used to unpack AERecord keys as Dictionary keys
-        return self.glueInfo.symbolType.symbol(code, type: typeProperty, descriptor: nil) // TO DO: use typeType? (TBH, am tempted to use it throughout, leaving AEM to coerce as necessary, as it'd simplify implementation a bit; also, note that type and property names can often overlap, e.g. `TED.document` may be either)
+        return self.glueInfo.symbolType.symbol(code: code, type: typeProperty, descriptor: nil) // TO DO: use typeType? (TBH, am tempted to use it throughout, leaving AEM to coerce as necessary, as it'd simplify implementation a bit; also, note that type and property names can often overlap, e.g. `TED.document` may be either)
     }
     
     var appRoot: RootSpecifier { return self.rootObjects.app } // TO DO: use original Application instance? when unpacking an objspec chain, it would be best if targeted AppData unpacks its main root as Application, and any nested objspecs' roots as App. Main problem is that storing Application instance inside AppData would create cyclic reference, with no obvious way to weakref it. Alternatively, since chain is lazily unpacked, it'd be possible for unpackParentSpecifiers() to instantiate a new Application object at the time (this would mean changing the way that unpackParentSpecifiers works). For now, might be simplest just to instantiate a new Application instance here each time - although that's not ideal for unpacking sub-specifiers (but they might be better unpacked using untargetedAppData); poss. just add an optional arg to unpack() that allows callers to specify which root to use, but picking the right AppData class with which to unpack a nested desc would be cleaner)
@@ -533,7 +544,7 @@ public class AppData {
                 ? selectorDesc : try self.unpack(selectorDesc)
             // TO DO: need 'strict AS emulation' option to fully unpack and repack specifiers, re-setting cachedDesc (TBH, only app that ever had this problem was iView Media Pro, since it takes a double whammy of app bugs to cause an app to puke on receiving objspecs it previously created itself)
             if formCode == SwiftAE_formRange || formCode == SwiftAE_formTest || (formCode == SwiftAE_formAbsolutePosition && selectorDesc.enumCodeValue == SwiftAE_kAEAll) {
-                return self.glueInfo.elementsSpecifierType.init(wantType: wantType, selectorForm: selectorForm, selectorData: selectorData,
+                return self.glueInfo.multiObjectSpecifierType.init(wantType: wantType, selectorForm: selectorForm, selectorData: selectorData,
                     parentQuery: nil, appData: self, cachedDesc: desc)
             } else {
                 return self.glueInfo.objectSpecifierType.init(wantType: wantType, selectorForm: selectorForm, selectorData: selectorData,
@@ -620,18 +631,18 @@ public class AppData {
         }
     }
     
-    func sendAppleEvent<T>(_ name: String?, eventClass: OSType, eventID: OSType, // note: human-readable command and parameter names are only used (if known) in error messages
-                           parentSpecifier: Specifier, // the Specifier on which the command method was called; see special-case packing logic below
-                           directParameter: Any, // the first (unnamed) parameter to the command method; see special-case packing logic below
-                           keywordParameters: KeywordParameters, // the remaining named parameters
-                           requestedType: Symbol?, // event's `as` parameter, if any
-                           waitReply: Bool, // wait for application to respond before returning? (default is true)
-                           sendOptions: NSAppleEventDescriptor.SendOptions?, // raw send options (if given, waitReply arg is ignored); default is nil
-                           withTimeout: TimeInterval?, // no. of seconds to wait before raising timeout error (-1712); may also be default/never
-                 //        returnID: AEReturnID, // TO DO: need to check correct procedure for this; should send return auto-generated returnID?
-                 //        transactionID: AETransactionID,
-                           considering: ConsideringOptions?,
-                           returnType: T.Type) throws -> T // coerce and unpack result as this type or return raw reply event if T is NSDescriptor; default is Any
+    public func sendAppleEvent<T>(_ name: String?, eventClass: OSType, eventID: OSType, // note: human-readable command and parameter names are only used (if known) in error messages
+                                  parentSpecifier: Specifier, // the Specifier on which the command method was called; see special-case packing logic below
+                                  directParameter: Any, // the first (unnamed) parameter to the command method; see special-case packing logic below
+                                  keywordParameters: KeywordParameters, // the remaining named parameters
+                                  requestedType: Symbol?, // event's `as` parameter, if any
+                                  waitReply: Bool, // wait for application to respond before returning? (default is true)
+                                  sendOptions: NSAppleEventDescriptor.SendOptions?, // raw send options (if given, waitReply arg is ignored); default is nil
+                                  withTimeout: TimeInterval?, // no. of seconds to wait before raising timeout error (-1712); may also be default/never
+                        //        returnID: AEReturnID, // TO DO: need to check correct procedure for this; should send return auto-generated returnID?
+                        //        transactionID: AETransactionID,
+                                  considering: ConsideringOptions?,
+                                  returnType: T.Type) throws -> T // coerce and unpack result as this type or return raw reply event if T is NSDescriptor; default is Any
     {
         // TO DO: all errors occurring within this method should be caught and rethrown as CommandError, allowing error message to include a description of the failed command as well as the error that occurred
         // Create a new AppleEvent descriptor (throws ConnectionError if target app isn't found)
@@ -736,9 +747,9 @@ public class AppData {
     
     // convenience shortcut for dispatching events using raw OSType codes only
     
-    func sendAppleEvent<T>(_ eventClass: OSType, eventID: OSType, parentSpecifier: Specifier,
-                           parameters: [OSType:Any] = [:], waitReply: Bool, sendOptions: NSAppleEventDescriptor.SendOptions?,
-                           withTimeout: TimeInterval?, considering: ConsideringOptions?, returnType: T.Type) throws -> T
+    public func sendAppleEvent<T>(_ eventClass: OSType, eventID: OSType, parentSpecifier: Specifier,
+                                  parameters: [OSType:Any] = [:], waitReply: Bool, sendOptions: NSAppleEventDescriptor.SendOptions?,
+                                  withTimeout: TimeInterval?, considering: ConsideringOptions?, returnType: T.Type) throws -> T
     {
         var parameters = parameters
         let directParameter = parameters.removeValue(forKey: keyDirectObject) ?? NoParameter

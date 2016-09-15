@@ -1,6 +1,6 @@
 //
 //  Formatter.swift
-//  SwiftAE
+//  SwiftAutomation
 //
 //  Generates source code representation of Specifier.
 //
@@ -18,7 +18,7 @@ import AppKit
 // Formatter
 
 // used by a Specifier's description property to render Swift literal representation of itself;
-// static glues extend this with application-specific code->name translation tables
+// static glues instantiate this with their own application-specific code->name translation tables
 
 public class SpecifierFormatter {
     
@@ -58,7 +58,7 @@ public class SpecifierFormatter {
     // hooks
     
     func formatSymbol(_ code: OSType) -> String {
-        return self.formatSymbol(Symbol.symbol(code)) // TO DO: hook for glue-specific Symbol subclasses
+        return self.formatSymbol(Symbol(code: code)) // TO DO: hook for glue-specific Symbol subclasses
     }
     
     func formatSymbol(_ symbol: Symbol) -> String {
@@ -243,7 +243,7 @@ func formatValue(_ value: Any) -> String { // TO DO: while this function can be 
             return "\(value)"
         }
     default:
-        return "\(value)" // SwiftAE objects (specifiers, symbols) are self-formatting; any other Swift object will use its own default description (which may or may not be the same as its literal representation, but that's Swift's problem, not ours)
+        return "\(value)" // SwiftAutomation objects (specifiers, symbols) are self-formatting; any other Swift object will use its own default description (which may or may not be the same as its literal representation, but that's Swift's problem, not ours)
     }
 }
 

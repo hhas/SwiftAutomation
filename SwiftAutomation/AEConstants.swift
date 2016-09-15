@@ -1,6 +1,6 @@
 //
 //  AEConstants.swift
-//  SwiftAE
+//  SwiftAutomation
 //
 //  Workaround: currently redefines all standard four-char codes as Carbon AE headers declare them in untyped enums (typical C sloppiness) so Swift wrongly converts them to Int, not OSType (UInt32), making them unusable. Note: 10.12 fixes the types on some but not all AE enums, so retaining this kludge for now with names explicitly prefixed for obviousness; these should be used where the OS-provided enums are still incorrectly typed (e.g. form* and some key* enums). Once Apple figures out how to write its headers correctly, this module can be eliminated and prefixes removed again.
 //

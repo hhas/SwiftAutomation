@@ -1,6 +1,6 @@
 //
 //  SAEEventSniffer.m
-//  SwiftAE
+//  AppleScriptToSwift
 //
 //
 

@@ -47,7 +47,7 @@ For example, iTunes.app implements two user interfaces, one graphical and one Ap
 
 A scriptable application also contains a built-in definition of its scripting interface in the form of an `aete` or `sdef` resource. This resource can be obtained programmatically and used:
 
-* to support automatic translation of human-readable terminology to four-letter codes in high-level bridges such as AppleScript and SwiftAE
+* to support automatic translation of human-readable terminology to four-letter codes in high-level bridges such as AppleScript and SwiftAutomation
 
 * to generate basic human-readable documentation by applications such as AppleScript Editor.
 
@@ -160,11 +160,11 @@ Finally, each window object has a one-to-one relationship to the document object
 
 
 
-## How SwiftAE works
+## How SwiftAutomation works
 
-SwiftAE is a high-level pure-Swift wrapper for macOS's lower-level Apple Event Manager APIs (`NSAppleEventDescriptor`). 
+SwiftAutomation is a high-level pure-Swift wrapper for macOS's lower-level Apple Event Manager APIs (`NSAppleEventDescriptor`). 
 
-The SwiftAE architecture consists of two parts:
+The SwiftAutomation architecture consists of two parts:
 
 * a collection of abstract classes and protocol extensions, providing an object-oriented API for building relational AEOM queries (object specifiers) and dispatching Apple events (commands)
 
@@ -179,7 +179,7 @@ For example, the following AppleScript sets the size of the first character of e
        set size of character 1 of (every paragraph where it ≠ "\n") of every document to 24
     end tell
 
-Here is the equivalent Swift code using SwiftAE's default `AE` glue:
+Here is the equivalent Swift code using SwiftAutomation's default `AE` glue:
 
     let textedit = AEApplication(bundleIdentifier: "com.apple.TextEdit")
 

@@ -1,6 +1,6 @@
 //
 //  Specifier.swift
-//  SwiftAE
+//  SwiftAutomation
 //
 //
 //  Base classes for constructing AE queries
@@ -38,7 +38,7 @@ import AppKit
 private let gUntargetedAppData = AppData() // dummy instance to keep compiler happy; glues will define their own private gUntargetedAppData constants containing an untargeted AppData instance
 
 
-public class Query: CustomStringConvertible, SelfPacking { // TO DO: Equatable?
+open class Query: CustomStringConvertible, SelfPacking { // TO DO: Equatable?
     
     public let appData: AppData
     internal private(set) var cachedDesc: NSAppleEventDescriptor?
@@ -89,7 +89,7 @@ public protocol SpecifierProtocol {
     var rootSpecifier: RootSpecifier {get}
 }
 
-public class Specifier: Query, SpecifierProtocol {
+open class Specifier: Query, SpecifierProtocol {
 
     // An object specifier is constructed as a linked list of AERecords of typeObjectSpecifier, terminated by a root descriptor (e.g. a null descriptor represents the root node of the app's Apple event object graph). The topmost node may also be an insertion location specifier, represented by an AERecord of typeInsertionLoc. The abstract Specifier class implements functionality common to both object and insertion specifiers.
     
@@ -174,7 +174,7 @@ public class Specifier: Query, SpecifierProtocol {
 /******************************************************************************/
 // insertion location specifier
 
-public class InsertionSpecifier: Specifier { // SwiftAE_packSelf
+open class InsertionSpecifier: Specifier { // SwiftAE_packSelf
     
     // 'insl'
     public let insertionLocation: NSAppleEventDescriptor
@@ -204,7 +204,7 @@ public protocol ObjectSpecifierProtocol: SpecifierProtocol {
     var selectorData: Any {get}
 }
 
-public class ObjectSpecifier: Specifier, ObjectSpecifierProtocol { // represents property or single element specifier; adds property+elements vars, relative selectors, insertion specifiers
+open class ObjectSpecifier: Specifier, ObjectSpecifierProtocol { // represents property or single element specifier; adds property+elements vars, relative selectors, insertion specifiers
     
     // 'want', 'form', 'data'
     public let wantType: NSAppleEventDescriptor
@@ -428,7 +428,7 @@ prefix func !(lhs: TestClause) -> TestClause {
 
 // note: app glues will also define their own untargeted App, Con, and Its roots
 
-public class RootSpecifier: ObjectSpecifier { // app, con, its, custom root (note: this is a bit sloppy; `con` based specifiers are only for use in by-range selectors, and only `its` based specifiers should support comparison and logic tests; only targeted absolute (app-based/customroot-based) specifiers should implement commands, although single `app` root doesn't distinguish untargeted from targeted since that's determined by absence/presence of AppData object)
+open class RootSpecifier: ObjectSpecifier { // app, con, its, custom root (note: this is a bit sloppy; `con` based specifiers are only for use in by-range selectors, and only `its` based specifiers should support comparison and logic tests; only targeted absolute (app-based/customroot-based) specifiers should implement commands, although single `app` root doesn't distinguish untargeted from targeted since that's determined by absence/presence of AppData object)
     
     public required init(rootObject: Any, appData: AppData) {
         // rootObject is either one of the three standard AEDescs indicating app/con/its root, or an arbitrary object supplied by caller (e.g. an AEAddressDesc if constructing a fully qualified specifier)
@@ -447,7 +447,7 @@ public class RootSpecifier: ObjectSpecifier { // app, con, its, custom root (not
     }
     
     // glue-defined root classes must override the following to return their own untargeted AppData instance
-    class var untargetedAppData: AppData { return gUntargetedAppData }
+    open class var untargetedAppData: AppData { return gUntargetedAppData }
 
 
     // TO DO: subclassing ObjectSpecifier is slightly risky, since accidental recursion in the following does very bad things, so it's essential that all Query/Specifier/ObjectSpecifier methods that operate on parent specifier are overridden here:

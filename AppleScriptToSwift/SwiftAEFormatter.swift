@@ -1,6 +1,6 @@
 //
 //  SwiftAEFormatter.swift
-//  SwiftAE
+//  SwiftAutomation
 //
 //  Swift-ObjC shim
 //

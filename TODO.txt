@@ -67,7 +67,7 @@ TO DO:
 -  unlike AppleScript, which allows `every element of...` to be used as an explicit alternative to `elements of...`, there is not an `all` by-ordinal selector var defined on ElementsSpecifier. While one could be added, there's never been a reported use case to indicate the need for it (specifically, where an app's terminology fails to distinguish a property vs elements name, the classic example being the `text` keyword which is such a mess it has special-case treatment built into AppleEventBridge's terminology parsers to ensure AppleEventBridge glues disambiguate it in exactly the same way that AppleScript does). (note: symbols can also be passed to elements[idx]; however, it's more about forcing a 'property' specifier to be an all-elements specifier so don't think that helps in itself)
 
 
-- could/should Symbol.symbol() use dictionary instead of switch? (possible downside is that dictionary would initialize all static lets unless closures were used, whereas switch only initializes them on first use)
+- check Symbol.symbol() lookup performance on on very large switches [e.g. InDesign]; if noticeable, a dictionary could be used to cache previous lookups
 
 
 - need to check how (e.g) iTunes handles 'rawData' property vs elements; it's possible both need to be supported (see also text vs text) (note: tdta is defined by iTunes hidden types suite solely for use as `rawData` property's declared type - it doesn't actually appear as an element; other apps with conflicting keywords may be different, however)

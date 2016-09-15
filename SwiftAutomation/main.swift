@@ -1,7 +1,5 @@
 //
 //  main.swift
-//  SwiftAE
+//  SwiftAutomation
 //
-
-// TO DO: build as framework
 

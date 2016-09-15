@@ -1,6 +1,6 @@
 //
 //  Support.swift
-//  SwiftAE
+//  SwiftAutomation
 //
 
 import Foundation
@@ -55,6 +55,9 @@ func UInt32Descriptor(_ data: UInt32) -> NSAppleEventDescriptor {
     var data = data // note: Swift's ObjC bridge appears to ignore the `const` on the `-[NSAppleEventDescriptor initWithDescriptorType:bytes:length:]` method's 'bytes' parameter, so need to rebind to `var` as workaround
     return NSAppleEventDescriptor(descriptorType: SwiftAE_typeUInt32, bytes: &data, length: MemoryLayout<UInt32>.size)!
 }
+
+
+let SymbolTypes: Set<DescType> = [typeType, typeEnumerated, typeProperty, typeKeyword]
 
 
 /******************************************************************************/
@@ -213,15 +216,15 @@ public enum TargetApplication {
 
 // root descriptor for all absolute object specifiers that do not have a custom root
 // e.g. `document 1 of «typeNull»`
-let AppRootDesc = NSAppleEventDescriptor.null() 
+public let AppRootDesc = NSAppleEventDescriptor.null()
 
 // root descriptor for an object specifier describing start or end of a range of elements in a by-range specifier
 // e.g. `folder (folder 2 of «typeCurrentContainer») thru (folder -1 of «typeCurrentContainer»)`
-let ConRootDesc = NSAppleEventDescriptor(descriptorType: typeCurrentContainer, data: nil)!
+public let ConRootDesc = NSAppleEventDescriptor(descriptorType: typeCurrentContainer, data: nil)!
 
 // root descriptor for an object specifier describing an element whose state is being compared in a by-test specifier
 // e.g. `every track where (rating of «typeObjectBeingExamined» > 50)`
-let ItsRootDesc = NSAppleEventDescriptor(descriptorType: typeObjectBeingExamined, data: nil)!
+public let ItsRootDesc = NSAppleEventDescriptor(descriptorType: typeObjectBeingExamined, data: nil)!
 
 
 

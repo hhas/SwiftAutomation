@@ -1,12 +1,13 @@
 //
 //  main.swift
-//  SwiftAE
+//  SwiftAutomation
 //
 //  tests // TO DO: move ad-hoc tests to separate target; replace this with examples of use
 //
 //
 //
 
+import AppKit
 import Foundation
 //import SwiftAutomation
 
@@ -37,6 +38,13 @@ print("\n\n")
 
 do {
     
+    let itunes = ITunes()
+    let state: ITU = try itunes.playerState.get()
+    print(state)
+//    try ITunes().play()
+    
+    
+    
     print("// \(TEDApp.documents[1].text)")
     print("// \(te.documents[1].text)")
 
@@ -47,7 +55,7 @@ do {
     
     // make new document with properties {text: "Hello World!"}
     
-    let teDocRef: TEDObject = try te.make(new: TED.document, withProperties: [TED.text: "Hello World!"])
+    let teDocRef: TEDItem = try te.make(new: TED.document, withProperties: [TED.text: "Hello World!"])
         
     print(teDocRef) // TO DO: resulting specifier shows a 'TEDApp' root but needs to show 'TextEdit()' root; see TODO in SpecifierFormatter
     
@@ -108,7 +116,6 @@ do {
     //
     try teDocRef.close(saving: TED.no)
     
-    try ITunes().play()
 
 } catch {
     print("ERROR: \(error)")

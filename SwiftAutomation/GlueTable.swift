@@ -1,13 +1,13 @@
 //
 //  GlueTable.swift
-//  SwiftAE
+//  SwiftAutomation
 //
 //  Combines default and application-specific terminology into lookup tables used
 //  by AE bridge.
 //
 //  The `aeglue` tool uses these tables to add properties and methods to a glue's
 //  Symbol subclass and Query and Command protocol extensions; formatAppleEvent()
-//  uses them to translate typeAppleEvent descriptors to SwiftAE syntax.
+//  uses them to translate typeAppleEvent descriptors to SwiftAutomation syntax.
 //
 //  May also be used by dynamic AE bridges.
 //
