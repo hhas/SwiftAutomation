@@ -104,7 +104,7 @@ let gDescriptionForError: [Int:String] = [ // error descriptions from ASLG/MacEr
 
 // errors
 
-public class SwiftAEError: Error, CustomStringConvertible { // TO DO: should all errors be chained? or just CommandError?
+public class SwiftAutomationError: Error, CustomStringConvertible { // TO DO: should all errors be chained? or just CommandError?
     public let _domain = "SwiftAutomation"
     public let _code: Int // TO DO: use custom codes for error types, or standard OSStatus codes?
     public let message: String?
@@ -120,21 +120,21 @@ public class SwiftAEError: Error, CustomStringConvertible { // TO DO: should all
     }
 }
 
-public class NotImplementedError: SwiftAEError {
+public class NotImplementedError: SwiftAutomationError {
     convenience init(message: String? = nil) {
         self.init(code: 1, message: "Not Implemented Error" + (message == nil ? "." : ": \(message!)"))
     }
 }
 
 
-public class ConnectionError: SwiftAEError {
+public class ConnectionError: SwiftAutomationError {
     init(target: TargetApplication, message: String = "Can't connect to application.") { // TO DO: target should be TargetApplication
         super.init(code: 1, message: message)
     }
 }
 
 
-public class PackError: SwiftAEError { // TO DO: include AppData? (c.f. UnpackError)
+public class PackError: SwiftAutomationError { // TO DO: include AppData? (c.f. UnpackError)
     
     let object: Any
     
@@ -148,7 +148,7 @@ public class PackError: SwiftAEError { // TO DO: include AppData? (c.f. UnpackEr
     }
 }
 
-public class UnpackError: SwiftAEError {
+public class UnpackError: SwiftAutomationError {
     
     let type: Any
     let appData: AppData
@@ -174,7 +174,7 @@ public class UnpackError: SwiftAEError {
     }
 }
 
-public class CommandError: SwiftAEError {
+public class CommandError: SwiftAutomationError {
     
     let appData: AppData
     let event: NSAppleEventDescriptor?
@@ -186,7 +186,7 @@ public class CommandError: SwiftAEError {
             event: NSAppleEventDescriptor? = nil,
             replyEvent: NSAppleEventDescriptor? = nil,
             commandInfo: Any? = nil,
-            parentError: Error? = nil, // TO DO: rename
+            parentError: Error? = nil, // TO DO: rename ('cause:'?)
             message: String? = nil)
     {
         var message = message ?? "Command failed."

@@ -160,7 +160,7 @@ public class DefaultTerminology: ApplicationTerminology {
                                        ("print", kCoreEventClass, kAEPrintDocuments, []),
                                        ("quit", kCoreEventClass, kAEQuitApplication, [("saving", keyAESaveOptions)]),
                                        ("reopen", kCoreEventClass, kAEReopenApplication, []),
-                                       ("launch", SwiftAE_kASAppleScriptSuite, SwiftAE_kASLaunchEvent, []),
+                                       //("launch", SwiftAE_kASAppleScriptSuite, SwiftAE_kASLaunchEvent, []), // this is a hardcoded method
                                        ("activate", kAEMiscStandards, kAEActivate, []),
                                        ("open location", _GURL, _GURL, [("window", _WIND)]),
                                        ("get", kAECoreSuite, kAEGetData, []),

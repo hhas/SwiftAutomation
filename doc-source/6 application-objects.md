@@ -115,18 +115,14 @@ You can check if the application specified by an Application object is currently
 SwiftAutomation automatically launches a non-running application the first time your script makes sends a command. To avoid accidental launches, _all_ commands relating to that application must be included in a conditional block that only executes if `isRunning` returns `true`.
 
 
-### Launching applications via `launchApplication()`
+### Launching applications via `launch()`
 
 [TO DO: not yet implemented]
 
-When SwiftAutomation launches a non-running application, it normally sends it a `run` command as part of the launching process. If you wish to avoid this, you should start the application by sending it a `launch` command before doing anything else:
-
-    launchApplication() throws
-
-This is useful when you want to start an application without it going through its normal startup procedure, and is equivalent to the using AppleScript's `launch` command. For example, to launch TextEdit without causing it to display a new, empty document (its usual behaviour):
+When SwiftAutomation launches a non-running application, it normally sends it a `run` command as part of the launching process. If you wish to avoid this, you should start the application by sending it a `launch` command before doing anything else. This is useful when you want to start an application without it going through its normal startup procedure, and is equivalent to the using AppleScript's `launch` command. For example, to launch TextEdit without causing it to display a new, empty document (its usual behaviour):
 
     textedit = TextEdit()
-    try textedit.launchApplication()
+    try textedit.launch()
     // other TextEdit-related code goes here...
 
 ### Restarting applications
@@ -135,9 +131,9 @@ As soon as you start to construct a reference or command using a newly created A
 
 Be default, if the target application has stopped running since the Application object was created, trying to send it a command using that Application object will result in an invalid connection error (-609), unless that command is `run` or `launch`. This restriction prevents SwiftAutomation accidentally restarting an application that has unexpectedly quit while a script is controlling it. You can restart an application by sending an explicit `run` or `launch` command, or by creating a new Application object for it. To change this behavior, use one of the following `RelaunchMode` values as the initializer's `relaunchMode:` argument:
 
-* `.Never` -- prevent the Application object automatically relaunching the application, even for a `run` or `launch` command
-* `.Limited` -- allow the Application object to relaunch the application before sending a `run` or `launch` command (SwiftAutomation's default behavior)
-* `.Always` -- allow the Application object to relaunch the application before sending any command (AppleScript's behavior)
+* `.never` -- prevent the Application object automatically relaunching the application, even for a `run` or `launch` command
+* `.limited` -- allow the Application object to relaunch the application before sending a `run` or `launch` command (SwiftAutomation's default behavior)
+* `.always` -- allow the Application object to relaunch the application before sending any command (AppleScript's behavior)
 
 Note that you can still use Application objects to control applications that have been quit _and_ restarted since the Application object was created. SwiftAutomation will automatically update the Application object's process id information as needed. [[TO DO: check this is correct; also check how it behaves when .Never is used]]
 

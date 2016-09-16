@@ -2,7 +2,7 @@
 //  ITunesGlue.swift
 //  iTunes.app 12.5.1
 //  SwiftAutomation.framework 0.1.0
-//  `aeglue -r iTunes.app`
+//  `aeglue -o /Users/has -r iTunes.app`
 //
 
 
@@ -832,7 +832,7 @@ extension ITUCommand {
     @discardableResult public func activate(_ directParameter: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent("activate", eventClass: 0x6d697363, eventID: 0x61637476, // "misc"/"actv"
+        return try self.appData.sendAppleEvent(name: "activate", eventClass: 0x6d697363, eventID: 0x61637476, // "misc"/"actv"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: Any.self)
@@ -840,7 +840,7 @@ extension ITUCommand {
     public func activate<T>(_ directParameter: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent("activate", eventClass: 0x6d697363, eventID: 0x61637476, // "misc"/"actv"
+        return try self.appData.sendAppleEvent(name: "activate", eventClass: 0x6d697363, eventID: 0x61637476, // "misc"/"actv"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: T.self)
@@ -849,7 +849,7 @@ extension ITUCommand {
             to: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent("add", eventClass: 0x686f6f6b, eventID: 0x41646420, // "hook"/"Add "
+        return try self.appData.sendAppleEvent(name: "add", eventClass: 0x686f6f6b, eventID: 0x41646420, // "hook"/"Add "
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("to", 0x696e7368, to), // "insh"
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
@@ -859,7 +859,7 @@ extension ITUCommand {
             to: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent("add", eventClass: 0x686f6f6b, eventID: 0x41646420, // "hook"/"Add "
+        return try self.appData.sendAppleEvent(name: "add", eventClass: 0x686f6f6b, eventID: 0x41646420, // "hook"/"Add "
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("to", 0x696e7368, to), // "insh"
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
@@ -868,7 +868,7 @@ extension ITUCommand {
     @discardableResult public func backTrack(_ directParameter: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent("backTrack", eventClass: 0x686f6f6b, eventID: 0x4261636b, // "hook"/"Back"
+        return try self.appData.sendAppleEvent(name: "backTrack", eventClass: 0x686f6f6b, eventID: 0x4261636b, // "hook"/"Back"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: Any.self)
@@ -876,7 +876,7 @@ extension ITUCommand {
     public func backTrack<T>(_ directParameter: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent("backTrack", eventClass: 0x686f6f6b, eventID: 0x4261636b, // "hook"/"Back"
+        return try self.appData.sendAppleEvent(name: "backTrack", eventClass: 0x686f6f6b, eventID: 0x4261636b, // "hook"/"Back"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: T.self)
@@ -884,7 +884,7 @@ extension ITUCommand {
     @discardableResult public func close(_ directParameter: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent("close", eventClass: 0x636f7265, eventID: 0x636c6f73, // "core"/"clos"
+        return try self.appData.sendAppleEvent(name: "close", eventClass: 0x636f7265, eventID: 0x636c6f73, // "core"/"clos"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: Any.self)
@@ -892,7 +892,7 @@ extension ITUCommand {
     public func close<T>(_ directParameter: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent("close", eventClass: 0x636f7265, eventID: 0x636c6f73, // "core"/"clos"
+        return try self.appData.sendAppleEvent(name: "close", eventClass: 0x636f7265, eventID: 0x636c6f73, // "core"/"clos"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: T.self)
@@ -900,7 +900,7 @@ extension ITUCommand {
     @discardableResult public func convert(_ directParameter: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent("convert", eventClass: 0x686f6f6b, eventID: 0x436f6e76, // "hook"/"Conv"
+        return try self.appData.sendAppleEvent(name: "convert", eventClass: 0x686f6f6b, eventID: 0x436f6e76, // "hook"/"Conv"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: Any.self)
@@ -908,7 +908,7 @@ extension ITUCommand {
     public func convert<T>(_ directParameter: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent("convert", eventClass: 0x686f6f6b, eventID: 0x436f6e76, // "hook"/"Conv"
+        return try self.appData.sendAppleEvent(name: "convert", eventClass: 0x686f6f6b, eventID: 0x436f6e76, // "hook"/"Conv"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: T.self)
@@ -917,7 +917,7 @@ extension ITUCommand {
             each: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent("count", eventClass: 0x636f7265, eventID: 0x636e7465, // "core"/"cnte"
+        return try self.appData.sendAppleEvent(name: "count", eventClass: 0x636f7265, eventID: 0x636e7465, // "core"/"cnte"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("each", 0x6b6f636c, each), // "kocl"
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
@@ -927,7 +927,7 @@ extension ITUCommand {
             each: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent("count", eventClass: 0x636f7265, eventID: 0x636e7465, // "core"/"cnte"
+        return try self.appData.sendAppleEvent(name: "count", eventClass: 0x636f7265, eventID: 0x636e7465, // "core"/"cnte"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("each", 0x6b6f636c, each), // "kocl"
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
@@ -936,7 +936,7 @@ extension ITUCommand {
     @discardableResult public func delete(_ directParameter: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent("delete", eventClass: 0x636f7265, eventID: 0x64656c6f, // "core"/"delo"
+        return try self.appData.sendAppleEvent(name: "delete", eventClass: 0x636f7265, eventID: 0x64656c6f, // "core"/"delo"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: Any.self)
@@ -944,7 +944,7 @@ extension ITUCommand {
     public func delete<T>(_ directParameter: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent("delete", eventClass: 0x636f7265, eventID: 0x64656c6f, // "core"/"delo"
+        return try self.appData.sendAppleEvent(name: "delete", eventClass: 0x636f7265, eventID: 0x64656c6f, // "core"/"delo"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: T.self)
@@ -952,7 +952,7 @@ extension ITUCommand {
     @discardableResult public func download(_ directParameter: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent("download", eventClass: 0x686f6f6b, eventID: 0x44776e6c, // "hook"/"Dwnl"
+        return try self.appData.sendAppleEvent(name: "download", eventClass: 0x686f6f6b, eventID: 0x44776e6c, // "hook"/"Dwnl"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: Any.self)
@@ -960,7 +960,7 @@ extension ITUCommand {
     public func download<T>(_ directParameter: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent("download", eventClass: 0x686f6f6b, eventID: 0x44776e6c, // "hook"/"Dwnl"
+        return try self.appData.sendAppleEvent(name: "download", eventClass: 0x686f6f6b, eventID: 0x44776e6c, // "hook"/"Dwnl"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: T.self)
@@ -969,7 +969,7 @@ extension ITUCommand {
             to: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent("duplicate", eventClass: 0x636f7265, eventID: 0x636c6f6e, // "core"/"clon"
+        return try self.appData.sendAppleEvent(name: "duplicate", eventClass: 0x636f7265, eventID: 0x636c6f6e, // "core"/"clon"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("to", 0x696e7368, to), // "insh"
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
@@ -979,7 +979,7 @@ extension ITUCommand {
             to: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent("duplicate", eventClass: 0x636f7265, eventID: 0x636c6f6e, // "core"/"clon"
+        return try self.appData.sendAppleEvent(name: "duplicate", eventClass: 0x636f7265, eventID: 0x636c6f6e, // "core"/"clon"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("to", 0x696e7368, to), // "insh"
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
@@ -988,7 +988,7 @@ extension ITUCommand {
     @discardableResult public func eject(_ directParameter: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent("eject", eventClass: 0x686f6f6b, eventID: 0x456a6374, // "hook"/"Ejct"
+        return try self.appData.sendAppleEvent(name: "eject", eventClass: 0x686f6f6b, eventID: 0x456a6374, // "hook"/"Ejct"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: Any.self)
@@ -996,7 +996,7 @@ extension ITUCommand {
     public func eject<T>(_ directParameter: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent("eject", eventClass: 0x686f6f6b, eventID: 0x456a6374, // "hook"/"Ejct"
+        return try self.appData.sendAppleEvent(name: "eject", eventClass: 0x686f6f6b, eventID: 0x456a6374, // "hook"/"Ejct"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: T.self)
@@ -1004,7 +1004,7 @@ extension ITUCommand {
     @discardableResult public func exists(_ directParameter: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent("exists", eventClass: 0x636f7265, eventID: 0x646f6578, // "core"/"doex"
+        return try self.appData.sendAppleEvent(name: "exists", eventClass: 0x636f7265, eventID: 0x646f6578, // "core"/"doex"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: Any.self)
@@ -1012,7 +1012,7 @@ extension ITUCommand {
     public func exists<T>(_ directParameter: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent("exists", eventClass: 0x636f7265, eventID: 0x646f6578, // "core"/"doex"
+        return try self.appData.sendAppleEvent(name: "exists", eventClass: 0x636f7265, eventID: 0x646f6578, // "core"/"doex"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: T.self)
@@ -1020,7 +1020,7 @@ extension ITUCommand {
     @discardableResult public func fastForward(_ directParameter: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent("fastForward", eventClass: 0x686f6f6b, eventID: 0x46617374, // "hook"/"Fast"
+        return try self.appData.sendAppleEvent(name: "fastForward", eventClass: 0x686f6f6b, eventID: 0x46617374, // "hook"/"Fast"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: Any.self)
@@ -1028,7 +1028,7 @@ extension ITUCommand {
     public func fastForward<T>(_ directParameter: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent("fastForward", eventClass: 0x686f6f6b, eventID: 0x46617374, // "hook"/"Fast"
+        return try self.appData.sendAppleEvent(name: "fastForward", eventClass: 0x686f6f6b, eventID: 0x46617374, // "hook"/"Fast"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: T.self)
@@ -1036,7 +1036,7 @@ extension ITUCommand {
     @discardableResult public func get(_ directParameter: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent("get", eventClass: 0x636f7265, eventID: 0x67657464, // "core"/"getd"
+        return try self.appData.sendAppleEvent(name: "get", eventClass: 0x636f7265, eventID: 0x67657464, // "core"/"getd"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: Any.self)
@@ -1044,23 +1044,7 @@ extension ITUCommand {
     public func get<T>(_ directParameter: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent("get", eventClass: 0x636f7265, eventID: 0x67657464, // "core"/"getd"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, returnType: T.self)
-    }
-    @discardableResult public func launch(_ directParameter: Any = NoParameter,
-            resultType: Symbol? = nil, waitReply: Bool = true,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent("launch", eventClass: 0x61736372, eventID: 0x6e6f6f70, // "ascr"/"noop"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, returnType: Any.self)
-    }
-    public func launch<T>(_ directParameter: Any = NoParameter,
-            resultType: Symbol? = nil, waitReply: Bool = true,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent("launch", eventClass: 0x61736372, eventID: 0x6e6f6f70, // "ascr"/"noop"
+        return try self.appData.sendAppleEvent(name: "get", eventClass: 0x636f7265, eventID: 0x67657464, // "core"/"getd"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: T.self)
@@ -1071,7 +1055,7 @@ extension ITUCommand {
             withProperties: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent("make", eventClass: 0x636f7265, eventID: 0x6372656c, // "core"/"crel"
+        return try self.appData.sendAppleEvent(name: "make", eventClass: 0x636f7265, eventID: 0x6372656c, // "core"/"crel"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("new", 0x6b6f636c, new), // "kocl"
                     ("at", 0x696e7368, at), // "insh"
@@ -1085,7 +1069,7 @@ extension ITUCommand {
             withProperties: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent("make", eventClass: 0x636f7265, eventID: 0x6372656c, // "core"/"crel"
+        return try self.appData.sendAppleEvent(name: "make", eventClass: 0x636f7265, eventID: 0x6372656c, // "core"/"crel"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("new", 0x6b6f636c, new), // "kocl"
                     ("at", 0x696e7368, at), // "insh"
@@ -1097,7 +1081,7 @@ extension ITUCommand {
             to: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent("move", eventClass: 0x636f7265, eventID: 0x6d6f7665, // "core"/"move"
+        return try self.appData.sendAppleEvent(name: "move", eventClass: 0x636f7265, eventID: 0x6d6f7665, // "core"/"move"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("to", 0x696e7368, to), // "insh"
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
@@ -1107,7 +1091,7 @@ extension ITUCommand {
             to: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent("move", eventClass: 0x636f7265, eventID: 0x6d6f7665, // "core"/"move"
+        return try self.appData.sendAppleEvent(name: "move", eventClass: 0x636f7265, eventID: 0x6d6f7665, // "core"/"move"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("to", 0x696e7368, to), // "insh"
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
@@ -1116,7 +1100,7 @@ extension ITUCommand {
     @discardableResult public func nextTrack(_ directParameter: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent("nextTrack", eventClass: 0x686f6f6b, eventID: 0x4e657874, // "hook"/"Next"
+        return try self.appData.sendAppleEvent(name: "nextTrack", eventClass: 0x686f6f6b, eventID: 0x4e657874, // "hook"/"Next"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: Any.self)
@@ -1124,7 +1108,7 @@ extension ITUCommand {
     public func nextTrack<T>(_ directParameter: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent("nextTrack", eventClass: 0x686f6f6b, eventID: 0x4e657874, // "hook"/"Next"
+        return try self.appData.sendAppleEvent(name: "nextTrack", eventClass: 0x686f6f6b, eventID: 0x4e657874, // "hook"/"Next"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: T.self)
@@ -1132,7 +1116,7 @@ extension ITUCommand {
     @discardableResult public func open(_ directParameter: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent("open", eventClass: 0x61657674, eventID: 0x6f646f63, // "aevt"/"odoc"
+        return try self.appData.sendAppleEvent(name: "open", eventClass: 0x61657674, eventID: 0x6f646f63, // "aevt"/"odoc"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: Any.self)
@@ -1140,7 +1124,7 @@ extension ITUCommand {
     public func open<T>(_ directParameter: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent("open", eventClass: 0x61657674, eventID: 0x6f646f63, // "aevt"/"odoc"
+        return try self.appData.sendAppleEvent(name: "open", eventClass: 0x61657674, eventID: 0x6f646f63, // "aevt"/"odoc"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: T.self)
@@ -1148,7 +1132,7 @@ extension ITUCommand {
     @discardableResult public func openLocation(_ directParameter: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent("openLocation", eventClass: 0x4755524c, eventID: 0x4755524c, // "GURL"/"GURL"
+        return try self.appData.sendAppleEvent(name: "openLocation", eventClass: 0x4755524c, eventID: 0x4755524c, // "GURL"/"GURL"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: Any.self)
@@ -1156,7 +1140,7 @@ extension ITUCommand {
     public func openLocation<T>(_ directParameter: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent("openLocation", eventClass: 0x4755524c, eventID: 0x4755524c, // "GURL"/"GURL"
+        return try self.appData.sendAppleEvent(name: "openLocation", eventClass: 0x4755524c, eventID: 0x4755524c, // "GURL"/"GURL"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: T.self)
@@ -1164,7 +1148,7 @@ extension ITUCommand {
     @discardableResult public func pause(_ directParameter: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent("pause", eventClass: 0x686f6f6b, eventID: 0x50617573, // "hook"/"Paus"
+        return try self.appData.sendAppleEvent(name: "pause", eventClass: 0x686f6f6b, eventID: 0x50617573, // "hook"/"Paus"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: Any.self)
@@ -1172,7 +1156,7 @@ extension ITUCommand {
     public func pause<T>(_ directParameter: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent("pause", eventClass: 0x686f6f6b, eventID: 0x50617573, // "hook"/"Paus"
+        return try self.appData.sendAppleEvent(name: "pause", eventClass: 0x686f6f6b, eventID: 0x50617573, // "hook"/"Paus"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: T.self)
@@ -1181,7 +1165,7 @@ extension ITUCommand {
             once: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent("play", eventClass: 0x686f6f6b, eventID: 0x506c6179, // "hook"/"Play"
+        return try self.appData.sendAppleEvent(name: "play", eventClass: 0x686f6f6b, eventID: 0x506c6179, // "hook"/"Play"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("once", 0x504f6e65, once), // "POne"
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
@@ -1191,7 +1175,7 @@ extension ITUCommand {
             once: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent("play", eventClass: 0x686f6f6b, eventID: 0x506c6179, // "hook"/"Play"
+        return try self.appData.sendAppleEvent(name: "play", eventClass: 0x686f6f6b, eventID: 0x506c6179, // "hook"/"Play"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("once", 0x504f6e65, once), // "POne"
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
@@ -1200,7 +1184,7 @@ extension ITUCommand {
     @discardableResult public func playpause(_ directParameter: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent("playpause", eventClass: 0x686f6f6b, eventID: 0x506c5073, // "hook"/"PlPs"
+        return try self.appData.sendAppleEvent(name: "playpause", eventClass: 0x686f6f6b, eventID: 0x506c5073, // "hook"/"PlPs"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: Any.self)
@@ -1208,7 +1192,7 @@ extension ITUCommand {
     public func playpause<T>(_ directParameter: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent("playpause", eventClass: 0x686f6f6b, eventID: 0x506c5073, // "hook"/"PlPs"
+        return try self.appData.sendAppleEvent(name: "playpause", eventClass: 0x686f6f6b, eventID: 0x506c5073, // "hook"/"PlPs"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: T.self)
@@ -1216,7 +1200,7 @@ extension ITUCommand {
     @discardableResult public func previousTrack(_ directParameter: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent("previousTrack", eventClass: 0x686f6f6b, eventID: 0x50726576, // "hook"/"Prev"
+        return try self.appData.sendAppleEvent(name: "previousTrack", eventClass: 0x686f6f6b, eventID: 0x50726576, // "hook"/"Prev"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: Any.self)
@@ -1224,7 +1208,7 @@ extension ITUCommand {
     public func previousTrack<T>(_ directParameter: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent("previousTrack", eventClass: 0x686f6f6b, eventID: 0x50726576, // "hook"/"Prev"
+        return try self.appData.sendAppleEvent(name: "previousTrack", eventClass: 0x686f6f6b, eventID: 0x50726576, // "hook"/"Prev"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: T.self)
@@ -1236,7 +1220,7 @@ extension ITUCommand {
             theme: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent("print", eventClass: 0x61657674, eventID: 0x70646f63, // "aevt"/"pdoc"
+        return try self.appData.sendAppleEvent(name: "print", eventClass: 0x61657674, eventID: 0x70646f63, // "aevt"/"pdoc"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("printDialog", 0x70646c67, printDialog), // "pdlg"
                     ("withProperties", 0x70726474, withProperties), // "prdt"
@@ -1252,7 +1236,7 @@ extension ITUCommand {
             theme: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent("print", eventClass: 0x61657674, eventID: 0x70646f63, // "aevt"/"pdoc"
+        return try self.appData.sendAppleEvent(name: "print", eventClass: 0x61657674, eventID: 0x70646f63, // "aevt"/"pdoc"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("printDialog", 0x70646c67, printDialog), // "pdlg"
                     ("withProperties", 0x70726474, withProperties), // "prdt"
@@ -1264,7 +1248,7 @@ extension ITUCommand {
     @discardableResult public func quit(_ directParameter: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent("quit", eventClass: 0x61657674, eventID: 0x71756974, // "aevt"/"quit"
+        return try self.appData.sendAppleEvent(name: "quit", eventClass: 0x61657674, eventID: 0x71756974, // "aevt"/"quit"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: Any.self)
@@ -1272,7 +1256,7 @@ extension ITUCommand {
     public func quit<T>(_ directParameter: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent("quit", eventClass: 0x61657674, eventID: 0x71756974, // "aevt"/"quit"
+        return try self.appData.sendAppleEvent(name: "quit", eventClass: 0x61657674, eventID: 0x71756974, // "aevt"/"quit"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: T.self)
@@ -1280,7 +1264,7 @@ extension ITUCommand {
     @discardableResult public func refresh(_ directParameter: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent("refresh", eventClass: 0x686f6f6b, eventID: 0x52667273, // "hook"/"Rfrs"
+        return try self.appData.sendAppleEvent(name: "refresh", eventClass: 0x686f6f6b, eventID: 0x52667273, // "hook"/"Rfrs"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: Any.self)
@@ -1288,7 +1272,7 @@ extension ITUCommand {
     public func refresh<T>(_ directParameter: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent("refresh", eventClass: 0x686f6f6b, eventID: 0x52667273, // "hook"/"Rfrs"
+        return try self.appData.sendAppleEvent(name: "refresh", eventClass: 0x686f6f6b, eventID: 0x52667273, // "hook"/"Rfrs"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: T.self)
@@ -1296,7 +1280,7 @@ extension ITUCommand {
     @discardableResult public func reopen(_ directParameter: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent("reopen", eventClass: 0x61657674, eventID: 0x72617070, // "aevt"/"rapp"
+        return try self.appData.sendAppleEvent(name: "reopen", eventClass: 0x61657674, eventID: 0x72617070, // "aevt"/"rapp"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: Any.self)
@@ -1304,7 +1288,7 @@ extension ITUCommand {
     public func reopen<T>(_ directParameter: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent("reopen", eventClass: 0x61657674, eventID: 0x72617070, // "aevt"/"rapp"
+        return try self.appData.sendAppleEvent(name: "reopen", eventClass: 0x61657674, eventID: 0x72617070, // "aevt"/"rapp"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: T.self)
@@ -1312,7 +1296,7 @@ extension ITUCommand {
     @discardableResult public func resume(_ directParameter: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent("resume", eventClass: 0x686f6f6b, eventID: 0x52657375, // "hook"/"Resu"
+        return try self.appData.sendAppleEvent(name: "resume", eventClass: 0x686f6f6b, eventID: 0x52657375, // "hook"/"Resu"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: Any.self)
@@ -1320,7 +1304,7 @@ extension ITUCommand {
     public func resume<T>(_ directParameter: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent("resume", eventClass: 0x686f6f6b, eventID: 0x52657375, // "hook"/"Resu"
+        return try self.appData.sendAppleEvent(name: "resume", eventClass: 0x686f6f6b, eventID: 0x52657375, // "hook"/"Resu"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: T.self)
@@ -1328,7 +1312,7 @@ extension ITUCommand {
     @discardableResult public func reveal(_ directParameter: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent("reveal", eventClass: 0x686f6f6b, eventID: 0x5265766c, // "hook"/"Revl"
+        return try self.appData.sendAppleEvent(name: "reveal", eventClass: 0x686f6f6b, eventID: 0x5265766c, // "hook"/"Revl"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: Any.self)
@@ -1336,7 +1320,7 @@ extension ITUCommand {
     public func reveal<T>(_ directParameter: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent("reveal", eventClass: 0x686f6f6b, eventID: 0x5265766c, // "hook"/"Revl"
+        return try self.appData.sendAppleEvent(name: "reveal", eventClass: 0x686f6f6b, eventID: 0x5265766c, // "hook"/"Revl"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: T.self)
@@ -1344,7 +1328,7 @@ extension ITUCommand {
     @discardableResult public func rewind(_ directParameter: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent("rewind", eventClass: 0x686f6f6b, eventID: 0x52776e64, // "hook"/"Rwnd"
+        return try self.appData.sendAppleEvent(name: "rewind", eventClass: 0x686f6f6b, eventID: 0x52776e64, // "hook"/"Rwnd"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: Any.self)
@@ -1352,7 +1336,7 @@ extension ITUCommand {
     public func rewind<T>(_ directParameter: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent("rewind", eventClass: 0x686f6f6b, eventID: 0x52776e64, // "hook"/"Rwnd"
+        return try self.appData.sendAppleEvent(name: "rewind", eventClass: 0x686f6f6b, eventID: 0x52776e64, // "hook"/"Rwnd"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: T.self)
@@ -1360,7 +1344,7 @@ extension ITUCommand {
     @discardableResult public func run(_ directParameter: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent("run", eventClass: 0x61657674, eventID: 0x6f617070, // "aevt"/"oapp"
+        return try self.appData.sendAppleEvent(name: "run", eventClass: 0x61657674, eventID: 0x6f617070, // "aevt"/"oapp"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: Any.self)
@@ -1368,7 +1352,7 @@ extension ITUCommand {
     public func run<T>(_ directParameter: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent("run", eventClass: 0x61657674, eventID: 0x6f617070, // "aevt"/"oapp"
+        return try self.appData.sendAppleEvent(name: "run", eventClass: 0x61657674, eventID: 0x6f617070, // "aevt"/"oapp"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: T.self)
@@ -1378,7 +1362,7 @@ extension ITUCommand {
             only: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent("search", eventClass: 0x686f6f6b, eventID: 0x53726368, // "hook"/"Srch"
+        return try self.appData.sendAppleEvent(name: "search", eventClass: 0x686f6f6b, eventID: 0x53726368, // "hook"/"Srch"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("for_", 0x7054726d, for_), // "pTrm"
                     ("only", 0x70417265, only), // "pAre"
@@ -1390,7 +1374,7 @@ extension ITUCommand {
             only: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent("search", eventClass: 0x686f6f6b, eventID: 0x53726368, // "hook"/"Srch"
+        return try self.appData.sendAppleEvent(name: "search", eventClass: 0x686f6f6b, eventID: 0x53726368, // "hook"/"Srch"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("for_", 0x7054726d, for_), // "pTrm"
                     ("only", 0x70417265, only), // "pAre"
@@ -1401,7 +1385,7 @@ extension ITUCommand {
             to: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent("set", eventClass: 0x636f7265, eventID: 0x73657464, // "core"/"setd"
+        return try self.appData.sendAppleEvent(name: "set", eventClass: 0x636f7265, eventID: 0x73657464, // "core"/"setd"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("to", 0x64617461, to), // "data"
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
@@ -1411,7 +1395,7 @@ extension ITUCommand {
             to: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent("set", eventClass: 0x636f7265, eventID: 0x73657464, // "core"/"setd"
+        return try self.appData.sendAppleEvent(name: "set", eventClass: 0x636f7265, eventID: 0x73657464, // "core"/"setd"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("to", 0x64617461, to), // "data"
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
@@ -1420,7 +1404,7 @@ extension ITUCommand {
     @discardableResult public func stop(_ directParameter: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent("stop", eventClass: 0x686f6f6b, eventID: 0x53746f70, // "hook"/"Stop"
+        return try self.appData.sendAppleEvent(name: "stop", eventClass: 0x686f6f6b, eventID: 0x53746f70, // "hook"/"Stop"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: Any.self)
@@ -1428,7 +1412,7 @@ extension ITUCommand {
     public func stop<T>(_ directParameter: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent("stop", eventClass: 0x686f6f6b, eventID: 0x53746f70, // "hook"/"Stop"
+        return try self.appData.sendAppleEvent(name: "stop", eventClass: 0x686f6f6b, eventID: 0x53746f70, // "hook"/"Stop"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: T.self)
@@ -1436,7 +1420,7 @@ extension ITUCommand {
     @discardableResult public func subscribe(_ directParameter: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent("subscribe", eventClass: 0x686f6f6b, eventID: 0x70537562, // "hook"/"pSub"
+        return try self.appData.sendAppleEvent(name: "subscribe", eventClass: 0x686f6f6b, eventID: 0x70537562, // "hook"/"pSub"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: Any.self)
@@ -1444,7 +1428,7 @@ extension ITUCommand {
     public func subscribe<T>(_ directParameter: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent("subscribe", eventClass: 0x686f6f6b, eventID: 0x70537562, // "hook"/"pSub"
+        return try self.appData.sendAppleEvent(name: "subscribe", eventClass: 0x686f6f6b, eventID: 0x70537562, // "hook"/"pSub"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: T.self)
@@ -1452,7 +1436,7 @@ extension ITUCommand {
     @discardableResult public func update(_ directParameter: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent("update", eventClass: 0x686f6f6b, eventID: 0x55706474, // "hook"/"Updt"
+        return try self.appData.sendAppleEvent(name: "update", eventClass: 0x686f6f6b, eventID: 0x55706474, // "hook"/"Updt"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: Any.self)
@@ -1460,7 +1444,7 @@ extension ITUCommand {
     public func update<T>(_ directParameter: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent("update", eventClass: 0x686f6f6b, eventID: 0x55706474, // "hook"/"Updt"
+        return try self.appData.sendAppleEvent(name: "update", eventClass: 0x686f6f6b, eventID: 0x55706474, // "hook"/"Updt"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: T.self)
@@ -1468,7 +1452,7 @@ extension ITUCommand {
     @discardableResult public func updateAllPodcasts(_ directParameter: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent("updateAllPodcasts", eventClass: 0x686f6f6b, eventID: 0x55706470, // "hook"/"Updp"
+        return try self.appData.sendAppleEvent(name: "updateAllPodcasts", eventClass: 0x686f6f6b, eventID: 0x55706470, // "hook"/"Updp"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: Any.self)
@@ -1476,7 +1460,7 @@ extension ITUCommand {
     public func updateAllPodcasts<T>(_ directParameter: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent("updateAllPodcasts", eventClass: 0x686f6f6b, eventID: 0x55706470, // "hook"/"Updp"
+        return try self.appData.sendAppleEvent(name: "updateAllPodcasts", eventClass: 0x686f6f6b, eventID: 0x55706470, // "hook"/"Updp"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: T.self)
@@ -1484,7 +1468,7 @@ extension ITUCommand {
     @discardableResult public func updatePodcast(_ directParameter: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent("updatePodcast", eventClass: 0x686f6f6b, eventID: 0x55706431, // "hook"/"Upd1"
+        return try self.appData.sendAppleEvent(name: "updatePodcast", eventClass: 0x686f6f6b, eventID: 0x55706431, // "hook"/"Upd1"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: Any.self)
@@ -1492,7 +1476,7 @@ extension ITUCommand {
     public func updatePodcast<T>(_ directParameter: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent("updatePodcast", eventClass: 0x686f6f6b, eventID: 0x55706431, // "hook"/"Upd1"
+        return try self.appData.sendAppleEvent(name: "updatePodcast", eventClass: 0x686f6f6b, eventID: 0x55706431, // "hook"/"Upd1"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: T.self)

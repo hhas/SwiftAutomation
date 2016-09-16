@@ -49,7 +49,7 @@ public func SwiftAEFormatAppleEvent(_ event: NSAppleEventDescriptor, useTerminol
         let errn = event.paramDescriptor(forKeyword: keyErrorNumber)?.int32Value ?? 0
         if errn != 0 { // format error message
             let errs = event.paramDescriptor(forKeyword: keyErrorString)?.stringValue
-            return SwiftAEError(code: Int(errn), message: errs).description // TO DO: use CommandError? (need to check it's happy with only replyEvent arg)
+            return SwiftAutomationError(code: Int(errn), message: errs).description // TO DO: use CommandError? (need to check it's happy with only replyEvent arg)
         } else if let reply = event.paramDescriptor(forKeyword: keyDirectObject) { // format return value
             return formatValue((try? appData.unpack(reply)) ?? reply)
         } else {

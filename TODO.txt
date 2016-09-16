@@ -19,8 +19,7 @@ TO DO:
 
 
 
-- what methods need to go on Application? e.g. launch, transaction support
-
+- Is it possible to use application glues directly from the interactive `swift` CLI tool? Unlike Xcode playgrounds, the `swift` "REPL" does not automatically re-execute all previous lines whenever a new line is entered, so would be a much better, safer choice for the SwiftAutomation tutorial and user experimentation. In addition, could a Swift REPL be integrated into the AppleScriptToSwift application to create a general-purpose 'SwiftAutomationExplorer.app'? (Such an application would also benefit from a built-in dictionary viewer that can display Swift-style application dictionaries without the user having to manually generate them.)
 
 
 - how to support sum types for return values? (this will be problematic given poor type introspection support in Swift3); best option is probably to include `--enum` option in aeglue that takes a description of [self-packing+self-unpacking] enums that user wants to have available and includes them in glue, similar to how `--struct` option might create custom structs based on dictionary's class/record types (note that some of these enums might be generated automatically, based on known aete and sdef-defined 'sum types')
@@ -31,7 +30,7 @@ TO DO:
 - one problem with T coercion is that cMissingType can coerce to typeUnicodeText, giving "msng" - this is arguably unsafe, since it can't be distinguished from actual string results, and should either be treated as a Symbol or nil (in which case an error will be raised unless an appropriate sum type is specified)
 
 
-- should command methods support optional throwable trailing closure for custom-converting values that can't automatically be coerced to the required type? (this'd require passing both the unpacked-as-Any value and T.self; the problem is that complex structures such as lists and records could call this in all sorts of places with all sorts of different Ts so the same closure needs to return Any)
+- should command methods support optional throwable trailing closure for custom-converting values that can't automatically be coerced to the required type? (this'd require passing both the unpacked-as-Any value and T.self; the problem is that complex structures such as lists and records could call this in all sorts of places with all sorts of different Ts so the same closure needs to return Any) -- TBH, don't want to add this extra API complexity unless/until it actually proves to be necessary, so wait until it's had some real-world use and see what UX problems are reported
 
 
 
@@ -50,4 +49,5 @@ TO DO:
 - check Symbol.symbol() lookup performance on on very large switches [e.g. InDesign]; if noticeable, a dictionary could be used to cache previous lookups
 
 
+- canonicize most/all Swift method names, e.g. pack(value:) instead of pack(_ value:)?
 

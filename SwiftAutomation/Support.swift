@@ -29,10 +29,10 @@ func FourCharCodeUnsafe(_ string: String) -> OSType { // note: silently returns 
 
 func FourCharCode(_ string: NSString) throws -> OSType { // note: use this instead of FourCharCode to get better error reporting
     guard let data = string.data(using: String.Encoding.macOSRoman.rawValue) else {
-        throw SwiftAEError(code: 1, message: "Invalid four-char code (bad encoding): \(formatValue(string))") // TO DO: what error?
+        throw SwiftAutomationError(code: 1, message: "Invalid four-char code (bad encoding): \(formatValue(string))") // TO DO: what error?
     }
     if (data.count != 4) {
-        throw SwiftAEError(code: 1, message: "Invalid four-char code (wrong length): \(formatValue(string))")
+        throw SwiftAutomationError(code: 1, message: "Invalid four-char code (wrong length): \(formatValue(string))")
     }
     var tmp: UInt32 = 0
     (data as NSData).getBytes(&tmp, length: 4)
@@ -107,28 +107,75 @@ public let NoParameter = Parameters.none // TO DO: what's easiest way to create 
 // locate/identify target application by name, path, bundle ID, eppc:// URL, etc
 
 
-public func URLForLocalApplication(_ name: String) -> URL? { // returns nil if not found
-    if name.hasPrefix("/") { // full path (note: path must include .app suffix)
-        return URL(fileURLWithPath: name)
-    } else { // if name is not full path, look up by name (.app suffix is optional)
-        let workspace = NSWorkspace.shared()
-        guard let path = workspace.fullPath(forApplication: name) ?? workspace.fullPath(forApplication: "\(name).app") else {
-            return nil
-        }
-        return URL(fileURLWithPath: path)
-    }
-}
+// AE errors indicating process unavailable // TO DO: finalize
+private let ProcessNotFoundErrorNumbers: Set<Int> = [procNotFound, connectionInvalid, localOnlyErr]
+
+private let LaunchEventSucceededErrorNumbers: Set<Int> = [Int(noErr), errAEEventNotHandled]
+
+private let LaunchEvent = NSAppleEventDescriptor(eventClass: SwiftAE_kASAppleScriptSuite, eventID: SwiftAE_kASLaunchEvent,
+                                                 targetDescriptor: NSAppleEventDescriptor.null(),
+                                                 returnID: AEReturnID(kAutoGenerateReturnID),
+                                                 transactionID: AETransactionID(kAnyTransactionID))
 
 // Application initializers pass application-identifying information to AppData initializer as enum according to which initializer was called
 
 public enum TargetApplication {
     case current
     case name(String) // application's name (.app suffix is optional) or full path
-    case url(Foundation.URL) // "file" or "eppc" URL
+    case url(URL) // "file" or "eppc" URL
     case bundleIdentifier(String, Bool) // bundleID, isDefault
     case processIdentifier(pid_t)
     case Descriptor(NSAppleEventDescriptor) // AEAddressDesc
     case none // used in untargeted AppData instances; sendAppleEvent() will raise ConnectionError if called
+    
+    // TO DO: implement `description` property and use it in all error messages raised here?
+    
+    // support functions
+    
+    private func localRunningApplication(url: URL) throws -> NSRunningApplication? {
+        guard let bundleID = Bundle(url: url)?.bundleIdentifier else {
+            throw ConnectionError(target: self, message: "Application not found: \(url)")
+        }
+        let foundProcesses = NSRunningApplication.runningApplications(withBundleIdentifier: bundleID)
+        if foundProcesses.count == 1 {
+            return foundProcesses[0]
+        } else if foundProcesses.count > 1 {
+            for process in foundProcesses {
+                if process.bundleURL == url { // TO DO: confirm this checks for FS identity, not path string equality; if not, use NSURLFileResourceIdentifierKey
+                    return process
+                }
+            }
+        }
+        return nil
+    }
+    
+    private func sendLaunchEvent(processDescriptor: NSAppleEventDescriptor) -> Int {
+        do {
+            let event = NSAppleEventDescriptor(eventClass: SwiftAE_kASAppleScriptSuite, eventID: SwiftAE_kASLaunchEvent,
+                                               targetDescriptor: processDescriptor, returnID: AEReturnID(kAutoGenerateReturnID),
+                                               transactionID: AETransactionID(kAnyTransactionID))
+            let reply = try event.sendEvent(options: .waitForReply, timeout: 30)
+            return Int(reply.paramDescriptor(forKeyword: keyErrorNumber)?.int32Value ?? 0) // application error (errAEEventNotHandled is normal)
+        } catch {
+            return (error as Error)._code // AEM error
+        }
+    }
+    
+    private func processDescriptorForLocalApplication(url: URL, launchOptions: LaunchOptions) throws -> NSAppleEventDescriptor {
+        // get a typeKernelProcessID-based AEAddressDesc for the target app, finding and launch it first if not already running;
+        // if app can't be found/launched, throws a ConnectionError/NSError instead
+        let runningProcess = try (self.localRunningApplication(url: url) ??
+                NSWorkspace.shared().launchApplication(at: url, options: launchOptions, configuration: [:]))
+        return NSAppleEventDescriptor(processIdentifier: runningProcess.processIdentifier)
+    }
+    
+    private func isRunning(processDescriptor: NSAppleEventDescriptor) -> Bool {
+        // check if process is running by sending it a 'noop' event; used by isRunning property
+        // this assumes app is running unless it receives an AEM error that explicitly indicates it isn't (a bit crude, but when the only identifying information for the target process is an arbitrary AEAddressDesc there isn't really a better way to check if it's running other than send it an event and see what happens)
+        return !ProcessNotFoundErrorNumbers.contains(self.sendLaunchEvent(processDescriptor: processDescriptor))
+    }
+    
+    // get info on this application
     
     public var isRelaunchable: Bool {
         switch self {
@@ -141,25 +188,83 @@ public enum TargetApplication {
         }
     }
     
-    // get AEAddressDesc for target application (for local processes specified by name, url, bundleID, or PID, this is typeKernelProcessID)
+    public var isRunning: Bool {
+        switch self {
+        case .current:
+            return true
+        case .name(let name): // application's name (.app suffix is optional) or full path
+            if let url = fileURLForLocalApplication(name) {
+                return (try? self.localRunningApplication(url: url)) != nil
+            }
+        case .url(let url): // "file" or "eppc" URL
+            if url.isFileURL {
+                return (try? self.localRunningApplication(url: url)) != nil
+            } else if url.scheme == "eppc" {
+                return self.isRunning(processDescriptor: NSAppleEventDescriptor(applicationURL: url))
+            }
+        case .bundleIdentifier(let bundleID, _):
+            return NSRunningApplication.runningApplications(withBundleIdentifier: bundleID).count > 0
+        case .processIdentifier(let pid):
+            return NSRunningApplication(processIdentifier: pid) != nil
+        case .Descriptor(let addressDesc):
+            return self.isRunning(processDescriptor: addressDesc)
+        case .none: // used in untargeted AppData instances; sendAppleEvent() will raise ConnectionError if called
+            ()
+        }
+        return false
+    }
+    
+    //
+    
+    private func launch(url: URL) throws {
+        try NSWorkspace.shared().launchApplication(at: url, options: [.withoutActivation],
+                                                   configuration: [NSWorkspaceLaunchConfigurationAppleEvent: LaunchEvent])
+    }
+    
+    // launch this application (equivalent to AppleScript's `launch` command)
+
+    public func launch() throws { // called by ApplicationExtension.launch()
+        // note: in principle an app _could_ implement an AE handler for this event that returns a value, but it probably isn't a good idea to do so (the event is called 'ascr'/'noop' for a reason), so even if a running process does return something (instead of throwing the expected errAEEventNotHandled) we just ignore it for sanity's sake (the flipside being that if the app _isn't_ already running then NSWorkspace.launchApplication() will launch it and pass the 'noop' descriptor as the first Apple event to handle, but doesn't return a result for that event, so to return a result at any other time would be inconsistent)
+        if self.isRunning {
+            let errorNumber = self.sendLaunchEvent(processDescriptor: try self.descriptor()!)
+            if !LaunchEventSucceededErrorNumbers.contains(errorNumber) {
+                throw SwiftAutomationError(code: errorNumber, message: "Can't launch application.")
+            }
+        } else {
+            switch self {
+            case .name(let name):
+                if let url = fileURLForLocalApplication(name) { try self.launch(url: url) }
+            case .url(let url):
+                if url.isFileURL { try self.launch(url: url) }
+            case .bundleIdentifier(let bundleID, _):
+                NSWorkspace.shared().launchApplication(withBundleIdentifier: bundleID, options: [.withoutActivation],
+                                                       additionalEventParamDescriptor: LaunchEvent, launchIdentifier: nil)
+            default:
+                ()
+            }
+            throw ConnectionError(target: self, message: "Can't launch application.")
+        }
+    }
+    
+    // get AEAddressDesc for target application (this is typeKernelProcessID for local processes specified by name/url/bundleID/PID)
     public func descriptor(_ launchOptions: LaunchOptions = DefaultLaunchOptions) throws -> NSAppleEventDescriptor? {
         switch self {
         case .current:
             return nil
         case .name(let name): // app name or full path
-            var url: Foundation.URL
+            var url: URL
             if name.hasPrefix("/") { // full path (note: path must include .app suffix)
-                url = Foundation.URL(fileURLWithPath: name)
+                url = URL(fileURLWithPath: name)
             } else { // if name is not full path, look up by name (.app suffix is optional)
-                guard let tmp = URLForLocalApplication(name) else {
+                guard let tmp = fileURLForLocalApplication(name) else {
                     throw ConnectionError(target: self, message: "Application not found: \(name)")
                 }
                 url = tmp
             }
-            return try self.processDescriptorForLocalApplication(url, launchOptions: launchOptions)
+            return try self.processDescriptorForLocalApplication(url: url, launchOptions: launchOptions)
         case .url(let url): // file/eppc URL
             if url.isFileURL {
-                return try self.processDescriptorForLocalApplication(url, launchOptions: launchOptions)
+                return try self.processDescriptorForLocalApplication(url: url, launchOptions: launchOptions)
             } else if url.scheme == "eppc" {
                 return NSAppleEventDescriptor(applicationURL: url)
             } else {
@@ -167,7 +272,7 @@ public enum TargetApplication {
             }
         case .bundleIdentifier(let bundleIdentifier, _):
             if let url = NSWorkspace.shared().urlForApplication(withBundleIdentifier: bundleIdentifier) {
-                return try self.processDescriptorForLocalApplication(url, launchOptions: launchOptions)
+                return try self.processDescriptorForLocalApplication(url: url, launchOptions: launchOptions)
             } else {
                 throw ConnectionError(target: self, message: "Application not found: \(bundleIdentifier)")
             }
@@ -179,34 +284,20 @@ public enum TargetApplication {
             throw ConnectionError(target: .none, message: "Untargeted specifiers can't send Apple events.")
         }
     }
-    
-    // support function for above
-    public func processDescriptorForLocalApplication(_ url: Foundation.URL, launchOptions: LaunchOptions) throws -> NSAppleEventDescriptor {
-        // get a typeKernelProcessID-based AEAddressDesc for the target app, finding and launch it first if not already running;
-        // if app can't be found/launched, throws an NSError instead
-        
-        // TO DO: this tends to activate app
-        
-        guard let bundleID = Bundle(url: url)?.bundleIdentifier else {
-            throw ConnectionError(target: self, message: "Application not found: \(url)")
+}
+
+
+// get file URL for the specified .app bundle (also used by `aeglue`)
+// `name` may be full POSIX path (including `.app` suffix), or file name only (`.app` suffix is optional); returns nil if not found
+public func fileURLForLocalApplication(_ name: String) -> URL? {
+    if name.hasPrefix("/") { // full path (note: path must include .app suffix)
+        return URL(fileURLWithPath: name)
+    } else { // if name is not full path, look up by name (.app suffix is optional)
+        let workspace = NSWorkspace.shared()
+        guard let path = workspace.fullPath(forApplication: name) ?? workspace.fullPath(forApplication: "\(name).app") else {
+            return nil
         }
-        let foundProcesses = NSRunningApplication.runningApplications(withBundleIdentifier: bundleID)
-        // note: while it'd be simpler always to call launchApplication, some apps (e.g. iTunes) will automatically open a window if already running, which is annoying to user
-        var runningProcess: NSRunningApplication? = nil
-        if foundProcesses.count == 1 {
-            runningProcess = foundProcesses[0]
-        } else if foundProcesses.count > 1 {
-            for process in foundProcesses {
-                if process.bundleURL == url {
-                    runningProcess = process
-                    break
-                }
-            }
-        }
-        if runningProcess == nil {
-            runningProcess = try NSWorkspace.shared().launchApplication(at: url, options: launchOptions, configuration: [:])
-        }
-        return NSAppleEventDescriptor(processIdentifier: runningProcess!.processIdentifier)
+        return URL(fileURLWithPath: path)
     }
 }
 

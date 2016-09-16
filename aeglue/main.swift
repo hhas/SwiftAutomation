@@ -10,7 +10,7 @@
 
 
 import Foundation
-//import SwiftAutomation // note: the `aeglue` target currently bakes everything into CLI executable
+//import SwiftAutomation // TO DO: the `aeglue` target currently bakes everything into CLI executable; if/when Swift finally supports dynamic framework linking, use import instead
 
 
 // TO DO: need option for excluding `import SwiftAutomation` from glue?
@@ -119,11 +119,7 @@ while let opt = optArgs.popLast() {
             print("Missing value for -o option.", to: &errStream)
             exit(1)
         }
-        outDir = URL(fileURLWithPath: path!)
-        if outDir == nil { // TO DO: also check is dir?
-            print("Invalid output directory path: \(path!)", to: &errStream)
-            exit(1)
-        }
+        outDir = URL(fileURLWithPath: path!).absoluteURL // TO DO: check path exists and is dir? // TO DO: Swift/Foundation is being janky and not always expanding to absolute path when given relative to CWD or ~; need to find canonical shell path expansion and use that
     case "-p":
         classNamePrefix = optArgs.popLast()
         if classNamePrefix == nil || classNamePrefix!.hasPrefix("-") {
@@ -169,7 +165,7 @@ if outDir == nil { // use current working directory by default
     outDir = URL(fileURLWithPath: "./").absoluteURL
 }
 while let arg = applicationPaths.popLast() { // get application name[s] (required unless -d option was used)
-    guard let applicationURL = URLForLocalApplication(arg) else {
+    guard let applicationURL = fileURLForLocalApplication(arg) else {
         print("Application not found: \(arg)", to: &errStream)
         exit(1)
     }

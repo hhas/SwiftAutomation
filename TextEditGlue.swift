@@ -7,7 +7,7 @@
 
 
 import Foundation
-//import SwiftAutomation
+import SwiftAutomation
 
 
 /******************************************************************************/
@@ -530,6 +530,22 @@ extension TEDCommand {
             resultType: Symbol? = nil, waitReply: Bool = true,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "get", eventClass: 0x636f7265, eventID: 0x67657464, // "core"/"getd"
+                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
+                withTimeout: withTimeout, considering: considering, returnType: T.self)
+    }
+    @discardableResult public func launch(_ directParameter: Any = NoParameter,
+            resultType: Symbol? = nil, waitReply: Bool = true,
+            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+        return try self.appData.sendAppleEvent(name: "launch", eventClass: 0x61736372, eventID: 0x6e6f6f70, // "ascr"/"noop"
+                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
+                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+    }
+    public func launch<T>(_ directParameter: Any = NoParameter,
+            resultType: Symbol? = nil, waitReply: Bool = true,
+            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent(name: "launch", eventClass: 0x61736372, eventID: 0x6e6f6f70, // "ascr"/"noop"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
                 withTimeout: withTimeout, considering: considering, returnType: T.self)

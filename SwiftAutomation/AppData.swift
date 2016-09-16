@@ -9,6 +9,7 @@ import Foundation
 import AppKit
 
 
+// TO DO: eliminate all `returnType:T.Type` params if no longer required
 
 // TO DO: what about 'missing value'? for a pure Swift bridge, might be better to use nil rather than Symbol.missingValue; note that Swift's compile-time/run-time treatment of `Any` and `nil` is inconsistent (either flawed or buggy). Q. How will this affect pack/unpack; presumably Optional will need extended same as collections to do its own unpacking?
 
@@ -18,7 +19,7 @@ import AppKit
 
 // TO DO: option for caller to pass their own 'customUnpack' func via command, to be called when standard unpack fails (either due to unrecognized AE type or inability to coerce to specified Swift type); this would prob. be done as trailing closure, which takes an AEDesc, required Type, and AppData as arguments and throws or returns value of that type (note that when unpacking list/record, this may be called multiple times, e.g. for the list/record and/or for each item in it)
 
-// TO DO: add `var unpackParentSpecifiers: Bool = false` compatibility flag; note that the simplest and safest (if not the most efficient) way to do this is to call the specifier's `unpackParentSpecifiers(clearCachedDesc:true)` method immediately after unpacking it, though since this option should almost never be needed efficiency isn't a concern (the unpack...Specifier methods could also unroll the specifier chain, of course, but then there'd be two code paths for doing the same thing which isn't ideal maintenance-wise)
+// TO DO: add `var fullyUnpackSpecifiers: Bool = false` compatibility flag; note that the simplest and safest (if not the most efficient) way to do this is to call the specifier's `unpackParentSpecifiers(clearCachedDesc:true)` method immediately after unpacking it, though since this option should almost never be needed (an app should always accept object specifiers it created) efficiency isn't a concern (the unpack...Specifier methods could also unroll the specifier chain, of course, but then there'd be two code paths for doing the same thing which isn't ideal maintenance-wise). (The only known app that requires this compatibility flag is iView Media Pro, which has an amusing pair of bugs that [#1] cause it to return by-index specifiers with a non-standard though still acceptable selector type [typeUInt32, IIRC], but requires by-index specifers passed as parameters to use typeSInt32 selectors and [#2] throws an error if given any other type instead of coercing it to the required type itself. AppleScript masks these because it _always_ fully unpacks and repacks each specifier, coercing indexes to typeSInt32 as it does. However, converting Specifiers<->NSAppleEventDescriptors in SwiftAutomation takes longer than the equivalent reference<->AEDesc conversions in AppleScript, so the only way to match AS for speed is to avoid full unpacking unless/until actually needed [for display purposes].)
 
 
 
@@ -27,24 +28,27 @@ public typealias KeywordParameters = [(name: String?, code: OSType, value: Any)]
 public typealias RootObjects = (app: RootSpecifier, con: RootSpecifier, its: RootSpecifier)
 
 
-public struct GlueInfo { // Glue-defined specifier, symbol, and formatter classes; used in (e.g.) AppData.unpack()
+public struct GlueInfo {
+    // Glue-defined specifier and symbol classes; AppData.unpack() instantiates these when unpacking the corresponding AEDescs
     let insertionSpecifierType: InsertionSpecifier.Type
     let objectSpecifierType: ObjectSpecifier.Type
     let multiObjectSpecifierType: ObjectSpecifier.Type
     let rootSpecifierType: RootSpecifier.Type
     let symbolType: Symbol.Type
-    let formatter: SpecifierFormatter
+    let formatter: SpecifierFormatter // used by Query.description to render literal representation of itself
     
     public init(insertionSpecifierType: InsertionSpecifier.Type,
-                objectSpecifierType: ObjectSpecifier.Type, multiObjectSpecifierType: ObjectSpecifier.Type,
-                rootSpecifierType: RootSpecifier.Type, symbolType: Symbol.Type, formatter: SpecifierFormatter) {
-    self.insertionSpecifierType = insertionSpecifierType
-    self.objectSpecifierType = objectSpecifierType
-    self.multiObjectSpecifierType = multiObjectSpecifierType
-    self.rootSpecifierType = rootSpecifierType
-    self.symbolType = symbolType
-    self.formatter = formatter
-
+                objectSpecifierType: ObjectSpecifier.Type,
+                multiObjectSpecifierType: ObjectSpecifier.Type,
+                rootSpecifierType: RootSpecifier.Type,
+                symbolType: Symbol.Type,
+                formatter: SpecifierFormatter) {
+        self.insertionSpecifierType = insertionSpecifierType
+        self.objectSpecifierType = objectSpecifierType
+        self.multiObjectSpecifierType = multiObjectSpecifierType
+        self.rootSpecifierType = rootSpecifierType
+        self.symbolType = symbolType
+        self.formatter = formatter
     }
 }
 
@@ -222,9 +226,11 @@ open class AppData {
     public let launchOptions: LaunchOptions
     public let relaunchMode: RelaunchMode
     
+    public let glueInfo: GlueInfo // glue-defined specifier and symbol classes, and standard root objects
+    
     private var _targetDescriptor: NSAppleEventDescriptor? = nil // targetDescriptor() creates an AEAddressDesc for the target process when dispatching first Apple event, caching it here for subsequent reuse; do not access directly
     
-    public let glueInfo: GlueInfo // glue-defined specifier and symbol classes, and standard root objects
+    private var transactionID: Int = kAnyTransactionID // TO DO: strictly speaking should be SInt32
     
     public var formatter: SpecifierFormatter { return self.glueInfo.formatter }
     
@@ -263,10 +269,10 @@ open class AppData {
     /******************************************************************************/
     // Convert a Swift value to an Apple event descriptor
     
-    let MissingValueDesc = NSAppleEventDescriptor(typeCode: SwiftAE_cMissingValue)
+    let MissingValueDesc = NSAppleEventDescriptor(typeCode: SwiftAE_cMissingValue) // TO DO: currently unused; delete?
     
-    private let nsBooleanType = type(of: NSNumber(value: true))
-    private let nsNumberType = type(of: NSNumber(value: 1))
+    private let kNSBooleanType = type(of: NSNumber(value: true))
+    private let kNSNumberType = type(of: NSNumber(value: 1))
     
    
     
@@ -274,12 +280,12 @@ open class AppData {
 //        print("PACKING: \(object) \(object.dynamicType)")
         
         // note: Swift's Bool/Int/Double<->NSNumber bridging sucks, so if an NSNumber instance is received it must be dealt with specially
-        if type(of: value) == self.nsBooleanType || value is DarwinBoolean { // test for NSNumber(bool:) or Swift Bool (true/false)
+        if type(of: value) == self.kNSBooleanType || value is DarwinBoolean { // test for NSNumber(bool:) or Swift Bool (true/false)
             // important: 
             // - the first test assumes NSNumber class cluster always returns an instance of __NSCFBooleanType (or at least something that can be distinguished from all other NSNumbers)
             // - `value is Bool/Int/Double` always returns true for any NSNumber, so must not be used; however, checking for BooleanType returns true only for Bool (or other Swift types that implement BooleanType protocol) so should be safe
             return NSAppleEventDescriptor(boolean: value as! Bool)
-        } else if type(of: value) == self.nsNumberType { // test for any other NSNumber (but not Swift numeric types as those will be dealt with below)
+        } else if type(of: value) == self.kNSNumberType { // test for any other NSNumber (but not Swift numeric types as those will be dealt with below)
             let numberObj = value as! NSNumber
             switch numberObj.objCType.pointee as Int8 {
             case 98, 99, 67, 115, 83, 105: // (b, c, C, s, S, i) anything that will fit into SInt32 is packed as typeSInt32 for compatibility
@@ -521,9 +527,10 @@ open class AppData {
         guard let _ = desc.forKeyword(keyAEObject), // only used to check InsertionLoc record is correctly formed // TO DO: in unlikely event of receiving a malformed record, would be simpler for unpackParentSpecifiers to use a RootSpecifier that throws error on use, avoiding need for extra check here
             let insertionLocation = desc.forKeyword(keyAEPosition) else {
                 throw UnpackError(appData: self, descriptor: desc, type: self.glueInfo.insertionSpecifierType,
-                    message: "Can't unpack malformed insertion specifier.")
+                                  message: "Can't unpack malformed insertion specifier.")
         }
-        return self.glueInfo.insertionSpecifierType.init(insertionLocation: insertionLocation, parentQuery: nil, appData: self, cachedDesc: desc)
+        return self.glueInfo.insertionSpecifierType.init(insertionLocation: insertionLocation,
+                                                         parentQuery: nil, appData: self, cachedDesc: desc)
     }
     
     // TO DO: compatibility option for fully unpacking and repacking object specifiers without caching original desc (i.e. mimic AS behavior exactly)
@@ -545,10 +552,10 @@ open class AppData {
             // TO DO: need 'strict AS emulation' option to fully unpack and repack specifiers, re-setting cachedDesc (TBH, only app that ever had this problem was iView Media Pro, since it takes a double whammy of app bugs to cause an app to puke on receiving objspecs it previously created itself)
             if formCode == SwiftAE_formRange || formCode == SwiftAE_formTest || (formCode == SwiftAE_formAbsolutePosition && selectorDesc.enumCodeValue == SwiftAE_kAEAll) {
                 return self.glueInfo.multiObjectSpecifierType.init(wantType: wantType, selectorForm: selectorForm, selectorData: selectorData,
-                    parentQuery: nil, appData: self, cachedDesc: desc)
+                                                                   parentQuery: nil, appData: self, cachedDesc: desc)
             } else {
                 return self.glueInfo.objectSpecifierType.init(wantType: wantType, selectorForm: selectorForm, selectorData: selectorData,
-                    parentQuery: nil, appData: self, cachedDesc: desc)
+                                                              parentQuery: nil, appData: self, cachedDesc: desc)
             }
         } catch {
             throw UnpackError(appData: self, descriptor: desc, type: self.glueInfo.objectSpecifierType,
@@ -617,7 +624,7 @@ open class AppData {
     // if relaunchMode = .Limited, only 'launch' and 'run' are allowed to restart a local application that's been quit
     let LimitedRelaunchEvents: [(OSType,OSType)] = [(kCoreEventClass, kAEOpenApplication), (SwiftAE_kASAppleScriptSuite, SwiftAE_kASLaunchEvent)]
     
-    private func send(_ event: NSAppleEventDescriptor, sendMode: NSAppleEventDescriptor.SendOptions, timeout: TimeInterval) throws -> NSAppleEventDescriptor { // used by sendAppleEvent()
+    private func send(event: NSAppleEventDescriptor, sendMode: NSAppleEventDescriptor.SendOptions, timeout: TimeInterval) throws -> NSAppleEventDescriptor { // used by sendAppleEvent()
         do {
             return try event.sendEvent(options: sendMode, timeout: timeout) // throws NSError on AEM errors (but not app errors)
         } catch { // 'launch' events normally return 'not handled' errors, so just ignore those
@@ -631,17 +638,16 @@ open class AppData {
         }
     }
     
-    public func sendAppleEvent<T>(_ name: String?, eventClass: OSType, eventID: OSType, // note: human-readable command and parameter names are only used (if known) in error messages
+    public func sendAppleEvent<T>(name: String?, eventClass: OSType, eventID: OSType, // note: human-readable command and parameter names are only used (if known) in error messages
                                   parentSpecifier: Specifier, // the Specifier on which the command method was called; see special-case packing logic below
-                                  directParameter: Any, // the first (unnamed) parameter to the command method; see special-case packing logic below
-                                  keywordParameters: KeywordParameters, // the remaining named parameters
-                                  requestedType: Symbol?, // event's `as` parameter, if any
-                                  waitReply: Bool, // wait for application to respond before returning? (default is true)
-                                  sendOptions: NSAppleEventDescriptor.SendOptions?, // raw send options (if given, waitReply arg is ignored); default is nil
-                                  withTimeout: TimeInterval?, // no. of seconds to wait before raising timeout error (-1712); may also be default/never
+                                  directParameter: Any = NoParameter, // the first (unnamed) parameter to the command method; see special-case packing logic below
+                                  keywordParameters: KeywordParameters = [], // the remaining named parameters
+                                  requestedType: Symbol? = nil, // event's `as` parameter, if any
+                                  waitReply: Bool = true, // wait for application to respond before returning? (default is true)
+                                  sendOptions: NSAppleEventDescriptor.SendOptions? = nil, // raw send options (if given, waitReply arg is ignored); default is nil
+                                  withTimeout: TimeInterval? = nil, // no. of seconds to wait before raising timeout error (-1712); may also be default/never
                         //        returnID: AEReturnID, // TO DO: need to check correct procedure for this; should send return auto-generated returnID?
-                        //        transactionID: AETransactionID,
-                                  considering: ConsideringOptions?,
+                                  considering: ConsideringOptions? = nil,
                                   returnType: T.Type) throws -> T // coerce and unpack result as this type or return raw reply event if T is NSDescriptor; default is Any
     {
         // TO DO: all errors occurring within this method should be caught and rethrown as CommandError, allowing error message to include a description of the failed command as well as the error that occurred
@@ -700,7 +706,7 @@ open class AppData {
         var replyEvent: NSAppleEventDescriptor
         do {
 //            print("SENDING: \(event)")
-            replyEvent = try self.send(event, sendMode: sendMode, timeout: timeout) // throws NSError on AEM error
+            replyEvent = try self.send(event: event, sendMode: sendMode, timeout: timeout) // throws NSError on AEM error
 //            print("REPLIED: \(replyEvent)\n")
         } catch { // handle errors raised by Apple Event Manager (e.g. timeout, process not found)
             if RelaunchableErrorCodes.contains((error as NSError).code) && self.target.isRelaunchable && (self.relaunchMode == .always
@@ -716,7 +722,7 @@ open class AppData {
                     event.setAttribute(event.attributeDescriptor(forKeyword: key)!, forKeyword: key)
                 }
                 do {
-                    replyEvent = try self.send(event, sendMode: sendMode, timeout: timeout)
+                    replyEvent = try self.send(event: event, sendMode: sendMode, timeout: timeout)
                 } catch {
                     throw CommandError(appData: self, event: event, parentError: error)
                 }
@@ -745,21 +751,58 @@ open class AppData {
         }
     }
     
-    // convenience shortcut for dispatching events using raw OSType codes only
+    // convenience shortcut for dispatching events using raw OSType codes only (the above method also requires human-readable command and parameter names to be supplied for error reporting purposes); users should call this via one of the `sendAppleEvent` methods on `AEApplication`/`AEItem`
     
-    public func sendAppleEvent<T>(_ eventClass: OSType, eventID: OSType, parentSpecifier: Specifier, parameters: [OSType:Any] = [:],
-                                  requestedType: Symbol? = nil, waitReply: Bool, sendOptions: NSAppleEventDescriptor.SendOptions?,
-                                  withTimeout: TimeInterval?, considering: ConsideringOptions?, returnType: T.Type) throws -> T
+    public func sendAppleEvent<T>(eventClass: OSType, eventID: OSType, parentSpecifier: Specifier, parameters: [OSType:Any] = [:],
+                                  requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: NSAppleEventDescriptor.SendOptions? = nil,
+                                  withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil, returnType: T.Type) throws -> T
     {
         var parameters = parameters
         let directParameter = parameters.removeValue(forKey: keyDirectObject) ?? NoParameter
         let keywordParameters: KeywordParameters = parameters.map({(name: nil, code: $0, value: $1)})
-        return try self.sendAppleEvent(nil, eventClass: eventClass, eventID: eventID,
+        return try self.sendAppleEvent(name: nil, eventClass: eventClass, eventID: eventID,
             parentSpecifier: parentSpecifier, directParameter: directParameter,
             keywordParameters: keywordParameters, requestedType: requestedType, waitReply: waitReply,
             sendOptions: sendOptions, withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
-
+    
+    // transaction support (in practice, there are few, if any, currently available apps that support transactions, but it's included for completeness)
+    
+    // TO DO: the following methods really need a mutex to ensure transactionID's consistency in the event they're called from different threads; best option would probably be to replace these methods with a single `doTransaction(_ closure: (Self)throws->())` that does its own thread locking and transaction management (Q. should this closure return void or generic T?)
+    
+    //      var mutex: pthread_mutex_t = pthread_mutex_t()
+    //      pthread_mutex_init(&mutex, nil)
+    //      pthread_mutex_lock(&mutex)
+    //      send kAEBeginTransaction
+    //      closure()
+    //      on success, send kAEEndTransaction/on error, send kAETransactionTerminated; finally:
+    //      pthread_mutex_unlock(&mutex)
+    //      pthread_mutex_destroy(&mutex)
+    //
+    
+    
+    public func beginTransaction(session: Any? = nil) throws {
+        if self.transactionID == kAnyTransactionID { //no-op on repeat calls
+            transactionID = try self.sendAppleEvent(name:nil, eventClass: kAEMiscStandards, eventID: kAEBeginTransaction,
+                                                    parentSpecifier: AEApp, directParameter: session, returnType: Int.self)
+        }
+    }
+    
+    public func endTransaction() throws {
+        if self.transactionID != kAnyTransactionID { // no-op on repeat calls
+            let _ = try self.sendAppleEvent(name: nil, eventClass: kAEMiscStandards, eventID: kAEEndTransaction,
+                                                parentSpecifier: AEApp, returnType: Any.self)
+            self.transactionID = kAnyTransactionID
+        }
+    }
+    
+    public func abortTransaction() throws {
+        if self.transactionID != kAnyTransactionID {
+            let _ = try self.sendAppleEvent(name: nil, eventClass: kAEMiscStandards, eventID: kAETransactionTerminated,
+                                            parentSpecifier: AEApp, returnType: Any.self)
+            self.transactionID = kAnyTransactionID
+        }
+    }
 }
 
 

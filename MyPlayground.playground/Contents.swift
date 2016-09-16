@@ -8,7 +8,7 @@ let itunes = ITunes()
 let textedit = TextEdit()
 let finder = Finder()
 
-
+/*
 let state: ITU = try itunes.playerState.get()
 if state == ITU.playing {
     print(try itunes.currentTrack.name.get())
@@ -28,8 +28,16 @@ try doc.name.get() as String
 
 
 
-try finder.home.get(resultType: FIN.alias) as URL
+print(try finder.home.get(resultType: FIN.alias) as URL)
+*/
 
+
+
+
+
+//try itunes.tracks.any.play()
+
+try textedit.launch()
 
 
 

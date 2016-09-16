@@ -39,18 +39,21 @@ let kSwiftKeywords: Set<String> = [ // Swift 2.0
 
 // Swift glue methods
 
-public let kSwiftAESpecifierMethods: Set<String> = [ // TO DO: review
+public let kSwiftAESpecifierMethods: Set<String> = [ // TO DO: review; some names have changed, others still need to be added
     // custom property/element specifiers
-    "property",
-    "userProperty",
-    "elements",
-    "customRoot",
-    // sendAppleEvent(eventClass:eventID:...
-    "currentApplication",
+    // Query
     "appData",
     "cachedDesc",
     "parentQuery",
     "rootSpecifier",
+    // Specifier
+    "property",
+    "userProperty",
+    "elements",
+    "sendAppleEvent",
+    // ApplicationExtension
+    "currentApplication",
+    "customRoot",
     // element(s) selectors
     "ID",
     "beginning",
@@ -73,10 +76,8 @@ public let kSwiftAESpecifierMethods: Set<String> = [ // TO DO: review
     "its",
     // miscellaneous
     "isRunning",
-    "launchApplication",
-    "reconnectApplication",
+    "launch",
     "beginTransaction",
-    "beginTransactionWithSession",
     "abortTransaction",
     "endTransaction",
 ]

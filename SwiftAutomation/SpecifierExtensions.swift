@@ -16,10 +16,6 @@
 import Foundation
 
 
-// TO DO: would be useful if Application classes could provide information on the current targeted process (full path, PID), esp for troubleshooting (note: it might be sufficient to put these properties on AppData and let users dig it out from there; this would also minimize namespace pollution and reduce the likelihood of conflicts with dictionary-defined vars/funcs added by glue generator)
-
-
-
 /******************************************************************************/
 // Property/single-element specifier; identifies an attribute/describes a one-to-one relationship between nodes in the app's AEOM graph
 
@@ -167,7 +163,7 @@ public protocol ApplicationExtension: RootSpecifierExtension {}
 
 extension ApplicationExtension {
     
-//    public var targetApplication: TargetApplication {return self.appData.target} // TO DO: include this? (might be useful to user for troubleshooting); what about processID (if local)?
+    // Application object constructors
     
     private init(target: TargetApplication, launchOptions: LaunchOptions, relaunchMode: RelaunchMode) {
         let appData = Self.untargetedAppData.targetedCopy(target, launchOptions: launchOptions, relaunchMode: relaunchMode)
@@ -203,6 +199,35 @@ extension ApplicationExtension {
     public func customRoot(_ object: Any) -> Self { // TO DO: should AppData also provide an option to set default app root object, to be used in building and unpacking _all_ object specifiers?
         return type(of: self).init(rootObject: object, appData: self.appData)
     }
+    
+    // launch this application (equivalent to AppleScript's `launch` command)
+    
+    public func launch() throws {
+        try self.appData.target.launch()
+    }
+    
+    // is the target application currently running?
+    
+    public var isRunning: Bool {
+        return self.appData.target.isRunning
+    }
+    
+    // note: users may access Application.appData.target directly for troubleshooting purposes, but are strongly discouraged from manipulating it directly
+    
+    // transaction support // TO DO: rework as `doTransaction(closure:)`
+    
+    public func beginTransaction(session: Any? = nil) throws {
+        try self.appData.beginTransaction(session: session)
+    }
+    
+    public func endTransaction() throws {
+        try self.appData.endTransaction()
+    }
+    
+    public func abortTransaction() throws {
+        try self.appData.abortTransaction()
+    }
+
 }
 
 

@@ -355,12 +355,12 @@
 			isa = PBXGroup;
 			children = (
 				4F63C4401B86A335000D74EE /* AppData.swift */,
+				4F63C4421B87AC88000D74EE /* Symbol.swift */,
 				4F63C42F1B7CF133000D74EE /* Specifier.swift */,
 				4F1D12401BA3042600875F74 /* SpecifierExtensions.swift */,
 				4FDD30FD1B932C29002BA20F /* SpecifierFormatter.swift */,
-				4F63C4421B87AC88000D74EE /* Symbol.swift */,
-				4F63C4441B8A4DFC000D74EE /* Errors.swift */,
 				4F63C4461B8A669C000D74EE /* Support.swift */,
+				4F63C4441B8A4DFC000D74EE /* Errors.swift */,
 				4F9AFB431D5B6C2600A71890 /* AEConstants.swift */,
 			);
 			name = bridge;

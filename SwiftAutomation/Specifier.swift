@@ -27,7 +27,7 @@
 import Foundation
 import AppKit
 
-// TO DO: underscore-prefix private/internal properties and methods to reduce risk of terminology clashes; what about 
+// TO DO: underscore/prefix non-public properties and methods to reduce risk of terminology clashes 
 
 // TO DO: make sure KeywordConverter lists _all_ Specifier members
 
@@ -114,7 +114,7 @@ open class Specifier: Query, SpecifierProtocol {
     override func unpackParentSpecifiers() {
         guard let cachedDesc = self.cachedDesc else {
             print("Can't unpack parent specifiers as cached descriptor don't exist (this isn't supposed to happen).") // TO DO: DEBUG; delete
-            self._parentQuery = RootSpecifier(rootObject: SwiftAEError(code: 1, message: "Can't unpack parent specifiers as cached AppData and/or AEDesc don't exist (this isn't supposed to happen)."), appData: self.appData) // TO DO: implement ErrorSpecifier subclass that takes error info and always raises on use
+            self._parentQuery = RootSpecifier(rootObject: SwiftAutomationError(code: 1, message: "Can't unpack parent specifiers as cached AppData and/or AEDesc don't exist (this isn't supposed to happen)."), appData: self.appData) // TO DO: implement ErrorSpecifier subclass that takes error info and always raises on use
             return
         }
         do {
@@ -127,45 +127,43 @@ open class Specifier: Query, SpecifierProtocol {
         }
     }
     
-    // convenience methods for sending Apple events using four-char codes // TO DO: any way to genericize these methods, and the methods they call?
+    // convenience methods for sending Apple events using four-char codes (either OSTypes or Strings)
     
-    // TO DO: any way to support String|OSType sum type without clients having to explicitly construct it? (or is that a 'special case' that Swift only grants to Optional?)
-    
-    func sendAppleEvent<T>(_ eventClass: OSType, _ eventID: OSType, _ parameters: [OSType:Any] = [:],
-                           waitReply: Bool = true, sendOptions: NSAppleEventDescriptor.SendOptions? = nil,
-                           withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(eventClass, eventID: eventID, parentSpecifier: self,
+    public func sendAppleEvent<T>(_ eventClass: OSType, _ eventID: OSType, _ parameters: [OSType:Any] = [:],
+                                  waitReply: Bool = true, sendOptions: NSAppleEventDescriptor.SendOptions? = nil,
+                                  withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent(eventClass: eventClass, eventID: eventID, parentSpecifier: self,
                                                parameters: parameters, waitReply: waitReply, sendOptions: sendOptions,
                                                withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     
-    func sendAppleEvent<T>(_ eventClass: String, _ eventID: String, _ parameters: [String:Any] = [:],
-                           waitReply: Bool = true, sendOptions: NSAppleEventDescriptor.SendOptions? = nil,
-                            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+    public func sendAppleEvent<T>(_ eventClass: String, _ eventID: String, _ parameters: [String:Any] = [:],
+                                  waitReply: Bool = true, sendOptions: NSAppleEventDescriptor.SendOptions? = nil,
+                                  withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
         var params = [OSType:Any]()
         for (k, v) in parameters { params[FourCharCodeUnsafe(k)] = v }
-        return try self.appData.sendAppleEvent(FourCharCodeUnsafe(eventClass), eventID: FourCharCodeUnsafe(eventID), parentSpecifier: self,
-                                               parameters: params, waitReply: waitReply, sendOptions: sendOptions,
+        return try self.appData.sendAppleEvent(eventClass: FourCharCodeUnsafe(eventClass), eventID: FourCharCodeUnsafe(eventID),
+                                               parentSpecifier: self, parameters: params, waitReply: waitReply, sendOptions: sendOptions,
                                                withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     
     // non-generic versions of the above methods; these are bound when T can't be inferred (either because caller doesn't use the return value or didn't declare a specific type for it, e.g. `let result = cmd.call()`), in which case Any is used
     
-    func sendAppleEvent(_ eventClass: OSType, _ eventID: OSType, _ parameters: [OSType:Any] = [:],
-                        waitReply: Bool = true, sendOptions: NSAppleEventDescriptor.SendOptions? = nil,
-                        withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(eventClass, eventID: eventID, parentSpecifier: self,
+    @discardableResult public func sendAppleEvent(_ eventClass: OSType, _ eventID: OSType, _ parameters: [OSType:Any] = [:],
+                                                  waitReply: Bool = true, sendOptions: NSAppleEventDescriptor.SendOptions? = nil,
+                                                  withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+        return try self.appData.sendAppleEvent(eventClass: eventClass, eventID: eventID, parentSpecifier: self,
                                                parameters: parameters, waitReply: waitReply, sendOptions: sendOptions,
                                                withTimeout: withTimeout, considering: considering, returnType: Any.self)
     }
     
-    func sendAppleEvent(_ eventClass: String, _ eventID: String, _ parameters: [String:Any] = [:],
-                        waitReply: Bool = true, sendOptions: NSAppleEventDescriptor.SendOptions? = nil,
-                        withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+    @discardableResult public func sendAppleEvent(_ eventClass: String, _ eventID: String, _ parameters: [String:Any] = [:],
+                                                  waitReply: Bool = true, sendOptions: NSAppleEventDescriptor.SendOptions? = nil,
+                                                  withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         var params = [OSType:Any]()
         for (k, v) in parameters { params[FourCharCodeUnsafe(k)] = v }
-        return try self.appData.sendAppleEvent(FourCharCodeUnsafe(eventClass), eventID: FourCharCodeUnsafe(eventID), parentSpecifier: self,
-                                               parameters: params, waitReply: waitReply, sendOptions: sendOptions,
+        return try self.appData.sendAppleEvent(eventClass: FourCharCodeUnsafe(eventClass), eventID: FourCharCodeUnsafe(eventID),
+                                               parentSpecifier: self, parameters: params, waitReply: waitReply, sendOptions: sendOptions,
                                                withTimeout: withTimeout, considering: considering, returnType: Any.self)
     }
 }
