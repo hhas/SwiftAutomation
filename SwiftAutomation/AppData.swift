@@ -9,7 +9,7 @@ import Foundation
 import AppKit
 
 
-// TO DO: eliminate all `returnType:T.Type` params if no longer required
+// TO DO: glues should use `as:` rather than `resultType:` if practical (terminology parsers should ignore `("as",keyAERequestedType)` if it appears in a command definition, and escape any partial matches - e.g. StdAdds commands use 'as..' and 'as.A' as well as 'rtyp', so the former should always appear as `as_:`)
 
 // TO DO: what about 'missing value'? for a pure Swift bridge, might be better to use nil rather than Symbol.missingValue; note that Swift's compile-time/run-time treatment of `Any` and `nil` is inconsistent (either flawed or buggy). Q. How will this affect pack/unpack; presumably Optional will need extended same as collections to do its own unpacking?
 
@@ -215,6 +215,9 @@ extension Dictionary : SelfPacking, SelfUnpacking {
 // AppData converts values between Swift and AE types, holds target process information, and provides methods for sending Apple events
 
 
+private let AbsoluteOrdinalCodes = [SwiftAE_kAEFirst, SwiftAE_kAEMiddle, SwiftAE_kAELast, SwiftAE_kAEAny, SwiftAE_kAEAll]
+
+
 open class AppData {
     
     // Note: the `isInt64Compatible` flag is currently `true` by default on the assumption that most apps will do the right thing upon receiving `typeUInt32`/`typeSInt64`/`typeUInt64` descriptors (i.e. coerce them to whatever type[s] they actually need), and apps like Excel which only accept `SInt32` and `Double` (which are what AppleScript uses) and fail on anything else are in the minority. If that assumption turns out to be wrong, this flag will need to be made `false` by default (i.e. emulate AppleScript's behavior).
@@ -402,6 +405,9 @@ open class AppData {
     // Convert an Apple event descriptor to the specified Swift type, coercing it as necessary
     
     public func unpack<T>(_ desc: NSAppleEventDescriptor) throws -> T {
+        
+        // TO DO: also have to allow for possibility of Optional<T>?
+        
         // TO DO: will these tests also match NSString, NSDate, NSArray, etc, or do those need tested for separately?
         if T.self == Any.self || T.self == AnyObject.self {
             return try self.unpackAny(desc) as! T
@@ -544,11 +550,12 @@ open class AppData {
         }
         do {
             let formCode = selectorForm.enumCodeValue
-            // unpack selectorData, unless it's a property code or absolute/relative ordinal
-            let selectorData = (formCode == SwiftAE_formPropertyID || formCode == SwiftAE_formRelativePosition
-                || (formCode == SwiftAE_formAbsolutePosition && selectorDesc.descriptorType == typeEnumerated
-                    && [SwiftAE_kAEFirst, SwiftAE_kAEMiddle, SwiftAE_kAELast, SwiftAE_kAEAny, SwiftAE_kAEAll].contains(selectorDesc.enumCodeValue)))
-                ? selectorDesc : try self.unpack(selectorDesc)
+            // unpack selectorData, unless it's a property code or absolute/relative ordinal (in which case use its prop/enum descriptor as-is)
+            let selectorData = formCode == SwiftAE_formPropertyID
+                            || formCode == SwiftAE_formRelativePosition // TO DO: shouldn't this check seld is prev/next, same as abs. ordinals?
+                            || formCode == SwiftAE_formAbsolutePosition
+                               && selectorDesc.descriptorType == typeEnumerated && AbsoluteOrdinalCodes.contains(selectorDesc.enumCodeValue)
+                    ? selectorDesc : try self.unpackAny(selectorDesc)
             // TO DO: need 'strict AS emulation' option to fully unpack and repack specifiers, re-setting cachedDesc (TBH, only app that ever had this problem was iView Media Pro, since it takes a double whammy of app bugs to cause an app to puke on receiving objspecs it previously created itself)
             if formCode == SwiftAE_formRange || formCode == SwiftAE_formTest || (formCode == SwiftAE_formAbsolutePosition && selectorDesc.enumCodeValue == SwiftAE_kAEAll) {
                 return self.glueInfo.multiObjectSpecifierType.init(wantType: wantType, selectorForm: selectorForm, selectorData: selectorData,
@@ -655,13 +662,13 @@ open class AppData {
                                            returnID: AEReturnID(kAutoGenerateReturnID), transactionID: AETransactionID(kAnyTransactionID)) // workarounds: Carbon constants are incorrectly mapped to Int, and NSAppleEventDescriptor.h currently doesn't define its own
         // pack its keyword parameters
         for (_, code, value) in keywordParameters {
-            if value as? Parameters != NoParameter {
+            if parameterExists(value) {
                 // TO DO: catch pack errors and report (simplest to capture all input and error info in CommandError, and only process/format if displayed)
                 event.setDescriptor(try self.pack(value), forKeyword: code)
             }
         }
         // pack event's direct parameter and/or subject attribute
-        let hasDirectParameter = directParameter as? Parameters != NoParameter
+        let hasDirectParameter = parameterExists(directParameter)
         if hasDirectParameter { // if the command includes a direct parameter, pack that normally as its direct param
             event.setParam(try self.pack(directParameter), forKeyword: keyDirectObject)
         }
@@ -737,7 +744,7 @@ open class AppData {
                 throw CommandError(appData: self, event: event, replyEvent: replyEvent)
             } else if let resultDesc = replyEvent.paramDescriptor(forKeyword: keyDirectObject) {
                 do {
-                    return try self.unpack(resultDesc) // TO DO: if this fails, rethrow as CommandError
+                    return try self.unpack(resultDesc) as T // TO DO: if this fails, rethrow as CommandError
                 } catch {
                     throw CommandError(appData: self, event: event, replyEvent: replyEvent, parentError: error)
                 }

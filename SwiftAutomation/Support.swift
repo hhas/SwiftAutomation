@@ -96,11 +96,15 @@ public let DefaultRelaunchMode: RelaunchMode = .limited
 
 // Indicates omitted command parameter
 
-public enum Parameters {
+public enum OptionalParameter {
     case none
 }
 
-public let NoParameter = Parameters.none
+public let NoParameter = OptionalParameter.none
+
+func parameterExists(_ value: Any) -> Bool {
+    return value as? OptionalParameter != NoParameter
+}
 
 
 /******************************************************************************/

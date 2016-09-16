@@ -112,7 +112,7 @@ open class Specifier: Query, SpecifierProtocol {
     // unpacking
     
     override func unpackParentSpecifiers() {
-        guard let cachedDesc = self.cachedDesc else {
+        guard let cachedDesc = self.cachedDesc else { // TO DO: convert this sanity check to assert?
             print("Can't unpack parent specifiers as cached descriptor don't exist (this isn't supposed to happen).") // TO DO: DEBUG; delete
             self._parentQuery = RootSpecifier(rootObject: SwiftAutomationError(code: 1, message: "Can't unpack parent specifiers as cached AppData and/or AEDesc don't exist (this isn't supposed to happen)."), appData: self.appData) // TO DO: implement ErrorSpecifier subclass that takes error info and always raises on use
             return
@@ -312,8 +312,8 @@ public struct RangeSelector: SelfPacking { // holds data for by-range selectors 
             throw UnpackError(appData: appData, descriptor: desc, type: RangeSelector.self, message: "Missing start/stop specifier in by-range specifier.")
         }
         do {
-            self.start = try appData.unpack(startDesc)
-            self.stop = try appData.unpack(stopDesc)
+            self.start = try appData.unpackAny(startDesc)
+            self.stop = try appData.unpackAny(stopDesc)
             self.wantType = NSAppleEventDescriptor(typeCode: typeType) // TO DO: wantType is incorrect; in principle this shouldn't matter as start and stop descs _should_ always be object specifiers, but paranoia is best; will need to rethink as it can't be reliably inferred here (since range desc should only appear in by-range object specifier desc, might be simplest just to unpack it directly from there instead of AppData)
         } catch {
             throw UnpackError(appData: appData, descriptor: desc, type: RangeSelector.self, message: "Failed to unpack start/stop specifier in by-range specifier.") // TO DO: or just return RangeSelector containing the original AEDescs?

@@ -51,7 +51,7 @@ public func SwiftAEFormatAppleEvent(_ event: NSAppleEventDescriptor, useTerminol
             let errs = event.paramDescriptor(forKeyword: keyErrorString)?.stringValue
             return SwiftAutomationError(code: Int(errn), message: errs).description // TO DO: use CommandError? (need to check it's happy with only replyEvent arg)
         } else if let reply = event.paramDescriptor(forKeyword: keyDirectObject) { // format return value
-            return formatValue((try? appData.unpack(reply) as Any) ?? reply)
+            return formatValue((try? appData.unpackAny(reply)) ?? reply)
         } else {
             return "<noreply>" // TO DO: what to return?
         }
@@ -168,7 +168,7 @@ public struct AppleEventDescription { // TO DO: split AE unpacking from CommandT
     public private(set) var name: String? = nil // nil if terminology unavailable (use eventClass+eventID instead)
     
     public private(set) var subject: Any? = nil
-    public private(set) var directParameter: Any? = nil
+    public private(set) var directParameter: Any = NoParameter
     public private(set) var keywordParameters: [(String, String)]? = nil // [(name,value),...], or nil if terminology unavailable (use rawParameters instead)
     public private(set) var rawParameters: [OSType:Any] = [:] // TO DO: should this omit direct and `as` params? (A. no, e.g. `make` cmd may have different reqs., so formatter should decide what to include)
     
@@ -187,27 +187,27 @@ public struct AppleEventDescription { // TO DO: split AE unpacking from CommandT
         // unpack subject attribute and/or direct parameter, if given
         if let desc = event.attributeDescriptor(forKeyword: SwiftAE_keySubjectAttr) {
             if desc.descriptorType != typeNull { // typeNull = root application object
-                self.subject = (try? appData.unpack(desc) as Any) ?? desc
+                self.subject = (try? appData.unpackAny(desc)) ?? desc
             }
         }
         if let desc = event.paramDescriptor(forKeyword: keyDirectObject) {
-            self.directParameter = (try? appData.unpack(desc)) ?? desc
+            self.directParameter = (try? appData.unpackAny(desc)) ?? desc
         }
-        // unpack `as` parameter, if given // TO DO: commands currently don't support this as std arg
+        // unpack `as` parameter, if given // TO DO: this needs to appear as resultType: arg
         if let desc = event.paramDescriptor(forKeyword: keyAERequestedType) {
-            self.requestedType = (try? appData.unpack(desc) as Any) ?? desc
+            self.requestedType = (try? appData.unpackAny(desc)) ?? desc
         }
         // unpack keyword parameters
         if commandInfo != nil {
             self.keywordParameters = []
-            for paramInfo in commandInfo!.orderedParameters { // this ignores parameters that don't have a keyword name
+            for paramInfo in commandInfo!.orderedParameters { // this ignores parameters that don't have a keyword name; it should also ignore ("as",keyAERequestedType) parameter (this is probably best done by ensuring that command parsers always omit it)
                 if let desc = event.paramDescriptor(forKeyword: paramInfo.code) {
-                    let value = formatValue((try? appData.unpack(desc) as Any) ?? desc)
+                    let value = formatValue((try? appData.unpackAny(desc)) ?? desc)
                     self.keywordParameters!.append((paramInfo.name, value))
                 }
             }
-            if event.numberOfItems > self.keywordParameters!.count + (self.directParameter == nil ? 0 : 1)
-                    + ((self.requestedType != nil && commandInfo!.parametersByCode[keyAERequestedType] == nil) ? 1 : 0) {
+            if event.numberOfItems > self.keywordParameters!.count + (parameterExists(self.directParameter) ? 1 : 0)
+                    + ((self.requestedType != nil && commandInfo!.parametersByCode[keyAERequestedType] == nil) ? 1 : 0) { // TO DO: update (see above)
                 self.keywordParameters = nil
                 commandInfo = nil
             }
@@ -216,7 +216,7 @@ public struct AppleEventDescription { // TO DO: split AE unpacking from CommandT
             for i in 1..<(event.numberOfItems+1) {
                 let desc = event.atIndex(i)!
                 //if ![keyDirectObject, keyAERequestedType].contains(desc.descriptorType) {
-                self.rawParameters[event.keywordForDescriptor(at: i)] = (try? appData.unpack(desc) as Any) ?? desc
+                self.rawParameters[event.keywordForDescriptor(at: i)] = (try? appData.unpackAny(desc)) ?? desc
                 //}
             }
         } else {
@@ -262,13 +262,13 @@ extension SpecifierFormatter {
         var parentSpecifier = String(describing: applicationObject)
         var args: [String] = []
         if let commandName = eventDescription.name {
-            if eventDescription.subject != nil && eventDescription.directParameter != nil {
+            if eventDescription.subject != nil && parameterExists(eventDescription.directParameter) {
                 parentSpecifier = self.format(eventDescription.subject!)
-                args.append(self.format(eventDescription.directParameter!))
+                args.append(self.format(eventDescription.directParameter))
             //} else if eventClass == kAECoreSuite && eventID == kAECreateElement { // TO DO: format make command as special case (for convenience, AEBCommand allows user to call `make` directly on a specifier, in which case the specifier is used as its `at` parameter if not already given)
-            } else if eventDescription.subject == nil && eventDescription.directParameter != nil {
-                parentSpecifier = self.format(eventDescription.directParameter!)
-            } else if eventDescription.subject != nil && eventDescription.directParameter == nil {
+            } else if eventDescription.subject == nil && parameterExists(eventDescription.directParameter) {
+                parentSpecifier = self.format(eventDescription.directParameter)
+            } else if eventDescription.subject != nil && !parameterExists(eventDescription.directParameter) {
                 parentSpecifier = self.format(eventDescription.subject!)
             }
             parentSpecifier += ".\(commandName)"

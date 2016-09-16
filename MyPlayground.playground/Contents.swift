@@ -15,10 +15,14 @@ if state == ITU.playing {
     print(state)
 }
 
-
-try Finder().home.files.name.get()
-
 try TextEdit().documents.name.get() as [String]
+
+print()
+print(try Finder().home.files.name.get())
+
+print()
+print(try Finder().home.files[1].get())
+
 
 /*
 
@@ -27,10 +31,10 @@ let doc: TEDItem = try textedit.make(new: TED.document) // TO DO: Swift will exe
 try doc.name.get() as String
 
 
-
-print(try finder.home.get(resultType: FIN.alias) as URL)
 */
 
+
+try finder.home.get(resultType: FIN.alias) as URL
 
 
 
