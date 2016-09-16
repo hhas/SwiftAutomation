@@ -638,18 +638,18 @@ open class AppData {
         }
     }
     
-    public func sendAppleEvent<T>(name: String?, eventClass: OSType, eventID: OSType, // note: human-readable command and parameter names are only used (if known) in error messages
+    public func sendAppleEvent<T>(name: String?, eventClass: OSType, eventID: OSType,
                                   parentSpecifier: Specifier, // the Specifier on which the command method was called; see special-case packing logic below
                                   directParameter: Any = NoParameter, // the first (unnamed) parameter to the command method; see special-case packing logic below
                                   keywordParameters: KeywordParameters = [], // the remaining named parameters
                                   requestedType: Symbol? = nil, // event's `as` parameter, if any
-                                  waitReply: Bool = true, // wait for application to respond before returning? (default is true)
-                                  sendOptions: NSAppleEventDescriptor.SendOptions? = nil, // raw send options (if given, waitReply arg is ignored); default is nil
+                                  waitReply: Bool = true, // wait for application to respond before returning? ignored when `sendOptions:` is given
+                                  sendOptions: NSAppleEventDescriptor.SendOptions? = nil, // raw send options (these are rarely needed)
                                   withTimeout: TimeInterval? = nil, // no. of seconds to wait before raising timeout error (-1712); may also be default/never
                         //        returnID: AEReturnID, // TO DO: need to check correct procedure for this; should send return auto-generated returnID?
                                   considering: ConsideringOptions? = nil,
-                                  returnType: T.Type) throws -> T // coerce and unpack result as this type or return raw reply event if T is NSDescriptor; default is Any
-    {
+                                  returnType: T.Type) throws -> T { // coerce and unpack result as this type or return raw reply event if T is NSDescriptor; default is Any
+        // note: human-readable command and parameter names are only used (if known) in error messages
         // TO DO: all errors occurring within this method should be caught and rethrown as CommandError, allowing error message to include a description of the failed command as well as the error that occurred
         // Create a new AppleEvent descriptor (throws ConnectionError if target app isn't found)
         let event = NSAppleEventDescriptor(eventClass: eventClass, eventID: eventID, targetDescriptor: try self.targetDescriptor(),
@@ -714,7 +714,7 @@ open class AppData {
                 // event failed as target process has quit since previous event; recreate AppleEvent with new address and resend
                 self._targetDescriptor = nil
                 let event = NSAppleEventDescriptor(eventClass: eventClass, eventID: eventID, targetDescriptor: try self.targetDescriptor(),
-                                                    returnID: AEReturnID(kAutoGenerateReturnID), transactionID: AETransactionID(kAnyTransactionID))
+                                                   returnID: AEReturnID(kAutoGenerateReturnID), transactionID: AETransactionID(kAnyTransactionID))
                 for i in 1..<(event.numberOfItems+1) {
                     event.setParam(event.atIndex(i)!, forKeyword: event.keywordForDescriptor(at: i))
                 }
@@ -761,47 +761,38 @@ open class AppData {
         let directParameter = parameters.removeValue(forKey: keyDirectObject) ?? NoParameter
         let keywordParameters: KeywordParameters = parameters.map({(name: nil, code: $0, value: $1)})
         return try self.sendAppleEvent(name: nil, eventClass: eventClass, eventID: eventID,
-            parentSpecifier: parentSpecifier, directParameter: directParameter,
-            keywordParameters: keywordParameters, requestedType: requestedType, waitReply: waitReply,
-            sendOptions: sendOptions, withTimeout: withTimeout, considering: considering, returnType: T.self)
+                                       parentSpecifier: parentSpecifier, directParameter: directParameter,
+                                       keywordParameters: keywordParameters, requestedType: requestedType, waitReply: waitReply,
+                                       sendOptions: sendOptions, withTimeout: withTimeout, considering: considering, returnType: T.self)
     }
     
     // transaction support (in practice, there are few, if any, currently available apps that support transactions, but it's included for completeness)
     
-    // TO DO: the following methods really need a mutex to ensure transactionID's consistency in the event they're called from different threads; best option would probably be to replace these methods with a single `doTransaction(_ closure: (Self)throws->())` that does its own thread locking and transaction management (Q. should this closure return void or generic T?)
-    
-    //      var mutex: pthread_mutex_t = pthread_mutex_t()
-    //      pthread_mutex_init(&mutex, nil)
-    //      pthread_mutex_lock(&mutex)
-    //      send kAEBeginTransaction
-    //      closure()
-    //      on success, send kAEEndTransaction/on error, send kAETransactionTerminated; finally:
-    //      pthread_mutex_unlock(&mutex)
-    //      pthread_mutex_destroy(&mutex)
-    //
-    
-    
-    public func beginTransaction(session: Any? = nil) throws {
-        if self.transactionID == kAnyTransactionID { //no-op on repeat calls
-            transactionID = try self.sendAppleEvent(name:nil, eventClass: kAEMiscStandards, eventID: kAEBeginTransaction,
-                                                    parentSpecifier: AEApp, directParameter: session, returnType: Int.self)
+    public func doTransaction<T>(session: Any? = nil, closure: () throws -> (T)) throws -> T {
+        var mutex = pthread_mutex_t()
+        pthread_mutex_init(&mutex, nil)
+        pthread_mutex_lock(&mutex)
+        defer {
+            pthread_mutex_unlock(&mutex)
+            pthread_mutex_destroy(&mutex)
         }
-    }
-    
-    public func endTransaction() throws {
-        if self.transactionID != kAnyTransactionID { // no-op on repeat calls
-            let _ = try self.sendAppleEvent(name: nil, eventClass: kAEMiscStandards, eventID: kAEEndTransaction,
-                                                parentSpecifier: AEApp, returnType: Any.self)
+        assert(self.transactionID == kAnyTransactionID, "Transaction \(self.transactionID) already active.") 
+        transactionID = try self.sendAppleEvent(name:nil, eventClass: kAEMiscStandards, eventID: kAEBeginTransaction,
+                                                parentSpecifier: AEApp, directParameter: session, returnType: Int.self)
+        defer {
             self.transactionID = kAnyTransactionID
         }
-    }
-    
-    public func abortTransaction() throws {
-        if self.transactionID != kAnyTransactionID {
-            let _ = try self.sendAppleEvent(name: nil, eventClass: kAEMiscStandards, eventID: kAETransactionTerminated,
-                                            parentSpecifier: AEApp, returnType: Any.self)
-            self.transactionID = kAnyTransactionID
-        }
+        var result: T
+        do {
+            result = try closure()
+        } catch { // abort transaction, then rethrow closure error
+            let _ = try? self.sendAppleEvent(name: nil, eventClass: kAEMiscStandards, eventID: kAETransactionTerminated,
+                                             parentSpecifier: AEApp, returnType: Any.self)
+            throw error
+        } // else end transaction
+        let _ = try self.sendAppleEvent(name: nil, eventClass: kAEMiscStandards, eventID: kAEEndTransaction,
+                                        parentSpecifier: AEApp, returnType: Any.self)
+        return result
     }
 }
 

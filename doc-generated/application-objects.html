@@ -91,15 +91,9 @@
 
 <h2>Transaction support</h2>
 
-<p>[TO DO: not currently implemented (not sure there are any apps that still use this feature, TBH)]</p>
+<p>Application objects implement a <code>doTransaction(session:closure:)</code> method that allow a sequence of commands to be handled atomically by applications that support transactions, e.g. FileMaker Pro.</p>
 
-<p>Application objects implement four additional methods, <code>-startTransactionWithSession:</code>, <code>-startTransaction</code>, <code>-endTransaction</code> and <code>-abortTransaction</code> that allow a sequence of related commands to be handled as a single operation by applications that support transactions, e.g. FileMaker Pro.</p>
-
-<p>Once the application object's <code>-startTransaction</code> or <code>-startTransactionWithSession:</code> method is called, all subsequent commands to that application will be sent as part of the same transaction until <code>-endTransaction</code> or <code>-abortTransaction</code> is called.</p>
-
-<p>The <code>-startTransactionWithSession:</code> method takes an argument that indicates the specific transaction session to open (in applications that support this).</p>
-
-<p>Remember to call <code>-endTransaction</code> or <code>-abortTransaction</code> at the end of every transaction. (This includes transactions interrupted by a raised exception.) If a transaction is accidentally left open, SwiftAutomation will try to end it automatically when the application object is disposed of, but this is not guaranteed to succeed.</p>
+<p>[TO DO: document this, once it's tested (<em>if</em> it can be tested... this is a massively neglected corner of AE handling; not even sure if FMP supports it any more, never mind any newer apps)]</p>
 
 <h2>Local application launching notes</h2>
 
@@ -113,8 +107,6 @@
 
 <h3>Checking if an application is running</h3>
 
-<p>[TO DO: not yet implemented]</p>
-
 <p>You can check if the application specified by an Application object is currently running by checking its <code>isRunning</code> property. This is useful if you don't want to perform commands on an application that isn't already running. For example:</p>
 
 <pre><code>  let textedit = TextEdit()
@@ -127,19 +119,12 @@
 
 <p>SwiftAutomation automatically launches a non-running application the first time your script makes sends a command. To avoid accidental launches, <em>all</em> commands relating to that application must be included in a conditional block that only executes if <code>isRunning</code> returns <code>true</code>.</p>
 
-<h3>Launching applications via <code>launchApplication()</code></h3>
+<h3>Launching applications via <code>launch()</code></h3>
 
-<p>[TO DO: not yet implemented]</p>
-
-<p>When SwiftAutomation launches a non-running application, it normally sends it a <code>run</code> command as part of the launching process. If you wish to avoid this, you should start the application by sending it a <code>launch</code> command before doing anything else:</p>
-
-<pre><code>  launchApplication() throws
-</code></pre>
-
-<p>This is useful when you want to start an application without it going through its normal startup procedure, and is equivalent to the using AppleScript's <code>launch</code> command. For example, to launch TextEdit without causing it to display a new, empty document (its usual behaviour):</p>
+<p>When SwiftAutomation launches a non-running application, it normally sends it a <code>run</code> command as part of the launching process. If you wish to avoid this, you should start the application by sending it a <code>launch</code> command before doing anything else. This is useful when you want to start an application without it going through its normal startup procedure, and is equivalent to the using AppleScript's <code>launch</code> command. For example, to launch TextEdit without causing it to display a new, empty document (its usual behaviour):</p>
 
 <pre><code>  textedit = TextEdit()
-  try textedit.launchApplication()
+  try textedit.launch()
   // other TextEdit-related code goes here...
 </code></pre>
 
@@ -150,12 +135,12 @@
 <p>Be default, if the target application has stopped running since the Application object was created, trying to send it a command using that Application object will result in an invalid connection error (-609), unless that command is <code>run</code> or <code>launch</code>. This restriction prevents SwiftAutomation accidentally restarting an application that has unexpectedly quit while a script is controlling it. You can restart an application by sending an explicit <code>run</code> or <code>launch</code> command, or by creating a new Application object for it. To change this behavior, use one of the following <code>RelaunchMode</code> values as the initializer's <code>relaunchMode:</code> argument:</p>
 
 <ul>
-<li><code>.Never</code> -- prevent the Application object automatically relaunching the application, even for a <code>run</code> or <code>launch</code> command</li>
-<li><code>.Limited</code> -- allow the Application object to relaunch the application before sending a <code>run</code> or <code>launch</code> command (SwiftAutomation's default behavior)</li>
-<li><code>.Always</code> -- allow the Application object to relaunch the application before sending any command (AppleScript's behavior)</li>
+<li><code>.never</code> -- prevent the Application object automatically relaunching the application, even for a <code>run</code> or <code>launch</code> command</li>
+<li><code>.limited</code> -- allow the Application object to relaunch the application before sending a <code>run</code> or <code>launch</code> command (SwiftAutomation's default behavior)</li>
+<li><code>.always</code> -- allow the Application object to relaunch the application before sending any command (AppleScript's behavior)</li>
 </ul>
 
-<p>Note that you can still use Application objects to control applications that have been quit <em>and</em> restarted since the Application object was created. SwiftAutomation will automatically update the Application object's process id information as needed. [[TO DO: check this is correct; also check how it behaves when .Never is used]]</p>
+<p>Note that you can still use Application objects to control applications that have been quit <em>and</em> restarted since the Application object was created. SwiftAutomation will automatically update the Application object's process id information as needed. [TO DO: check this is correct; also check how it behaves when .Never is used]</p>
 
 <p class="hilitebox">There is a known problem with quitting and immediately relaunching an application via SwiftAutomation, where the relaunch instruction is sent to the application before it has actually quit. This timing issue appears to be the OS's fault; one workaround is to send the `quit` command, wait until `isRunning` returns `false`, then send the `run`/`launch` command.</p>
 

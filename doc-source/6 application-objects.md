@@ -76,15 +76,9 @@ Note that these commands are only useful in applications that define an Apple Ev
 
 ## Transaction support
 
-[TO DO: not currently implemented (not sure there are any apps that still use this feature, TBH)]
+Application objects implement a `doTransaction(session:closure:)` method that allow a sequence of commands to be handled atomically by applications that support transactions, e.g. FileMaker Pro.
 
-Application objects implement four additional methods, `-startTransactionWithSession:`, `-startTransaction`, `-endTransaction` and `-abortTransaction` that allow a sequence of related commands to be handled as a single operation by applications that support transactions, e.g. FileMaker Pro.
-
-Once the application object's `-startTransaction` or `-startTransactionWithSession:` method is called, all subsequent commands to that application will be sent as part of the same transaction until `-endTransaction` or `-abortTransaction` is called.
-
-The `-startTransactionWithSession:` method takes an argument that indicates the specific transaction session to open (in applications that support this).
-
-Remember to call `-endTransaction` or `-abortTransaction` at the end of every transaction. (This includes transactions interrupted by a raised exception.) If a transaction is accidentally left open, SwiftAutomation will try to end it automatically when the application object is disposed of, but this is not guaranteed to succeed.
+[TO DO: document this, once it's tested (_if_ it can be tested... this is a massively neglected corner of AE handling; not even sure if FMP supports it any more, never mind any newer apps)]
 
 
 ## Local application launching notes
@@ -101,8 +95,6 @@ SwiftAutomation identifies locally run applications by their process ids so it's
 
 ### Checking if an application is running
 
-[TO DO: not yet implemented]
-
 You can check if the application specified by an Application object is currently running by checking its `isRunning` property. This is useful if you don't want to perform commands on an application that isn't already running. For example:
 
     let textedit = TextEdit()
@@ -117,13 +109,12 @@ SwiftAutomation automatically launches a non-running application the first time 
 
 ### Launching applications via `launch()`
 
-[TO DO: not yet implemented]
-
 When SwiftAutomation launches a non-running application, it normally sends it a `run` command as part of the launching process. If you wish to avoid this, you should start the application by sending it a `launch` command before doing anything else. This is useful when you want to start an application without it going through its normal startup procedure, and is equivalent to the using AppleScript's `launch` command. For example, to launch TextEdit without causing it to display a new, empty document (its usual behaviour):
 
     textedit = TextEdit()
     try textedit.launch()
     // other TextEdit-related code goes here...
+
 
 ### Restarting applications
 
@@ -135,7 +126,7 @@ Be default, if the target application has stopped running since the Application 
 * `.limited` -- allow the Application object to relaunch the application before sending a `run` or `launch` command (SwiftAutomation's default behavior)
 * `.always` -- allow the Application object to relaunch the application before sending any command (AppleScript's behavior)
 
-Note that you can still use Application objects to control applications that have been quit _and_ restarted since the Application object was created. SwiftAutomation will automatically update the Application object's process id information as needed. [[TO DO: check this is correct; also check how it behaves when .Never is used]]
+Note that you can still use Application objects to control applications that have been quit _and_ restarted since the Application object was created. SwiftAutomation will automatically update the Application object's process id information as needed. [TO DO: check this is correct; also check how it behaves when .Never is used]
 
 
 <p class="hilitebox">There is a known problem with quitting and immediately relaunching an application via SwiftAutomation, where the relaunch instruction is sent to the application before it has actually quit. This timing issue appears to be the OS's fault; one workaround is to send the `quit` command, wait until `isRunning` returns `false`, then send the `run`/`launch` command.</p>

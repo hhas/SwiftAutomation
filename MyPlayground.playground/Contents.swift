@@ -37,7 +37,8 @@ print(try finder.home.get(resultType: FIN.alias) as URL)
 
 //try itunes.tracks.any.play()
 
-try textedit.launch()
+//try textedit.launch()
+
 
 
 

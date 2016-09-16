@@ -163,6 +163,8 @@ public protocol ApplicationExtension: RootSpecifierExtension {}
 
 extension ApplicationExtension {
     
+    // note: users may access Application.appData.target directly for troubleshooting purposes, but are strongly discouraged from using it directly (it is public so that generated glues can use it, but should otherwise be treated as an internal implementation detail)
+    
     // Application object constructors
     
     private init(target: TargetApplication, launchOptions: LaunchOptions, relaunchMode: RelaunchMode) {
@@ -212,22 +214,11 @@ extension ApplicationExtension {
         return self.appData.target.isRunning
     }
     
-    // note: users may access Application.appData.target directly for troubleshooting purposes, but are strongly discouraged from manipulating it directly
+    // transaction support
     
-    // transaction support // TO DO: rework as `doTransaction(closure:)`
-    
-    public func beginTransaction(session: Any? = nil) throws {
-        try self.appData.beginTransaction(session: session)
+    public func doTransaction<T>(session: Any? = nil, closure: () throws -> (T)) throws -> T {
+        return try self.appData.doTransaction(session: session, closure: closure)
     }
-    
-    public func endTransaction() throws {
-        try self.appData.endTransaction()
-    }
-    
-    public func abortTransaction() throws {
-        try self.appData.abortTransaction()
-    }
-
 }
 
 

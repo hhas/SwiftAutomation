@@ -100,7 +100,7 @@ public enum Parameters {
     case none
 }
 
-public let NoParameter = Parameters.none // TO DO: what's easiest way to create unique symbol? (i.e. not sure about using nil to indicate omission of directParameter [or any other parameter] in commands, as that can't be distinguished from nil values returned by Cocoa APIs to signal a runtime error; what's recommended current best practice for Swift APIs?) // TO DO: actually, could use nil as long as glue commands don't accept it (caveat: raw 4CC APIs must reject it)
+public let NoParameter = Parameters.none
 
 
 /******************************************************************************/
