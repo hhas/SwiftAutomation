@@ -408,7 +408,7 @@ extension TEDCommand {
         return try self.appData.sendAppleEvent(name: "activate", eventClass: 0x6d697363, eventID: 0x61637476, // "misc"/"actv"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+                withTimeout: withTimeout, considering: considering)
     }
     public func activate<T>(_ directParameter: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
@@ -416,7 +416,7 @@ extension TEDCommand {
         return try self.appData.sendAppleEvent(name: "activate", eventClass: 0x6d697363, eventID: 0x61637476, // "misc"/"actv"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, returnType: T.self)
+                withTimeout: withTimeout, considering: considering)
     }
     @discardableResult public func close(_ directParameter: Any = NoParameter,
             saving: Any = NoParameter,
@@ -428,7 +428,7 @@ extension TEDCommand {
                     ("saving", 0x7361766f, saving), // "savo"
                     ("savingIn", 0x6b66696c, savingIn), // "kfil"
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+                withTimeout: withTimeout, considering: considering)
     }
     public func close<T>(_ directParameter: Any = NoParameter,
             saving: Any = NoParameter,
@@ -440,7 +440,7 @@ extension TEDCommand {
                     ("saving", 0x7361766f, saving), // "savo"
                     ("savingIn", 0x6b66696c, savingIn), // "kfil"
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, returnType: T.self)
+                withTimeout: withTimeout, considering: considering)
     }
     @discardableResult public func count(_ directParameter: Any = NoParameter,
             each: Any = NoParameter,
@@ -450,7 +450,7 @@ extension TEDCommand {
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("each", 0x6b6f636c, each), // "kocl"
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+                withTimeout: withTimeout, considering: considering)
     }
     public func count<T>(_ directParameter: Any = NoParameter,
             each: Any = NoParameter,
@@ -460,7 +460,7 @@ extension TEDCommand {
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("each", 0x6b6f636c, each), // "kocl"
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, returnType: T.self)
+                withTimeout: withTimeout, considering: considering)
     }
     @discardableResult public func delete(_ directParameter: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
@@ -468,7 +468,7 @@ extension TEDCommand {
         return try self.appData.sendAppleEvent(name: "delete", eventClass: 0x636f7265, eventID: 0x64656c6f, // "core"/"delo"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+                withTimeout: withTimeout, considering: considering)
     }
     public func delete<T>(_ directParameter: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
@@ -476,7 +476,7 @@ extension TEDCommand {
         return try self.appData.sendAppleEvent(name: "delete", eventClass: 0x636f7265, eventID: 0x64656c6f, // "core"/"delo"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, returnType: T.self)
+                withTimeout: withTimeout, considering: considering)
     }
     @discardableResult public func duplicate(_ directParameter: Any = NoParameter,
             to: Any = NoParameter,
@@ -488,7 +488,7 @@ extension TEDCommand {
                     ("to", 0x696e7368, to), // "insh"
                     ("withProperties", 0x70726474, withProperties), // "prdt"
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+                withTimeout: withTimeout, considering: considering)
     }
     public func duplicate<T>(_ directParameter: Any = NoParameter,
             to: Any = NoParameter,
@@ -500,7 +500,7 @@ extension TEDCommand {
                     ("to", 0x696e7368, to), // "insh"
                     ("withProperties", 0x70726474, withProperties), // "prdt"
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, returnType: T.self)
+                withTimeout: withTimeout, considering: considering)
     }
     @discardableResult public func exists(_ directParameter: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
@@ -508,7 +508,7 @@ extension TEDCommand {
         return try self.appData.sendAppleEvent(name: "exists", eventClass: 0x636f7265, eventID: 0x646f6578, // "core"/"doex"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+                withTimeout: withTimeout, considering: considering)
     }
     public func exists<T>(_ directParameter: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
@@ -516,7 +516,7 @@ extension TEDCommand {
         return try self.appData.sendAppleEvent(name: "exists", eventClass: 0x636f7265, eventID: 0x646f6578, // "core"/"doex"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, returnType: T.self)
+                withTimeout: withTimeout, considering: considering)
     }
     @discardableResult public func get(_ directParameter: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
@@ -524,7 +524,7 @@ extension TEDCommand {
         return try self.appData.sendAppleEvent(name: "get", eventClass: 0x636f7265, eventID: 0x67657464, // "core"/"getd"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+                withTimeout: withTimeout, considering: considering)
     }
     public func get<T>(_ directParameter: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
@@ -532,7 +532,7 @@ extension TEDCommand {
         return try self.appData.sendAppleEvent(name: "get", eventClass: 0x636f7265, eventID: 0x67657464, // "core"/"getd"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, returnType: T.self)
+                withTimeout: withTimeout, considering: considering)
     }
     @discardableResult public func make(_ directParameter: Any = NoParameter,
             new: Any = NoParameter,
@@ -548,7 +548,7 @@ extension TEDCommand {
                     ("withData", 0x64617461, withData), // "data"
                     ("withProperties", 0x70726474, withProperties), // "prdt"
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+                withTimeout: withTimeout, considering: considering)
     }
     public func make<T>(_ directParameter: Any = NoParameter,
             new: Any = NoParameter,
@@ -564,7 +564,7 @@ extension TEDCommand {
                     ("withData", 0x64617461, withData), // "data"
                     ("withProperties", 0x70726474, withProperties), // "prdt"
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, returnType: T.self)
+                withTimeout: withTimeout, considering: considering)
     }
     @discardableResult public func move(_ directParameter: Any = NoParameter,
             to: Any = NoParameter,
@@ -574,7 +574,7 @@ extension TEDCommand {
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("to", 0x696e7368, to), // "insh"
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+                withTimeout: withTimeout, considering: considering)
     }
     public func move<T>(_ directParameter: Any = NoParameter,
             to: Any = NoParameter,
@@ -584,7 +584,7 @@ extension TEDCommand {
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("to", 0x696e7368, to), // "insh"
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, returnType: T.self)
+                withTimeout: withTimeout, considering: considering)
     }
     @discardableResult public func open(_ directParameter: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
@@ -592,7 +592,7 @@ extension TEDCommand {
         return try self.appData.sendAppleEvent(name: "open", eventClass: 0x61657674, eventID: 0x6f646f63, // "aevt"/"odoc"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+                withTimeout: withTimeout, considering: considering)
     }
     public func open<T>(_ directParameter: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
@@ -600,7 +600,7 @@ extension TEDCommand {
         return try self.appData.sendAppleEvent(name: "open", eventClass: 0x61657674, eventID: 0x6f646f63, // "aevt"/"odoc"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, returnType: T.self)
+                withTimeout: withTimeout, considering: considering)
     }
     @discardableResult public func openLocation(_ directParameter: Any = NoParameter,
             window: Any = NoParameter,
@@ -610,7 +610,7 @@ extension TEDCommand {
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("window", 0x57494e44, window), // "WIND"
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+                withTimeout: withTimeout, considering: considering)
     }
     public func openLocation<T>(_ directParameter: Any = NoParameter,
             window: Any = NoParameter,
@@ -620,7 +620,7 @@ extension TEDCommand {
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("window", 0x57494e44, window), // "WIND"
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, returnType: T.self)
+                withTimeout: withTimeout, considering: considering)
     }
     @discardableResult public func print(_ directParameter: Any = NoParameter,
             printDialog: Any = NoParameter,
@@ -632,7 +632,7 @@ extension TEDCommand {
                     ("printDialog", 0x70646c67, printDialog), // "pdlg"
                     ("withProperties", 0x70726474, withProperties), // "prdt"
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+                withTimeout: withTimeout, considering: considering)
     }
     public func print<T>(_ directParameter: Any = NoParameter,
             printDialog: Any = NoParameter,
@@ -644,7 +644,7 @@ extension TEDCommand {
                     ("printDialog", 0x70646c67, printDialog), // "pdlg"
                     ("withProperties", 0x70726474, withProperties), // "prdt"
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, returnType: T.self)
+                withTimeout: withTimeout, considering: considering)
     }
     @discardableResult public func quit(_ directParameter: Any = NoParameter,
             saving: Any = NoParameter,
@@ -654,7 +654,7 @@ extension TEDCommand {
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("saving", 0x7361766f, saving), // "savo"
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+                withTimeout: withTimeout, considering: considering)
     }
     public func quit<T>(_ directParameter: Any = NoParameter,
             saving: Any = NoParameter,
@@ -664,7 +664,7 @@ extension TEDCommand {
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("saving", 0x7361766f, saving), // "savo"
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, returnType: T.self)
+                withTimeout: withTimeout, considering: considering)
     }
     @discardableResult public func reopen(_ directParameter: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
@@ -672,7 +672,7 @@ extension TEDCommand {
         return try self.appData.sendAppleEvent(name: "reopen", eventClass: 0x61657674, eventID: 0x72617070, // "aevt"/"rapp"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+                withTimeout: withTimeout, considering: considering)
     }
     public func reopen<T>(_ directParameter: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
@@ -680,7 +680,7 @@ extension TEDCommand {
         return try self.appData.sendAppleEvent(name: "reopen", eventClass: 0x61657674, eventID: 0x72617070, // "aevt"/"rapp"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, returnType: T.self)
+                withTimeout: withTimeout, considering: considering)
     }
     @discardableResult public func run(_ directParameter: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
@@ -688,7 +688,7 @@ extension TEDCommand {
         return try self.appData.sendAppleEvent(name: "run", eventClass: 0x61657674, eventID: 0x6f617070, // "aevt"/"oapp"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+                withTimeout: withTimeout, considering: considering)
     }
     public func run<T>(_ directParameter: Any = NoParameter,
             resultType: Symbol? = nil, waitReply: Bool = true,
@@ -696,7 +696,7 @@ extension TEDCommand {
         return try self.appData.sendAppleEvent(name: "run", eventClass: 0x61657674, eventID: 0x6f617070, // "aevt"/"oapp"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, returnType: T.self)
+                withTimeout: withTimeout, considering: considering)
     }
     @discardableResult public func save(_ directParameter: Any = NoParameter,
             as_: Any = NoParameter,
@@ -708,7 +708,7 @@ extension TEDCommand {
                     ("as_", 0x666c7470, as_), // "fltp"
                     ("in_", 0x6b66696c, in_), // "kfil"
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+                withTimeout: withTimeout, considering: considering)
     }
     public func save<T>(_ directParameter: Any = NoParameter,
             as_: Any = NoParameter,
@@ -720,7 +720,7 @@ extension TEDCommand {
                     ("as_", 0x666c7470, as_), // "fltp"
                     ("in_", 0x6b66696c, in_), // "kfil"
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, returnType: T.self)
+                withTimeout: withTimeout, considering: considering)
     }
     @discardableResult public func set(_ directParameter: Any = NoParameter,
             to: Any = NoParameter,
@@ -730,7 +730,7 @@ extension TEDCommand {
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("to", 0x64617461, to), // "data"
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, returnType: Any.self)
+                withTimeout: withTimeout, considering: considering)
     }
     public func set<T>(_ directParameter: Any = NoParameter,
             to: Any = NoParameter,
@@ -740,7 +740,7 @@ extension TEDCommand {
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("to", 0x64617461, to), // "data"
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
-                withTimeout: withTimeout, considering: considering, returnType: T.self)
+                withTimeout: withTimeout, considering: considering)
     }
 }
 

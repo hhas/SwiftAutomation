@@ -71,13 +71,13 @@ extension Set : SelfPacking, SelfUnpacking {
         case typeAEList:
             for i in 1..<(desc.numberOfItems+1) { // bug workaround for zero-length range: 1...0 throws error, but 1..<1 doesn't
                 do {
-                    result.insert(try appData.unpack(desc.atIndex(i)!, returnType: Element.self))
+                    result.insert(try appData.unpack(desc.atIndex(i)!) as Element)
                 } catch {
                     throw UnpackError(appData: appData, descriptor: desc, type: self, message: "Can't unpack item \(i) of list descriptor.")
                 }
             }
         default:
-            result.insert(try appData.unpack(desc, returnType: Element.self))
+            result.insert(try appData.unpack(desc) as Element)
         }
         return result
     }
@@ -98,7 +98,7 @@ extension Array : SelfPacking, SelfUnpacking {
             var result = [Element]()
             for i in 1..<(desc.numberOfItems+1) { // bug workaround for zero-length range: 1...0 throws error, but 1..<1 doesn't
                 do {
-                    result.append(try appData.unpack(desc.atIndex(i)!, returnType: Element.self))
+                    result.append(try appData.unpack(desc.atIndex(i)!) as Element)
                 } catch {
                     throw UnpackError(appData: appData, descriptor: desc, type: self,
                                       message: "Can't unpack item \(i) of list descriptor.")
@@ -117,11 +117,11 @@ extension Array : SelfPacking, SelfUnpacking {
                 }
                 return result
             } else { // for any other Element, unpack as Int then repack as AEList of typeSInt32, and [try to] unpack that as [Element] (bit lazy, but will do)
-                let array = try appData.unpack(desc, returnType: [Int].self)
+                let array = try appData.unpack(desc) as [Int]
                 return try self.SwiftAE_unpackSelf(try appData.pack(array), appData: appData)
             }
         default:
-            return [try appData.unpack(desc, returnType: Element.self)]
+            return [try appData.unpack(desc) as Element]
         }
     }
 }
@@ -183,7 +183,7 @@ extension Dictionary : SelfPacking, SelfUnpacking {
                                               message: "Can't unpack record keys as non-Symbol type: \(Key.self)")
                         }
                         do {
-                            result[key] = try appData.unpack(desc.atIndex(j+1)!, returnType: Value.self)
+                            result[key] = try appData.unpack(desc.atIndex(j+1)!) as Value
                         } catch {
                             throw UnpackError(appData: appData, descriptor: desc, type: Value.self,
                                               message: "Can't unpack value of record's \(key) property as Swift type: \(Value.self)")
@@ -199,7 +199,7 @@ extension Dictionary : SelfPacking, SelfUnpacking {
                                       message: "Can't unpack record keys as non-Symbol type: \(Key.self)")
                 }
                 do {
-                    result[key] = try appData.unpack(desc.atIndex(i)!, returnType: Value.self)
+                    result[key] = try appData.unpack(desc.atIndex(i)!) as Value
                 } catch {
                     throw UnpackError(appData: appData, descriptor: desc, type: Value.self,
                                       message: "Can't unpack value of record's \(key) property as Swift type: \(Value.self)")
@@ -401,10 +401,10 @@ open class AppData {
     /******************************************************************************/
     // Convert an Apple event descriptor to the specified Swift type, coercing it as necessary
     
-    public func unpack<T>(_ desc: NSAppleEventDescriptor, returnType: T.Type) throws -> T {
+    public func unpack<T>(_ desc: NSAppleEventDescriptor) throws -> T {
         // TO DO: will these tests also match NSString, NSDate, NSArray, etc, or do those need tested for separately?
         if T.self == Any.self || T.self == AnyObject.self {
-            return try self.unpack(desc) as! T
+            return try self.unpackAny(desc) as! T
         } else if T.self == Bool.self {
             return desc.booleanValue as! T
         } else if T.self == Int.self { // TO DO: what about sized types (Int8, Int16, Int32, Int64); what about UInts?
@@ -426,7 +426,7 @@ open class AppData {
         } else if let t = T.self as? SelfUnpacking.Type { // Array, Dictionary
             return try t.SwiftAE_unpackSelf(desc, appData: self) as! T
         } else if T.self is Query.Type { // note: user typically specifies exact class ([PREFIX][Object|Elements]Specifier)
-            if let result = try self.unpack(desc) as? T { // specifiers can be composed of several AE types, so unpack first then check type
+            if let result = try self.unpackAny(desc) as? T { // specifiers can be composed of several AE types, so unpack first then check type
                 return result
             }
         } else if T.self is Symbol.Type {
@@ -452,7 +452,7 @@ open class AppData {
     /******************************************************************************/
     // Convert an Apple event descriptor to its preferred Swift type, as determined by its descriptorType
     
-    public func unpack(_ desc: NSAppleEventDescriptor) throws -> Any { // TO DO: make sure Optional(VALUE) isn't returned, as that allows the possibility of .None (i.e. nil) as well; whereas nil should only be returned if 'cMissingValue' is mapped to nil (and that has yet to be decided on); e.g. use Any!, or will that mess up type signatures elsewhere?
+    public func unpackAny(_ desc: NSAppleEventDescriptor) throws -> Any { // TO DO: make sure Optional(VALUE) isn't returned, as that allows the possibility of .None (i.e. nil) as well; whereas nil should only be returned if 'cMissingValue' is mapped to nil (and that has yet to be decided on); e.g. use Any!, or will that mess up type signatures elsewhere?
         switch desc.descriptorType {
             // common AE types
         case typeTrue, typeFalse, typeBoolean:
@@ -500,7 +500,7 @@ open class AppData {
             (desc.coerce(toDescriptorType: typeUInt64)!.data as NSData).getBytes(&result, length: MemoryLayout<UInt64>.size)
             return UInt(result)
         case typeQDPoint, typeQDRectangle, typeRGBColor:
-            return try self.unpack(desc, returnType: [Int].self)
+            return try self.unpack(desc) as [Int]
         default:
             if desc.isRecordDescriptor {
                 return try Dictionary.SwiftAE_unpackSelf(desc, appData: self) as [Symbol:Any]
@@ -572,7 +572,7 @@ open class AppData {
             let operand1Desc = desc.forKeyword(SwiftAE_keyAEObject1),
             let operand2Desc = desc.forKeyword(SwiftAE_keyAEObject2) {
                 // TO DO: also check operatorType is valid?
-                let operand1 = try self.unpack(operand1Desc), operand2 = try self.unpack(operand2Desc) // TO DO: catch and rethrow with additional details
+                let operand1 = try self.unpackAny(operand1Desc), operand2 = try self.unpackAny(operand2Desc) // TO DO: catch and rethrow with additional details
                 if operatorType.typeCodeValue == kAEContains && !(operand1 is ObjectSpecifier) {
                     if let op2 = operand2 as? ObjectSpecifier {
                         return ComparisonTest(operatorType: gIsIn, operand1: op2, operand2: operand1, appData: self, cachedDesc: desc)
@@ -589,7 +589,7 @@ open class AppData {
         if let operatorType = desc.forKeyword(SwiftAE_keyAELogicalOperator),
             let operandsDesc = desc.forKeyword(keyAEObject) {
                 // TO DO: also check operatorType is valid?
-                let operands = try self.unpack(operandsDesc, returnType: [TestClause].self) // TO DO: catch and rethrow with additional details
+                let operands = try self.unpack(operandsDesc) as [TestClause] // TO DO: catch and rethrow with additional details
                 return LogicalTest(operatorType: operatorType, operands: operands, appData: self, cachedDesc: desc)
         }
         throw UnpackError(appData: self, descriptor: desc, type: TestClause.self, message: "Can't unpack logical test: malformed descriptor.")
@@ -647,8 +647,7 @@ open class AppData {
                                   sendOptions: NSAppleEventDescriptor.SendOptions? = nil, // raw send options (these are rarely needed)
                                   withTimeout: TimeInterval? = nil, // no. of seconds to wait before raising timeout error (-1712); may also be default/never
                         //        returnID: AEReturnID, // TO DO: need to check correct procedure for this; should send return auto-generated returnID?
-                                  considering: ConsideringOptions? = nil,
-                                  returnType: T.Type) throws -> T { // coerce and unpack result as this type or return raw reply event if T is NSDescriptor; default is Any
+                                  considering: ConsideringOptions? = nil) throws -> T { // coerce and unpack result as this type or return raw reply event if T is NSDescriptor; default is Any
         // note: human-readable command and parameter names are only used (if known) in error messages
         // TO DO: all errors occurring within this method should be caught and rethrown as CommandError, allowing error message to include a description of the failed command as well as the error that occurred
         // Create a new AppleEvent descriptor (throws ConnectionError if target app isn't found)
@@ -738,7 +737,7 @@ open class AppData {
                 throw CommandError(appData: self, event: event, replyEvent: replyEvent)
             } else if let resultDesc = replyEvent.paramDescriptor(forKeyword: keyDirectObject) {
                 do {
-                    return try self.unpack(resultDesc, returnType: T.self) // TO DO: if this fails, rethrow as CommandError
+                    return try self.unpack(resultDesc) // TO DO: if this fails, rethrow as CommandError
                 } catch {
                     throw CommandError(appData: self, event: event, replyEvent: replyEvent, parentError: error)
                 }
@@ -755,7 +754,7 @@ open class AppData {
     
     public func sendAppleEvent<T>(eventClass: OSType, eventID: OSType, parentSpecifier: Specifier, parameters: [OSType:Any] = [:],
                                   requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: NSAppleEventDescriptor.SendOptions? = nil,
-                                  withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil, returnType: T.Type) throws -> T
+                                  withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T
     {
         var parameters = parameters
         let directParameter = parameters.removeValue(forKey: keyDirectObject) ?? NoParameter
@@ -763,7 +762,7 @@ open class AppData {
         return try self.sendAppleEvent(name: nil, eventClass: eventClass, eventID: eventID,
                                        parentSpecifier: parentSpecifier, directParameter: directParameter,
                                        keywordParameters: keywordParameters, requestedType: requestedType, waitReply: waitReply,
-                                       sendOptions: sendOptions, withTimeout: withTimeout, considering: considering, returnType: T.self)
+                                       sendOptions: sendOptions, withTimeout: withTimeout, considering: considering)
     }
     
     // transaction support (in practice, there are few, if any, currently available apps that support transactions, but it's included for completeness)
@@ -778,7 +777,7 @@ open class AppData {
         }
         assert(self.transactionID == kAnyTransactionID, "Transaction \(self.transactionID) already active.") 
         transactionID = try self.sendAppleEvent(name:nil, eventClass: kAEMiscStandards, eventID: kAEBeginTransaction,
-                                                parentSpecifier: AEApp, directParameter: session, returnType: Int.self)
+                                                parentSpecifier: AEApp, directParameter: session) as Int
         defer {
             self.transactionID = kAnyTransactionID
         }
@@ -787,11 +786,11 @@ open class AppData {
             result = try closure()
         } catch { // abort transaction, then rethrow closure error
             let _ = try? self.sendAppleEvent(name: nil, eventClass: kAEMiscStandards, eventID: kAETransactionTerminated,
-                                             parentSpecifier: AEApp, returnType: Any.self)
+                                             parentSpecifier: AEApp) as Any
             throw error
         } // else end transaction
         let _ = try self.sendAppleEvent(name: nil, eventClass: kAEMiscStandards, eventID: kAEEndTransaction,
-                                        parentSpecifier: AEApp, returnType: Any.self)
+                                        parentSpecifier: AEApp) as Any
         return result
     }
 }

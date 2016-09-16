@@ -51,7 +51,7 @@ public func SwiftAEFormatAppleEvent(_ event: NSAppleEventDescriptor, useTerminol
             let errs = event.paramDescriptor(forKeyword: keyErrorString)?.stringValue
             return SwiftAutomationError(code: Int(errn), message: errs).description // TO DO: use CommandError? (need to check it's happy with only replyEvent arg)
         } else if let reply = event.paramDescriptor(forKeyword: keyDirectObject) { // format return value
-            return formatValue((try? appData.unpack(reply)) ?? reply)
+            return formatValue((try? appData.unpack(reply) as Any) ?? reply)
         } else {
             return "<noreply>" // TO DO: what to return?
         }
@@ -187,7 +187,7 @@ public struct AppleEventDescription { // TO DO: split AE unpacking from CommandT
         // unpack subject attribute and/or direct parameter, if given
         if let desc = event.attributeDescriptor(forKeyword: SwiftAE_keySubjectAttr) {
             if desc.descriptorType != typeNull { // typeNull = root application object
-                self.subject = (try? appData.unpack(desc)) ?? desc
+                self.subject = (try? appData.unpack(desc) as Any) ?? desc
             }
         }
         if let desc = event.paramDescriptor(forKeyword: keyDirectObject) {
@@ -195,14 +195,14 @@ public struct AppleEventDescription { // TO DO: split AE unpacking from CommandT
         }
         // unpack `as` parameter, if given // TO DO: commands currently don't support this as std arg
         if let desc = event.paramDescriptor(forKeyword: keyAERequestedType) {
-            self.requestedType = (try? appData.unpack(desc)) ?? desc
+            self.requestedType = (try? appData.unpack(desc) as Any) ?? desc
         }
         // unpack keyword parameters
         if commandInfo != nil {
             self.keywordParameters = []
             for paramInfo in commandInfo!.orderedParameters { // this ignores parameters that don't have a keyword name
                 if let desc = event.paramDescriptor(forKeyword: paramInfo.code) {
-                    let value = formatValue((try? appData.unpack(desc)) ?? desc)
+                    let value = formatValue((try? appData.unpack(desc) as Any) ?? desc)
                     self.keywordParameters!.append((paramInfo.name, value))
                 }
             }
@@ -216,7 +216,7 @@ public struct AppleEventDescription { // TO DO: split AE unpacking from CommandT
             for i in 1..<(event.numberOfItems+1) {
                 let desc = event.atIndex(i)!
                 //if ![keyDirectObject, keyAERequestedType].contains(desc.descriptorType) {
-                self.rawParameters[event.keywordForDescriptor(at: i)] = (try? appData.unpack(desc)) ?? desc
+                self.rawParameters[event.keywordForDescriptor(at: i)] = (try? appData.unpack(desc) as Any) ?? desc
                 //}
             }
         } else {

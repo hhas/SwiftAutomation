@@ -119,7 +119,7 @@ open class Specifier: Query, SpecifierProtocol {
         }
         do {
             let parentDesc = cachedDesc.forKeyword(SwiftAE_keyAEContainer)!
-            self._parentQuery = try appData.unpack(parentDesc, returnType: Specifier.self)
+            self._parentQuery = try appData.unpack(parentDesc) as Specifier
             self._parentQuery!.unpackParentSpecifiers()
         } catch {
             print("Deferred unpack parent specifier failed: \(error)") // TO DO: DEBUG; delete
@@ -134,7 +134,7 @@ open class Specifier: Query, SpecifierProtocol {
                                   withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(eventClass: eventClass, eventID: eventID, parentSpecifier: self,
                                                parameters: parameters, waitReply: waitReply, sendOptions: sendOptions,
-                                               withTimeout: withTimeout, considering: considering, returnType: T.self)
+                                               withTimeout: withTimeout, considering: considering)
     }
     
     public func sendAppleEvent<T>(_ eventClass: String, _ eventID: String, _ parameters: [String:Any] = [:],
@@ -144,7 +144,7 @@ open class Specifier: Query, SpecifierProtocol {
         for (k, v) in parameters { params[FourCharCodeUnsafe(k)] = v }
         return try self.appData.sendAppleEvent(eventClass: FourCharCodeUnsafe(eventClass), eventID: FourCharCodeUnsafe(eventID),
                                                parentSpecifier: self, parameters: params, waitReply: waitReply, sendOptions: sendOptions,
-                                               withTimeout: withTimeout, considering: considering, returnType: T.self)
+                                               withTimeout: withTimeout, considering: considering)
     }
     
     // non-generic versions of the above methods; these are bound when T can't be inferred (either because caller doesn't use the return value or didn't declare a specific type for it, e.g. `let result = cmd.call()`), in which case Any is used
@@ -154,7 +154,7 @@ open class Specifier: Query, SpecifierProtocol {
                                                   withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(eventClass: eventClass, eventID: eventID, parentSpecifier: self,
                                                parameters: parameters, waitReply: waitReply, sendOptions: sendOptions,
-                                               withTimeout: withTimeout, considering: considering, returnType: Any.self)
+                                               withTimeout: withTimeout, considering: considering)
     }
     
     @discardableResult public func sendAppleEvent(_ eventClass: String, _ eventID: String, _ parameters: [String:Any] = [:],
@@ -164,7 +164,7 @@ open class Specifier: Query, SpecifierProtocol {
         for (k, v) in parameters { params[FourCharCodeUnsafe(k)] = v }
         return try self.appData.sendAppleEvent(eventClass: FourCharCodeUnsafe(eventClass), eventID: FourCharCodeUnsafe(eventID),
                                                parentSpecifier: self, parameters: params, waitReply: waitReply, sendOptions: sendOptions,
-                                               withTimeout: withTimeout, considering: considering, returnType: Any.self)
+                                               withTimeout: withTimeout, considering: considering)
     }
 }
 
