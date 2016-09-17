@@ -745,9 +745,9 @@ extension TEDCommand {
 }
 
 
-public protocol TEDQuery: ObjectSpecifierExtension, TEDCommand {} // provides vars and methods for constructing specifiers
+public protocol TEDObject: ObjectSpecifierExtension, TEDCommand {} // provides vars and methods for constructing specifiers
 
-extension TEDQuery {
+extension TEDObject {
     
     // Properties
     public var bounds: TEDItem {return self.property(0x70626e64) as! TEDItem} // "pbnd"
@@ -811,7 +811,7 @@ public class TEDInsertion: InsertionSpecifier, TEDCommand {}
 
 // by index/name/id/previous/next
 // first/middle/last/any
-public class TEDItem: ObjectSpecifier, TEDQuery {
+public class TEDItem: ObjectSpecifier, TEDObject {
     public typealias InsertionSpecifierType = TEDInsertion
     public typealias ObjectSpecifierType = TEDItem
     public typealias MultipleObjectSpecifierType = TEDItems
@@ -822,7 +822,7 @@ public class TEDItem: ObjectSpecifier, TEDQuery {
 public class TEDItems: TEDItem, ElementsSpecifierExtension {}
 
 // App/Con/Its
-public class TEDRoot: RootSpecifier, TEDQuery, RootSpecifierExtension {
+public class TEDRoot: RootSpecifier, TEDObject, RootSpecifierExtension {
     public typealias InsertionSpecifierType = TEDInsertion
     public typealias ObjectSpecifierType = TEDItem
     public typealias MultipleObjectSpecifierType = TEDItems

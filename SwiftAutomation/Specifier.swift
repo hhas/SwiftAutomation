@@ -5,23 +5,54 @@
 //
 //  Base classes for constructing AE queries
 //
-//  Notes: An AE query is represented as a linked list of AEDescs, primarily AERecordDescs of typeObjectSpecifier. Each object specifier record has four properties:
+//  Notes: 
+//
+//  An AE query is represented as a linked list of AEDescs, primarily AERecordDescs of typeObjectSpecifier. Each object specifier record has four properties:
 //
 //      'want' -- the type of element to identify (or 'prop' when identifying a property)
 //      'form', 'seld' -- the reference form and selector data identifying the element(s) or property
 //      'from' -- the parent descriptor in the linked list
 //
-//  For example:
+//    For example:
 //
 //      name of document "ReadMe" [of application "TextEdit"]
 //
-//  is represented by the following chain of AEDescs:
+//    is represented by the following chain of AEDescs:
 //
 //      {want:'prop', form:'prop', seld:'pnam', from:{want:'docu', form:'name', seld:"ReadMe", from:null}}
 //
-//  Additional AERecord types (typeInsertionLocation, typeRangeDescriptor, typeCompDescriptor, typeLogicalDescriptor) are also used to construct specialized query forms describing insertion points before/after existing elements, element ranges, and test clauses.
+//    Additional AERecord types (typeInsertionLocation, typeRangeDescriptor, typeCompDescriptor, typeLogicalDescriptor) are also used to construct specialized query forms describing insertion points before/after existing elements, element ranges, and test clauses.
 //
-// Atomic AEDescs of typeNull, typeCurrentContainer, and typeObjectBeingExamined are used to terminate the linked list.
+//    Atomic AEDescs of typeNull, typeCurrentContainer, and typeObjectBeingExamined are used to terminate the linked list.
+//
+//
+//  [TO DO: developer notes on Apple event query forms and Apple Event Object Model's relational object graphs (objects with attributes, one-to-one relationships, and one-to-many relationships); aka "AE IPC is simple first-class relational queries, not OOP"]
+//
+//
+//  Specifier.swift defines the base classes from which concrete Specifier classes representing each major query form are constructed. These base classes combine with various SpecifierExtensions (which provide by-index, by-name, etc selectors and Application object constructors) and glue-defined Query and Command extensions (which provide property and all-elements selectors, and commands) to form the following concrete classes:
+//
+//    CLASS                 DESCRIPTION                         CAN CONSTRUCT
+//
+//    Query                 [base class]
+//     ├─PREFIXInsertion    insertion location specifier        ├─commands
+//     └─PREFIXObject       [object specifier base protocol]    └─commands, and property and all-elements specifiers
+//        ├─PREFIXItem         single-object specifier             ├─previous/next selectors
+//        │  └─PREFIXItems     multi-object specifier              │  └─by-index/name/id/ordinal/range/test selectors
+//        └─PREFIXRoot         App/Con/Its (untargeted roots)      ├─[1]
+//           └─APPLICATION     Application (app-targeted root)     └─initializers
+//
+//
+//    (The above diagram fudges the exact inheritance hierarchy for illustrative purposes. Commands are actually provided by a PREFIXCommand protocol [not shown], which is adopted by APPLICATION and all PREFIX classes except PREFIXRoot [1] - which cannot construct working commands as it has no target information, so omits these methods for clarity. Strictly speaking, the only class which should implement commands is APPLICATION, as Apple event IPC is based on Remote *Procedure* Calls, not OOP; however, they also appear on specifier classes as a convenient shorthand when writing commands whose direct parameter is a specifier. Note that while all specifier classes provide command methods [including those used to construct relative-specifiers in by-range and by-test clauses, as omitting commands from these is more trouble than its worth] they will automatically throw if their root is an untargeted App/Con/Its object.)
+//
+//    The following classes are also defined for use with Its-based object specifiers in by-test selectors.
+//
+//    Query
+//     └─TestClause         [test clause base class]
+//        ├─ComparisonTest     comparison/containment test
+//        └─LogicalTest        Boolean logic test
+//
+//
+//    Except for APPLICATION, users do not instantiate any of these classes directly, but instead by chained property/method calls on existing Query instances.
 //
 
 import Foundation
@@ -38,7 +69,7 @@ import AppKit
 private let gUntargetedAppData = AppData() // dummy instance to keep compiler happy; glues will define their own private gUntargetedAppData constants containing an untargeted AppData instance
 
 
-open class Query: CustomStringConvertible, SelfPacking { // TO DO: Equatable?
+open class Query: CustomStringConvertible, SelfPacking { // TO DO: Equatable? (TBH, comparing and hashing Query objects would be of limited use; not sure it's worth the effort as, ultimately, only the target app can know if two queries identify the same object or not)
     
     public let appData: AppData
     internal private(set) var cachedDesc: NSAppleEventDescriptor?
@@ -67,6 +98,8 @@ open class Query: CustomStringConvertible, SelfPacking { // TO DO: Equatable?
     
     // misc
     
+    // note that parentQuery and rootSpecifier properties are really only intended for internal use when traversing a specifier chain; while there is nothing to prevent client code using these properties the results are not guaranteed to be valid or usable queries (once constructed, object specifiers should be treated as opaque values); the proper way to identify an object's (or objects') container is to ask the application to return a specifier (or list of specifiers) to its `container` property, if it has one, e.g. `let parentFolder:FinItem = someFinderItem.container.get()`
+    
     // return the next ObjectSpecifier/TestClause in query chain
     var parentQuery: Query { return self } // this implementation should never be called; subclasses must override this
     
@@ -83,7 +116,7 @@ open class Query: CustomStringConvertible, SelfPacking { // TO DO: Equatable?
 // TO DO: is it practical to prevent commands appearing on untargeted specifiers? (it ought to be doable as long as subclasses and mixins can provide the right class hooks; the main issue is how crazy mad the typing gets)
 
 
-public protocol SpecifierProtocol {
+public protocol SpecifierProtocol { // glue-defined Command extensions, and by ObjectSpecifierProtocol
     var appData: AppData {get}
     var parentQuery: Query {get}
     var rootSpecifier: RootSpecifier {get}

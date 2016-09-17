@@ -433,9 +433,9 @@ extension AECommand {
 }
 
 
-public protocol AEQuery: ObjectSpecifierExtension, AECommand {} // provides vars and methods for constructing specifiers
+public protocol AEObject: ObjectSpecifierExtension, AECommand {} // provides vars and methods for constructing specifiers
 
-extension AEQuery {
+extension AEObject {
     
     // Properties
     public var class_: AEItem {return self.property(0x70636c73) as! AEItem} // "pcls"
@@ -456,7 +456,7 @@ public class AEInsertion: InsertionSpecifier, AECommand {}
 
 // by index/name/id/previous/next
 // first/middle/last/any
-public class AEItem: ObjectSpecifier, AEQuery {
+public class AEItem: ObjectSpecifier, AEObject {
     public typealias InsertionSpecifierType = AEInsertion
     public typealias ObjectSpecifierType = AEItem
     public typealias MultipleObjectSpecifierType = AEItems
@@ -467,7 +467,7 @@ public class AEItem: ObjectSpecifier, AEQuery {
 public class AEItems: AEItem, ElementsSpecifierExtension {}
 
 // App/Con/Its
-public class AERoot: RootSpecifier, AEQuery, RootSpecifierExtension {
+public class AERoot: RootSpecifier, AEObject, RootSpecifierExtension {
     public typealias InsertionSpecifierType = AEInsertion
     public typealias ObjectSpecifierType = AEItem
     public typealias MultipleObjectSpecifierType = AEItems

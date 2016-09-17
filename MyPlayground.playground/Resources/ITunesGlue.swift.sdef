@@ -3,8 +3,6 @@
 
 <dictionary>
     <suite name="Standard Suite" code="****" description="Common terms for most applications">
-        <!-- Note the spec for access-group elements is squirreled away in the man page for sdef -->
-        <!-- access-group identifier="*"/ The asterisk here means the element is usable by any application, without an explicit entitlement. -->
         <access-group identifier="*"></access-group>
         <command name="print" code="aevtpdoc" description="Print the specified object(s)">
             <direct-parameter type="specifier" optional="yes" requires-access="r" description="list of objects to print"></direct-parameter>
@@ -51,11 +49,7 @@
         <command name="save" code="coresave" description="Save the specified object(s)">
             <direct-parameter type="specifier" description="the object(s) to save"></direct-parameter>
         </command>
-        <command name="set" code="coresetd">
-            <direct-parameter type="specifier"></direct-parameter>
-            <parameter name="to:" code="data" type="any"></parameter>
-        </command>
-        <class name="printSettings" code="pset">
+        <record-type name="printSettings" code="pset">
             <property name="copies" code="lwcp" type="integer" access="r" description="the number of copies of a document to be printed"></property>
             <property name="collating" code="lwcl" type="boolean" access="r" description="Should printed copies be collated?"></property>
             <property name="startingPage" code="lwfp" type="integer" access="r" description="the first page of the document to be printed"></property>
@@ -64,10 +58,12 @@
             <property name="pagesDown" code="lwld" type="integer" access="r" description="number of logical pages laid out down a physical page"></property>
             <property name="errorHandling" code="lweh" type="enum" access="r" description="how errors are handled"></property>
             <property name="requestedPrintTime" code="lwqt" type="date" access="r" description="the time at which the desktop printer should print the document"></property>
-            <property name="printerFeatures" code="lwpf" type="list" access="r" description="printer specific options"></property>
+            <property name="printerFeatures" code="lwpf" access="r" description="printer specific options">
+                <type type="text" list="yes"></type>
+            </property>
             <property name="faxNumber" code="faxn" type="text" access="r" description="for fax number"></property>
             <property name="targetPrinter" code="trpr" type="text" access="r" description="for target printer"></property>
-        </class>
+        </record-type>
         <enumeration name="eKnd" code="eKnd">
             <enumerator name="ITU.trackListing" code="kTrk" description="a basic listing of tracks within a playlist"></enumerator>
             <enumerator name="ITU.albumListing" code="kAlb" description="a listing of a playlist grouped by album"></enumerator>
@@ -201,11 +197,19 @@
                 <access-group identifier="com.apple.iTunes.playback" access="r"></access-group>
                 <access-group identifier="com.apple.iTunes.user-interface" access="rw"></access-group>
             </element>
+            <element type="playlist">
+                <access-group identifier="com.apple.iTunes.library.read" access="r"></access-group>
+                <access-group identifier="com.apple.iTunes.library.read-write" access="rw"></access-group>
+            </element>
             <element type="playlistWindow">
                 <access-group identifier="com.apple.iTunes.playback" access="r"></access-group>
                 <access-group identifier="com.apple.iTunes.user-interface" access="rw"></access-group>
             </element>
             <element type="source">
+                <access-group identifier="com.apple.iTunes.library.read" access="r"></access-group>
+                <access-group identifier="com.apple.iTunes.library.read-write" access="rw"></access-group>
+            </element>
+            <element type="track">
                 <access-group identifier="com.apple.iTunes.library.read" access="r"></access-group>
                 <access-group identifier="com.apple.iTunes.library.read-write" access="rw"></access-group>
             </element>
@@ -284,6 +288,7 @@
                 <access-group identifier="com.apple.iTunes.user-interface" access="rw"></access-group>
             </property>
         </class>
+        <value-type name="doubleInteger" code="comp" hidden="yes"></value-type>
         <value-type name="picture" code="PICT" hidden="yes"></value-type>
         <!-- <value-type name="raw data" code="tdta" hidden="yes"/> -->
         <class name="artwork" code="cArt" description="a piece of art within a track or playlist" inherits="item" plural="artworks">
@@ -376,11 +381,18 @@
             <element type="track"></element>
             <element type="artwork"></element>
             <property name="description" code="pDes" type="text" description="the description of the playlist"></property>
+            <property name="disliked" code="pHat" type="boolean" description="is this playlist disliked?"></property>
             <property name="duration" code="pDur" type="integer" access="r" description="the total length of all songs (in seconds)"></property>
             <property name="name" code="pnam" type="text" description="the name of the playlist"></property>
             <property name="loved" code="pLov" type="boolean" description="is this playlist loved?"></property>
             <property name="parent" code="pPlP" type="playlist" access="r" description="folder which contains this playlist (if any)"></property>
+            <property name="shuffle" code="pShf" type="boolean" description="play the songs in this playlist in random order? (obsolete; always false)">
+                <access-group identifier="com.apple.iTunes.playback" access="rw"></access-group>
+            </property>
             <property name="size" code="pSiz" type="integer" access="r" description="the total size of all songs (in bytes)"></property>
+            <property name="songRepeat" code="pRpt" type="eRpt" description="playback repeat mode (obsolete; always off)">
+                <access-group identifier="com.apple.iTunes.playback" access="rw"></access-group>
+            </property>
             <property name="specialKind" code="pSpK" type="eSpK" access="r" description="special playlist kind"></property>
             <property name="time" code="pTim" type="text" access="r" description="the length of all songs in MM:SS format"></property>
             <property name="visible" code="pvis" type="boolean" access="r" description="is this playlist visible in the Source list?"></property>
@@ -424,6 +436,7 @@
             <element type="artwork"></element>
             <property name="album" code="pAlb" type="text" description="the album name of the track"></property>
             <property name="albumArtist" code="pAlA" type="text" description="the album artist of the track"></property>
+            <property name="albumDisliked" code="pAHt" type="boolean" description="is the album for this track disliked?"></property>
             <property name="albumLoved" code="pALv" type="boolean" description="is the album for this track loved?"></property>
             <property name="albumRating" code="pAlR" type="integer" description="the rating of the album for this track (0 to 100)"></property>
             <property name="albumRatingKind" code="pARk" type="eRtK" access="r" description="the rating kind of the album rating for this track"></property>
@@ -442,6 +455,7 @@
             <property name="description" code="pDes" type="text" description="the description of the track"></property>
             <property name="discCount" code="pDsC" type="integer" description="the total number of discs in the source album"></property>
             <property name="discNumber" code="pDsN" type="integer" description="the index of the disc containing this track on the source album"></property>
+            <property name="disliked" code="pHat" type="boolean" description="is this track disliked?"></property>
             <property name="downloaderAppleID" code="pDAI" type="text" access="r" description="the Apple ID of the person who downloaded this track"></property>
             <property name="downloaderName" code="pDNm" type="text" access="r" description="the name of the person who downloaded this track"></property>
             <property name="duration" code="pDur" type="real" access="r" description="the length of the track in seconds"></property>
@@ -459,6 +473,9 @@
             <property name="lyrics" code="pLyr" type="text" description="the lyrics of the track"></property>
             <property name="mediaKind" code="pMdK" type="eMdK" description="the media kind of the track"></property>
             <property name="modificationDate" code="asmo" type="date" access="r" description="the modification date of the content of this track"></property>
+            <property name="movement" code="pMNm" type="text" description="the movement name of the track"></property>
+            <property name="movementCount" code="pMvC" type="integer" description="the total number of movements in the work"></property>
+            <property name="movementNumber" code="pMvN" type="integer" description="the index of the movement in the work"></property>
             <property name="playedCount" code="pPlC" type="integer" description="number of times this track has been played"></property>
             <property name="playedDate" code="pPlD" type="date" description="the date and time this track was last played"></property>
             <property name="purchaserAppleID" code="pPAI" type="text" access="r" description="the Apple ID of the person who purchased this track"></property>
@@ -486,6 +503,7 @@
             <property name="unplayed" code="pUnp" type="boolean" description="is this track unplayed?"></property>
             <property name="videoKind" code="pVdK" type="eVdK" description="kind of video track"></property>
             <property name="volumeAdjustment" code="pAdj" type="integer" description="relative volume adjustment of the track (-100% to 100%)"></property>
+            <property name="work" code="pWrk" type="text" description="the work name of the track"></property>
             <property name="year" code="pYr " type="integer" description="the year the track was recorded/released"></property>
         </class>
         <class name="URLTrack" code="cURT" description="a track representing a network stream" inherits="track" plural="URLTracks">
@@ -577,14 +595,14 @@
             <enumerator name="ITU.alertTone" code="kMdL" description="alert tone track"></enumerator>
             <enumerator name="ITU.audiobook" code="kMdA" description="audiobook track"></enumerator>
             <enumerator name="ITU.book" code="kMdB" description="book track"></enumerator>
-            <enumerator name="ITU.homeVideo" code="kMdH" description="home video track"></enumerator>
+            <enumerator name="ITU.homeVideo" code="kVdH" description="home video track"></enumerator>
             <enumerator name="ITU.iTunesU" code="kMdI" description="iTunes U track"></enumerator>
-            <enumerator name="ITU.movie" code="kMdM" description="movie track"></enumerator>
-            <enumerator name="ITU.music" code="kMdS" description="music track"></enumerator>
-            <enumerator name="ITU.musicVideo" code="kMdV" description="music video track"></enumerator>
+            <enumerator name="ITU.movie" code="kVdM" description="movie track"></enumerator>
+            <enumerator name="ITU.song" code="kMdS" description="music track"></enumerator>
+            <enumerator name="ITU.musicVideo" code="kVdV" description="music video track"></enumerator>
             <enumerator name="ITU.podcast" code="kMdP" description="podcast track"></enumerator>
             <enumerator name="ITU.ringtone" code="kMdR" description="ringtone track"></enumerator>
-            <enumerator name="ITU.TVShow" code="kMdT" description="TV show track"></enumerator>
+            <enumerator name="ITU.TVShow" code="kVdT" description="TV show track"></enumerator>
             <enumerator name="ITU.voiceMemo" code="kMdO" description="voice memo track"></enumerator>
             <enumerator name="ITU.unknown" code="kUnk"></enumerator>
         </enumeration>

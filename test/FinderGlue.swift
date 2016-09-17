@@ -1434,9 +1434,9 @@ extension FINCommand {
 }
 
 
-public protocol FINQuery: ObjectSpecifierExtension, FINCommand {} // provides vars and methods for constructing specifiers
+public protocol FINObject: ObjectSpecifierExtension, FINCommand {} // provides vars and methods for constructing specifiers
 
-extension FINQuery {
+extension FINObject {
     
     // Properties
     public var acceptsHighLevelEvents: FINItem {return self.property(0x69736162) as! FINItem} // "isab"
@@ -1620,7 +1620,7 @@ public class FINInsertion: InsertionSpecifier, FINCommand {}
 
 // by index/name/id/previous/next
 // first/middle/last/any
-public class FINItem: ObjectSpecifier, FINQuery {
+public class FINItem: ObjectSpecifier, FINObject {
     public typealias InsertionSpecifierType = FINInsertion
     public typealias ObjectSpecifierType = FINItem
     public typealias MultipleObjectSpecifierType = FINItems
@@ -1631,7 +1631,7 @@ public class FINItem: ObjectSpecifier, FINQuery {
 public class FINItems: FINItem, ElementsSpecifierExtension {}
 
 // App/Con/Its
-public class FINRoot: RootSpecifier, FINQuery, RootSpecifierExtension {
+public class FINRoot: RootSpecifier, FINObject, RootSpecifierExtension {
     public typealias InsertionSpecifierType = FINInsertion
     public typealias ObjectSpecifierType = FINItem
     public typealias MultipleObjectSpecifierType = FINItems

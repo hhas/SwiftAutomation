@@ -1484,9 +1484,9 @@ extension ITUCommand {
 }
 
 
-public protocol ITUQuery: ObjectSpecifierExtension, ITUCommand {} // provides vars and methods for constructing specifiers
+public protocol ITUObject: ObjectSpecifierExtension, ITUCommand {} // provides vars and methods for constructing specifiers
 
-extension ITUQuery {
+extension ITUObject {
     
     // Properties
     public var address: ITUItem {return self.property(0x7055524c) as! ITUItem} // "pURL"
@@ -1662,7 +1662,7 @@ public class ITUInsertion: InsertionSpecifier, ITUCommand {}
 
 // by index/name/id/previous/next
 // first/middle/last/any
-public class ITUItem: ObjectSpecifier, ITUQuery {
+public class ITUItem: ObjectSpecifier, ITUObject {
     public typealias InsertionSpecifierType = ITUInsertion
     public typealias ObjectSpecifierType = ITUItem
     public typealias MultipleObjectSpecifierType = ITUItems
@@ -1673,7 +1673,7 @@ public class ITUItem: ObjectSpecifier, ITUQuery {
 public class ITUItems: ITUItem, ElementsSpecifierExtension {}
 
 // App/Con/Its
-public class ITURoot: RootSpecifier, ITUQuery, RootSpecifierExtension {
+public class ITURoot: RootSpecifier, ITUObject, RootSpecifierExtension {
     public typealias InsertionSpecifierType = ITUInsertion
     public typealias ObjectSpecifierType = ITUItem
     public typealias MultipleObjectSpecifierType = ITUItems
