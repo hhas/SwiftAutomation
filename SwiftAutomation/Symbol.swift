@@ -73,13 +73,13 @@ open class Symbol: Hashable, Equatable, CustomStringConvertible, SelfPacking {
     // returns true if Symbol contains name but not code (i.e. it represents a string-based record property key)
     public var nameOnly: Bool { return self.type == NoOSType && self.name != nil }
     
-    // TO DO: implement overrideable SwiftAE_unpackSelf static method for unpacking descs as glue-defined (and/or standard) Symbols? (Q. what benefit would this provide? glue-specific Symbol subclasses already have to be stored in AppData.glueInfo)
+    // TO DO: implement overrideable SwiftAutomation_unpackSelf static method for unpacking descs as glue-defined (and/or standard) Symbols? (Q. what benefit would this provide? glue-specific Symbol subclasses already have to be stored in AppData.glueInfo)
     
-    public func SwiftAE_packSelf(_ appData: AppData) throws -> NSAppleEventDescriptor {
+    public func SwiftAutomation_packSelf(_ appData: AppData) throws -> NSAppleEventDescriptor {
         return self.descriptor
     }
     
-    public var descriptor: NSAppleEventDescriptor { // TO DO: problem is ObjectSpecifier.previous()/.next() methods require a 4CC to construct themselves, so they can't call SwiftAE_packSelf as they may not have an AppData object to give, nor can they throw errors themselves if packing fails; a solution might be for prev/next specifiers to cache the original Symbol instance themselves, and use that
+    public var descriptor: NSAppleEventDescriptor { // TO DO: problem is ObjectSpecifier.previous()/.next() methods require a 4CC to construct themselves, so they can't call SwiftAutomation_packSelf as they may not have an AppData object to give, nor can they throw errors themselves if packing fails; a solution might be for prev/next specifiers to cache the original Symbol instance themselves, and use that
         if self.cachedDesc == nil {
             if self.nameOnly {
                 self.cachedDesc = NSAppleEventDescriptor(string: self.name!)
@@ -92,7 +92,7 @@ open class Symbol: Hashable, Equatable, CustomStringConvertible, SelfPacking {
     
     public var hashValue: Int {return self.nameOnly ? self.name!.hashValue : Int(self.code)}
     
-    //    public let missingValue = Symbol(name: "missingValue", code: SwiftAE_cMissingValue, type: typeType) // TO DO: use this or nil? (since this bridge is Swift-only, and idiomatic Swift APIs use Error, not nil, to indicate errors, inclined to use nil)
+    //    public let missingValue = Symbol(name: "missingValue", code: SwiftAutomation_cMissingValue, type: typeType) // TO DO: use this or nil? (since this bridge is Swift-only, and idiomatic Swift APIs use Error, not nil, to indicate errors, inclined to use nil)
     
 }
 

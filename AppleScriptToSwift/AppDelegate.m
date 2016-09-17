@@ -50,13 +50,13 @@
 
 -(void)logAppleEvent:(NSAppleEventDescriptor *)desc {
     NSError *error = nil;
-    NSString *literalResult = [SwiftAEFormatter formatAppleEvent: desc useSDEF: useSDEF];
+    NSString *literalResult = [SAEFormatter formatAppleEvent: desc useSDEF: useSDEF];
     [self writeToView: self.logView isReply: NO literalResult: literalResult error: error desc: desc];
 }
 
 -(void)logReplyEvent:(NSAppleEventDescriptor *)desc {
     NSError *error = nil;
-    NSString *literalResult = [SwiftAEFormatter formatAppleEvent: desc useSDEF: useSDEF];
+    NSString *literalResult = [SAEFormatter formatAppleEvent: desc useSDEF: useSDEF];
     [self writeToView: self.logView isReply: YES literalResult: literalResult error: error desc: desc];
 
 }

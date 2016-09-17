@@ -10,6 +10,11 @@ import Carbon
 // TO DO: neither parser has been thoroughly tested to ensure correct results when multiple terminologies are given (e.g. if app also has scriptable plugins)
 
 
+
+// TO DO: does getting sdef via (ascr/gsdf?) Apple event work now?
+
+
+
 public class SDEFParser: NSObject, XMLParserDelegate, ApplicationTerminology {
 
     public private(set) var types: KeywordTerms = []

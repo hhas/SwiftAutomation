@@ -17,7 +17,7 @@
 		4F0E39CC1BB008A400FF2A96 /* SAELanguageInstance.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39CB1BB008A400FF2A96 /* SAELanguageInstance.m */; };
 		4F0E39CF1BB008B400FF2A96 /* SAEEventSniffer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39CE1BB008B400FF2A96 /* SAEEventSniffer.m */; };
 		4F0E39D21BB00B3300FF2A96 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39D11BB00B3300FF2A96 /* AppDelegate.m */; };
-		4F0E39D41BB0342600FF2A96 /* SwiftAEFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39D31BB0342600FF2A96 /* SwiftAEFormatter.swift */; };
+		4F0E39D41BB0342600FF2A96 /* SAEFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39D31BB0342600FF2A96 /* SAEFormatter.swift */; };
 		4F0E39D61BB0504D00FF2A96 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39D51BB0504D00FF2A96 /* main.m */; };
 		4F9AFB531D5E9B4100A71890 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F9AFB451D5E99FC00A71890 /* main.swift */; };
 		4FB7D8751D5EA60F00F0DB36 /* AppData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F63C4401B86A335000D74EE /* AppData.swift */; };
@@ -34,7 +34,7 @@
 		4FB7D8801D5EA60F00F0DB36 /* AETEParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E394E1BA8D2F600FF2A96 /* AETEParser.swift */; };
 		4FB7D8811D5EA60F00F0DB36 /* SDEFParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39481BA8717D00FF2A96 /* SDEFParser.swift */; };
 		4FB7D8821D5EA60F00F0DB36 /* GlueTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39501BA9A7EA00FF2A96 /* GlueTable.swift */; };
-		4FB7D8831D5EA60F00F0DB36 /* EventFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39951BADD58500FF2A96 /* EventFormatter.swift */; };
+		4FB7D8831D5EA60F00F0DB36 /* AppleEventFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39951BADD58500FF2A96 /* AppleEventFormatter.swift */; };
 		4FB7D8841D5EA60F00F0DB36 /* StaticGlueBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E396D1BAA9BA700FF2A96 /* StaticGlueBuilder.swift */; };
 		4FB7D8851D5EA60F00F0DB36 /* AEApplicationGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F2645AB1BA4F27700256402 /* AEApplicationGlue.swift */; };
 		4FB7D8861D5EA61F00F0DB36 /* AppData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F63C4401B86A335000D74EE /* AppData.swift */; };
@@ -51,7 +51,7 @@
 		4FB7D8911D5EA61F00F0DB36 /* AETEParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E394E1BA8D2F600FF2A96 /* AETEParser.swift */; };
 		4FB7D8921D5EA61F00F0DB36 /* SDEFParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39481BA8717D00FF2A96 /* SDEFParser.swift */; };
 		4FB7D8931D5EA61F00F0DB36 /* GlueTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39501BA9A7EA00FF2A96 /* GlueTable.swift */; };
-		4FB7D8941D5EA61F00F0DB36 /* EventFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39951BADD58500FF2A96 /* EventFormatter.swift */; };
+		4FB7D8941D5EA61F00F0DB36 /* AppleEventFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39951BADD58500FF2A96 /* AppleEventFormatter.swift */; };
 		4FB7D8951D5EA61F00F0DB36 /* StaticGlueBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E396D1BAA9BA700FF2A96 /* StaticGlueBuilder.swift */; };
 		4FB7D8961D5EA67800F0DB36 /* AEApplicationGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F2645AB1BA4F27700256402 /* AEApplicationGlue.swift */; };
 		4FDB20441D8ABA2E008AB470 /* FinderGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FDB20411D8ABA2E008AB470 /* FinderGlue.swift */; };
@@ -75,7 +75,7 @@
 		4FFF5D3D1D899F29008ED4F5 /* AETEParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E394E1BA8D2F600FF2A96 /* AETEParser.swift */; };
 		4FFF5D3E1D899F29008ED4F5 /* SDEFParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39481BA8717D00FF2A96 /* SDEFParser.swift */; };
 		4FFF5D3F1D899F29008ED4F5 /* GlueTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39501BA9A7EA00FF2A96 /* GlueTable.swift */; };
-		4FFF5D401D899F29008ED4F5 /* EventFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39951BADD58500FF2A96 /* EventFormatter.swift */; };
+		4FFF5D401D899F29008ED4F5 /* AppleEventFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39951BADD58500FF2A96 /* AppleEventFormatter.swift */; };
 		4FFF5D411D899F29008ED4F5 /* StaticGlueBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E396D1BAA9BA700FF2A96 /* StaticGlueBuilder.swift */; };
 		4FFF5D421D899F29008ED4F5 /* AEApplicationGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F2645AB1BA4F27700256402 /* AEApplicationGlue.swift */; };
 		4FFF5D4B1D89B4EF008ED4F5 /* SwiftAEGlueTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FFF5D491D89A26C008ED4F5 /* SwiftAEGlueTemplate.swift */; };
@@ -195,7 +195,7 @@
 		4F0E39651BAA98A900FF2A96 /* aeglue */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = aeglue; sourceTree = BUILT_PRODUCTS_DIR; };
 		4F0E39671BAA98A900FF2A96 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		4F0E396D1BAA9BA700FF2A96 /* StaticGlueBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StaticGlueBuilder.swift; sourceTree = "<group>"; };
-		4F0E39951BADD58500FF2A96 /* EventFormatter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventFormatter.swift; sourceTree = "<group>"; };
+		4F0E39951BADD58500FF2A96 /* AppleEventFormatter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppleEventFormatter.swift; sourceTree = "<group>"; };
 		4F0E399C1BAF7A7400FF2A96 /* AppleScriptToSwift.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AppleScriptToSwift.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4F0E39A01BAF7A7400FF2A96 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		4F0E39A31BAF7A7400FF2A96 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
@@ -207,7 +207,7 @@
 		4F0E39CE1BB008B400FF2A96 /* SAEEventSniffer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SAEEventSniffer.m; sourceTree = "<group>"; };
 		4F0E39D01BB00B3300FF2A96 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		4F0E39D11BB00B3300FF2A96 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		4F0E39D31BB0342600FF2A96 /* SwiftAEFormatter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftAEFormatter.swift; sourceTree = "<group>"; };
+		4F0E39D31BB0342600FF2A96 /* SAEFormatter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SAEFormatter.swift; sourceTree = "<group>"; };
 		4F0E39D51BB0504D00FF2A96 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		4F1D12401BA3042600875F74 /* SpecifierExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpecifierExtensions.swift; sourceTree = "<group>"; };
 		4F2645AB1BA4F27700256402 /* AEApplicationGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AEApplicationGlue.swift; sourceTree = "<group>"; };
@@ -336,9 +336,9 @@
 				4F0E394E1BA8D2F600FF2A96 /* AETEParser.swift */,
 				4F0E39481BA8717D00FF2A96 /* SDEFParser.swift */,
 				4F0E39501BA9A7EA00FF2A96 /* GlueTable.swift */,
-				4F0E39951BADD58500FF2A96 /* EventFormatter.swift */,
 				4FFF5D491D89A26C008ED4F5 /* SwiftAEGlueTemplate.swift */,
 				4F0E396D1BAA9BA700FF2A96 /* StaticGlueBuilder.swift */,
+				4F0E39951BADD58500FF2A96 /* AppleEventFormatter.swift */,
 			);
 			name = "terminology support";
 			sourceTree = "<group>";
@@ -376,7 +376,7 @@
 				4F0E39CB1BB008A400FF2A96 /* SAELanguageInstance.m */,
 				4F0E39CD1BB008B400FF2A96 /* SAEEventSniffer.h */,
 				4F0E39CE1BB008B400FF2A96 /* SAEEventSniffer.m */,
-				4F0E39D31BB0342600FF2A96 /* SwiftAEFormatter.swift */,
+				4F0E39D31BB0342600FF2A96 /* SAEFormatter.swift */,
 				4F0E39A01BAF7A7400FF2A96 /* Assets.xcassets */,
 				4F0E39A21BAF7A7400FF2A96 /* MainMenu.xib */,
 				4F0E39A51BAF7A7400FF2A96 /* Info.plist */,
@@ -634,7 +634,7 @@
 				4FB7D8801D5EA60F00F0DB36 /* AETEParser.swift in Sources */,
 				4FB7D8811D5EA60F00F0DB36 /* SDEFParser.swift in Sources */,
 				4FB7D8821D5EA60F00F0DB36 /* GlueTable.swift in Sources */,
-				4FB7D8831D5EA60F00F0DB36 /* EventFormatter.swift in Sources */,
+				4FB7D8831D5EA60F00F0DB36 /* AppleEventFormatter.swift in Sources */,
 				4FFF5D4F1D89B552008ED4F5 /* SwiftAEGlueTemplate.swift in Sources */,
 				4FB7D8841D5EA60F00F0DB36 /* StaticGlueBuilder.swift in Sources */,
 				4FB7D8851D5EA60F00F0DB36 /* AEApplicationGlue.swift in Sources */,
@@ -650,7 +650,7 @@
 				4F0E39D21BB00B3300FF2A96 /* AppDelegate.m in Sources */,
 				4F0E39CF1BB008B400FF2A96 /* SAEEventSniffer.m in Sources */,
 				4F0E39CC1BB008A400FF2A96 /* SAELanguageInstance.m in Sources */,
-				4F0E39D41BB0342600FF2A96 /* SwiftAEFormatter.swift in Sources */,
+				4F0E39D41BB0342600FF2A96 /* SAEFormatter.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -672,7 +672,7 @@
 				4FB7D8911D5EA61F00F0DB36 /* AETEParser.swift in Sources */,
 				4FB7D8921D5EA61F00F0DB36 /* SDEFParser.swift in Sources */,
 				4FB7D8931D5EA61F00F0DB36 /* GlueTable.swift in Sources */,
-				4FB7D8941D5EA61F00F0DB36 /* EventFormatter.swift in Sources */,
+				4FB7D8941D5EA61F00F0DB36 /* AppleEventFormatter.swift in Sources */,
 				4FFF5D511D89B572008ED4F5 /* SwiftAEGlueTemplate.swift in Sources */,
 				4FB7D8951D5EA61F00F0DB36 /* StaticGlueBuilder.swift in Sources */,
 				4FB7D8961D5EA67800F0DB36 /* AEApplicationGlue.swift in Sources */,
@@ -702,7 +702,7 @@
 				4FFF5D3D1D899F29008ED4F5 /* AETEParser.swift in Sources */,
 				4FFF5D3E1D899F29008ED4F5 /* SDEFParser.swift in Sources */,
 				4FFF5D3F1D899F29008ED4F5 /* GlueTable.swift in Sources */,
-				4FFF5D401D899F29008ED4F5 /* EventFormatter.swift in Sources */,
+				4FFF5D401D899F29008ED4F5 /* AppleEventFormatter.swift in Sources */,
 				4FFF5D4B1D89B4EF008ED4F5 /* SwiftAEGlueTemplate.swift in Sources */,
 				4FFF5D411D899F29008ED4F5 /* StaticGlueBuilder.swift in Sources */,
 				4FFF5D421D899F29008ED4F5 /* AEApplicationGlue.swift in Sources */,

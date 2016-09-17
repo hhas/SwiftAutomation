@@ -5,7 +5,7 @@
 //  Format an AppleEvent descriptor as Swift source code. Enables user tools
 //  to translate application commands from AppleScript to Swift syntax simply
 //  by installing a custom SendProc into an AS component instance to intercept
-//  outgoing AEs, pass them to SwiftAEFormatAppleEvent(), and print the result.
+//  outgoing AEs, pass them to formatAppleEvent(), and print the result.
 //
 //
 
@@ -30,7 +30,7 @@ public enum TerminologyType {
 }
 
 
-public func SwiftAEFormatAppleEvent(_ event: NSAppleEventDescriptor, useTerminology: TerminologyType = .sdef) -> String {
+public func formatAppleEvent(descriptor event: NSAppleEventDescriptor, useTerminology: TerminologyType = .sdef) -> String {
     //  Format an outgoing or reply AppleEvent (if the latter, only the return value/error description is displayed).
     //  Caution: if sending events to self, caller MUST use TerminologyType.SDEF or call
     //  formatAppleEvent on a background thread, otherwise formatAppleEvent will deadlock
@@ -88,8 +88,8 @@ private func appDataForAppleEvent(_ event: NSAppleEventDescriptor, useTerminolog
 
 public class DynamicAppData: AppData { // TO DO: can this be used as-is/with modifications as base class for dynamic bridges? if so, move to its own file as it's not specific to formatting; if not, rename it
     
-    public internal(set) var glueSpec: GlueSpec! // TO DO: initializing these is messy, due to AppData.init() being required; any cleaner solution?
-    public internal(set) var glueTable: GlueTable!
+    public internal(set) var glueSpec: GlueSpec! // provides glue metadata; TO DO: initializing these is messy, due to AppData.init() being required; any cleaner solution?
+    public internal(set) var glueTable: GlueTable! // provides keyword<->FCC translations
     
     // given AppleEvent's address descriptor, create AppData instance with formatting info
     // TO DO: ought to be an init, but AppData.init() is already required, which makes overriding problematic
@@ -161,6 +161,8 @@ private let gDefaultConsidering: ConsideringOptions = [.case]
 private let gDefaultConsidersIgnoresMask: UInt32 = 0x00010000 // AppleScript ignores case by default
 
 
+// parsed Apple event
+
 public struct AppleEventDescription { // TO DO: split AE unpacking from CommandTerm processing; put the latter in a function that takes glueTable as arg; that'll allow init to take any AppData instance, which gives more flexibility
     
     public let eventClass: OSType
@@ -185,7 +187,7 @@ public struct AppleEventDescription { // TO DO: split AE unpacking from CommandT
         self.eventID = eventID
         var commandInfo = appData.glueTable.commandsByCode[CommandTermKey(eventClass, eventID)]
         // unpack subject attribute and/or direct parameter, if given
-        if let desc = event.attributeDescriptor(forKeyword: SwiftAE_keySubjectAttr) {
+        if let desc = event.attributeDescriptor(forKeyword: SwiftAutomation_keySubjectAttr) {
             if desc.descriptorType != typeNull { // typeNull = root application object
                 self.subject = (try? appData.unpackAny(desc)) ?? desc
             }
@@ -235,7 +237,7 @@ public struct AppleEventDescription { // TO DO: split AE unpacking from CommandT
                 self.withTimeout = Double(timeoutInTicks) / 60.0
             }
         }
-        if let considersAndIgnoresDesc = event.attributeDescriptor(forKeyword: SwiftAE_enumConsidsAndIgnores) {
+        if let considersAndIgnoresDesc = event.attributeDescriptor(forKeyword: SwiftAutomation_enumConsidsAndIgnores) {
             var considersAndIgnores: UInt32 = 0
             (considersAndIgnoresDesc.data as NSData).getBytes(&considersAndIgnores, length: MemoryLayout<UInt32>.size)
             if considersAndIgnores != gDefaultConsidersIgnoresMask {
@@ -253,7 +255,7 @@ public struct AppleEventDescription { // TO DO: split AE unpacking from CommandT
 
 
 /******************************************************************************/
-// extend SpecifierFormatter to format AppleEvent descriptors as Swift code
+// extend the standard SpecifierFormatter class so it can also format AppleEvent descriptors
 
 
 extension SpecifierFormatter {

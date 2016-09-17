@@ -93,7 +93,7 @@ public let kSwiftAEParameterNames: Set<String> = [
 ]
 
 
-public let kReservedPrefixes: Set<String> = ["NS", "AE", "SwiftAE_"] // TO DO: decide
+public let kReservedPrefixes: Set<String> = ["NS", "AE", "SwiftAutomation_"] // TO DO: decide
 
 
 public let kWordSeparators = CharacterSet(charactersIn: " -/")

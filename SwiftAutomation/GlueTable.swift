@@ -21,6 +21,8 @@ public func CommandTermKey(_ eventClass: OSType, _ eventID: OSType) -> UInt64 {
 }
 
 
+// TO DO: add `var description: String {...}` that returns pretty-printed literal representation that can be written directly to file as a static keyword<->FCC table, which users can modify manually in order to correct for defective terms? (might be better leaving it to a `format()` method that can be customized for different languages, or else export in a generic data format (e.g. JSON) that is trivial to edit and parse back in)
+
 public class GlueTable {
     // provides lookup tables used by language-specific bridges to pack/unpack/format symbols, specifiers, and commands
     // note: dictionary structures are optimized for dynamic bridges, but are also usable
@@ -65,14 +67,14 @@ public class GlueTable {
     
     public init(keywordConverter: KeywordConverterProtocol = gSwiftAEKeywordConverter) {
         self.keywordConverter = keywordConverter
-        self.addApplicationTerminology(keywordConverter.defaultTerminology)
+        self.add(terminology: keywordConverter.defaultTerminology)
         // retain copies of default type and command terms; these will be used to disambiguate
         // any conflicting application-defined terms added later
         self.defaultTypesByName = self.typesByName
         self.defaultCommandsByName = self.commandsByName
     }
 
-    private func addTypes(_ keywords: KeywordTerms, descriptorType: OSType) {
+    private func add(symbolKeywords keywords: KeywordTerms, descriptorType: OSType) {
         let len = keywords.count
         for i in 0..<len {
             // add a definition to typeByCode table
@@ -111,7 +113,8 @@ public class GlueTable {
     }
 
     // TO DO: confirm tables are passed by ref
-    private func addSpecifiers(_ keywords: KeywordTerms, nameTable: inout [String:KeywordTerm], codeTable: inout [OSType:String]) {
+    private func add(specifierKeywords keywords: KeywordTerms,
+                     nameTable: inout [String:KeywordTerm], codeTable: inout [OSType:String]) {
         let len = keywords.count
         for i in 0..<len {
             // add a definition to the byCode table
@@ -130,7 +133,7 @@ public class GlueTable {
         }
     }
 
-    private func addCommands(_ commands: [CommandTerm]) {
+    private func add(commandKeywords commands: [CommandTerm]) {
         // To handle synonyms, if two commands have same name but different codes, only the first
         // definition should be used (iterating array in reverse ensures this)
         let len = commands.count
@@ -153,18 +156,19 @@ public class GlueTable {
         }
     }
 
-    // add data from AETEParser, SDEFParser or equivalent
+    // called by parseAETE/parseSDEF 
+    // TO DO: what about adding manually exported+edited lookup tables? (it's be simpler just to use manually edited SDEFs, but SDEFs can't represent all four-char codes correctly [non-printing control characters are disallowed in XML, and SDEF format doesn't have a way to escape unprintable 'MacRoman characters', e.g. as '\x00', so FCCs that are valid in AETEs and used by some Carbon apps/osaxen get omitted when converted to SDEF, breaking that SDEF's compatibility with the target app])
     // (note: default terminology is added automatically when GlueTable is instantiated; users should not add it themselves)
-    public func addApplicationTerminology(_ terms: ApplicationTerminology) {
+    public func add(terminology terms: ApplicationTerminology) {
         // build type tables
-        self.addTypes(terms.properties, descriptorType: typeType) // technically typeProperty, but typeType is prob. safest
-        self.addTypes(terms.enumerators, descriptorType: typeEnumerated)
-        self.addTypes(terms.types, descriptorType: typeType)
+        self.add(symbolKeywords: terms.properties, descriptorType: typeType) // technically typeProperty, but typeType is prob. safest
+        self.add(symbolKeywords: terms.enumerators, descriptorType: typeEnumerated)
+        self.add(symbolKeywords: terms.types, descriptorType: typeType)
         // build specifier tables
-        self.addSpecifiers(terms.elements, nameTable: &self.elementsByName, codeTable: &self.elementsByCode)
-        self.addSpecifiers(terms.properties, nameTable: &self.propertiesByName, codeTable: &self.propertiesByCode)
+        self.add(specifierKeywords: terms.elements, nameTable: &self.elementsByName, codeTable: &self.elementsByCode)
+        self.add(specifierKeywords: terms.properties, nameTable: &self.propertiesByName, codeTable: &self.propertiesByCode)
         // build command table
-        self.addCommands(terms.commands)
+        self.add(commandKeywords: terms.commands)
         // special case: if property table contains a 'text' definition, move it to element table
         // (AppleScript always packs 'text of...' as an all-elements specifier, not a property specifier)
         // TO DO: should check if this rule only applies to 'text', or other ambiguous property/element names too
@@ -173,6 +177,26 @@ public class GlueTable {
             self.propertiesByName.removeValue(forKey: "text")
         }
         self._specifiersByName = nil
+    }
+    
+    //
+    
+    public func add(AETE descriptor: NSAppleEventDescriptor) throws {
+        // use `try AEApplication(url: url).getAETE()` to retrieve typeAETE descriptor via an 'ascr'/'gdte' Apple event
+        // use `OSAGetSysTerminology()` to get typeAEUT (language component)'s AETE/AEUT resource (e.g. for AppleScript's built-in terminology)
+        let parser = AETEParser(keywordConverter: self.keywordConverter)
+        try parser.parse(descriptor)
+        self.add(terminology: parser)
+    }
+    
+    public func add(SDEF data: Data) throws {
+        let parser = SDEFParser(keywordConverter: self.keywordConverter)
+        try parser.parse(data)
+        self.add(terminology: parser)       
+    }
+    
+    public func add(SDEF url: URL) throws { // url may be file:// (for .sdef resource) or eppc:// (assuming OSACopyScriptingDefinitionFromURL works right now)
+        try self.add(SDEF: GetScriptingDefinition(url))
     }
 }
 

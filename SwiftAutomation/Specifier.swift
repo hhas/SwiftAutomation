@@ -54,14 +54,14 @@ open class Query: CustomStringConvertible, SelfPacking { // TO DO: Equatable?
     
     // packing
     
-    public func SwiftAE_packSelf(_ appData: AppData) throws -> NSAppleEventDescriptor {
+    public func SwiftAutomation_packSelf(_ appData: AppData) throws -> NSAppleEventDescriptor {
         if self.cachedDesc == nil {
-            self.cachedDesc = try self.SwiftAE_packSelf()
+            self.cachedDesc = try self.SwiftAutomation_packSelf()
         }
         return self.cachedDesc!
     }
     
-    func SwiftAE_packSelf() throws -> NSAppleEventDescriptor { // this implementation should never be called; subclasses must override this to pack themselves
+    func SwiftAutomation_packSelf() throws -> NSAppleEventDescriptor { // this implementation should never be called; subclasses must override this to pack themselves
         throw NotImplementedError()
     }
     
@@ -118,12 +118,12 @@ open class Specifier: Query, SpecifierProtocol {
             return
         }
         do {
-            let parentDesc = cachedDesc.forKeyword(SwiftAE_keyAEContainer)!
+            let parentDesc = cachedDesc.forKeyword(SwiftAutomation_keyAEContainer)!
             self._parentQuery = try appData.unpack(parentDesc) as Specifier
             self._parentQuery!.unpackParentSpecifiers()
         } catch {
             print("Deferred unpack parent specifier failed: \(error)") // TO DO: DEBUG; delete
-            self._parentQuery = RootSpecifier(rootObject: (cachedDesc.forKeyword(SwiftAE_keyAEContainer))!, appData: self.appData) // TO DO: store error in RootSpecifier and raise it on packing
+            self._parentQuery = RootSpecifier(rootObject: (cachedDesc.forKeyword(SwiftAutomation_keyAEContainer))!, appData: self.appData) // TO DO: store error in RootSpecifier and raise it on packing
         }
     }
     
@@ -172,7 +172,7 @@ open class Specifier: Query, SpecifierProtocol {
 /******************************************************************************/
 // insertion location specifier
 
-open class InsertionSpecifier: Specifier { // SwiftAE_packSelf
+open class InsertionSpecifier: Specifier { // SwiftAutomation_packSelf
     
     // 'insl'
     public let insertionLocation: NSAppleEventDescriptor
@@ -183,9 +183,9 @@ open class InsertionSpecifier: Specifier { // SwiftAE_packSelf
         super.init(parentQuery: parentQuery, appData: appData, cachedDesc: cachedDesc)
     }
     
-    override func SwiftAE_packSelf() throws -> NSAppleEventDescriptor {
+    override func SwiftAutomation_packSelf() throws -> NSAppleEventDescriptor {
         let desc = NSAppleEventDescriptor.record().coerce(toDescriptorType: typeInsertionLoc)!
-        desc.setDescriptor(try self.parentQuery.SwiftAE_packSelf(self.appData), forKeyword: keyAEObject)
+        desc.setDescriptor(try self.parentQuery.SwiftAutomation_packSelf(self.appData), forKeyword: keyAEObject)
         desc.setDescriptor(self.insertionLocation, forKeyword: keyAEPosition)
         return desc
     }
@@ -219,12 +219,12 @@ open class ObjectSpecifier: Specifier, ObjectSpecifierProtocol { // represents p
         super.init(parentQuery: parentQuery, appData: appData, cachedDesc: cachedDesc)
     }
     
-    override func SwiftAE_packSelf() throws -> NSAppleEventDescriptor {
+    override func SwiftAutomation_packSelf() throws -> NSAppleEventDescriptor {
         let desc = NSAppleEventDescriptor.record().coerce(toDescriptorType: typeObjectSpecifier)!
-        desc.setDescriptor(try self.parentQuery.SwiftAE_packSelf(self.appData), forKeyword: SwiftAE_keyAEContainer)
-        desc.setDescriptor(self.wantType, forKeyword: SwiftAE_keyAEDesiredClass)
-        desc.setDescriptor(self.selectorForm, forKeyword: SwiftAE_keyAEKeyForm)
-        desc.setDescriptor(try self.appData.pack(self.selectorData), forKeyword: SwiftAE_keyAEKeyData)
+        desc.setDescriptor(try self.parentQuery.SwiftAutomation_packSelf(self.appData), forKeyword: SwiftAutomation_keyAEContainer)
+        desc.setDescriptor(self.wantType, forKeyword: SwiftAutomation_keyAEDesiredClass)
+        desc.setDescriptor(self.selectorForm, forKeyword: SwiftAutomation_keyAEKeyForm)
+        desc.setDescriptor(try self.appData.pack(self.selectorData), forKeyword: SwiftAutomation_keyAEKeyData)
         return desc
     }
         
@@ -289,14 +289,14 @@ public struct RangeSelector: SelfPacking { // holds data for by-range selectors 
         case is NSAppleEventDescriptor:
             return selectorData as! NSAppleEventDescriptor
         case is Specifier: // technically, only ObjectSpecifier makes sense here, tho AS prob. doesn't prevent insertion loc or multi-element specifier being passed instead
-            return try (selectorData as! Specifier).SwiftAE_packSelf(appData)
+            return try (selectorData as! Specifier).SwiftAutomation_packSelf(appData)
         default: // pack anything else as a by-name or by-index specifier
             selectorForm = selectorData is String ? gNameForm : gAbsolutePositionForm
             let desc = NSAppleEventDescriptor.record().coerce(toDescriptorType: typeObjectSpecifier)!
-            desc.setDescriptor(ConRootDesc, forKeyword: SwiftAE_keyAEContainer)
-            desc.setDescriptor(self.wantType, forKeyword: SwiftAE_keyAEDesiredClass)
-            desc.setDescriptor(selectorForm, forKeyword: SwiftAE_keyAEKeyForm)
-            desc.setDescriptor(try appData.pack(selectorData), forKeyword: SwiftAE_keyAEKeyData)
+            desc.setDescriptor(ConRootDesc, forKeyword: SwiftAutomation_keyAEContainer)
+            desc.setDescriptor(self.wantType, forKeyword: SwiftAutomation_keyAEDesiredClass)
+            desc.setDescriptor(selectorForm, forKeyword: SwiftAutomation_keyAEKeyForm)
+            desc.setDescriptor(try appData.pack(selectorData), forKeyword: SwiftAutomation_keyAEKeyData)
             return desc
         }
     }
@@ -320,7 +320,7 @@ public struct RangeSelector: SelfPacking { // holds data for by-range selectors 
         }
     }
     
-    public func SwiftAE_packSelf(_ appData: AppData) throws -> NSAppleEventDescriptor {
+    public func SwiftAutomation_packSelf(_ appData: AppData) throws -> NSAppleEventDescriptor {
         // note: the returned desc will be cached by the ElementsSpecifier, so no need to cache it here
         let desc = NSAppleEventDescriptor.record().coerce(toDescriptorType: typeRangeDescriptor)!
         desc.setDescriptor(try self.packSelector(self.start, appData: appData), forKeyword: keyAERangeStart)
@@ -354,21 +354,21 @@ public class ComparisonTest: TestClause {
         super.init(appData: appData, cachedDesc: cachedDesc)
     }
     
-    override func SwiftAE_packSelf() throws -> NSAppleEventDescriptor {
+    override func SwiftAutomation_packSelf() throws -> NSAppleEventDescriptor {
         if self.operatorType === gNE { // AEM doesn't support a 'kAENotEqual' enum...
-            return try (!(self.operand1 == self.operand2)).SwiftAE_packSelf(self.appData) // so convert to kAEEquals+kAENOT
+            return try (!(self.operand1 == self.operand2)).SwiftAutomation_packSelf(self.appData) // so convert to kAEEquals+kAENOT
         } else {
             let desc = NSAppleEventDescriptor.record().coerce(toDescriptorType: typeCompDescriptor)!
             let opDesc1 = try self.appData.pack(self.operand1)
             let opDesc2 = try self.appData.pack(self.operand2)
             if self.operatorType === gIsIn { // AEM doesn't support a 'kAEIsIn' enum...
-                desc.setDescriptor(gContains, forKeyword: SwiftAE_keyAECompOperator) // so use kAEContains with operands reversed
-                desc.setDescriptor(opDesc2, forKeyword: SwiftAE_keyAEObject1)
-                desc.setDescriptor(opDesc1, forKeyword: SwiftAE_keyAEObject2)
+                desc.setDescriptor(gContains, forKeyword: SwiftAutomation_keyAECompOperator) // so use kAEContains with operands reversed
+                desc.setDescriptor(opDesc2, forKeyword: SwiftAutomation_keyAEObject1)
+                desc.setDescriptor(opDesc1, forKeyword: SwiftAutomation_keyAEObject2)
             } else {
-                desc.setDescriptor(self.operatorType, forKeyword: SwiftAE_keyAECompOperator)
-                desc.setDescriptor(opDesc1, forKeyword: SwiftAE_keyAEObject1)
-                desc.setDescriptor(opDesc2, forKeyword: SwiftAE_keyAEObject2)
+                desc.setDescriptor(self.operatorType, forKeyword: SwiftAutomation_keyAECompOperator)
+                desc.setDescriptor(opDesc1, forKeyword: SwiftAutomation_keyAEObject1)
+                desc.setDescriptor(opDesc2, forKeyword: SwiftAutomation_keyAEObject2)
             }
             return desc
         }
@@ -393,11 +393,11 @@ public class LogicalTest: TestClause {
         super.init(appData: appData, cachedDesc: cachedDesc)
     }
     
-    override func SwiftAE_packSelf() throws -> NSAppleEventDescriptor {
+    override func SwiftAutomation_packSelf() throws -> NSAppleEventDescriptor {
         let desc = NSAppleEventDescriptor.record().coerce(toDescriptorType: typeLogicalDescriptor)!
         let opDesc = try self.appData.pack(self.operands)
-        desc.setDescriptor(self.operatorType, forKeyword: SwiftAE_keyAELogicalOperator)
-        desc.setDescriptor(opDesc, forKeyword: SwiftAE_keyAELogicalTerms)
+        desc.setDescriptor(self.operatorType, forKeyword: SwiftAutomation_keyAELogicalOperator)
+        desc.setDescriptor(opDesc, forKeyword: SwiftAutomation_keyAELogicalTerms)
         return desc
     }
     
@@ -440,7 +440,7 @@ open class RootSpecifier: ObjectSpecifier { // app, con, its, custom root (note:
         
     }
     
-    public override func SwiftAE_packSelf() throws -> NSAppleEventDescriptor {
+    public override func SwiftAutomation_packSelf() throws -> NSAppleEventDescriptor {
         return try self.appData.pack(self.selectorData)
     }
     
@@ -466,28 +466,28 @@ open class RootSpecifier: ObjectSpecifier { // app, con, its, custom root (note:
 
 let gPropertyType = NSAppleEventDescriptor(typeCode: typeProperty)
 // selector forms
-let gPropertyForm           = NSAppleEventDescriptor(enumCode: SwiftAE_formPropertyID) // specifier.NAME or specifier.property(CODE)
-let gUserPropertyForm       = NSAppleEventDescriptor(enumCode: SwiftAE_formUserPropertyID) // specifier.userProperty(NAME)
-let gAbsolutePositionForm   = NSAppleEventDescriptor(enumCode: SwiftAE_formAbsolutePosition) // specifier[IDX] or specifier.first/middle/last/any
-let gNameForm               = NSAppleEventDescriptor(enumCode: SwiftAE_formName) // specifier[NAME] or specifier.named(NAME)
-let gUniqueIDForm           = NSAppleEventDescriptor(enumCode: SwiftAE_formUniqueID) // specifier.ID(UID)
-let gRelativePositionForm   = NSAppleEventDescriptor(enumCode: SwiftAE_formRelativePosition) // specifier.before/after(SYMBOL)
-let gRangeForm              = NSAppleEventDescriptor(enumCode: SwiftAE_formRange) // specifier[FROM,TO]
-let gTestForm               = NSAppleEventDescriptor(enumCode: SwiftAE_formTest) // specifier[TEST]
+let gPropertyForm           = NSAppleEventDescriptor(enumCode: SwiftAutomation_formPropertyID) // specifier.NAME or specifier.property(CODE)
+let gUserPropertyForm       = NSAppleEventDescriptor(enumCode: SwiftAutomation_formUserPropertyID) // specifier.userProperty(NAME)
+let gAbsolutePositionForm   = NSAppleEventDescriptor(enumCode: SwiftAutomation_formAbsolutePosition) // specifier[IDX] or specifier.first/middle/last/any
+let gNameForm               = NSAppleEventDescriptor(enumCode: SwiftAutomation_formName) // specifier[NAME] or specifier.named(NAME)
+let gUniqueIDForm           = NSAppleEventDescriptor(enumCode: SwiftAutomation_formUniqueID) // specifier.ID(UID)
+let gRelativePositionForm   = NSAppleEventDescriptor(enumCode: SwiftAutomation_formRelativePosition) // specifier.before/after(SYMBOL)
+let gRangeForm              = NSAppleEventDescriptor(enumCode: SwiftAutomation_formRange) // specifier[FROM,TO]
+let gTestForm               = NSAppleEventDescriptor(enumCode: SwiftAutomation_formTest) // specifier[TEST]
 // insertion locations
 let gBeginning  = NSAppleEventDescriptor(enumCode: kAEBeginning)
 let gEnd        = NSAppleEventDescriptor(enumCode: kAEEnd)
 let gBefore     = NSAppleEventDescriptor(enumCode: kAEBefore)
 let gAfter      = NSAppleEventDescriptor(enumCode: kAEAfter)
 // absolute positions
-let gFirst  = FourCharCodeDescriptor(typeAbsoluteOrdinal, SwiftAE_kAEFirst)
-let gMiddle = FourCharCodeDescriptor(typeAbsoluteOrdinal, SwiftAE_kAEMiddle)
-let gLast   = FourCharCodeDescriptor(typeAbsoluteOrdinal, SwiftAE_kAELast)
-let gAny    = FourCharCodeDescriptor(typeAbsoluteOrdinal, SwiftAE_kAEAny)
-let gAll    = FourCharCodeDescriptor(typeAbsoluteOrdinal, SwiftAE_kAEAll)
+let gFirst  = FourCharCodeDescriptor(typeAbsoluteOrdinal, SwiftAutomation_kAEFirst)
+let gMiddle = FourCharCodeDescriptor(typeAbsoluteOrdinal, SwiftAutomation_kAEMiddle)
+let gLast   = FourCharCodeDescriptor(typeAbsoluteOrdinal, SwiftAutomation_kAELast)
+let gAny    = FourCharCodeDescriptor(typeAbsoluteOrdinal, SwiftAutomation_kAEAny)
+let gAll    = FourCharCodeDescriptor(typeAbsoluteOrdinal, SwiftAutomation_kAEAll)
 // relative positions
-let gPrevious   = NSAppleEventDescriptor(enumCode: SwiftAE_kAEPrevious)
-let gNext       = NSAppleEventDescriptor(enumCode: SwiftAE_kAENext)
+let gPrevious   = NSAppleEventDescriptor(enumCode: SwiftAutomation_kAEPrevious)
+let gNext       = NSAppleEventDescriptor(enumCode: SwiftAutomation_kAENext)
 
 // AEM doesn't define '!=' or 'in' operators, so define 'temp' codes to represent these
 let kSAENotEquals: OSType = 0x00000001
@@ -506,9 +506,9 @@ let gEndsWith   = NSAppleEventDescriptor(enumCode: kAEEndsWith)
 let gContains   = NSAppleEventDescriptor(enumCode: kAEContains)
 let gIsIn       = NSAppleEventDescriptor(enumCode: kSAEIsIn) // pack d as op2.contains(op1)
 // logic tests
-let gAND = NSAppleEventDescriptor(enumCode: SwiftAE_kAEAND)
-let gOR  = NSAppleEventDescriptor(enumCode: SwiftAE_kAEOR)
-let gNOT = NSAppleEventDescriptor(enumCode: SwiftAE_kAENOT)
+let gAND = NSAppleEventDescriptor(enumCode: SwiftAutomation_kAEAND)
+let gOR  = NSAppleEventDescriptor(enumCode: SwiftAutomation_kAEOR)
+let gNOT = NSAppleEventDescriptor(enumCode: SwiftAutomation_kAENOT)
 
 
 

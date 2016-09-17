@@ -133,36 +133,36 @@ public class SpecifierFormatter {
         let form = specifier.selectorForm.enumCodeValue
         var result = self.format(specifier.parentQuery)
         switch form {
-        case SwiftAE_formPropertyID:
+        case SwiftAutomation_formPropertyID:
             // kludge, seld is either desc or symbol, depending on whether constructed or unpacked; TO DO: eliminate?
             if let desc = specifier.selectorData as? NSAppleEventDescriptor, let propertyDesc = desc.coerce(toDescriptorType: typeType) {
                 return result + formatPropertyVar(propertyDesc.typeCodeValue)
             } else if let symbol = specifier.selectorData as? Symbol {
                 return result + formatPropertyVar(symbol.code)
             } // else malformed desc
-        case SwiftAE_formUserPropertyID:
+        case SwiftAutomation_formUserPropertyID:
             return "\(result).userProperty(\(formatValue(specifier.selectorData)))"
         default:
             result += formatElementsVar(specifier.wantType.typeCodeValue)
-            if let desc = specifier.selectorData as? NSAppleEventDescriptor, desc.typeCodeValue == SwiftAE_kAEAll { // TO DO: check this is right (replaced `where` with `,`)
+            if let desc = specifier.selectorData as? NSAppleEventDescriptor, desc.typeCodeValue == SwiftAutomation_kAEAll { // TO DO: check this is right (replaced `where` with `,`)
                 return result
             }
             switch form {
-            case SwiftAE_formAbsolutePosition: // specifier[IDX] or specifier.first/middle/last/any
+            case SwiftAutomation_formAbsolutePosition: // specifier[IDX] or specifier.first/middle/last/any
                 if let desc = specifier.selectorData as? NSAppleEventDescriptor, // ObjectSpecifier.unpackSelf does not unpack ordinals
-                        let ordinal = [SwiftAE_kAEFirst: "first", SwiftAE_kAEMiddle: "middle", SwiftAE_kAELast: "last", SwiftAE_kAEAny: "any"][desc.enumCodeValue] {
+                        let ordinal = [SwiftAutomation_kAEFirst: "first", SwiftAutomation_kAEMiddle: "middle", SwiftAutomation_kAELast: "last", SwiftAutomation_kAEAny: "any"][desc.enumCodeValue] {
                     return "\(result).\(ordinal)"
                 } else {
                     return "\(result)[\(formatValue(specifier.selectorData))]"
                 }
-            case SwiftAE_formName: // specifier[NAME] or specifier.named(NAME)
+            case SwiftAutomation_formName: // specifier[NAME] or specifier.named(NAME)
                 return specifier.selectorData is Int ? "\(result).named(\(formatValue(specifier.selectorData)))"
                                                      : "\(result)[\(formatValue(specifier.selectorData))]"
-            case SwiftAE_formUniqueID: // specifier.ID(UID)
+            case SwiftAutomation_formUniqueID: // specifier.ID(UID)
                 return "\(result).ID(\(self.format(specifier.selectorData)))"
-            case SwiftAE_formRelativePosition: // specifier.previous/next(SYMBOL)
+            case SwiftAutomation_formRelativePosition: // specifier.previous/next(SYMBOL)
                 if let seld = specifier.selectorData as? NSAppleEventDescriptor, // ObjectSpecifier.unpackSelf does not unpack ordinals
-                    let name = [SwiftAE_kAEPrevious: "previous", SwiftAE_kAENext: "next"][seld.enumCodeValue],
+                    let name = [SwiftAutomation_kAEPrevious: "previous", SwiftAutomation_kAENext: "next"][seld.enumCodeValue],
                     let parent = specifier.parentQuery as? ObjectSpecifier {
                         if specifier.wantType.typeCodeValue == parent.wantType.typeCodeValue {
                             return "\(result).\(name)()" // use shorthand form for neatness
@@ -170,11 +170,11 @@ public class SpecifierFormatter {
                             return "\(result).\(name)(\(self.formatSymbol(specifier.wantType.typeCodeValue)))"
                         }
                 }
-            case SwiftAE_formRange: // specifier[FROM,TO]
+            case SwiftAutomation_formRange: // specifier[FROM,TO]
                 if let seld = specifier.selectorData as? RangeSelector {
                     return "\(result)[\(self.format(seld.start)), \(self.format(seld.stop))]" // TO DO: app-based specifiers should use untargeted 'App' root; con-based specifiers should be reduced to minimal representation if their wantType == specifier.wantType
                 }
-            case SwiftAE_formTest: // specifier[TEST]
+            case SwiftAutomation_formTest: // specifier[TEST]
                 return "\(result)[\(self.format(specifier.selectorData))]"
             default:
                 break
@@ -199,11 +199,11 @@ public class SpecifierFormatter {
     func formatLogicalTest(_ specifier: LogicalTest) -> String {
         let operands = specifier.operands.map({formatValue($0)})
         let opcode = specifier.operatorType.enumCodeValue
-        if let name = [SwiftAE_kAEAND: "&&", SwiftAE_kAEOR: "||"][opcode] {
+        if let name = [SwiftAutomation_kAEAND: "&&", SwiftAutomation_kAEOR: "||"][opcode] {
             if operands.count > 1 {
                 return operands.joined(separator: " \(name) ")
             }
-        } else if opcode == SwiftAE_kAENOT && operands.count == 1 {
+        } else if opcode == SwiftAutomation_kAENOT && operands.count == 1 {
             return "!(\(operands[0]))"
         }
         return "<\(type(of: specifier))(logc:\(specifier.operatorType),term:\(formatValue(operands)))>"
@@ -214,13 +214,13 @@ public class SpecifierFormatter {
 
 // general formatting functions
 
-func formatValue(_ value: Any) -> String { // TO DO: while this function can be used standalone, might be cleanest just to make it a member of SpecifierFormatter
+func formatValue(_ value: Any) -> String { // TO DO: while this function can be used standalone, might be cleanest just to make it a member of SpecifierFormatter (the goal is to ensure that all specifiers display as valid literal code)
     // formats AE-bridged Swift types as literal syntax; other Swift types will show their default description (unfortunately debugDescription doesn't provide usable literal representations - e.g. String doesn't show tabs in escaped form, Cocoa classes return their [non-literal] description string instead, and reliable representations of Bool/Int/Double are a dead loss as soon as NSNumber gets involved)
     
     // TO DO: how practical to use Mirror?
     
     switch value {
-    case let obj as NSArray: // HACK; see also AppData.pack()
+    case let obj as NSArray: // HACK; see also AppData.pack() // TO DO: implement SelfFormatting protocol on Array, Set, Dictionary
         return "[" + obj.map({formatValue($0)}).joined(separator: ", ") + "]"
     case let obj as NSDictionary: // HACK; see also AppData.pack()
         return "[" + obj.map({"\(formatValue($0)): \(formatValue($1))"}).joined(separator: ", ") + "]"

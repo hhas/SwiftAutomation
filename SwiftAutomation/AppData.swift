@@ -21,6 +21,8 @@ import AppKit
 
 // TO DO: add `var fullyUnpackSpecifiers: Bool = false` compatibility flag; note that the simplest and safest (if not the most efficient) way to do this is to call the specifier's `unpackParentSpecifiers(clearCachedDesc:true)` method immediately after unpacking it, though since this option should almost never be needed (an app should always accept object specifiers it created) efficiency isn't a concern (the unpack...Specifier methods could also unroll the specifier chain, of course, but then there'd be two code paths for doing the same thing which isn't ideal maintenance-wise). (The only known app that requires this compatibility flag is iView Media Pro, which has an amusing pair of bugs that [#1] cause it to return by-index specifiers with a non-standard though still acceptable selector type [typeUInt32, IIRC], but requires by-index specifers passed as parameters to use typeSInt32 selectors and [#2] throws an error if given any other type instead of coercing it to the required type itself. AppleScript masks these because it _always_ fully unpacks and repacks each specifier, coercing indexes to typeSInt32 as it does. However, converting Specifiers<->NSAppleEventDescriptors in SwiftAutomation takes longer than the equivalent reference<->AEDesc conversions in AppleScript, so the only way to match AS for speed is to avoid full unpacking unless/until actually needed [for display purposes].)
 
+// TO DO: how to support SendMode.queueReply/resultID (is there any situation where the resultID needs passed here, or is that purely for constructing reply events on the server side, in which case sendAppleEvent should return auto-generated returnID which client can then use to identify the reply event when it arrives in its own main loop event queue)
+
 
 
 public typealias KeywordParameters = [(name: String?, code: OSType, value: Any)]
@@ -57,15 +59,15 @@ public struct GlueInfo {
 // extend Swift's standard collection types to pack and unpack themselves
 
 
-extension Set : SelfPacking, SelfUnpacking {
+extension Set : SelfPacking, SelfUnpacking { // note: AEM doesn't define a standard AE type for Sets, so pack/unpack as typeAEList (we'll assume client code has its own reasons for suppling/requesting Set<T> instead of Array<T>)
     
-    public func SwiftAE_packSelf(_ appData: AppData) throws -> NSAppleEventDescriptor {
+    public func SwiftAutomation_packSelf(_ appData: AppData) throws -> NSAppleEventDescriptor {
         let desc = NSAppleEventDescriptor.list()
         for item in self { desc.insert(try appData.pack(item), at: 0) }
         return desc
     }
     
-    static func SwiftAE_unpackSelf(_ desc: NSAppleEventDescriptor, appData: AppData) throws -> Set<Element> {
+    static func SwiftAutomation_unpackSelf(_ desc: NSAppleEventDescriptor, appData: AppData) throws -> Set<Element> {
         var result = Set<Element>()
         switch desc.descriptorType {
         case typeAEList:
@@ -86,13 +88,13 @@ extension Set : SelfPacking, SelfUnpacking {
 
 extension Array : SelfPacking, SelfUnpacking {
     
-    public func SwiftAE_packSelf(_ appData: AppData) throws -> NSAppleEventDescriptor {
+    public func SwiftAutomation_packSelf(_ appData: AppData) throws -> NSAppleEventDescriptor {
         let desc = NSAppleEventDescriptor.list()
         for item in self { desc.insert(try appData.pack(item), at: 0) }
         return desc
     }
     
-    static func SwiftAE_unpackSelf(_ desc: NSAppleEventDescriptor, appData: AppData) throws -> [Element] {
+    static func SwiftAutomation_unpackSelf(_ desc: NSAppleEventDescriptor, appData: AppData) throws -> [Element] {
         switch desc.descriptorType {
         case typeAEList:
             var result = [Element]()
@@ -118,7 +120,7 @@ extension Array : SelfPacking, SelfUnpacking {
                 return result
             } else { // for any other Element, unpack as Int then repack as AEList of typeSInt32, and [try to] unpack that as [Element] (bit lazy, but will do)
                 let array = try appData.unpack(desc) as [Int]
-                return try self.SwiftAE_unpackSelf(try appData.pack(array), appData: appData)
+                return try self.SwiftAutomation_unpackSelf(try appData.pack(array), appData: appData)
             }
         default:
             return [try appData.unpack(desc) as Element]
@@ -129,10 +131,10 @@ extension Array : SelfPacking, SelfUnpacking {
 
 extension Dictionary : SelfPacking, SelfUnpacking {
     
-    public func SwiftAE_packSelf(_ appData: AppData) throws -> NSAppleEventDescriptor {
+    public func SwiftAutomation_packSelf(_ appData: AppData) throws -> NSAppleEventDescriptor {
         var desc = NSAppleEventDescriptor.record()
         var isCustomRecordType: Bool = false
-        if let key = AESymbol(code: SwiftAE_pClass) as? Key, let recordClass = self[key] as? Symbol { // TO DO: confirm this works
+        if let key = AESymbol(code: SwiftAutomation_pClass) as? Key, let recordClass = self[key] as? Symbol { // TO DO: confirm this works
             if !recordClass.nameOnly {
                 desc = desc.coerce(toDescriptorType: recordClass.code)!
                 isCustomRecordType = true
@@ -149,27 +151,27 @@ extension Dictionary : SelfPacking, SelfUnpacking {
                 }
                 userProperties?.insert(try appData.pack(keySymbol), at: 0)
                 userProperties?.insert(try appData.pack(value), at: 0)
-            } else if !(keySymbol.code == SwiftAE_pClass && isCustomRecordType) {
+            } else if !(keySymbol.code == SwiftAutomation_pClass && isCustomRecordType) {
                 desc.setDescriptor(try appData.pack(value), forKeyword: keySymbol.code)
             }
         }
         return desc
     }
     
-    static func SwiftAE_unpackSelf(_ desc: NSAppleEventDescriptor, appData: AppData) throws -> [Key:Value] {
+    static func SwiftAutomation_unpackSelf(_ desc: NSAppleEventDescriptor, appData: AppData) throws -> [Key:Value] {
         if !desc.isRecordDescriptor {
             throw UnpackError(appData: appData, descriptor: desc, type: self, message: "Not a record.")
         }
         var result = [Key:Value]()
         if desc.descriptorType != typeAERecord {
-            if let key = appData.glueInfo.symbolType.symbol(code: SwiftAE_pClass) as? Key,
+            if let key = appData.glueInfo.symbolType.symbol(code: SwiftAutomation_pClass) as? Key,
                     let value = appData.glueInfo.symbolType.symbol(code: desc.descriptorType) as? Value {
                 result[key] = value
             }
         }
         for i in 1..<(desc.numberOfItems+1) {
             let property = desc.keywordForDescriptor(at: i)
-            if property == SwiftAE_keyASUserRecordFields {
+            if property == SwiftAutomation_keyASUserRecordFields {
                 // unpack record properties whose keys are identifiers (represented as AEList of form: [key1,value1,key2,value2,...])
                 let userProperties = desc.atIndex(i)!
                 if userProperties.descriptorType == typeAEList && userProperties.numberOfItems % 2 == 0 {
@@ -215,7 +217,7 @@ extension Dictionary : SelfPacking, SelfUnpacking {
 // AppData converts values between Swift and AE types, holds target process information, and provides methods for sending Apple events
 
 
-private let AbsoluteOrdinalCodes = [SwiftAE_kAEFirst, SwiftAE_kAEMiddle, SwiftAE_kAELast, SwiftAE_kAEAny, SwiftAE_kAEAll]
+private let AbsoluteOrdinalCodes = [SwiftAutomation_kAEFirst, SwiftAutomation_kAEMiddle, SwiftAutomation_kAELast, SwiftAutomation_kAEAny, SwiftAutomation_kAEAll]
 
 
 open class AppData {
@@ -272,7 +274,7 @@ open class AppData {
     /******************************************************************************/
     // Convert a Swift value to an Apple event descriptor
     
-    let MissingValueDesc = NSAppleEventDescriptor(typeCode: SwiftAE_cMissingValue) // TO DO: currently unused; delete?
+    let MissingValueDesc = NSAppleEventDescriptor(typeCode: SwiftAutomation_cMissingValue) // TO DO: currently unused; delete?
     
     private let kNSBooleanType = type(of: NSNumber(value: true))
     private let kNSNumberType = type(of: NSNumber(value: 1))
@@ -282,7 +284,7 @@ open class AppData {
     public func pack(_ value: Any) throws -> NSAppleEventDescriptor { // TO DO: what if value is nil? treat as error or pack as missing value? (note that Swift is annoyingly inconsistent on whether nil is/isn't a member of Any, giving compiler error when assigning a nil literal but none when assigning var of type `Whatever?` to `Any`)
 //        print("PACKING: \(object) \(object.dynamicType)")
         
-        // note: Swift's Bool/Int/Double<->NSNumber bridging sucks, so if an NSNumber instance is received it must be dealt with specially
+        // note: Swift's Bool/Int/Double<->NSNumber bridging sucks, so NSNumber instances require special processing to ensure the underlying value's exact type (Bool/Int/Double/etc) isn't lost in translation
         if type(of: value) == self.kNSBooleanType || value is DarwinBoolean { // test for NSNumber(bool:) or Swift Bool (true/false)
             // important: 
             // - the first test assumes NSNumber class cluster always returns an instance of __NSCFBooleanType (or at least something that can be distinguished from all other NSNumbers)
@@ -326,8 +328,9 @@ open class AppData {
         case let obj as NSAppleEventDescriptor:
             return obj
         case let val as SelfPacking:
-            return try val.SwiftAE_packSelf(self)
+            return try val.SwiftAutomation_packSelf(self)
         case var val as Int:
+            // Note: to maximize application compatibility, always preferentially pack integers as typeSInt32, as that's the traditional integer type recognized by all apps. (In theory, packing as typeSInt64 shouldn't be a problem as apps should coerce to whatever type they actually require before unpacking, but not-so-well-designed Carbon apps sometimes explicitly typecheck instead, so will fail if the descriptor isn't the assumed typeSInt32.)
             if Int(Int32.min) <= val && val <= Int(Int32.max) {
                 return NSAppleEventDescriptor(int32: Int32(val))
             } else if self.isInt64Compatible {
@@ -342,14 +345,17 @@ open class AppData {
         case let obj as Date:
           return NSAppleEventDescriptor(date: obj)
         case let obj as URL:
-          return NSAppleEventDescriptor(fileURL: obj) // TO DO: what about packing as typeAlias if it's a bookmark URL?
+             // TO DO: what about packing as typeAlias if it's a bookmark URL? PROBLEM: Unlike Cocoa's NSURL, Swift's URL struct doesn't implement isFileReferenceURL(), so either need to coerce to NSURL in order to determine whether to pack as typeAlias or typeFileURL, or else cross fingers and hope that always packing as typeFileURL won't cause various crusty/flaky/elderly (Carbon) apps to puke because they're expecting typeAlias and don't have the wits to coerce the given descriptor to that type before trying to unpack it. Ideally we'd cache the original AEDesc within the unpacked Swift value (c.f. Specifier), but we can't do that without subclassing, and URL is a struct so we'd have to subclass NSURL (see AppleEventBridge's AEMURL.m for existing implementation of this), but what happens when that gets coerced to a Swift URL? (Seamless Cocoa-Swift integration my arse...).
+            return NSAppleEventDescriptor(fileURL: obj)
             
             
-        // TO DO: will following cases still be needed? (depends on how transparent Swift's ObjC bridging is)
+        // TO DO: will following cases still be needed? (depends on how transparent Swift's ObjC bridging is; if the SelfPacking protocol test matches Swift collections but not their Cocoa equivalents then yes)
+        case let obj as NSSet:
+            return try (obj as Set).SwiftAutomation_packSelf(self)
         case let obj as NSArray:
-            return try (obj as Array).SwiftAE_packSelf(self)
+            return try (obj as Array).SwiftAutomation_packSelf(self)
         case let obj as NSDictionary:
-            return try (obj as Dictionary).SwiftAE_packSelf(self)
+            return try (obj as Dictionary).SwiftAutomation_packSelf(self)
             
         
         case var val as UInt:
@@ -430,7 +436,7 @@ open class AppData {
                 return result as! T
             }
         } else if let t = T.self as? SelfUnpacking.Type { // Array, Dictionary
-            return try t.SwiftAE_unpackSelf(desc, appData: self) as! T
+            return try t.SwiftAutomation_unpackSelf(desc, appData: self) as! T
         } else if T.self is Query.Type { // note: user typically specifies exact class ([PREFIX][Object|Elements]Specifier)
             if let result = try self.unpackAny(desc) as? T { // specifiers can be composed of several AE types, so unpack first then check type
                 return result
@@ -472,10 +478,10 @@ open class AppData {
         case typeLongDateTime:
             return desc.dateValue ?? desc // ditto
         case typeAEList:
-            return try Array.SwiftAE_unpackSelf(desc, appData: self) as [Any]
+            return try Array.SwiftAutomation_unpackSelf(desc, appData: self) as [Any]
         case typeAERecord:
-            return try Dictionary.SwiftAE_unpackSelf(desc, appData: self) as [Symbol:Any]
-        case typeAlias, typeBookmarkData, typeFileURL, typeFSRef, SwiftAE_typeFSS:
+            return try Dictionary.SwiftAutomation_unpackSelf(desc, appData: self) as [Symbol:Any]
+        case typeAlias, typeBookmarkData, typeFileURL, typeFSRef, SwiftAutomation_typeFSS:
             return desc.fileURLValue ?? desc // ditto
         case typeType, typeEnumerated, typeProperty, typeKeyword:
             return self.unpackSymbol(desc)
@@ -509,7 +515,7 @@ open class AppData {
             return try self.unpack(desc) as [Int]
         default:
             if desc.isRecordDescriptor {
-                return try Dictionary.SwiftAE_unpackSelf(desc, appData: self) as [Symbol:Any]
+                return try Dictionary.SwiftAutomation_unpackSelf(desc, appData: self) as [Symbol:Any]
             }
             return desc
         }
@@ -541,23 +547,23 @@ open class AppData {
     
     // TO DO: compatibility option for fully unpacking and repacking object specifiers without caching original desc (i.e. mimic AS behavior exactly)
     func unpackObjectSpecifier(_ desc: NSAppleEventDescriptor) throws -> Specifier {
-        guard let _ = desc.forKeyword(SwiftAE_keyAEContainer), // container desc is only used in unpackParentSpecifiers, but confirm its existence
-            let wantType = desc.forKeyword(SwiftAE_keyAEDesiredClass),
-            let selectorForm = desc.forKeyword(SwiftAE_keyAEKeyForm),
-            let selectorDesc = desc.forKeyword(SwiftAE_keyAEKeyData) else {
+        guard let _ = desc.forKeyword(SwiftAutomation_keyAEContainer), // container desc is only used in unpackParentSpecifiers, but confirm its existence
+            let wantType = desc.forKeyword(SwiftAutomation_keyAEDesiredClass),
+            let selectorForm = desc.forKeyword(SwiftAutomation_keyAEKeyForm),
+            let selectorDesc = desc.forKeyword(SwiftAutomation_keyAEKeyData) else {
                 throw UnpackError(appData: self, descriptor: desc, type: self.glueInfo.objectSpecifierType,
                     message: "Can't unpack malformed object specifier.")
         }
         do {
             let formCode = selectorForm.enumCodeValue
             // unpack selectorData, unless it's a property code or absolute/relative ordinal (in which case use its prop/enum descriptor as-is)
-            let selectorData = formCode == SwiftAE_formPropertyID
-                            || formCode == SwiftAE_formRelativePosition // TO DO: shouldn't this check seld is prev/next, same as abs. ordinals?
-                            || formCode == SwiftAE_formAbsolutePosition
+            let selectorData = formCode == SwiftAutomation_formPropertyID
+                            || formCode == SwiftAutomation_formRelativePosition // TO DO: shouldn't this check seld is prev/next, same as abs. ordinals?
+                            || formCode == SwiftAutomation_formAbsolutePosition
                                && selectorDesc.descriptorType == typeEnumerated && AbsoluteOrdinalCodes.contains(selectorDesc.enumCodeValue)
                     ? selectorDesc : try self.unpackAny(selectorDesc)
             // TO DO: need 'strict AS emulation' option to fully unpack and repack specifiers, re-setting cachedDesc (TBH, only app that ever had this problem was iView Media Pro, since it takes a double whammy of app bugs to cause an app to puke on receiving objspecs it previously created itself)
-            if formCode == SwiftAE_formRange || formCode == SwiftAE_formTest || (formCode == SwiftAE_formAbsolutePosition && selectorDesc.enumCodeValue == SwiftAE_kAEAll) {
+            if formCode == SwiftAutomation_formRange || formCode == SwiftAutomation_formTest || (formCode == SwiftAutomation_formAbsolutePosition && selectorDesc.enumCodeValue == SwiftAutomation_kAEAll) {
                 return self.glueInfo.multiObjectSpecifierType.init(wantType: wantType, selectorForm: selectorForm, selectorData: selectorData,
                                                                    parentQuery: nil, appData: self, cachedDesc: desc)
             } else {
@@ -575,9 +581,9 @@ open class AppData {
     }
     
     func unpackCompDescriptor(_ desc: NSAppleEventDescriptor) throws -> TestClause {
-        if let operatorType = desc.forKeyword(SwiftAE_keyAECompOperator),
-            let operand1Desc = desc.forKeyword(SwiftAE_keyAEObject1),
-            let operand2Desc = desc.forKeyword(SwiftAE_keyAEObject2) {
+        if let operatorType = desc.forKeyword(SwiftAutomation_keyAECompOperator),
+            let operand1Desc = desc.forKeyword(SwiftAutomation_keyAEObject1),
+            let operand2Desc = desc.forKeyword(SwiftAutomation_keyAEObject2) {
                 // TO DO: also check operatorType is valid?
                 let operand1 = try self.unpackAny(operand1Desc), operand2 = try self.unpackAny(operand2Desc) // TO DO: catch and rethrow with additional details
                 if operatorType.typeCodeValue == kAEContains && !(operand1 is ObjectSpecifier) {
@@ -593,7 +599,7 @@ open class AppData {
     }
     
     func unpackLogicalDescriptor(_ desc: NSAppleEventDescriptor) throws -> TestClause {
-        if let operatorType = desc.forKeyword(SwiftAE_keyAELogicalOperator),
+        if let operatorType = desc.forKeyword(SwiftAutomation_keyAELogicalOperator),
             let operandsDesc = desc.forKeyword(keyAEObject) {
                 // TO DO: also check operatorType is valid?
                 let operands = try self.unpack(operandsDesc) as [TestClause] // TO DO: catch and rethrow with additional details
@@ -624,20 +630,20 @@ open class AppData {
     let DefaultSendMode = NSAppleEventDescriptor.SendOptions.canSwitchLayer
     let DefaultConsiderations = packConsideringAndIgnoringFlags([.case])
     
-    let NoResult = Symbol(name: "missingValue", code: SwiftAE_cMissingValue) // TO DO: get rid of this if mapping cMissingValue to nil
+    let NoResult = Symbol(name: "missingValue", code: SwiftAutomation_cMissingValue) // TO DO: get rid of this if mapping cMissingValue to nil
     
     // if target process is no longer running, Apple Event Manager will return an error when an event is sent to it
     let RelaunchableErrorCodes: Set<Int> = [-600, -609]
     // if relaunchMode = .Limited, only 'launch' and 'run' are allowed to restart a local application that's been quit
-    let LimitedRelaunchEvents: [(OSType,OSType)] = [(kCoreEventClass, kAEOpenApplication), (SwiftAE_kASAppleScriptSuite, SwiftAE_kASLaunchEvent)]
+    let LimitedRelaunchEvents: [(OSType,OSType)] = [(kCoreEventClass, kAEOpenApplication), (SwiftAutomation_kASAppleScriptSuite, SwiftAutomation_kASLaunchEvent)]
     
     private func send(event: NSAppleEventDescriptor, sendMode: NSAppleEventDescriptor.SendOptions, timeout: TimeInterval) throws -> NSAppleEventDescriptor { // used by sendAppleEvent()
         do {
             return try event.sendEvent(options: sendMode, timeout: timeout) // throws NSError on AEM errors (but not app errors)
         } catch { // 'launch' events normally return 'not handled' errors, so just ignore those
             if (error as NSError).code == -1708
-                && event.attributeDescriptor(forKeyword: keyEventClassAttr)!.typeCodeValue == SwiftAE_kASAppleScriptSuite
-                && event.attributeDescriptor(forKeyword: keyEventIDAttr)!.typeCodeValue == SwiftAE_kASLaunchEvent {
+                && event.attributeDescriptor(forKeyword: keyEventClassAttr)!.typeCodeValue == SwiftAutomation_kASAppleScriptSuite
+                && event.attributeDescriptor(forKeyword: keyEventIDAttr)!.typeCodeValue == SwiftAutomation_kASLaunchEvent {
                     return NSAppleEventDescriptor.record() // (not a full AppleEvent desc, but reply event's attributes aren't used so is equivalent to a reply event containing neither error nor result)
             } else {
                 throw error
@@ -692,7 +698,7 @@ open class AppData {
                 }
             }
         }
-        event.setAttribute(subjectDesc, forKeyword: SwiftAE_keySubjectAttr)
+        event.setAttribute(subjectDesc, forKeyword: SwiftAutomation_keySubjectAttr)
         // pack requested type (`as`) parameter, if specified; note: most apps ignore this, but a few may recognize it (usually in `get` commands)  even if they don't define it in their dictionary (another AppleScript-introduced quirk)
         if let type = requestedType {
             event.setDescriptor(NSAppleEventDescriptor(typeCode: type.code), forKeyword: keyAERequestedType)
@@ -702,8 +708,8 @@ open class AppData {
         // event attributes
         // (note: most apps ignore considering/ignoring attributes, and always ignore case and consider everything else)
         let (considerations, consideringIgnoring) = considering == nil ? DefaultConsiderations : packConsideringAndIgnoringFlags(considering!)
-        event.setAttribute(considerations, forKeyword: SwiftAE_enumConsiderations)
-        event.setAttribute(consideringIgnoring, forKeyword: SwiftAE_enumConsidsAndIgnores)
+        event.setAttribute(considerations, forKeyword: SwiftAutomation_enumConsiderations)
+        event.setAttribute(consideringIgnoring, forKeyword: SwiftAutomation_enumConsidsAndIgnores)
         // send the event
         let sendMode = sendOptions ?? DefaultSendMode.union(waitReply ? .waitForReply : .noReply) // TO DO: finalize
         let timeout = withTimeout ?? 120 // TO DO: -sendEvent method's default/no timeout options are currently busted (rdar://21477694)
@@ -724,7 +730,7 @@ open class AppData {
                 for i in 1..<(event.numberOfItems+1) {
                     event.setParam(event.atIndex(i)!, forKeyword: event.keywordForDescriptor(at: i))
                 }
-                for key in [SwiftAE_keySubjectAttr, SwiftAE_enumConsiderations, SwiftAE_enumConsidsAndIgnores] {
+                for key in [SwiftAutomation_keySubjectAttr, SwiftAutomation_enumConsiderations, SwiftAutomation_enumConsidsAndIgnores] {
                     event.setAttribute(event.attributeDescriptor(forKeyword: key)!, forKeyword: key)
                 }
                 do {
@@ -737,7 +743,7 @@ open class AppData {
             }
         }
         if sendMode.contains(.waitForReply) {
-            // if rawReply && (T.self is NSAppleEventDescriptor.Type || T.self is Any.Type) { // TO DO: need explicit 'rawReply' arg/flag
+            // if rawReply && (T.self is NSAppleEventDescriptor.Type || T.self is Any.Type) { // TO DO: need explicit 'rawReply' arg/flag in order to return the entire reply event, rather than just its result (OTOH, is there any way to do it via T short of subclassing NSAppleEventDescriptor as ReplyAppleEvent and copying everything across)
             //    return replyEvent as! T
             // }
             if replyEvent.paramDescriptor(forKeyword: keyErrorNumber)?.int32Value ?? 0 != 0 { // check if an application error occurred
@@ -809,13 +815,13 @@ open class AppData {
 
 let gConsiderationsTable: [(Considerations, NSAppleEventDescriptor, UInt32, UInt32)] = [
     // note: Swift mistranslates considering/ignoring mask constants as Int, not UInt32, so redefine them here
-    (.case,             NSAppleEventDescriptor(enumCode: SwiftAE_kAECase),              0x00000001, 0x00010000),
-    (.diacritic,        NSAppleEventDescriptor(enumCode: SwiftAE_kAEDiacritic),         0x00000002, 0x00020000),
-    (.whiteSpace,       NSAppleEventDescriptor(enumCode: SwiftAE_kAEWhiteSpace),        0x00000004, 0x00040000),
-    (.hyphens,          NSAppleEventDescriptor(enumCode: SwiftAE_kAEHyphens),           0x00000008, 0x00080000),
-    (.expansion,        NSAppleEventDescriptor(enumCode: SwiftAE_kAEExpansion),         0x00000010, 0x00100000),
-    (.punctuation,      NSAppleEventDescriptor(enumCode: SwiftAE_kAEPunctuation),       0x00000020, 0x00200000),
-    (.numericStrings,   NSAppleEventDescriptor(enumCode: SwiftAE_kASNumericStrings),    0x00000080, 0x00800000),
+    (.case,             NSAppleEventDescriptor(enumCode: SwiftAutomation_kAECase),              0x00000001, 0x00010000),
+    (.diacritic,        NSAppleEventDescriptor(enumCode: SwiftAutomation_kAEDiacritic),         0x00000002, 0x00020000),
+    (.whiteSpace,       NSAppleEventDescriptor(enumCode: SwiftAutomation_kAEWhiteSpace),        0x00000004, 0x00040000),
+    (.hyphens,          NSAppleEventDescriptor(enumCode: SwiftAutomation_kAEHyphens),           0x00000008, 0x00080000),
+    (.expansion,        NSAppleEventDescriptor(enumCode: SwiftAutomation_kAEExpansion),         0x00000010, 0x00100000),
+    (.punctuation,      NSAppleEventDescriptor(enumCode: SwiftAutomation_kAEPunctuation),       0x00000020, 0x00200000),
+    (.numericStrings,   NSAppleEventDescriptor(enumCode: SwiftAutomation_kASNumericStrings),    0x00000080, 0x00800000),
 ]
 
 private func packConsideringAndIgnoringFlags(_ considerations: ConsideringOptions) -> (NSAppleEventDescriptor, NSAppleEventDescriptor) {

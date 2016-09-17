@@ -51,18 +51,15 @@ public class GlueSpec {
             self.applicationClassName = (appName == classNamePrefix) ? keywordConverter.escapeName(appName) : appName
         }
     }
-    
+
     public func buildGlueTable() throws -> GlueTable { // parse application terminology into
         let glueTable = GlueTable(keywordConverter: self.keywordConverter)
-            if let url = self.applicationURL {
-            var parser: ApplicationTerminology
+        if let url = self.applicationURL { // if nil, return table containing default terminology only
             if self.useSDEF {
-                parser = SDEFParser(keywordConverter: self.keywordConverter)
-                try (parser as! SDEFParser).parse(GetScriptingDefinition(url))
+                try glueTable.add(SDEF: url)
             } else {
-                parser = try AEApplication(url: url).parseAETE(self.keywordConverter)
+                try glueTable.add(AETE: AEApplication(url: url).getAETE())
             }
-            glueTable.addApplicationTerminology(parser)
         }
         return glueTable
     }

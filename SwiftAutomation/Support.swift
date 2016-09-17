@@ -12,11 +12,11 @@ import AppKit
 // Set, Array, Dictionary structs pack and unpack themselves
 
 public protocol SelfPacking {
-    func SwiftAE_packSelf(_ appData: AppData) throws -> NSAppleEventDescriptor
+    func SwiftAutomation_packSelf(_ appData: AppData) throws -> NSAppleEventDescriptor
 }
 
 protocol SelfUnpacking {
-    static func SwiftAE_unpackSelf(_ desc: NSAppleEventDescriptor, appData: AppData) throws -> Self
+    static func SwiftAutomation_unpackSelf(_ desc: NSAppleEventDescriptor, appData: AppData) throws -> Self
 }
 
 
@@ -53,7 +53,7 @@ func FourCharCodeDescriptor(_ type: OSType, _ data: OSType) -> NSAppleEventDescr
 
 func UInt32Descriptor(_ data: UInt32) -> NSAppleEventDescriptor {
     var data = data // note: Swift's ObjC bridge appears to ignore the `const` on the `-[NSAppleEventDescriptor initWithDescriptorType:bytes:length:]` method's 'bytes' parameter, so need to rebind to `var` as workaround
-    return NSAppleEventDescriptor(descriptorType: SwiftAE_typeUInt32, bytes: &data, length: MemoryLayout<UInt32>.size)!
+    return NSAppleEventDescriptor(descriptorType: SwiftAutomation_typeUInt32, bytes: &data, length: MemoryLayout<UInt32>.size)!
 }
 
 
@@ -116,7 +116,7 @@ private let ProcessNotFoundErrorNumbers: Set<Int> = [procNotFound, connectionInv
 
 private let LaunchEventSucceededErrorNumbers: Set<Int> = [Int(noErr), errAEEventNotHandled]
 
-private let LaunchEvent = NSAppleEventDescriptor(eventClass: SwiftAE_kASAppleScriptSuite, eventID: SwiftAE_kASLaunchEvent,
+private let LaunchEvent = NSAppleEventDescriptor(eventClass: SwiftAutomation_kASAppleScriptSuite, eventID: SwiftAutomation_kASLaunchEvent,
                                                  targetDescriptor: NSAppleEventDescriptor.null(),
                                                  returnID: AEReturnID(kAutoGenerateReturnID),
                                                  transactionID: AETransactionID(kAnyTransactionID))
@@ -155,7 +155,7 @@ public enum TargetApplication {
     
     private func sendLaunchEvent(processDescriptor: NSAppleEventDescriptor) -> Int {
         do {
-            let event = NSAppleEventDescriptor(eventClass: SwiftAE_kASAppleScriptSuite, eventID: SwiftAE_kASLaunchEvent,
+            let event = NSAppleEventDescriptor(eventClass: SwiftAutomation_kASAppleScriptSuite, eventID: SwiftAutomation_kASLaunchEvent,
                                                targetDescriptor: processDescriptor, returnID: AEReturnID(kAutoGenerateReturnID),
                                                transactionID: AETransactionID(kAnyTransactionID))
             let reply = try event.sendEvent(options: .waitForReply, timeout: 30)
