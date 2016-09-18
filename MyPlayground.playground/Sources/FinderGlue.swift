@@ -1971,7 +1971,7 @@ public class Finder: FINRoot, ApplicationExtension {
 
 // App/Con/Its root objects used to construct untargeted specifiers; these can be used to construct specifiers for use in commands, though cannot send commands themselves
 
-public let FINApp = gUntargetedAppData.rootObjects.app as! FINRoot
-public let FINCon = gUntargetedAppData.rootObjects.con as! FINRoot
-public let FINIts = gUntargetedAppData.rootObjects.its as! FINRoot
+public let FINApp = gUntargetedAppData.app as! FINRoot
+public let FINCon = gUntargetedAppData.con as! FINRoot
+public let FINIts = gUntargetedAppData.its as! FINRoot
 

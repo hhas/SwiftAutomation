@@ -988,7 +988,7 @@ public class TextEdit: TEDRoot, ApplicationExtension {
 
 // App/Con/Its root objects used to construct untargeted specifiers; these can be used to construct specifiers for use in commands, though cannot send commands themselves
 
-public let TEDApp = gUntargetedAppData.rootObjects.app as! TEDRoot
-public let TEDCon = gUntargetedAppData.rootObjects.con as! TEDRoot
-public let TEDIts = gUntargetedAppData.rootObjects.its as! TEDRoot
+public let TEDApp = gUntargetedAppData.app as! TEDRoot
+public let TEDCon = gUntargetedAppData.con as! TEDRoot
+public let TEDIts = gUntargetedAppData.its as! TEDRoot
 

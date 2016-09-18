@@ -13,13 +13,10 @@ import AppKit
 
 // TO DO: what about 'missing value'? for a pure Swift bridge, might be better to use nil rather than Symbol.missingValue; note that Swift's compile-time/run-time treatment of `Any` and `nil` is inconsistent (either flawed or buggy). Q. How will this affect pack/unpack; presumably Optional will need extended same as collections to do its own unpacking? (Caution: the problem with using `nil` is that `Optional<>` plays very badly with commands' default return type `Any`. Unfortunately, the Swift type system treats `Optional` as a member of the `Any` set, whereas it really should treat it as a special case so that it can be distinguished by `Any?` vs `Any`; as it is, once an Optional is cast to Any, it is a huge PITA to persuade it to unbox unless you already know its exact type, e.g. `Optional<String>`, in order to cast it to that first, otherwise you just end up wrapping it in another Optional to give `Optional<Any>`, resulting in values like `Optional.some(nil)` when you actually try to use it. Under the circumstances, it is probably safer to stick to a unique `MissingValue` constant and avoiding `nil` altogether, at least until such time as Swift's type system figures out how to handle these types sanely.)
 
-// TO DO: when unpacking specifiers, may want to use Application instance, not untargeted AppRoot, as their app root (while ObjSpec, etc. instances contain AppData, AppRoot does not, so won't display itself as Application and can't be extracted and used as-is); this will require Application to pass itself as weak-ref to AppData's init
-
 // TO DO: option for caller to pass their own 'customUnpack' func via command, to be called when standard unpack fails (either due to unrecognized AE type or inability to coerce to specified Swift type); this would prob. be done as trailing closure, which takes an AEDesc, required Type, and AppData as arguments and throws or returns value of that type (note that when unpacking list/record, this may be called multiple times, e.g. for the list/record and/or for each item in it)
 
 // TO DO: add `var fullyUnpackSpecifiers: Bool = false` compatibility flag; note that the simplest and safest (if not the most efficient) way to do this is to call the specifier's `unpackParentSpecifiers(clearCachedDesc:true)` method immediately after unpacking it, though since this option should almost never be needed (an app should always accept object specifiers it created) efficiency isn't a concern (the unpack...Specifier methods could also unroll the specifier chain, of course, but then there'd be two code paths for doing the same thing which isn't ideal maintenance-wise). (The only known app that requires this compatibility flag is iView Media Pro, which has an amusing pair of bugs that [#1] cause it to return by-index specifiers with a non-standard though still acceptable selector type [typeUInt32, IIRC], but requires by-index specifers passed as parameters to use typeSInt32 selectors and [#2] throws an error if given any other type instead of coercing it to the required type itself. AppleScript masks these because it _always_ fully unpacks and repacks each specifier, coercing indexes to typeSInt32 as it does. However, converting Specifiers<->NSAppleEventDescriptors in SwiftAutomation takes longer than the equivalent reference<->AEDesc conversions in AppleScript, so the only way to match AS for speed is to avoid full unpacking unless/until actually needed [for display purposes].)
 
-// TO DO: once everything's working, see if AppData.rootObjects can be de-gnarlified to ensure retain cycles never occur
 
 
 
@@ -27,28 +24,22 @@ let MissingValueDesc = NSAppleEventDescriptor(typeCode: SwiftAutomation_cMissing
 
 let MissingValue = Symbol(name: "missingValue", code: SwiftAutomation_cMissingValue) // TO DO: this needs to be a unique non-Symbol type so that type system can distinguish it from Symbol.Type when unpacking
 
-public typealias KeywordParameters = [(name: String?, code: OSType, value: Any)]
-
-public typealias RootObjects = (app: RootSpecifier, con: RootSpecifier, its: RootSpecifier)
+public typealias KeywordParameter = (name: String?, code: OSType, value: Any)
 
 
 public struct GlueClasses {
     // Glue-defined specifier and symbol classes; AppData.unpack() instantiates these when unpacking the corresponding AEDescs
-    let insertionSpecifierType: InsertionSpecifier.Type
-    let objectSpecifierType: ObjectSpecifier.Type
-    let multiObjectSpecifierType: ObjectSpecifier.Type
-    let rootSpecifierType: RootSpecifier.Type // TO DO: rename `untargetedRootSpecifierType` to distinguish from targetedRoot (i.e. Application) class?
-    let applicationType: RootSpecifier.Type
-    let symbolType: Symbol.Type
+    let insertionSpecifierType: InsertionSpecifier.Type // PREFIXInsertion
+    let objectSpecifierType: ObjectSpecifier.Type       // PREFIXItem
+    let multiObjectSpecifierType: ObjectSpecifier.Type  // PREFIXItems
+    let rootSpecifierType: RootSpecifier.Type           // PREFIXApp/PREFIXCon/PREFIXIts
+    let applicationType: RootSpecifier.Type             // APPLICATION
+    let symbolType: Symbol.Type                         // PREFIXSymbol
     let formatter: SpecifierFormatter // used by Query.description to render literal representation of itself
     
-    public init(insertionSpecifierType: InsertionSpecifier.Type,
-                objectSpecifierType: ObjectSpecifier.Type,
-                multiObjectSpecifierType: ObjectSpecifier.Type,
-                rootSpecifierType: RootSpecifier.Type,
-                applicationType: RootSpecifier.Type,
-                symbolType: Symbol.Type,
-                formatter: SpecifierFormatter) {
+    public init(insertionSpecifierType: InsertionSpecifier.Type, objectSpecifierType: ObjectSpecifier.Type,
+                multiObjectSpecifierType: ObjectSpecifier.Type, rootSpecifierType: RootSpecifier.Type,
+                applicationType: RootSpecifier.Type, symbolType: Symbol.Type, formatter: SpecifierFormatter) {
         self.insertionSpecifierType = insertionSpecifierType
         self.objectSpecifierType = objectSpecifierType
         self.multiObjectSpecifierType = multiObjectSpecifierType
@@ -237,7 +228,6 @@ open class AppData {
     public let relaunchMode: RelaunchMode
     
     public let glueClasses: GlueClasses // holds all glue-defined Specifier and Symbol classes so unpack() can instantiate them as needed (also contains SpecifierFormatter, though since only one formatter instance is needed it's already instantiated for convenience)
-    public private(set) var rootObjects: RootObjects! // glue-defined App, Con, Its instances used by unpack(); these are a bit problematic since they're circular retains; a non-leaky solution would be for RootSpecifier subclasses to provide static vars that return 'singleton' instances for each, instantiating on first use, allowing AppData to retrieved them via `self.glueClasses.rootSpecifierType._appRoot/_conRoot/_itsRoot` as needed... however, that would require them to use the same AppData instance each time; TBH, it may be simplest just to instantiate new roots every time a full unpack is done
     
     private var _targetDescriptor: NSAppleEventDescriptor? = nil // targetDescriptor() creates an AEAddressDesc for the target process when dispatching first Apple event, caching it here for subsequent reuse
     
@@ -246,16 +236,11 @@ open class AppData {
     public var formatter: SpecifierFormatter { return self.glueClasses.formatter } // convenience accessor
     
     
-    public required init(target: TargetApplication, launchOptions: LaunchOptions,
-                         relaunchMode: RelaunchMode, glueClasses: GlueClasses, rootObjects: RootObjects?) { // should be private, but targetedCopy requires it to be required, which in turn requires it to be public; it should not be called directly, however (if an AppData instance is required for standalone use, instantiate the Application class from the default AEApplicationGlue or an application-specific glue, then get its appData property instead)
+    public required init(target: TargetApplication, launchOptions: LaunchOptions, relaunchMode: RelaunchMode, glueClasses: GlueClasses) { // should be private, but targetedCopy requires it to be required, which in turn requires it to be public; it should not be called directly, however (if an AppData instance is required for standalone use, instantiate the Application class from the default AEApplicationGlue or an application-specific glue, then get its appData property instead)
         self.target = target
         self.launchOptions = launchOptions
         self.relaunchMode = relaunchMode
         self.glueClasses = glueClasses
-        // Create untargeted App/Con/Its root specifiers (note that storing these RootSpecifier instances in this AppData instance this creates an uncollectable refcycle between them, but since these objects are only created once per glue and used as global constants, it isn't an issue in practice)
-        self.rootObjects = rootObjects ?? (app: glueClasses.rootSpecifierType.init(rootObject: AppRootDesc, appData: self),
-                                           con: glueClasses.rootSpecifierType.init(rootObject: ConRootDesc, appData: self),
-                                           its: glueClasses.rootSpecifierType.init(rootObject: ItsRootDesc, appData: self))
     }
     
     public convenience init() { // used in Specifier file to keep compiler happy (note: this will leak memory each time it's used, and returned Specifiers will be minimally functional; for general programming tasks, use AEApplication.untargetedAppData instead)
@@ -266,23 +251,32 @@ open class AppData {
     
     // create a new untargeted AppData instance for a glue file's private gUntargetedAppData constant (note: this will leak memory each time it's used so users should not call it themselves; instead, use AEApplication.untargetedAppData to return an already-created instance suitable for general programming tasks)
     public convenience init(glueClasses: GlueClasses) {
-        self.init(target: .none, launchOptions: DefaultLaunchOptions, relaunchMode: .never, glueClasses: glueClasses, rootObjects: nil)
+        self.init(target: .none, launchOptions: DefaultLaunchOptions, relaunchMode: .never, glueClasses: glueClasses)
     }
     
     // create a targeted copy of a [typically untargeted] AppData instance; Application inits should always use this to create targeted AppData instances
     public func targetedCopy(_ target: TargetApplication, launchOptions: LaunchOptions, relaunchMode: RelaunchMode) -> Self {
-        return type(of: self).init(target: target, launchOptions: launchOptions, relaunchMode: relaunchMode,
-                                   glueClasses: self.glueClasses, rootObjects: self.rootObjects)
+        return type(of: self).init(target: target, launchOptions: launchOptions, relaunchMode: relaunchMode, glueClasses: self.glueClasses)
     }
     
+    /******************************************************************************/
+    // specifier roots
     
-    public var targetedAppRoot: RootSpecifier {
-        // TO DO: one way to cache Application instance without creating permanent retain cycles would be to have a timer that automatically releases it after a period of unuse
-//        print("getting AppData.targetedAppRoot, target=\(self.target)") // DEBUG
-        return self.rootObjects.app // TO DO: this currently returns untargeted
+    public var application: RootSpecifier {
+        return self.glueClasses.applicationType.init(rootObject: AppRootDesc, appData: self)
     }
     
-    // TO DO: add vars for untargeted App, Con, Its roots, and just instantiate each time, thereby avoiding the rootObjects retain cycle (the only time these will be used anyway is when fully unpacking specifiers so they can be formatted for display; in normal use only the topmost specifier gets unpacked)
+    public var app: RootSpecifier {
+        return self.glueClasses.rootSpecifierType.init(rootObject: AppRootDesc, appData: self)
+    }
+    
+    public var con: RootSpecifier {
+        return self.glueClasses.rootSpecifierType.init(rootObject: ConRootDesc, appData: self)
+    }
+    
+    public var its: RootSpecifier {
+        return self.glueClasses.rootSpecifierType.init(rootObject: ItsRootDesc, appData: self)
+    }
     
     
     /******************************************************************************/
@@ -505,11 +499,11 @@ open class AppData {
         case typeRangeDescriptor:
             return try self.unpackRangeDescriptor(desc)
         case typeNull: // null descriptor indicates object specifier root
-            return self.targetedAppRoot
+            return self.application
         case typeCurrentContainer:
-            return self.rootObjects.con
+            return self.con
         case typeObjectBeingExamined:
-            return self.rootObjects.its
+            return self.its
         case typeCompDescriptor:
             return try self.unpackCompDescriptor(desc)
         case typeLogicalDescriptor:
@@ -664,7 +658,7 @@ open class AppData {
     public func sendAppleEvent<T>(name: String?, eventClass: OSType, eventID: OSType,
                                   parentSpecifier: Specifier, // the Specifier on which the command method was called; see special-case packing logic below
                                   directParameter: Any = NoParameter, // the first (unnamed) parameter to the command method; see special-case packing logic below
-                                  keywordParameters: KeywordParameters = [], // the remaining named parameters
+                                  keywordParameters: [KeywordParameter] = [], // the remaining named parameters
                                   requestedType: Symbol? = nil, // event's `as` parameter, if any
                                   waitReply: Bool = true, // wait for application to respond before returning? ignored when `sendOptions:` is given
                                   sendOptions: NSAppleEventDescriptor.SendOptions? = nil, // raw send options (these are rarely needed)
@@ -786,7 +780,7 @@ open class AppData {
     {
         var parameters = parameters
         let directParameter = parameters.removeValue(forKey: keyDirectObject) ?? NoParameter
-        let keywordParameters: KeywordParameters = parameters.map({(name: nil, code: $0, value: $1)})
+        let keywordParameters: [KeywordParameter] = parameters.map({(name: nil, code: $0, value: $1)})
         return try self.sendAppleEvent(name: nil, eventClass: eventClass, eventID: eventID,
                                        parentSpecifier: parentSpecifier, directParameter: directParameter,
                                        keywordParameters: keywordParameters, requestedType: requestedType, waitReply: waitReply,

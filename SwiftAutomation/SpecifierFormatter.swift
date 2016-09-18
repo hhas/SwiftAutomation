@@ -107,7 +107,7 @@ public class SpecifierFormatter {
             }
         }
         var result  = applicationClassName
-        switch specifier.appData.target { // TO DO: specifiers returned by app currently don't display correctly, showing untargeted App root instead of targeted Application root. i.e. AppData unpacks specifiers using untargeted App RootSpecifier as root, so this will _always_ be .None, which defeats the point (in prototype, the AppData instance was captured in a new mutable formatter instance created by the receiving `description` property; this formatter then walked the specifier chain building up representation using that AppData instance, so even though the root specifier object itself was untargeted the full rendered specifier was displayed as having a targeted root, thus accurately reflecting its ability to dispatch events itself. the mutable renderer also rendered nested specifiers more attractively, since it could always display them with an untargeted App root regardless of how they were actually constructed)
+        switch specifier.appData.target {
         case .none:
             result = "\(self.classNamePrefix)App"
         case .current:

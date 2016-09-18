@@ -586,7 +586,7 @@ public class AEApplication: AERoot, ApplicationExtension {}
 
 // App/Con/Its root objects used to construct untargeted specifiers; these can be used to construct specifiers for use in commands, though cannot send commands themselves
 
-public let AEApp = gUntargetedAppData.rootObjects.app as! AERoot
-public let AECon = gUntargetedAppData.rootObjects.con as! AERoot
-public let AEIts = gUntargetedAppData.rootObjects.its as! AERoot
+public let AEApp = gUntargetedAppData.app as! AERoot
+public let AECon = gUntargetedAppData.con as! AERoot
+public let AEIts = gUntargetedAppData.its as! AERoot
 

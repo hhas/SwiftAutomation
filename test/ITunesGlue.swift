@@ -1996,7 +1996,7 @@ public class ITunes: ITURoot, ApplicationExtension {
 
 // App/Con/Its root objects used to construct untargeted specifiers; these can be used to construct specifiers for use in commands, though cannot send commands themselves
 
-public let ITUApp = gUntargetedAppData.rootObjects.app as! ITURoot
-public let ITUCon = gUntargetedAppData.rootObjects.con as! ITURoot
-public let ITUIts = gUntargetedAppData.rootObjects.its as! ITURoot
+public let ITUApp = gUntargetedAppData.app as! ITURoot
+public let ITUCon = gUntargetedAppData.con as! ITURoot
+public let ITUIts = gUntargetedAppData.its as! ITURoot
 

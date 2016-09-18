@@ -9,14 +9,13 @@
 //
 //
 
-//  TO DO: code's a bit gnarly: leaks some memory each time it's used (due to AppData-RootSpecifier coupling) and is not yet sufficiently decoupled to allow reuse over other languages (although that's something that can/should be sorted out once there are other languages than Swift to support)
-
-
-// TO DO: Application object should hide url arg for display purposes
+// TO DO: Application object should appear as `APPLICATION()`, not `APPLICATION(name:"/PATH/TO/APP")`, for display purposes
 
 // TO DO: Symbols aren't displaying correctly (currently appear as `Symbol.NAME` instead of `PREFIX.NAME`)
 
 // TO DO: Symbols currently appear quoted in commands, e.g. `TextEdit(name: "/Applications/TextEdit.app").documents.close(saving: "Symbol.no")`
+
+//  TO DO: ensure specifier, symbol, and value formatting is fully decoupled from Swift-specific representation to allow reuse over other languages (although that's something that can/should be sorted out once there are other languages than Swift to support)
 
 
 import Foundation
@@ -24,8 +23,8 @@ import AppKit
 
 
 public enum TerminologyType {
-    case aete
-    case sdef
+    case aete // old and nasty, but reliable; can't be obtained from apps with broken `ascr/gdte` event handlers (e.g. Finder)
+    case sdef // reliable for Cocoa apps only; may be corrupted when auto-generated for aete-only Carbon apps due to bugs in macOS's AETE-to-SDEF converter and/or limitations in XML/SDEF format (e.g. SDEF format represents OSTypes as four-character strings, but some OSTypes can't be represented as text due to 'unprintable characters', and SDEF format doesn't provide a way to represent those as [e.g.] hex numbers so converter discards them instead)
     case none // use default terminology + raw four-char codes only
 }
 
@@ -57,7 +56,7 @@ public func formatAppleEvent(descriptor event: NSAppleEventDescriptor, useTermin
         }
     } else { // fully format outgoing event
         let eventDescription = AppleEventDescription(event: event, appData: appData)
-        return appData.formatter.formatAppleEvent(eventDescription, applicationObject: appData.targetedAppRoot)
+        return appData.formatter.formatAppleEvent(eventDescription, applicationObject: appData.application)
     }
 }
 
@@ -123,17 +122,16 @@ public class DynamicAppData: AppData { // TO DO: can this be used as-is/with mod
         let glueClasses = GlueClasses(insertionSpecifierType: AEInsertion.self, objectSpecifierType: AEItem.self,
                                       multiObjectSpecifierType: AEItems.self, rootSpecifierType: AERoot.self,
                                       applicationType: AERoot.self, symbolType: Symbol.self, formatter: specifierFormatter) // TO DO: what applicationType?
-        // TO DO: this is going to leak memory on root objects; how to clean up? (explicit 'releaseRoots' method?)
         let appData = self.init(target: TargetApplication.url(applicationURL), launchOptions: DefaultLaunchOptions,
-                                relaunchMode: DefaultRelaunchMode, glueClasses: glueClasses, rootObjects: nil)
+                                relaunchMode: DefaultRelaunchMode, glueClasses: glueClasses) // TO DO: because this uses app path (to ensure it targets the right process if multiple app versions with same bundle ID are installed) instead of bundle ID, SpecifierFormatter will display as "APPLICATION(name:...)" instead of "APPLICATION()", which is best for debugging AEs (since it provides the most information) but not ideal for AppleScriptToSwift translations (which are usually best using idiomatic representation and leaving user to customize the Application constructor syntax according to their own needs)
         appData.glueSpec = glueSpec
         appData.glueTable = glueTable
         return appData
     }
     
     public override func targetedCopy(_ target: TargetApplication, launchOptions: LaunchOptions, relaunchMode: RelaunchMode) -> Self {
-        let appData = type(of: self).init(target: target, launchOptions: launchOptions, relaunchMode: relaunchMode,
-                                          glueClasses: self.glueClasses, rootObjects: self.rootObjects)
+        let appData = type(of: self).init(target: target, launchOptions: launchOptions,
+                                          relaunchMode: relaunchMode, glueClasses: self.glueClasses)
         appData.glueSpec = self.glueSpec
         appData.glueTable = self.glueTable
         return appData      
@@ -176,8 +174,8 @@ public struct AppleEventDescription { // TO DO: split AE unpacking from CommandT
     public private(set) var rawParameters: [OSType:Any] = [:] // TO DO: should this omit direct and `as` params? (A. no, e.g. `make` cmd may have different reqs., so formatter should decide what to include)
     
     public private(set) var requestedType: Any? = nil
-    public private(set) var waitReply: Bool = true // really wantsReply (which could be either wait/queue reply)
-    public private(set) var withTimeout: TimeInterval = gDefaultTimeout // TO DO: sort constant
+    public private(set) var waitReply: Bool = true // really wantsReply (which could be either wait/queue reply) // TO DO: currently unused by formatAppleEvent() as it's problematic; delete?
+    public private(set) var withTimeout: TimeInterval = gDefaultTimeout // TO DO: sort constant // TO DO: currently unused by formatAppleEvent() as it's problematic; delete?
     public private(set) var considering: ConsideringOptions = [.case]
     
     public init(event: NSAppleEventDescriptor, appData: DynamicAppData) {
@@ -258,6 +256,17 @@ public struct AppleEventDescription { // TO DO: split AE unpacking from CommandT
 /******************************************************************************/
 // extend the standard SpecifierFormatter class so it can also format AppleEvent descriptors
 
+/*
+// TO DO: problem with extending SpecifierFormatter is it can't be subclassed to modify its formatting behavior, e.g.:
+
+override func formatRootSpecifier(_ specifier: RootSpecifier) -> String {
+    if (specifier.rootObject as? NSAppleEventDescriptor)?.descriptorType == typeNull {
+        return APPLICATION-CLASS-NAME
+    } else {
+        return super.formatRootSpecifier(specifier)
+    }
+}
+ */
 
 extension SpecifierFormatter {
     
