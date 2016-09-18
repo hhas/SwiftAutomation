@@ -13,6 +13,8 @@ import AppKit
 
 // TO DO: how to display nested App root as shorthand? (really need separate description(nested:Bool) func, or else use visitor API - note that a simplified api only need replicate constructor calls, not individual specifier+selector method calls; it also gives cleaner approach to glue-specific hooks and dynamic use, and encapsulating general Swift type formatting)
 
+// note: using an external formatter class allows different formatters to be swapped in for other languages
+
 
 /******************************************************************************/
 // Formatter
@@ -23,18 +25,19 @@ import AppKit
 public class SpecifierFormatter {
     
     let applicationClassName: String, classNamePrefix: String // used to render specifier roots (Application, App, Con, Its)
-    let propertyNames: [OSType:String], elementsNames: [OSType:String] // note: dicts should also used in dynamic appdata to translate attribute names to ostypes
+    let typeNames: [OSType:String], propertyNames: [OSType:String], elementsNames: [OSType:String] // note: dicts should also used in dynamic appdata to translate attribute names to ostypes
     
     public required init(applicationClassName: String = "Application", classNamePrefix: String = "",
-                         propertyNames: [OSType:String] = [:], elementsNames: [OSType:String] = [:]) {
+                         typeNames: [OSType:String] = [:], propertyNames: [OSType:String] = [:], elementsNames: [OSType:String] = [:]) {
         self.applicationClassName = applicationClassName
         self.classNamePrefix = classNamePrefix
+        self.typeNames = typeNames
         self.propertyNames = propertyNames
         self.elementsNames = elementsNames
     }
     
     
-    public func format(_ object: Any) -> String {
+    public func format(_ object: Any) -> String { // TO DO: optional `nested: Bool = false` parameter
         // formats Specifier, Symbol as literals
         switch object {
             // TO DO: this isn't right yet: specifiers with different formatter should use that formatter (think we're getting tied in knots here regarding static vs dynamic - and since dynamic requires a completely different appdata+formatter it's kinda academic)
@@ -57,12 +60,18 @@ public class SpecifierFormatter {
     
     // hooks
     
-    func formatSymbol(_ code: OSType) -> String {
-        return self.formatSymbol(Symbol(code: code)) // TO DO: hook for glue-specific Symbol subclasses
+    func formatSymbol(_ symbol: Symbol) -> String {
+        return self.formatSymbol(name: symbol.name, code: symbol.code, type: symbol.type)
     }
     
-    func formatSymbol(_ symbol: Symbol) -> String {
-        return "\(symbol)" // TO DO: if symbol doesn't have a name, try lookup table; also, what, if any, hooks are needed here? (TBH, prob. don't need any hooks, except for class)
+    func formatSymbol(name: String?, code: OSType, type: OSType) -> String {
+        if name != nil { // either a string-based record key or a standard symbol
+            return "\(self.classNamePrefix)" + (type == NoOSType ? "(\(formatValue(name!)))" : ".\(name!)")
+        } else if let typeName = self.typeNames[code] {
+            return "\(self.classNamePrefix).\(typeName)"
+        } else {
+            return "\(self.classNamePrefix)(code:\(formatFourCharCodeString(code)),type:\(formatFourCharCodeString(type)))"
+        }
     }
     
     func formatPropertyVar(_ code: OSType) -> String {
@@ -142,6 +151,19 @@ public class SpecifierFormatter {
             } // else malformed desc
         case SwiftAutomation_formUserPropertyID:
             return "\(result).userProperty(\(formatValue(specifier.selectorData)))"
+        case SwiftAutomation_formRelativePosition: // specifier.previous/next(SYMBOL)
+            if let seld = specifier.selectorData as? NSAppleEventDescriptor, // ObjectSpecifier.unpackSelf does not unpack ordinals
+                    let name = [SwiftAutomation_kAEPrevious: "previous", SwiftAutomation_kAENext: "next"][seld.enumCodeValue],
+                    let parent = specifier.parentQuery as? ObjectSpecifier {
+                print("RESULT \(result)")
+                print(specifier.parentQuery)
+                if specifier.wantType.typeCodeValue == parent.wantType.typeCodeValue {
+                    return "\(result).\(name)()" // use shorthand form for neatness
+                } else {
+                    let element = self.formatSymbol(name: nil, code: specifier.wantType.typeCodeValue, type: typeType)
+                    return "\(result).\(name)(\(element))"
+                }
+            }
         default:
             result += formatElementsVar(specifier.wantType.typeCodeValue)
             if let desc = specifier.selectorData as? NSAppleEventDescriptor, desc.typeCodeValue == SwiftAutomation_kAEAll { // TO DO: check this is right (replaced `where` with `,`)
@@ -160,16 +182,6 @@ public class SpecifierFormatter {
                                                      : "\(result)[\(formatValue(specifier.selectorData))]"
             case SwiftAutomation_formUniqueID: // specifier.ID(UID)
                 return "\(result).ID(\(self.format(specifier.selectorData)))"
-            case SwiftAutomation_formRelativePosition: // specifier.previous/next(SYMBOL)
-                if let seld = specifier.selectorData as? NSAppleEventDescriptor, // ObjectSpecifier.unpackSelf does not unpack ordinals
-                    let name = [SwiftAutomation_kAEPrevious: "previous", SwiftAutomation_kAENext: "next"][seld.enumCodeValue],
-                    let parent = specifier.parentQuery as? ObjectSpecifier {
-                        if specifier.wantType.typeCodeValue == parent.wantType.typeCodeValue {
-                            return "\(result).\(name)()" // use shorthand form for neatness
-                        } else {
-                            return "\(result).\(name)(\(self.formatSymbol(specifier.wantType.typeCodeValue)))"
-                        }
-                }
             case SwiftAutomation_formRange: // specifier[FROM,TO]
                 if let seld = specifier.selectorData as? RangeSelector {
                     return "\(result)[\(self.format(seld.start)), \(self.format(seld.stop))]" // TO DO: app-based specifiers should use untargeted 'App' root; con-based specifiers should be reduced to minimal representation if their wantType == specifier.wantType
@@ -214,13 +226,10 @@ public class SpecifierFormatter {
 
 // general formatting functions
 
-func formatValue(_ value: Any) -> String { // TO DO: while this function can be used standalone, might be cleanest just to make it a member of SpecifierFormatter (the goal is to ensure that all specifiers display as valid literal code)
-    // formats AE-bridged Swift types as literal syntax; other Swift types will show their default description (unfortunately debugDescription doesn't provide usable literal representations - e.g. String doesn't show tabs in escaped form, Cocoa classes return their [non-literal] description string instead, and reliable representations of Bool/Int/Double are a dead loss as soon as NSNumber gets involved)
-    
-    // TO DO: how practical to use Mirror?
-    
+func formatValue(_ value: Any) -> String {
+    // formats AE-bridged Swift types as literal syntax; other Swift types will show their default description (unfortunately debugDescription doesn't provide usable literal representations - e.g. String doesn't show tabs in escaped form, Cocoa classes return their [non-literal] description string instead, and reliable representations of Bool/Int/Double are a dead loss as soon as NSNumber gets involved, so custom implementation is needed)
     switch value {
-    case let obj as NSArray: // HACK; see also AppData.pack() // TO DO: implement SelfFormatting protocol on Array, Set, Dictionary
+    case let obj as NSArray: // HACK (since `obj as Array` won't work); see also AppData.pack() // TO DO: implement SelfFormatting protocol on Array, Set, Dictionary
         return "[" + obj.map({formatValue($0)}).joined(separator: ", ") + "]"
     case let obj as NSDictionary: // HACK; see also AppData.pack()
         return "[" + obj.map({"\(formatValue($0)): \(formatValue($1))"}).joined(separator: ", ") + "]"
@@ -231,9 +240,13 @@ func formatValue(_ value: Any) -> String { // TO DO: while this function can be 
         }
         return "\"\(tmp)\""
     case let obj as Date:
-        return "NSDate(string:\(formatValue(obj.description)))" // TO DO: fix this representation (not sure what's best; maybe include human-readable date string as inline comment?)
+        return "Date(timeIntervalSinceReferenceDate:\(obj.timeIntervalSinceReferenceDate)/*\(obj.description)*/)"
     case let obj as URL:
-        return "NSURL(string:\(formatValue(obj.absoluteString)))" // TO DO: fix this representation
+        if obj.isFileURL {
+            return "URL(fileURLWithPath:\(formatValue(obj.path)))"
+        } else {
+            return "URL(string:\(formatValue(obj.absoluteString)))"
+        }
     case let obj as NSNumber:
         // note: matching Bool, Int, Double types can be glitchy due to Swift's crappy bridging of ObjC's crappy NSNumber class,
         // so just match NSNumber (which also matches corresponding Swift types) and figure out appropriate representation
@@ -243,15 +256,22 @@ func formatValue(_ value: Any) -> String { // TO DO: while this function can be 
             return "\(value)"
         }
     default:
-        return "\(value)" // SwiftAutomation objects (specifiers, symbols) are self-formatting; any other Swift object will use its own default description (which may or may not be the same as its literal representation, but that's Swift's problem, not ours)
+        return "\(value)" // SwiftAutomation objects (specifiers, symbols) are self-formatting; any other value will use its own default description (which may or may not be the same as its literal representation, but that's Swift's problem, not ours)
     }
 }
 
 
+// convert an OSType to its String literal representation, e.g. 'docu' -> "\"docu\""
 func formatFourCharCodeString(_ code: OSType) -> String {
-    return "\"\(FourCharCodeString(code))\"" // TO DO: unfinished; non-alphanumeric chars should appear as \x00 codes
+    var n = CFSwapInt32HostToBig(code)
+    var result = ""
+    for _ in 1...4 {
+        let c = n % 256
+        result += String(format: (c == 0x21 || 0x23 <= c && c <= 0x7e) ? "%c" : "\\0x%02X", c)
+        n >>= 8
+    }
+    return result
 }
-
 
 
 

@@ -57,7 +57,7 @@ public func formatAppleEvent(descriptor event: NSAppleEventDescriptor, useTermin
         }
     } else { // fully format outgoing event
         let eventDescription = AppleEventDescription(event: event, appData: appData)
-        return appData.formatter.formatAppleEvent(eventDescription, applicationObject: appData.appRoot)
+        return appData.formatter.formatAppleEvent(eventDescription, applicationObject: appData.targetedAppRoot)
     }
 }
 
@@ -116,6 +116,7 @@ public class DynamicAppData: AppData { // TO DO: can this be used as-is/with mod
             glueTable = try glueSpec.buildGlueTable()
             specifierFormatter = SpecifierFormatter(applicationClassName: glueSpec.applicationClassName,
                                                     classNamePrefix: glueSpec.classNamePrefix,
+                                                    typeNames: glueTable.typesByCode,
                                                     propertyNames: glueTable.propertiesByCode,
                                                     elementsNames: glueTable.elementsByCode)
         }

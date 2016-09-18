@@ -62,6 +62,8 @@ import AppKit
 
 // TO DO: make sure KeywordConverter lists _all_ Specifier members
 
+// TO DO: debugDescription that displays raw FCC representation?
+
 
 /******************************************************************************/
 // abstract base class for _all_ specifier and test clause subclasses
@@ -92,18 +94,24 @@ open class Query: CustomStringConvertible, SelfPacking { // TO DO: Equatable? (T
         return self.cachedDesc!
     }
     
-    func SwiftAutomation_packSelf() throws -> NSAppleEventDescriptor { // this implementation should never be called; subclasses must override this to pack themselves
-        throw NotImplementedError()
+    func SwiftAutomation_packSelf() throws -> NSAppleEventDescriptor { // subclasses must override this to pack themselves
+        fatalError("Query.SwiftAutomation_packSelf() must be overridden by subclasses.")
     }
+    
+    // TO DO: better to call fatalError in SwiftAutomation_packSelf, parentQuery, rootSpecifier?
     
     // misc
     
     // note that parentQuery and rootSpecifier properties are really only intended for internal use when traversing a specifier chain; while there is nothing to prevent client code using these properties the results are not guaranteed to be valid or usable queries (once constructed, object specifiers should be treated as opaque values); the proper way to identify an object's (or objects') container is to ask the application to return a specifier (or list of specifiers) to its `container` property, if it has one, e.g. `let parentFolder:FinItem = someFinderItem.container.get()`
     
     // return the next ObjectSpecifier/TestClause in query chain
-    var parentQuery: Query { return self } // this implementation should never be called; subclasses must override this
+    var parentQuery: Query { // subclasses must override this
+        fatalError("Query.parentQuery must be overridden by subclasses.")
+    }
     
-    public var rootSpecifier: RootSpecifier { return gUntargetedAppData.rootObjects.app } // this implementation should never be called; subclasses must override this
+    public var rootSpecifier: RootSpecifier { // subclasses must override this
+        fatalError("Query.rootSpecifier must be overridden by subclasses.")
+    }
     
     public var description: String { return self.appData.formatter.format(self) }
 }

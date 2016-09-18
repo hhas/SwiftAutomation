@@ -57,6 +57,7 @@ func UInt32Descriptor(_ data: UInt32) -> NSAppleEventDescriptor {
 }
 
 
+// the following AEDesc types will be mapped to Symbol instances
 let SymbolTypes: Set<DescType> = [typeType, typeEnumerated, typeProperty, typeKeyword]
 
 

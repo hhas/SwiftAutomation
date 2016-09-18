@@ -271,6 +271,11 @@ open class AppData {
     }
     
     
+    public var targetedAppRoot: RootSpecifier {
+        return self.rootObjects.app // TO DO: this currently returns untargeted
+    }
+    
+    
     /******************************************************************************/
     // Convert a Swift value to an Apple event descriptor
     
@@ -493,7 +498,7 @@ open class AppData {
         case typeRangeDescriptor:
             return try self.unpackRangeDescriptor(desc)
         case typeNull: // null descriptor indicates object specifier root
-            return self.appRoot
+            return self.rootObjects.app // TO DO: when should this return targeted root instead? (probably simplest if it _always_ returns targeted root, and leave formatter to decide whether to show it as targeted or untargeted purely based on context)
         case typeCurrentContainer:
             return self.rootObjects.con
         case typeObjectBeingExamined:
@@ -532,8 +537,6 @@ open class AppData {
     func unpackAEProperty(_ code: OSType) -> Symbol { // used to unpack AERecord keys as Dictionary keys
         return self.glueInfo.symbolType.symbol(code: code, type: typeProperty, descriptor: nil) // TO DO: use typeType? (TBH, am tempted to use it throughout, leaving AEM to coerce as necessary, as it'd simplify implementation a bit; also, note that type and property names can often overlap, e.g. `TED.document` may be either)
     }
-    
-    var appRoot: RootSpecifier { return self.rootObjects.app } // TO DO: use original Application instance? when unpacking an objspec chain, it would be best if targeted AppData unpacks its main root as Application, and any nested objspecs' roots as App. Main problem is that storing Application instance inside AppData would create cyclic reference, with no obvious way to weakref it. Alternatively, since chain is lazily unpacked, it'd be possible for unpackParentSpecifiers() to instantiate a new Application object at the time (this would mean changing the way that unpackParentSpecifiers works). For now, might be simplest just to instantiate a new Application instance here each time - although that's not ideal for unpacking sub-specifiers (but they might be better unpacked using untargetedAppData); poss. just add an optional arg to unpack() that allows callers to specify which root to use, but picking the right AppData class with which to unpack a nested desc would be cleaner)
     
     func unpackInsertionLoc(_ desc: NSAppleEventDescriptor) throws -> Specifier {
         guard let _ = desc.forKeyword(keyAEObject), // only used to check InsertionLoc record is correctly formed // TO DO: in unlikely event of receiving a malformed record, would be simpler for unpackParentSpecifiers to use a RootSpecifier that throws error on use, avoiding need for extra check here
