@@ -170,6 +170,7 @@ extension ApplicationExtension {
     private init(target: TargetApplication, launchOptions: LaunchOptions, relaunchMode: RelaunchMode) {
         let appData = Self.untargetedAppData.targetedCopy(target, launchOptions: launchOptions, relaunchMode: relaunchMode)
         self.init(rootObject: AppRootDesc, appData: appData)
+        // TO DO: is there any way to store this new Application object into appData so that it can be returned when unpacking specifier roots, without creating either circular refcounts or expired weakrefs? (the alternative is just for AppData to instantiate Application each time, but to do that it needs to know its exact class… perhaps this can be stored in GlueClasses, which already holds Specifier, Root, etc classes?)
     }
     
     public init(name: String, launchOptions: LaunchOptions = DefaultLaunchOptions, relaunchMode: RelaunchMode = DefaultRelaunchMode) {

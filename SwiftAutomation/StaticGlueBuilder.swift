@@ -94,7 +94,7 @@ public class StaticGlueTemplate {
         let tagLength = ("«+\(name)»" as NSString).length
         while true {
             let range = self._template.range(of: "(?s)«\\+\(name)».*?«-\(name)»",
-                                           options: .regularExpression, range: NSMakeRange(0, self._template.length))
+                                             options: .regularExpression, range: NSMakeRange(0, self._template.length))
             if range.length == 0 {
                 return
             }
@@ -116,7 +116,7 @@ public class StaticGlueTemplate {
     
     public func insertString(_ name: String, _ newContent: String) {
         self._template.replaceOccurrences(of: "«\(name)»", with: newContent,
-            options: .literal, range: NSMakeRange(0, _template.length))
+                                          options: .literal, range: NSMakeRange(0, _template.length))
     }
     
     public func insertOSType(_ name: String, _ code: OSType) { // insert OSType as numeric and/or string literal representations (tag for the latter is name+"_STR")
@@ -148,7 +148,7 @@ public class StaticGlueTemplate {
     
     public func removeTags(_ name: String, deleteContent: Bool) {
         self._template.replaceOccurrences(of: "(?s)«\\+\(name)»(.*?)«-\(name)»", with: deleteContent ? "" : "$1",
-                                            options: .regularExpression, range: NSMakeRange(0, _template.length))
+                                          options: .regularExpression, range: NSMakeRange(0, _template.length))
     }
 }
 

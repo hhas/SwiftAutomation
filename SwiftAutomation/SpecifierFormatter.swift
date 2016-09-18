@@ -155,8 +155,6 @@ public class SpecifierFormatter {
             if let seld = specifier.selectorData as? NSAppleEventDescriptor, // ObjectSpecifier.unpackSelf does not unpack ordinals
                     let name = [SwiftAutomation_kAEPrevious: "previous", SwiftAutomation_kAENext: "next"][seld.enumCodeValue],
                     let parent = specifier.parentQuery as? ObjectSpecifier {
-                print("RESULT \(result)")
-                print(specifier.parentQuery)
                 if specifier.wantType.typeCodeValue == parent.wantType.typeCodeValue {
                     return "\(result).\(name)()" // use shorthand form for neatness
                 } else {
@@ -270,7 +268,7 @@ func formatFourCharCodeString(_ code: OSType) -> String {
         result += String(format: (c == 0x21 || 0x23 <= c && c <= 0x7e) ? "%c" : "\\0x%02X", c)
         n >>= 8
     }
-    return result
+    return "\"\(result)\""
 }
 
 

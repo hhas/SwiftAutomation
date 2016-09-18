@@ -73,7 +73,7 @@ open class Symbol: Hashable, Equatable, CustomStringConvertible, SelfPacking {
     // returns true if Symbol contains name but not code (i.e. it represents a string-based record property key)
     public var nameOnly: Bool { return self.type == NoOSType && self.name != nil }
     
-    // TO DO: implement overrideable SwiftAutomation_unpackSelf static method for unpacking descs as glue-defined (and/or standard) Symbols? (Q. what benefit would this provide? glue-specific Symbol subclasses already have to be stored in AppData.glueInfo)
+    // TO DO: implement overrideable SwiftAutomation_unpackSelf static method for unpacking descs as glue-defined (and/or standard) Symbols? (Q. what benefit would this provide? glue-specific Symbol subclasses already have to be stored in AppData.glueClasses)
     
     public func SwiftAutomation_packSelf(_ appData: AppData) throws -> NSAppleEventDescriptor {
         return self.descriptor

@@ -120,12 +120,12 @@ public class DynamicAppData: AppData { // TO DO: can this be used as-is/with mod
                                                     propertyNames: glueTable.propertiesByCode,
                                                     elementsNames: glueTable.elementsByCode)
         }
-        let glueInfo = GlueInfo(insertionSpecifierType: AEInsertion.self, objectSpecifierType: AEItem.self,
-                                multiObjectSpecifierType: AEItems.self, rootSpecifierType: AERoot.self,
-                                symbolType: Symbol.self, formatter: specifierFormatter)
+        let glueClasses = GlueClasses(insertionSpecifierType: AEInsertion.self, objectSpecifierType: AEItem.self,
+                                      multiObjectSpecifierType: AEItems.self, rootSpecifierType: AERoot.self,
+                                      applicationType: AERoot.self, symbolType: Symbol.self, formatter: specifierFormatter) // TO DO: what applicationType?
         // TO DO: this is going to leak memory on root objects; how to clean up? (explicit 'releaseRoots' method?)
         let appData = self.init(target: TargetApplication.url(applicationURL), launchOptions: DefaultLaunchOptions,
-                                relaunchMode: DefaultRelaunchMode, glueInfo: glueInfo, rootObjects: nil)
+                                relaunchMode: DefaultRelaunchMode, glueClasses: glueClasses, rootObjects: nil)
         appData.glueSpec = glueSpec
         appData.glueTable = glueTable
         return appData
@@ -133,20 +133,20 @@ public class DynamicAppData: AppData { // TO DO: can this be used as-is/with mod
     
     public override func targetedCopy(_ target: TargetApplication, launchOptions: LaunchOptions, relaunchMode: RelaunchMode) -> Self {
         let appData = type(of: self).init(target: target, launchOptions: launchOptions, relaunchMode: relaunchMode,
-                                          glueInfo: self.glueInfo, rootObjects: self.rootObjects)
+                                          glueClasses: self.glueClasses, rootObjects: self.rootObjects)
         appData.glueSpec = self.glueSpec
         appData.glueTable = self.glueTable
         return appData      
     }
     
     override func unpackSymbol(_ desc: NSAppleEventDescriptor) -> Symbol {
-        return self.glueInfo.symbolType.init(name: self.glueTable.typesByCode[desc.typeCodeValue],
-                                             code: desc.typeCodeValue, type: desc.descriptorType, cachedDesc: desc)
+        return self.glueClasses.symbolType.init(name: self.glueTable.typesByCode[desc.typeCodeValue],
+                                                code: desc.typeCodeValue, type: desc.descriptorType, cachedDesc: desc)
     }
     
     override func unpackAEProperty(_ code: OSType) -> Symbol {
-        return self.glueInfo.symbolType.init(name: self.glueTable.typesByCode[code],
-                                             code: code, type: typeProperty, cachedDesc: nil)
+        return self.glueClasses.symbolType.init(name: self.glueTable.typesByCode[code],
+                                                code: code, type: typeProperty, cachedDesc: nil)
     }
 }
 
