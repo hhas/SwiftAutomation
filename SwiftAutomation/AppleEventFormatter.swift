@@ -11,9 +11,7 @@
 
 // TO DO: Application object should appear as `APPLICATION()`, not `APPLICATION(name:"/PATH/TO/APP")`, for display purposes
 
-// TO DO: Symbols aren't displaying correctly (currently appear as `Symbol.NAME` instead of `PREFIX.NAME`)
-
-// TO DO: Symbols currently appear quoted in commands, e.g. `TextEdit(name: "/Applications/TextEdit.app").documents.close(saving: "Symbol.no")`
+// TO DO: Symbols aren't displaying correctly within arrays/dictionaries/specifiers (currently appear as `Symbol.NAME` instead of `PREFIX.NAME`), e.g. `TextEdit(name: "/Applications/TextEdit.app").make(new: TED.document, withProperties: [Symbol.text: "foo"])`; `tell app "textedit" to document (text)` -> `TextEdit(name: "/Applications/TextEdit.app").documents[Symbol.text].get()`
 
 //  TO DO: ensure specifier, symbol, and value formatting is fully decoupled from Swift-specific representation to allow reuse over other languages (although that's something that can/should be sorted out once there are other languages than Swift to support)
 
@@ -170,7 +168,7 @@ public struct AppleEventDescription { // TO DO: split AE unpacking from CommandT
     
     public private(set) var subject: Any? = nil
     public private(set) var directParameter: Any = NoParameter
-    public private(set) var keywordParameters: [(String, String)]? = nil // [(name,value),...], or nil if terminology unavailable (use rawParameters instead)
+    public private(set) var keywordParameters: [(String, Any)]? = nil // [(name,value),...], or nil if terminology unavailable (use rawParameters instead)
     public private(set) var rawParameters: [OSType:Any] = [:] // TO DO: should this omit direct and `as` params? (A. no, e.g. `make` cmd may have different reqs., so formatter should decide what to include)
     
     public private(set) var requestedType: Any? = nil
@@ -203,8 +201,7 @@ public struct AppleEventDescription { // TO DO: split AE unpacking from CommandT
             self.keywordParameters = []
             for paramInfo in commandInfo!.orderedParameters { // this ignores parameters that don't have a keyword name; it should also ignore ("as",keyAERequestedType) parameter (this is probably best done by ensuring that command parsers always omit it)
                 if let desc = event.paramDescriptor(forKeyword: paramInfo.code) {
-                    let value = formatValue((try? appData.unpackAny(desc)) ?? desc)
-                    self.keywordParameters!.append((paramInfo.name, value))
+                    self.keywordParameters!.append((paramInfo.name, ((try? appData.unpackAny(desc)) ?? desc)))
                 }
             }
             if event.numberOfItems > self.keywordParameters!.count + (parameterExists(self.directParameter) ? 1 : 0)
