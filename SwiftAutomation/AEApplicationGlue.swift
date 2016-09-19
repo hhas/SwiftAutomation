@@ -2,7 +2,7 @@
 //  AEApplicationGlue.swift
 //  built-in 
 //  SwiftAutomation.framework 0.1.0
-//  `aeglue -o /Users/has/SwiftAE/tmp -d`
+//  `aeglue -D`
 //
 
 
@@ -89,7 +89,6 @@ private let gSpecifierFormatter = SpecifierFormatter(applicationClassName: "AEAp
                                                                      0x706f7274: "machPort", // "port"
                                                                      0x6d617220: "March", // "mar\0x20"
                                                                      0x6d617920: "May", // "may\0x20"
-                                                                     0x6d736e67: "missingValue", // "msng"
                                                                      0x6d6f6e20: "Monday", // "mon\0x20"
                                                                      0x6e6f2020: "no", // "no\0x20\0x20"
                                                                      0x6e6f7620: "November", // "nov\0x20"
@@ -213,7 +212,6 @@ public class AESymbol: Symbol {
         case 0x706f7274: return self.machPort // "port"
         case 0x6d617220: return self.March // "mar\0x20"
         case 0x6d617920: return self.May // "may\0x20"
-        case 0x6d736e67: return self.missingValue // "msng"
         case 0x6d6f6e20: return self.Monday // "mon\0x20"
         case 0x6e6f2020: return self.no // "no\0x20\0x20"
         case 0x6e6f7620: return self.November // "nov\0x20"
@@ -317,7 +315,6 @@ public class AESymbol: Symbol {
     public static let machPort = AESymbol(name: "machPort", code: 0x706f7274, type: typeType) // "port"
     public static let March = AESymbol(name: "March", code: 0x6d617220, type: typeType) // "mar\0x20"
     public static let May = AESymbol(name: "May", code: 0x6d617920, type: typeType) // "may\0x20"
-    public static let missingValue = AESymbol(name: "missingValue", code: 0x6d736e67, type: typeType) // "msng"
     public static let Monday = AESymbol(name: "Monday", code: 0x6d6f6e20, type: typeType) // "mon\0x20"
     public static let November = AESymbol(name: "November", code: 0x6e6f7620, type: typeType) // "nov\0x20"
     public static let null = AESymbol(name: "null", code: 0x6e756c6c, type: typeType) // "null"

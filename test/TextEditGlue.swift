@@ -2,7 +2,7 @@
 //  TextEditGlue.swift
 //  TextEdit.app 1.11
 //  SwiftAutomation.framework 0.1.0
-//  `aeglue -o /Users/has/SwiftAE/tmp -r TextEdit.app`
+//  `aeglue 'TextEdit.app'`
 //
 
 
@@ -110,7 +110,6 @@ private let gSpecifierFormatter = SpecifierFormatter(applicationClassName: "Text
                                                                      0x6d617920: "May", // "may\0x20"
                                                                      0x69736d6e: "miniaturizable", // "ismn"
                                                                      0x706d6e64: "miniaturized", // "pmnd"
-                                                                     0x6d736e67: "missingValue", // "msng"
                                                                      0x706d6f64: "modal", // "pmod"
                                                                      0x696d6f64: "modified", // "imod"
                                                                      0x6d6f6e20: "Monday", // "mon\0x20"
@@ -320,7 +319,6 @@ public class TEDSymbol: Symbol {
         case 0x6d617920: return self.May // "may\0x20"
         case 0x69736d6e: return self.miniaturizable // "ismn"
         case 0x706d6e64: return self.miniaturized // "pmnd"
-        case 0x6d736e67: return self.missingValue // "msng"
         case 0x706d6f64: return self.modal // "pmod"
         case 0x696d6f64: return self.modified // "imod"
         case 0x6d6f6e20: return self.Monday // "mon\0x20"
@@ -465,7 +463,6 @@ public class TEDSymbol: Symbol {
     public static let May = TEDSymbol(name: "May", code: 0x6d617920, type: typeType) // "may\0x20"
     public static let miniaturizable = TEDSymbol(name: "miniaturizable", code: 0x69736d6e, type: typeType) // "ismn"
     public static let miniaturized = TEDSymbol(name: "miniaturized", code: 0x706d6e64, type: typeType) // "pmnd"
-    public static let missingValue = TEDSymbol(name: "missingValue", code: 0x6d736e67, type: typeType) // "msng"
     public static let modal = TEDSymbol(name: "modal", code: 0x706d6f64, type: typeType) // "pmod"
     public static let modified = TEDSymbol(name: "modified", code: 0x696d6f64, type: typeType) // "imod"
     public static let Monday = TEDSymbol(name: "Monday", code: 0x6d6f6e20, type: typeType) // "mon\0x20"
@@ -982,7 +979,7 @@ public class TEDRoot: RootSpecifier, TEDObject, RootSpecifierExtension {
 public class TextEdit: TEDRoot, ApplicationExtension {
     public convenience init(launchOptions: LaunchOptions = DefaultLaunchOptions, relaunchMode: RelaunchMode = DefaultRelaunchMode) {
         self.init(rootObject: AppRootDesc, appData: type(of:self).untargetedAppData.targetedCopy(
-                .bundleIdentifier("com.apple.TextEdit", true), launchOptions: launchOptions, relaunchMode: relaunchMode))
+                  .bundleIdentifier("com.apple.TextEdit", true), launchOptions: launchOptions, relaunchMode: relaunchMode))
     }
 }
 

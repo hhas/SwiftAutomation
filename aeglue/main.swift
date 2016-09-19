@@ -4,7 +4,7 @@
 //
 //  Generate application-specific glue files for SwiftAutomation.
 //
-//  Note: the undocumented -d option is used to [re]generate the SwiftAutomation framework's AEApplicationGlue.swift file.
+//  Note: the undocumented `-D` option is used to [re]generate the SwiftAutomation framework's AEApplicationGlue.swift file.
 //  TO DO: would it be simpler just to generate default glue if no apps specified? (if so, -np options should be allowed, so users can create their own default glues)
 //
 
@@ -13,9 +13,11 @@ import Foundation
 //import SwiftAutomation // TO DO: the `aeglue` target currently bakes everything into CLI executable; if/when Swift finally supports dynamic framework linking, use import instead
 
 
-// TO DO: need option for excluding `import SwiftAutomation` from glue?
+// TO DO: need `-e` option for excluding `import SwiftAutomation` from glue?
 
 // TO DO: what about adding an option for building glues as importable modules?
+
+// TO DO: `-t` option for defining sum types, e.g. `StringOrSymbol` (Q. should this include `Number` as alias for `IntOrDouble`, c.f. AS?)
 
 
 let gHelp = [
@@ -58,8 +60,12 @@ let gHelp = [
     ""].joined(separator: "\n")
 
 
+func quoteForShell(_ string: String) -> String { // single-quote string for use in shell
+    return "'" + string.replacingOccurrences(of: "'", with: "'\\''") + "'"
+}
+
 func writeData(_ data: NSData, toURL: URL, overwriting: Bool) throws {
-    // TO DO: writeToURL throws rotten error message if dir not found, e.g. "The folder “FinderGlue.swift” doesn’t exist."
+    // TO DO: writeToURL throws rotten error message if dir not found, e.g. "The folder “FinderGlue.swift” doesn’t exist." when the destination folder is missing
     do {
         try data.write(to: toURL as URL, options: (overwriting ? .atomic : .withoutOverwriting))
     } catch {
@@ -87,23 +93,24 @@ var outDir: URL?
 
 var optArgs = ProcessInfo.processInfo.arguments.reversed() as [String] // bug workaround: popping/inserting at start of Array[Slice] is buggy, so reverse it and work from end
 
-let _ = optArgs.popLast() // skip path to this executable
+optArgs.removeLast() // skip path to this executable
 
 if optArgs.count == 0 {
     print(gHelp, to: &errStream)
     exit(0)
 }
 
-var foundOpts = Array(optArgs.reversed()) // used to create string representation of shell command that will appear in glue
+var foundOpts = [String]() // used to create string representation of shell command that will appear in glue
 var applicationPaths = [String]() // application name/path arguments
 
 // parse options
 let gValueOptions = "onp".characters // must contain all options that have values; used to separate option key from value if not explicitly separated by whitespace
 while let opt = optArgs.popLast() {
     switch(opt) {
-    case "-d":
+    case "-D":
         writeDefaultGlue = true
         frameworkImport = ""
+        foundOpts.append(opt)
     case "-h":
         print(gHelp, to: &errStream)
         exit(0)
@@ -113,6 +120,7 @@ while let opt = optArgs.popLast() {
             print("Missing value for -n option.", to: &errStream)
             exit(1)
         }
+        foundOpts.append("\(opt) \(applicationClassName!)")
     case "-o":
         let path = optArgs.popLast()
         if path == nil || path!.hasPrefix("-") {
@@ -126,21 +134,24 @@ while let opt = optArgs.popLast() {
             print("Missing value for -p option.", to: &errStream)
             exit(1)
         }
+        foundOpts.append("\(opt) \(classNamePrefix!)")
     case "-r":
         canOverwrite = true
     case "-s":
         useSDEF = true
+        foundOpts.append(opt)
     case "-v":
         print("0.0.0") // TO DO: print SwiftAutomation.framework bundle version
         exit(0)
     case "--": // explicit options/arguments separator, so treat remaining items as arguments
         applicationPaths = optArgs
         optArgs = []
+        foundOpts.append(opt)
     default: // emulate [hopefully] standard getopt parsing behavior
         if opt.hasPrefix("-") { // if it's multiple short option flags, reinsert them as separate options
             var chars = opt.characters
             if chars.count > 2 { // e.g. given "-rs", split into "-r" and "-s", and reinsert
-                let _ = chars.popFirst() // skip leading "-"
+                chars.removeFirst() // skip leading "-"
                 var tmp: [String] = []
                 while let c = chars.popFirst() {
                     tmp.append("-\(c)")
@@ -164,13 +175,12 @@ while let opt = optArgs.popLast() {
 if outDir == nil { // use current working directory by default
     outDir = URL(fileURLWithPath: "./").absoluteURL
 }
-while let arg = applicationPaths.popLast() { // get application name[s] (required unless -d option was used)
+while let arg = applicationPaths.popLast() { // get application name[s] (required unless -D option was used)
     guard let applicationURL = fileURLForLocalApplication(arg) else {
         print("Application not found: \(arg)", to: &errStream)
         exit(1)
     }
     applicationURLs.append(applicationURL)
-    foundOpts.removeLast()
 }
 if writeDefaultGlue {
     applicationURLs.append(nil)
@@ -181,11 +191,11 @@ if writeDefaultGlue {
 
 // create glue spec
 
-    
 for applicationURL in applicationURLs {
     let glueSpec = GlueSpec(applicationURL: applicationURL, classNamePrefix: classNamePrefix,
                             applicationClassName: applicationClassName, useSDEF: useSDEF)
-    let shellCommand = "aeglue " + (foundOpts + (applicationURL == nil ? [] : [applicationURL!.lastPathComponent])).joined(separator: " ")
+    let shellCommand = "aeglue " + (foundOpts +
+            (applicationURL == nil ? [] : [quoteForShell(applicationURL!.lastPathComponent)])).joined(separator: " ")
     let glueFileName = "\(glueSpec.applicationClassName)Glue.swift"
     // generate SwiftAutomation glue file
     do {

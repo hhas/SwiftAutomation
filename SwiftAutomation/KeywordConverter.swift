@@ -35,6 +35,10 @@ let kSwiftKeywords: Set<String> = [ // Swift 2.0
     "optional", "override", "postfix", "precedence", "prefix", "Protocol", "required", "right",
     "Type", "unowned", "weak", "willSet",
     // "get"/"set" only used in defining getters/setters so shouldn't conflict with apps' get/set commands
+    
+    // misc
+    
+    "missingValue", // represented as MissingValueType, not Symbol
 ]
 
 // Swift glue methods
@@ -73,13 +77,11 @@ public let kSwiftAESpecifierMethods: Set<String> = [ // TO DO: review; some name
     "isIn",
     // currently unused
     "help", // TO DO: uppercase?
-    "its",
+    "its", // TO DO: unused?
     // miscellaneous
     "isRunning",
     "launch",
-    "beginTransaction",
-    "abortTransaction",
-    "endTransaction",
+    "doTransaction",
 ]
 
 

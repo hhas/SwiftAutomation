@@ -83,15 +83,17 @@ public class GlueTable {
                 let term = keywords[i]
                 var name = term.name
                 let code = term.code
-                // escape definitions that semi-overlap default definitions
-                if let desc = self.defaultTypesByName[name] {
-                    if desc.typeCodeValue != code {
-                        term.name = self.keywordConverter.escapeName(name)
-                        name = term.name
+                if !(name == "missing value" && code == SwiftAutomation_cMissingValue) { // (`missing value` is special case)
+                    // escape definitions that semi-overlap default definitions
+                    if let desc = self.defaultTypesByName[name] {
+                        if desc.typeCodeValue != code {
+                            term.name = self.keywordConverter.escapeName(name)
+                            name = term.name
+                        }
                     }
+                    // add item
+                    self.typesByCode[code] = name
                 }
-                // add item
-                self.typesByCode[code] = name
             }
             // add a definition to typeByName table
             // to handle synonyms, if same name appears more than once then use code from first definition in list
@@ -99,11 +101,13 @@ public class GlueTable {
                 let term = keywords[len - 1 - i]
                 var name = term.name
                 var code = term.code // actually constant, but NSAppleEventDescriptor constructor below insists on var
-                // escape definitions that semi-overlap default definitions
-                if let desc = self.defaultTypesByName[name] {
-                    if desc.typeCodeValue != code {
-                        name = self.keywordConverter.escapeName(name)
-                        name = term.name
+                if !(name == "missing value" && code == SwiftAutomation_cMissingValue) { // (`missing value` is special case)
+                    // escape definitions that semi-overlap default definitions
+                    if let desc = self.defaultTypesByName[name] {
+                        if desc.typeCodeValue != code {
+                            name = self.keywordConverter.escapeName(name)
+                            name = term.name
+                        }
                     }
                 }
                 // add item

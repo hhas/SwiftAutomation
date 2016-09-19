@@ -6,6 +6,9 @@
 #import "AppDelegate.h"
 
 
+// TO DO: would be useful to store user's `Use SDEF terminology` preference for each app, avoiding the need for her to re-check it each time she's working with one of these problem apps (e.g. Finder); what about preserving history of previously executed commands? (would argue that these sorts of features belong in a full-blown SwiftForAutomation editor application, whereas AppleScriptToSwift.app is just a minimal free tool)
+
+
 @interface AppDelegate ()
 @end
 

@@ -22,6 +22,8 @@ import AppKit
 // used by a Specifier's description property to render Swift literal representation of itself;
 // static glues instantiate this with their own application-specific code->name translation tables
 
+// TO DO: either make this class fully open so it can be overridden (e.g. to generate representations for other languages), or make its format() method part of a Formatter protocol
+
 public class SpecifierFormatter {
     
     let applicationClassName: String, classNamePrefix: String // used to render specifier roots (Application, App, Con, Its)
@@ -54,7 +56,7 @@ public class SpecifierFormatter {
         case let obj as Symbol:
             return self.formatSymbol(obj)
         default:
-            return formatValue(object)
+            return self.formatValue(object)
         }
     }
     
@@ -66,7 +68,7 @@ public class SpecifierFormatter {
     
     func formatSymbol(name: String?, code: OSType, type: OSType) -> String {
         if name != nil { // either a string-based record key or a standard symbol
-            return "\(self.classNamePrefix)" + (type == NoOSType ? "(\(formatValue(name!)))" : ".\(name!)")
+            return "\(self.classNamePrefix)" + (type == NoOSType ? "(\(self.formatValue(name!)))" : ".\(name!)")
         } else if let typeName = self.typeNames[code] {
             return "\(self.classNamePrefix).\(typeName)"
         } else {
@@ -150,7 +152,7 @@ public class SpecifierFormatter {
                 return result + formatPropertyVar(symbol.code)
             } // else malformed desc
         case SwiftAutomation_formUserPropertyID:
-            return "\(result).userProperty(\(formatValue(specifier.selectorData)))"
+            return "\(result).userProperty(\(self.formatValue(specifier.selectorData)))"
         case SwiftAutomation_formRelativePosition: // specifier.previous/next(SYMBOL)
             if let seld = specifier.selectorData as? NSAppleEventDescriptor, // ObjectSpecifier.unpackSelf does not unpack ordinals
                     let name = [SwiftAutomation_kAEPrevious: "previous", SwiftAutomation_kAENext: "next"][seld.enumCodeValue],
@@ -173,11 +175,11 @@ public class SpecifierFormatter {
                         let ordinal = [SwiftAutomation_kAEFirst: "first", SwiftAutomation_kAEMiddle: "middle", SwiftAutomation_kAELast: "last", SwiftAutomation_kAEAny: "any"][desc.enumCodeValue] {
                     return "\(result).\(ordinal)"
                 } else {
-                    return "\(result)[\(formatValue(specifier.selectorData))]"
+                    return "\(result)[\(self.formatValue(specifier.selectorData))]"
                 }
             case SwiftAutomation_formName: // specifier[NAME] or specifier.named(NAME)
-                return specifier.selectorData is Int ? "\(result).named(\(formatValue(specifier.selectorData)))"
-                                                     : "\(result)[\(formatValue(specifier.selectorData))]"
+                return specifier.selectorData is Int ? "\(result).named(\(self.formatValue(specifier.selectorData)))"
+                                                     : "\(result)[\(self.formatValue(specifier.selectorData))]"
             case SwiftAutomation_formUniqueID: // specifier.ID(UID)
                 return "\(result).ID(\(self.format(specifier.selectorData)))"
             case SwiftAutomation_formRange: // specifier[FROM,TO]
@@ -190,11 +192,11 @@ public class SpecifierFormatter {
                 break
             }
         }
-        return "<\(type(of: specifier))(want:\(specifier.wantType),form:\(specifier.selectorForm),seld:\(formatValue(specifier.selectorData)),from:\(self.format(specifier.parentQuery)))>"
+        return "<\(type(of: specifier))(want:\(specifier.wantType),form:\(specifier.selectorForm),seld:\(self.formatValue(specifier.selectorData)),from:\(self.format(specifier.parentQuery)))>"
     }
     
     func formatComparisonTest(_ specifier: ComparisonTest) -> String {
-        let operand1 = formatValue(specifier.operand1), operand2 = formatValue(specifier.operand2)
+        let operand1 = self.formatValue(specifier.operand1), operand2 = self.formatValue(specifier.operand2)
         let opcode = specifier.operatorType.enumCodeValue
         if let name = [kAELessThan: "<", kAELessThanEquals: "<=", kAEEquals: "==",
                        kSAENotEquals: "!=", kAEGreaterThan: ">", kAEGreaterThanEquals: ">="][opcode] {
@@ -203,11 +205,11 @@ public class SpecifierFormatter {
                               kAEContains: "contains", kSAEIsIn: "isIn"][opcode] {
             return "\(operand1).\(name)(\(operand2))"
         }
-        return "<\(type(of: specifier))(relo:\(specifier.operatorType),obj1:\(formatValue(operand1)),obj2:\(formatValue(operand2)))>"
+        return "<\(type(of: specifier))(relo:\(specifier.operatorType),obj1:\(self.formatValue(operand1)),obj2:\(self.formatValue(operand2)))>"
     }
     
     func formatLogicalTest(_ specifier: LogicalTest) -> String {
-        let operands = specifier.operands.map({formatValue($0)})
+        let operands = specifier.operands.map({self.formatValue($0)})
         let opcode = specifier.operatorType.enumCodeValue
         if let name = [SwiftAutomation_kAEAND: "&&", SwiftAutomation_kAEOR: "||"][opcode] {
             if operands.count > 1 {
@@ -216,48 +218,50 @@ public class SpecifierFormatter {
         } else if opcode == SwiftAutomation_kAENOT && operands.count == 1 {
             return "!(\(operands[0]))"
         }
-        return "<\(type(of: specifier))(logc:\(specifier.operatorType),term:\(formatValue(operands)))>"
+        return "<\(type(of: specifier))(logc:\(specifier.operatorType),term:\(self.formatValue(operands)))>"
+    }
+
+    // general formatting functions
+
+    func formatValue(_ value: Any) -> String { // TO DO: this should probably be a method on SpecifierFormatter so that it can be overridden to generate representations for other languages
+        // formats AE-bridged Swift types as literal syntax; other Swift types will show their default description (unfortunately debugDescription doesn't provide usable literal representations - e.g. String doesn't show tabs in escaped form, Cocoa classes return their [non-literal] description string instead, and reliable representations of Bool/Int/Double are a dead loss as soon as NSNumber gets involved, so custom implementation is needed)
+        switch value {
+        case let obj as NSArray: // HACK (since `obj as Array` won't work); see also AppData.pack() // TO DO: implement SelfFormatting protocol on Array, Set, Dictionary
+            return "[" + obj.map({self.formatValue($0)}).joined(separator: ", ") + "]"
+        case let obj as NSDictionary: // HACK; see also AppData.pack()
+            return "[" + obj.map({"\(self.formatValue($0)): \(self.formatValue($1))"}).joined(separator: ", ") + "]"
+        case let obj as String:
+            return quoteString(obj)
+        case let obj as Date:
+            return "Date(timeIntervalSinceReferenceDate:\(obj.timeIntervalSinceReferenceDate)/*\(obj.description)*/)"
+        case let obj as URL:
+            if obj.isFileURL {
+                return "URL(fileURLWithPath:\(self.formatValue(obj.path)))"
+            } else {
+                return "URL(string:\(self.formatValue(obj.absoluteString)))"
+            }
+        case let obj as NSNumber:
+            // note: matching Bool, Int, Double types can be glitchy due to Swift's crappy bridging of ObjC's crappy NSNumber class,
+            // so just match NSNumber (which also matches corresponding Swift types) and figure out appropriate representation
+            if CFBooleanGetTypeID() == CFGetTypeID(obj) { // voodoo: NSNumber class cluster uses __NSCFBoolean
+                return obj == 0 ? "false" : "true"
+            } else {
+                return "\(value)"
+            }
+        default:
+            return "\(value)" // SwiftAutomation objects (specifiers, symbols) are self-formatting; any other value will use its own default description (which may or may not be the same as its literal representation, but that's Swift's problem, not ours)
+        }
     }
 }
 
 
-
-// general formatting functions
-
-func formatValue(_ value: Any) -> String {
-    // formats AE-bridged Swift types as literal syntax; other Swift types will show their default description (unfortunately debugDescription doesn't provide usable literal representations - e.g. String doesn't show tabs in escaped form, Cocoa classes return their [non-literal] description string instead, and reliable representations of Bool/Int/Double are a dead loss as soon as NSNumber gets involved, so custom implementation is needed)
-    switch value {
-    case let obj as NSArray: // HACK (since `obj as Array` won't work); see also AppData.pack() // TO DO: implement SelfFormatting protocol on Array, Set, Dictionary
-        return "[" + obj.map({formatValue($0)}).joined(separator: ", ") + "]"
-    case let obj as NSDictionary: // HACK; see also AppData.pack()
-        return "[" + obj.map({"\(formatValue($0)): \(formatValue($1))"}).joined(separator: ", ") + "]"
-    case let obj as String:
-        let tmp = NSMutableString(string: obj)
-        for (from, to) in [("\\", "\\\\"), ("\"", "\\\""), ("\r", "\\r"), ("\n", "\\n"), ("\t", "\\t")] {
-            tmp.replaceOccurrences(of: from, with: to, options: .literal, range: NSMakeRange(0, tmp.length))
-        }
-        return "\"\(tmp)\""
-    case let obj as Date:
-        return "Date(timeIntervalSinceReferenceDate:\(obj.timeIntervalSinceReferenceDate)/*\(obj.description)*/)"
-    case let obj as URL:
-        if obj.isFileURL {
-            return "URL(fileURLWithPath:\(formatValue(obj.path)))"
-        } else {
-            return "URL(string:\(formatValue(obj.absoluteString)))"
-        }
-    case let obj as NSNumber:
-        // note: matching Bool, Int, Double types can be glitchy due to Swift's crappy bridging of ObjC's crappy NSNumber class,
-        // so just match NSNumber (which also matches corresponding Swift types) and figure out appropriate representation
-        if CFBooleanGetTypeID() == CFGetTypeID(obj) { // voodoo: NSNumber class cluster uses __NSCFBoolean
-            return obj == 0 ? "false" : "true"
-        } else {
-            return "\(value)"
-        }
-    default:
-        return "\(value)" // SwiftAutomation objects (specifiers, symbols) are self-formatting; any other value will use its own default description (which may or may not be the same as its literal representation, but that's Swift's problem, not ours)
+func quoteString(_ string: String) -> String {
+    let tmp = NSMutableString(string: string)
+    for (from, to) in [("\\", "\\\\"), ("\"", "\\\""), ("\r", "\\r"), ("\n", "\\n"), ("\t", "\\t")] {
+        tmp.replaceOccurrences(of: from, with: to, options: .literal, range: NSMakeRange(0, tmp.length))
     }
+    return "\"\(tmp)\""
 }
-
 
 // convert an OSType to its String literal representation, e.g. 'docu' -> "\"docu\""
 func formatFourCharCodeString(_ code: OSType) -> String {

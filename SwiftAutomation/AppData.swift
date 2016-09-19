@@ -9,20 +9,15 @@ import Foundation
 import AppKit
 
 
-// TO DO: glues should use `as:` rather than `resultType:` if practical (terminology parsers should ignore `("as",keyAERequestedType)` if it appears in a command definition, and escape any partial matches - e.g. StdAdds commands use 'as..' and 'as.A' as well as 'rtyp', so the former should always appear as `as_:`)
 
 // TO DO: what about 'missing value'? for a pure Swift bridge, might be better to use nil rather than Symbol.missingValue; note that Swift's compile-time/run-time treatment of `Any` and `nil` is inconsistent (either flawed or buggy). Q. How will this affect pack/unpack; presumably Optional will need extended same as collections to do its own unpacking? (Caution: the problem with using `nil` is that `Optional<>` plays very badly with commands' default return type `Any`. Unfortunately, the Swift type system treats `Optional` as a member of the `Any` set, whereas it really should treat it as a special case so that it can be distinguished by `Any?` vs `Any`; as it is, once an Optional is cast to Any, it is a huge PITA to persuade it to unbox unless you already know its exact type, e.g. `Optional<String>`, in order to cast it to that first, otherwise you just end up wrapping it in another Optional to give `Optional<Any>`, resulting in values like `Optional.some(nil)` when you actually try to use it. Under the circumstances, it is probably safer to stick to a unique `MissingValue` constant and avoiding `nil` altogether, at least until such time as Swift's type system figures out how to handle these types sanely.)
 
-// TO DO: option for caller to pass their own 'customUnpack' func via command, to be called when standard unpack fails (either due to unrecognized AE type or inability to coerce to specified Swift type); this would prob. be done as trailing closure, which takes an AEDesc, required Type, and AppData as arguments and throws or returns value of that type (note that when unpacking list/record, this may be called multiple times, e.g. for the list/record and/or for each item in it)
+// TO DO: Is it worth mapping cMissingValue<->nil when the parameter/result type is _known_ to be Optional<T>? i.e. both MissingValue and nil would be accepted as synonyms for cMissingValue, so passing either as a parameter will always succeed; conversely, if the return type is Any (the default when caller doesn't specify a particular type) then MissingValue will be returned, while any other return type (T) will return nil where Optional<U> is specified. That avoids optional unboxing hell when the [default] return type Any is used, while being idiomatic Swift when a specific return type (including Optional<Any>) is given. Simplest may be to implement it experimentally, and see how well it works in practice.
 
 // TO DO: add `var fullyUnpackSpecifiers: Bool = false` compatibility flag; note that the simplest and safest (if not the most efficient) way to do this is to call the specifier's `unpackParentSpecifiers(clearCachedDesc:true)` method immediately after unpacking it, though since this option should almost never be needed (an app should always accept object specifiers it created) efficiency isn't a concern (the unpack...Specifier methods could also unroll the specifier chain, of course, but then there'd be two code paths for doing the same thing which isn't ideal maintenance-wise). (The only known app that requires this compatibility flag is iView Media Pro, which has an amusing pair of bugs that [#1] cause it to return by-index specifiers with a non-standard though still acceptable selector type [typeUInt32, IIRC], but requires by-index specifers passed as parameters to use typeSInt32 selectors and [#2] throws an error if given any other type instead of coercing it to the required type itself. AppleScript masks these because it _always_ fully unpacks and repacks each specifier, coercing indexes to typeSInt32 as it does. However, converting Specifiers<->NSAppleEventDescriptors in SwiftAutomation takes longer than the equivalent reference<->AEDesc conversions in AppleScript, so the only way to match AS for speed is to avoid full unpacking unless/until actually needed [for display purposes].)
 
 
 
-
-let MissingValueDesc = NSAppleEventDescriptor(typeCode: SwiftAutomation_cMissingValue) // TO DO: currently unused; delete?
-
-let MissingValue = Symbol(name: "missingValue", code: SwiftAutomation_cMissingValue) // TO DO: this needs to be a unique non-Symbol type so that type system can distinguish it from Symbol.Type when unpacking
 
 public typealias KeywordParameter = (name: String?, code: OSType, value: Any)
 
@@ -418,31 +413,37 @@ open class AppData {
     
     public func unpack<T>(_ desc: NSAppleEventDescriptor) throws -> T {
         
-        // TO DO: also have to allow for possibility of Optional<T>?
+        // TO DO: also have to allow for possibility of Optional<T> in case client requests that? (the optional should be ignored); one benefit of this is it allows results to be assigned to an existing var of type Optional<T>; currently user would need to explicitly cast the command's result to T first; the problem here is that it's impossible to test if T is an Optional (same problem as with Array<T> and other generic types); thus the solution would be to extend Optional with SelfPacking and SelfUnpacking (same as for Array, etc above)
         
         // TO DO: will these tests also match NSString, NSDate, NSArray, etc, or do those need tested for separately?
+        
         if T.self == Any.self || T.self == AnyObject.self {
             return try self.unpackAny(desc) as! T
+        } else if let t = T.self as? SelfUnpacking.Type { // Array, Dictionary
+            return try t.SwiftAutomation_unpackSelf(desc, appData: self) as! T
+        } else if isMissingValue(desc) {
+            // TO DO: ALWAYS handle `missing value` as special case; DON'T allow it to coerce to any other type (e.g. typeUnicodeText) even if AEM allows it
+            throw UnpackError(appData: self, descriptor: desc, type: T.self, message: "Can't coerce 'missing value' descriptor to Swift type (not a supported sum type): \(T.self)") // TO DO: raise a MissingValueError instead? that'd make it easier to distinguish errors caused by app returning 'missing value' when client wants a normal value (e.g. string)? or is it better to force user to be a good type citizen and always state exactly what they want, e.g. StringOrMissingValue?
         } else if T.self == Bool.self {
             return desc.booleanValue as! T
-        } else if T.self == Int.self { // TO DO: what about sized types (Int8, Int16, Int32, Int64); what about UInts?
-            if desc.descriptorType == typeSInt32 {
+        } else if T.self == Int.self { // TO DO: this assumes Int will _always_ be 64-bit (on macOS); is that safe?
+            if desc.descriptorType == typeSInt32 { // shortcut for common case where descriptor is already a standard 32-bit int
                 return Int(desc.int32Value) as! T
-            } else if let intDesc = desc.coerce(toDescriptorType: typeSInt64) {
-                var result: Int64 = 0
-                (intDesc.data as NSData).getBytes(&result, length: MemoryLayout<Int64>.size)
+            } else if let result = self.unpackInt(desc) {
                 return Int(result) as! T
             }
-        } else if T.self == Double.self { // TO DO: what about Float (typeIEEE32BitFloatingPoint)?
-             if let doubleDesc = desc.coerce(toDescriptorType: typeIEEE64BitFloatingPoint) {
-                 return Double(doubleDesc.doubleValue) as! T
-             }
+        } else if T.self == UInt.self {
+            if let result = self.unpackInt(desc) {
+                return Int(result) as! T
+            }
+        } else if T.self == Double.self {
+            if let doubleDesc = desc.coerce(toDescriptorType: typeIEEE64BitFloatingPoint) {
+                return Double(doubleDesc.doubleValue) as! T
+            }
         } else if T.self == String.self {
             if let result = desc.stringValue { // TO DO: fail if desc is typeType, typeEnumerated, etc.? or convert to name [if known] and return that? (i.e. typeType, etc. can always coerce to typeUnicodeText, but this is misleading and could cause problems e.g. when a value may be string or missingValue)
                 return result as! T
             }
-        } else if let t = T.self as? SelfUnpacking.Type { // Array, Dictionary
-            return try t.SwiftAutomation_unpackSelf(desc, appData: self) as! T
         } else if T.self is Query.Type { // note: user typically specifies exact class ([PREFIX][Object|Elements]Specifier)
             if let result = try self.unpackAny(desc) as? T { // specifiers can be composed of several AE types, so unpack first then check type
                 return result
@@ -458,7 +459,44 @@ open class AppData {
         } else if T.self == URL.self {
              if let result = desc.fileURLValue { // TO DO: roundtripping of typeAlias, typeBookmarkData, etc? (as in AppleEventBridge, this'd require a custom NSURL subclass to cache the original descriptor and return it again when repacked)
                  return result as! T
-             }
+            }
+        } else if T.self == Int8.self { // lack of common protocols on Integer types is a pain
+            if let n = self.unpackInt(desc), let result = Int8(exactly: n) {
+                return result as! T
+            }
+        } else if T.self == Int16.self {
+            if let n = self.unpackInt(desc), let result = Int16(exactly: n) {
+                return result as! T
+            }
+        } else if T.self == Int32.self {
+            if let n = self.unpackInt(desc), let result = Int32(exactly: n) {
+                return result as! T
+            }
+        } else if T.self == Int64.self {
+            if let n = self.unpackInt(desc), let result = Int64(exactly: n) {
+                return result as! T
+            }
+        } else if T.self == UInt8.self {
+            if let n = self.unpackUInt(desc), let result = UInt8(exactly: n) {
+                return result as! T
+            }
+        } else if T.self == UInt16.self {
+            if let n = self.unpackUInt(desc), let result = UInt16(exactly: n) {
+                return result as! T
+            }
+        } else if T.self == UInt32.self {
+            if let n = self.unpackUInt(desc), let result = UInt32(exactly: n) {
+                return result as! T
+            }
+        } else if T.self == UInt64.self {
+            if let n = self.unpackUInt(desc), let result = UInt64(exactly: n) {
+                return result as! T
+            }
+        } else if T.self == Float.self {
+            if let doubleDesc = desc.coerce(toDescriptorType: typeIEEE64BitFloatingPoint),
+                    let result = Float(exactly: doubleDesc.doubleValue) {
+                return result as! T
+            }
         } else if T.self == NSAppleEventDescriptor.self {
             return desc as! T
         }
@@ -490,7 +528,7 @@ open class AppData {
         case typeAlias, typeBookmarkData, typeFileURL, typeFSRef, SwiftAutomation_typeFSS:
             return desc.fileURLValue ?? desc // ditto
         case typeType, typeEnumerated, typeProperty, typeKeyword:
-            return self.unpackSymbol(desc)
+            return isMissingValue(desc) ? MissingValue : self.unpackSymbol(desc)
             // object specifiers
         case typeObjectSpecifier:
             return try self.unpackObjectSpecifier(desc)
@@ -508,15 +546,12 @@ open class AppData {
             return try self.unpackCompDescriptor(desc)
         case typeLogicalDescriptor:
             return try self.unpackLogicalDescriptor(desc)
+            
             // less common types
         case typeSInt64:
-            var result: Int64 = 0
-            (desc.data as NSData).getBytes(&result, length: MemoryLayout<Int64>.size)
-            return Int(result)
+            return self.unpackInt(desc)!
         case typeUInt64, typeUInt32, typeUInt16:
-            var result: UInt64 = 0
-            (desc.coerce(toDescriptorType: typeUInt64)!.data as NSData).getBytes(&result, length: MemoryLayout<UInt64>.size)
-            return UInt(result)
+            return self.unpackUInt(desc)!
         case typeQDPoint, typeQDRectangle, typeRGBColor:
             return try self.unpack(desc) as [Int]
         default:
@@ -527,6 +562,29 @@ open class AppData {
         }
     }
     
+    // helpers for the above
+    
+    private func unpackInt(_ desc: NSAppleEventDescriptor) -> Int? {
+        // coerce the descriptor (whatever it is - typeSInt16, typeUInt32, typeUnicodeText, etc.) to typeSIn64 (hoping the Apple Event Manager has remembered to install TYPE-to-SInt64 coercion handlers for all these types too), and unpack as Int[64]
+        if let intDesc = desc.coerce(toDescriptorType: typeSInt64) {
+            var result: Int64 = 0
+            (intDesc.data as NSData).getBytes(&result, length: MemoryLayout<Int64>.size)
+            return Int(result)
+        } else {
+            return nil
+        }
+    }
+    
+    private func unpackUInt(_ desc: NSAppleEventDescriptor) -> UInt? {
+            // same as above, except for unsigned
+        if let intDesc = desc.coerce(toDescriptorType: typeUInt64) {
+            var result: UInt64 = 0
+            (intDesc.data as NSData).getBytes(&result, length: MemoryLayout<UInt64>.size)
+            return UInt(result)
+        } else {
+            return nil
+        }
+    }
     
     /******************************************************************************/
     // Supporting methods for unpacking symbols and specifiers

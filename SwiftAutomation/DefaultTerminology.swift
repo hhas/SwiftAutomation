@@ -110,7 +110,7 @@ public class DefaultTerminology: ApplicationTerminology {
                                     ("process serial number", typeProcessSerialNumber),
                                     ("application signature", typeApplSignature),
                                     ("application url", typeApplicationURL),
-                                    ("missing value", SwiftAutomation_cMissingValue),
+                                    // ("missing value", SwiftAutomation_cMissingValue), // represented as MissingValueType, not Symbol
                                     ("null", typeNull),
                                     ("machine location", typeMachineLoc),
                                     ("machine", SwiftAutomation_cMachine),

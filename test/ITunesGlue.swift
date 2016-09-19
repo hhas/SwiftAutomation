@@ -2,7 +2,7 @@
 //  ITunesGlue.swift
 //  iTunes.app 12.5.1
 //  SwiftAutomation.framework 0.1.0
-//  `aeglue -o /Users/has/SwiftAE/tmp -r iTunes.app`
+//  `aeglue 'iTunes.app'`
 //
 
 
@@ -172,8 +172,8 @@ private let gSpecifierFormatter = SpecifierFormatter(applicationClassName: "ITun
                                                                      0x6b706964: "kernelProcessId", // "kpid"
                                                                      0x704b6e64: "kind", // "pKnd"
                                                                      0x6b56534c: "large", // "kVSL"
-                                                                     0x6b4c6962: "library", // "kLib"
                                                                      0x6b53704c: "Library", // "kSpL"
+                                                                     0x6b4c6962: "library", // "kLib"
                                                                      0x634c6950: "libraryPlaylist", // "cLiP"
                                                                      0x6c697374: "list", // "list"
                                                                      0x704c6f63: "location", // "pLoc"
@@ -192,7 +192,6 @@ private let gSpecifierFormatter = SpecifierFormatter(applicationClassName: "ITun
                                                                      0x6d617920: "May", // "may\0x20"
                                                                      0x6b56534d: "medium", // "kVSM"
                                                                      0x704d696e: "minimized", // "pMin"
-                                                                     0x6d736e67: "missingValue", // "msng"
                                                                      0x704d6f64: "modifiable", // "pMod"
                                                                      0x61736d6f: "modificationDate", // "asmo"
                                                                      0x6d6f6e20: "Monday", // "mon\0x20"
@@ -242,8 +241,8 @@ private let gSpecifierFormatter = SpecifierFormatter(applicationClassName: "ITun
                                                                      0x63525450: "radioTunerPlaylist", // "cRTP"
                                                                      0x70527465: "rating", // "pRte"
                                                                      0x7052746b: "ratingKind", // "pRtk"
-                                                                     0x74647461: "rawData", // "tdta"
                                                                      0x70526177: "rawData", // "pRaw"
+                                                                     0x74647461: "rawData", // "tdta"
                                                                      0x7265636f: "record", // "reco"
                                                                      0x6f626a20: "reference", // "obj\0x20"
                                                                      0x70526c44: "releaseDate", // "pRlD"
@@ -651,8 +650,8 @@ public class ITUSymbol: Symbol {
         case 0x6b706964: return self.kernelProcessId // "kpid"
         case 0x704b6e64: return self.kind // "pKnd"
         case 0x6b56534c: return self.large // "kVSL"
-        case 0x6b4c6962: return self.library // "kLib"
         case 0x6b53704c: return self.Library // "kSpL"
+        case 0x6b4c6962: return self.library // "kLib"
         case 0x634c6950: return self.libraryPlaylist // "cLiP"
         case 0x6c697374: return self.list // "list"
         case 0x704c6f63: return self.location // "pLoc"
@@ -671,7 +670,6 @@ public class ITUSymbol: Symbol {
         case 0x6d617920: return self.May // "may\0x20"
         case 0x6b56534d: return self.medium // "kVSM"
         case 0x704d696e: return self.minimized // "pMin"
-        case 0x6d736e67: return self.missingValue // "msng"
         case 0x704d6f64: return self.modifiable // "pMod"
         case 0x61736d6f: return self.modificationDate // "asmo"
         case 0x6d6f6e20: return self.Monday // "mon\0x20"
@@ -721,8 +719,8 @@ public class ITUSymbol: Symbol {
         case 0x63525450: return self.radioTunerPlaylist // "cRTP"
         case 0x70527465: return self.rating // "pRte"
         case 0x7052746b: return self.ratingKind // "pRtk"
-        case 0x74647461: return self.rawData // "tdta"
         case 0x70526177: return self.rawData // "pRaw"
+        case 0x74647461: return self.rawData // "tdta"
         case 0x7265636f: return self.record // "reco"
         case 0x6f626a20: return self.reference // "obj\0x20"
         case 0x70526c44: return self.releaseDate // "pRlD"
@@ -954,7 +952,6 @@ public class ITUSymbol: Symbol {
     public static let March = ITUSymbol(name: "March", code: 0x6d617220, type: typeType) // "mar\0x20"
     public static let May = ITUSymbol(name: "May", code: 0x6d617920, type: typeType) // "may\0x20"
     public static let minimized = ITUSymbol(name: "minimized", code: 0x704d696e, type: typeType) // "pMin"
-    public static let missingValue = ITUSymbol(name: "missingValue", code: 0x6d736e67, type: typeType) // "msng"
     public static let modifiable = ITUSymbol(name: "modifiable", code: 0x704d6f64, type: typeType) // "pMod"
     public static let modificationDate = ITUSymbol(name: "modificationDate", code: 0x61736d6f, type: typeType) // "asmo"
     public static let Monday = ITUSymbol(name: "Monday", code: 0x6d6f6e20, type: typeType) // "mon\0x20"
@@ -1990,7 +1987,7 @@ public class ITURoot: RootSpecifier, ITUObject, RootSpecifierExtension {
 public class ITunes: ITURoot, ApplicationExtension {
     public convenience init(launchOptions: LaunchOptions = DefaultLaunchOptions, relaunchMode: RelaunchMode = DefaultRelaunchMode) {
         self.init(rootObject: AppRootDesc, appData: type(of:self).untargetedAppData.targetedCopy(
-                .bundleIdentifier("com.apple.iTunes", true), launchOptions: launchOptions, relaunchMode: relaunchMode))
+                  .bundleIdentifier("com.apple.iTunes", true), launchOptions: launchOptions, relaunchMode: relaunchMode))
     }
 }
 

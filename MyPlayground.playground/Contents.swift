@@ -1,13 +1,14 @@
 //: Playground - noun: a place where people can play
 
 import Cocoa
+import SwiftAutomation
 
 
 
 let itunes = ITunes()
 let textedit = TextEdit()
 let finder = Finder()
-
+/*
 let state: ITU = try itunes.playerState.get()
 if state == ITU.playing {
     print(try itunes.currentTrack.name.get())
@@ -42,7 +43,13 @@ try finder.home.get(resultType: FIN.alias) as URL
 //try itunes.tracks.any.play()
 
 //try textedit.launch()
+*/
 
+try finder.files.fileType.get()
+
+try finder.files.fileType.get() as [MayBeMissing<String>]
+
+try finder.files.fileType.get() as [String?]
 
 
 

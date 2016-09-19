@@ -7,12 +7,7 @@
 import Foundation
 
 
-// TO DO: how best to convert string-based record keys during pack/unpack? one option might be to format as String literal, and allow packDictionary to accept both Symbol and String keys; conversely, String-based symbols would need to hash and compare as equal to the same Strings so that strings can be used to get record properties from dictionary, e.g. `{Symbol(string:"foo"):VALUE}["foo"] -> VALUE` (Q. what problems might that cause elsewhere, given that Symbol isn't actually a String subtype, so can't be used in other places where a string is accepted)
-
-
 // TO DO: one disadvantage of using class rather than enum is that dictionary keys have to be written longhand, e.g. `FIN.name` rather than `.name`; the flipside is that enums are ostensibly finite whereas AE types/enums/properties can be any OSType; that said, non-glue-defined AE types could be represented by parameterized cases, e.g. `.custom(String)`, `.code(OSType)`
-
-// TO DO: standard types and enums (defined in DefaultTerminology) are currently added to all glue-specific symbol classes; need to make a final decision on this (while the duplication of definitions is mildly irritating, it may be simplest to keep this as it avoids user having to remember which Symbols [sub]class defines which terms, and probably avoids a bunch of butthurt from Swift's type system too)
 
 
 let NoOSType: OSType = 0 // valid OSTypes should always be non-zero, so just use 0 instead of nil to indicate omitted OSType and avoid the extra Optional<OSType> boxing/unboxing
@@ -34,12 +29,11 @@ open class Symbol: Hashable, Equatable, CustomStringConvertible, SelfPacking {
         self.cachedDesc = cachedDesc
     }
     
-    // constructor for string-based record key
+    // special constructor for string-based record keys (avoids the need to wrap dictionary keys in a `StringOrSymbol` enum when unpacking)
+    // e.g. the AppleScript record `{name:"Bob", isMyUser:true}` maps to the Swift Dictionary `[Symbol.name:"Bob", Symbol("isMyUser"):true]`
     
-    // TO DO: this might also be of use when implementing dynamic bridges, where only the name is given upon instantiation, and the AE type and code are looked up in DynamicAppData when Symbol is packed
-    
-    public convenience init(_ string: String, cachedDesc: NSAppleEventDescriptor? = nil) {
-        self.init(name: string, code: NoOSType, type: NoOSType, cachedDesc: cachedDesc)
+    public convenience init(_ name: String, cachedDesc: NSAppleEventDescriptor? = nil) {
+        self.init(name: name, code: NoOSType, type: NoOSType, cachedDesc: cachedDesc)
     }
     
     // convenience constructors for creating Symbols using raw four-char codes
@@ -62,9 +56,11 @@ open class Symbol: Hashable, Equatable, CustomStringConvertible, SelfPacking {
         return self.init(name: string, code: NoOSType, type: NoOSType, cachedDesc: descriptor)
     }
     
+    public var hashValue: Int {return self.nameOnly ? self.name!.hashValue : Int(self.code)}
+    
     public var description: String {
         if let name = self.name {
-            return self.nameOnly ? "\(self.typeAliasName)(\(formatValue(name)))" : "\(self.typeAliasName).\(name)"
+            return self.nameOnly ? "\(self.typeAliasName)(\(quoteString(name)))" : "\(self.typeAliasName).\(name)"
         } else {
             return "\(self.typeAliasName)(code:\(formatFourCharCodeString(self.code)),type:\(formatFourCharCodeString(self.type)))"
         }
@@ -89,11 +85,6 @@ open class Symbol: Hashable, Equatable, CustomStringConvertible, SelfPacking {
         }
         return self.cachedDesc!
     }
-    
-    public var hashValue: Int {return self.nameOnly ? self.name!.hashValue : Int(self.code)}
-    
-    //    public let missingValue = Symbol(name: "missingValue", code: SwiftAutomation_cMissingValue, type: typeType) // TO DO: use this or nil? (since this bridge is Swift-only, and idiomatic Swift APIs use Error, not nil, to indicate errors, inclined to use nil)
-    
 }
 
 

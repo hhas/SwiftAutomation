@@ -15,23 +15,12 @@ TO DO:
 
 
 
-- SpecifierFormatter.format() currently never shows Application(...) root as returned specifiers use untargeted AppRoot which never contains appData. This doesn't affect subsequent use of those specifiers, since the rest of the specifier consists of SpecifierNodes that do retain the AppData used to unpack them, but does screw up introspection a bit. Simplest fix here might be to pass existing appData as [optional] arg to SpecifierFormatter.format(). Best solution may be for Application constructors to pass weakrefd self to AppData constructor, so that returned specifiers always have targeted absolute root, and rely purely on formatter to deal with abbreviating nested specifiers. (Note: AppleEventBridge never had this issue since all specifiers were represented by single wrapper class that held both AppData and low-level AEM specifier.)
-
-
-
 - Is it possible to use application glues directly from the interactive `swift` CLI tool? Unlike Xcode playgrounds, the `swift` "REPL" does not automatically re-execute all previous lines whenever a new line is entered, so would be a much better, safer choice for the SwiftAutomation tutorial and user experimentation. In addition, could a Swift REPL be integrated into the AppleScriptToSwift application to create a general-purpose 'SwiftAutomationExplorer.app'? (Such an application would also benefit from a built-in dictionary viewer that can display Swift-style application dictionaries without the user having to manually generate them.)
 
 
-- how to support sum types for return values? (this will be problematic given poor type introspection support in Swift3); best option is probably to include `--enum` option in aeglue that takes a description of [self-packing+self-unpacking] enums that user wants to have available and includes them in glue, similar to how `--struct` option might create custom structs based on dictionary's class/record types (note that some of these enums might be generated automatically, based on known aete and sdef-defined 'sum types')
+- support sum types for return values; best option is probably to include `--enum` (`--enum-type`?) option in aeglue that takes a description of [self-packing+self-unpacking] enums that user wants to have available and includes them in glue, similar to how `--struct` option might create custom structs based on dictionary's class/record types (note that some of these enums might be generated automatically, based on known aete and sdef-defined 'sum types'), e.g. `-t String/Symbol` -> `enum StringOrSymbol {...}`
 
-
-
-
-- one problem with T coercion is that cMissingType can coerce to typeUnicodeText, giving "msng" - this is arguably unsafe, since it can't be distinguished from actual string results, and should either be treated as a Symbol or nil (in which case an error will be raised unless an appropriate sum type is specified)
-
-
-- should command methods support optional throwable trailing closure for custom-converting values that can't automatically be coerced to the required type? (this'd require passing both the unpacked-as-Any value and T.self; the problem is that complex structures such as lists and records could call this in all sorts of places with all sorts of different Ts so the same closure needs to return Any) -- TBH, don't want to add this extra API complexity unless/until it actually proves to be necessary, so wait until it's had some real-world use and see what UX problems are reported
-
+- one problem with T coercion is that AEM allows typeType/typeEnum descriptors to coerce to typeUnicodeText, giving four-char strings ("docu", "yes\0x20", etc.); however, this is arguably unsafe, as these FCC strings can't be distinguished from actual string results, so should be unpacked as a Symbol only (assuming T = Any/StringOrSymbol sum type) or else throw an UnpackError
 
 
 
@@ -40,6 +29,8 @@ TO DO:
 
 - by-test selector currently doesn't confirm ITS-based root before packing test clause; similarly, by-range selector doesn't confirm APP/CON-based roots for start+stop specifiers; implementing this either means extra mixin subclasses (so type system can enforce it) or pack-time checking (so it can be reported as a command error) - though whether it's worth doing has yet to be decided (having a complete set of specifier variants just for constructing `its` based specifiers will add code complexity and would be problematic for unpacking since objspecs need to be fully unpacked to determine root type but standard behavior is to shallow unpack objspecs for efficiency and only fully unpack when necessary)
 
+
+- should glues use `as:` rather than `resultType:`? Q. is it practical to do so, given that `as` is an app-definable parameter, not an AEM-defined attribute? (terminology parsers would need to ignore `("as",keyAERequestedType)` if it appears in a command definition, and escape any partial matches - e.g. StdAdds commands use 'as..' and 'as.A' as well as 'rtyp', so the former should always appear as `as_:`)
 
 
 

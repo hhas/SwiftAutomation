@@ -76,8 +76,8 @@ public class SDEFParser: NSObject, XMLParserDelegate, ApplicationTerminology {
                 }
                 var eventClass: OSType, eventID: OSType
                 do {
-                    eventClass = try FourCharCode(codeString.substring(to: 4) as NSString)
-                    eventID = try FourCharCode(codeString.substring(from: 4) as NSString)
+                    eventClass = try FourCharCode(codeString.substring(to: 4))
+                    eventID = try FourCharCode(codeString.substring(from: 4))
                 } catch {
                     throw TerminologyError("Malformed \(tagName) in SDEF: invalid 'code' attribute (\(error)).")
                 }
@@ -108,7 +108,7 @@ public class SDEFParser: NSObject, XMLParserDelegate, ApplicationTerminology {
     
     // used by parser() callback
     func parseKeywordTerm(_ tagName: String, attributes: [String:String]) throws -> (String, OSType) {
-        guard let name = attributes["name"], let codeString = attributes["code"] as NSString? else {
+        guard let name = attributes["name"], let codeString = attributes["code"] else {
             throw TerminologyError("Malformed \(tagName) in SDEF: missing 'name' or 'code' attribute.")
         }
         if name == "" {

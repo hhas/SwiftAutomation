@@ -9,7 +9,7 @@
 //
 //
 
-// TO DO: Application object should appear as `APPLICATION()`, not `APPLICATION(name:"/PATH/TO/APP")`, for display purposes
+// TO DO: Application object should appear as `APPLICATION()`, not `APPLICATION(name:"/PATH/TO/APP")`, for display in AppleScriptToSwift translator app -- probably simplest to have a boolean arg to formatAppleEvent that dictates this (since the full version is still useful for debugging work)... might be worth making this an `app/application/fullApplication` enum to cover PREFIXApp case as well
 
 // TO DO: Symbols aren't displaying correctly within arrays/dictionaries/specifiers (currently appear as `Symbol.NAME` instead of `PREFIX.NAME`), e.g. `TextEdit(name: "/Applications/TextEdit.app").make(new: TED.document, withProperties: [Symbol.text: "foo"])`; `tell app "textedit" to document (text)` -> `TextEdit(name: "/Applications/TextEdit.app").documents[Symbol.text].get()`
 
@@ -48,7 +48,7 @@ public func formatAppleEvent(descriptor event: NSAppleEventDescriptor, useTermin
             let errs = event.paramDescriptor(forKeyword: keyErrorString)?.stringValue
             return SwiftAutomationError(code: Int(errn), message: errs).description // TO DO: use CommandError? (need to check it's happy with only replyEvent arg)
         } else if let reply = event.paramDescriptor(forKeyword: keyDirectObject) { // format return value
-            return formatValue((try? appData.unpackAny(reply)) ?? reply)
+            return appData.formatter.format((try? appData.unpackAny(reply)) ?? reply)
         } else {
             return "<noreply>" // TO DO: what to return?
         }
@@ -263,9 +263,13 @@ override func formatRootSpecifier(_ specifier: RootSpecifier) -> String {
         return super.formatRootSpecifier(specifier)
     }
 }
+ 
+ -- however, this particular issue will go away if formatter has instance var/param for specifying how absolute specifiers should be represented (APPLICATION(...), APPLICATION(), or PREFIXApp)
  */
 
 extension SpecifierFormatter {
+    
+    // note: only reason this code isn't folded into top-level formatAppleEvent() function above is to allow subclasses of SpecifierFormatter to override in order to generate representations for other languages
     
     public func formatAppleEvent(_ eventDescription: AppleEventDescription, applicationObject: RootSpecifier) -> String {
         var parentSpecifier = String(describing: applicationObject)

@@ -40,7 +40,7 @@ public extension ObjectSpecifierExtension {
     }
     
     public func property(_ code: String) -> ObjectSpecifierType { // caution: string must be valid four-char code; if not, 0x00000000 is used
-		return self.property(FourCharCodeUnsafe(code)) // TO DO: use FourCharCode()throws, capturing error in custom root specifier to be rethrown if/when specifier is used in a command?
+		return self.property(FourCharCodeUnsafe(code)) // TO DO: use FourCharCode()throws, capturing error in custom root specifier to be rethrown if/when specifier is used in a command? (see notes on corresponding AppData.sendAppleEvent() method; since FCC strings are low-level, users who use them already need to know what they're doing so shouldn't pass invalid strings in the first place); actually, storing a SwiftAutomationError in ObjectSpecifier's selectorData should work as AppData.pack will rethrow it (once that feature's implemented) when packing the specifier for dispatch, so the safe FCC() version can be used here
     }
     
     public func elements(_ code: OSType) -> MultipleObjectSpecifierType {

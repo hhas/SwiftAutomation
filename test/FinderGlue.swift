@@ -2,7 +2,7 @@
 //  FinderGlue.swift
 //  Finder.app 10.11.4
 //  SwiftAutomation.framework 0.1.0
-//  `aeglue -o /Users/has/SwiftAE/tmp -rs Finder.app`
+//  `aeglue -s 'Finder.app'`
 //
 
 
@@ -221,7 +221,6 @@ private let gSpecifierFormatter = SpecifierFormatter(applicationClassName: "Find
                                                                      0x6d696963: "mini", // "miic"
                                                                      0x6d707274: "minimumSize", // "mprt"
                                                                      0x636c776e: "minimumWidth", // "clwn"
-                                                                     0x6d736e67: "missingValue", // "msng"
                                                                      0x706d6f64: "modal", // "pmod"
                                                                      0x61736d6f: "modificationDate", // "asmo"
                                                                      0x656c736d: "modificationDateColumn", // "elsm"
@@ -721,7 +720,6 @@ public class FINSymbol: Symbol {
         case 0x6d696963: return self.mini // "miic"
         case 0x6d707274: return self.minimumSize // "mprt"
         case 0x636c776e: return self.minimumWidth // "clwn"
-        case 0x6d736e67: return self.missingValue // "msng"
         case 0x706d6f64: return self.modal // "pmod"
         case 0x61736d6f: return self.modificationDate // "asmo"
         case 0x656c736d: return self.modificationDateColumn // "elsm"
@@ -1002,7 +1000,6 @@ public class FINSymbol: Symbol {
     public static let May = FINSymbol(name: "May", code: 0x6d617920, type: typeType) // "may\0x20"
     public static let minimumSize = FINSymbol(name: "minimumSize", code: 0x6d707274, type: typeType) // "mprt"
     public static let minimumWidth = FINSymbol(name: "minimumWidth", code: 0x636c776e, type: typeType) // "clwn"
-    public static let missingValue = FINSymbol(name: "missingValue", code: 0x6d736e67, type: typeType) // "msng"
     public static let modal = FINSymbol(name: "modal", code: 0x706d6f64, type: typeType) // "pmod"
     public static let Monday = FINSymbol(name: "Monday", code: 0x6d6f6e20, type: typeType) // "mon\0x20"
     public static let nameExtension = FINSymbol(name: "nameExtension", code: 0x6e6d7874, type: typeType) // "nmxt"
@@ -1965,7 +1962,7 @@ public class FINRoot: RootSpecifier, FINObject, RootSpecifierExtension {
 public class Finder: FINRoot, ApplicationExtension {
     public convenience init(launchOptions: LaunchOptions = DefaultLaunchOptions, relaunchMode: RelaunchMode = DefaultRelaunchMode) {
         self.init(rootObject: AppRootDesc, appData: type(of:self).untargetedAppData.targetedCopy(
-                .bundleIdentifier("com.apple.finder", true), launchOptions: launchOptions, relaunchMode: relaunchMode))
+                  .bundleIdentifier("com.apple.finder", true), launchOptions: launchOptions, relaunchMode: relaunchMode))
     }
 }
 
