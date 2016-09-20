@@ -7,10 +7,15 @@ import Foundation
 import AppKit
 
 
+// TO DO: utility functions for converting between POSIX and HFS path strings? (HFS paths are nasty and rightly deprecated, but some older Carbon apps still refuse to take anything except an HFS path string, particularly when saving documents; fortunately these conversions can be performed solely using AE coercions - no deprecated C function calls required - but it's a pain for user to do as it requires multiple lower-level NSAppleEventDescriptor calls, so including public functions for performing these conversions, while smelly, is probably the least horrid compromise.)
+
+// TO DO: what about converting URLs to typeAlias and other filesystem-related descriptor types? (In theory, applications should always accept typeFileURL and coerce it to whatever type they actually need themselves; in practice, not-so-well-designed Carbon apps may require one specific type - e.g. typeAlias - and refuse to accept any other, in which case it's the client's problem to give it what it needs. Again, nasty, but probably better to include smelly utility functions than leave users to deal with arcane NSAppleEventDescriptor calls.)
+
+
 /******************************************************************************/
 // convert between 4-character strings and OSTypes (use these instead of calling UTGetOSTypeFromString/UTCopyStringFromOSType directly)
 
-func FourCharCodeUnsafe(_ string: String) -> OSType { // note: silently returns 0 if string is invalid; where practical, use throwing version below
+func FourCharCodeUnsafe(_ string: String) -> OSType { // note: silently returns 0 if string is invalid; where practical, use throwing version below // TO DO: pretty sure the safe version can always be used: the non-throwing property() and elements() methods just need to trap the error and store it in the returned specifier (as its selector data), and it will be re-thrown when the specifier is used in an application command method (which can throw).
     return UTGetOSTypeFromString(string as CFString)
 }
 

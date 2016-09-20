@@ -51,5 +51,7 @@ try finder.files.fileType.get() as [MayBeMissing<String>]
 
 try finder.files.fileType.get() as [String?]
 
+textedit.isRunning
+
 
 

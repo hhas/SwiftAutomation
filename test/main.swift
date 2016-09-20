@@ -100,7 +100,7 @@ do {
     
     
     // get every file of folder "Documents" of home whose name extension is "txt"
-    let date = Date(timeIntervalSinceReferenceDate:0)
+    let date = Date(timeIntervalSinceReferenceDate:5400) // 1:30am on 1 Jan 2001 (UTC)
     print("\nTEST: Finder().home.folders[\"Documents\"].files[FINIts.nameExtension == \"txt\" && FINIts.modificationDate > DATE].name.get()")
     let q = Finder().home.folders["Documents"].files[FINIts.nameExtension == "txt" && FINIts.modificationDate > date].name
     print("// \(q)")
@@ -172,14 +172,12 @@ print("\(try c.pack(NSNumber(double: 3.1))) \(formatFourCharCodeString(try c.pac
 */
 
 
-
+ 
 
 /*
-
 let finder = AEApplication(name: "Finder")
 
 
-/*
 do {
 let result = try finder.sendAppleEvent(kAECoreSuite, kAEGetData,
     [keyDirectObject:finder.property("home").elements("cobj")])
@@ -187,18 +185,20 @@ print("\n\nRESULT1: \(result)")
 } catch {
 print("\n\nERROR1: \(error)")
 }
-*/
+let f = URL(fileURLWithPath:"/Users/Shared")
 
-let result = try finder.appData!.sendAppleEvent("open", eventClass: kAECoreSuite, eventID: kAEGetData,
-                                        parentSpecifier: finder,
-                                        directParameter: finder.elements(cFile)[NSURL.fileURLWithPath("/Users/has/entoli - defining pairs.txt")],
-                                        keywordParameters: [],
-                                        requestedType: nil,
-                                        waitReply: true,
-                                        sendOptions: nil,
-                                        withTimeout: nil,
-                                        considering: nil,
-                                        returnType: Any.self)
+do {
+let result = try finder.sendAppleEvent(kAECoreSuite, kAEGetData, [keyDirectObject: AEApp.elements(cObject)[f]])
+    print("RAW: \(result)")
+} catch {
+    print("\n\nERROR: \(error)")
+}
+do {
+let result = try finder.sendAppleEvent(kAECoreSuite, kAEGetData, [keyDirectObject: AEApp.elements(cFile)[f]]) // Finder will throw error as f is a folder, not a file
+    print("RAW: \(result)")
+} catch {
+    print("\n\nERROR: \(error)")
+}
 */
 
 /*

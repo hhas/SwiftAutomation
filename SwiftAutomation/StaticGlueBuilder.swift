@@ -6,6 +6,13 @@
 //
 //
 
+// TO DO: how difficult would it be to auto-generate enum type definitions from an app's AETE/SDEF? (bearing in mind that AETE/SDEF-supplied type info is frequently vague, ambiguous, incomplete, and/or wrong, so a manual option will always be required as well); this basically falls into same camp as how to auto-generate struct-based record definitions as a more static-friendly alternative to AppData's standard AERecordDesc<->[Symbol:Any] mapping; may be worth exploring later (and will need a manual format string option as well, e.g. "STRUCTNAME=PROPERTY1:TYPE1+PROPERTY2:TYPE2+...")
+
+// TO DO: needs special-case handling for "Missing" (basically, pull it out of the typeNames list and set a flag that adds `case missing` to the enum) [note: don't need special support for "Optional", but probably should report it as an error just to remind users to typealias it themselves; ditto for "Array", "Dictionary", "Set"]
+
+// TO DO: `aeglue` will need an option for typealiasing generics, and/or supporting them directly in -e and -s options
+
+
 import Foundation
 
 
@@ -17,7 +24,7 @@ public class GlueSpec {
     public let useSDEF: Bool
     public let bundleInfo: BundleInfoType
     
-    public let enumeratedTypeFormats: [String] // TO DO: could this be better factored (e.g. to take Array<EnumeratedTypeDefinition> directly, allowing the client to build that array however it likes)?
+    public let enumeratedTypeFormats: [String] // TO DO: bit kludgy; could it be better factored (e.g. to take Array<EnumeratedTypeDefinition> directly, allowing the client to build that array however it likes)?
     
     public typealias BundleInfoType = [String:AnyObject]
     
@@ -53,7 +60,7 @@ public class GlueSpec {
                     applicationClassName ?? (bundleInfo["CFBundleName"] as? String) ?? "\(prefix)Application")
             self.applicationClassName = (appName == classNamePrefix) ? keywordConverter.escapeName(appName) : appName
         }
-        self.enumeratedTypeFormats = enumeratedTypeFormats // TO DO: what about auto-generating default definitions from AETE/SDEF? (see also TODOs on generating record structs) (note: ignore auto-type-generation for now and implement manual format-string-based support only - an experimental branch can explore feasibility of automating it later on)
+        self.enumeratedTypeFormats = enumeratedTypeFormats
     }
 
     public func buildGlueTable() throws -> GlueTable { // parse application terminology into
@@ -77,18 +84,10 @@ public class GlueSpec {
 /******************************************************************************/
 // Enumerated type support
 
-// TO DO: how difficult would it be to auto-generate enum type definitions from an app's AETE/SDEF? (bearing in mind that AETE/SDEF-supplied type info is frequently vague, ambiguous, incomplete, and/or wrong, so a manual option will always be required as well); this basically falls into same camp as how to auto-generate struct-based record definitions as a more static-friendly alternative to AppData's standard AERecordDesc<->[Symbol:Any] mapping; may be worth exploring later (and will need a manual format string option as well, e.g. "STRUCTNAME=PROPERTY1:TYPE1+PROPERTY2:TYPE2+...")
-
-
-let ReservedGlueTypeNames: Set<String> = ["Symbol", "Object", "Insertion", "Item", "Items", "Root"] // enum type renderer will automatically prefix these names with classNamePrefix // TO DO: should probably be on glueSpec.keywordConverter
+let ReservedGlueTypeNames: Set<String> = ["Symbol", "Object", "Insertion", "Item", "Items", "Root", "Record"] // enum type renderer will automatically prefix these names with classNamePrefix // TO DO: should probably be on glueSpec.keywordConverter
 
 
 public typealias EnumeratedTypeDefinition = (enumName: String, cases: [(caseName: String, typeName: String)]) // (note: the last unnamed item is only used when auto-generating enum's name; it's the same as the typeName except it doesn't have a classNamePrefix automatically added)
-
-
-// TO DO: needs special-case handling for "Missing" (basically, pull it out of the typeNames list and set a flag that adds `case missing` to the enum) [note: don't need special support for "Optional", but probably should report it as an error just to remind users to typealias it themselves; ditto for "Array", "Dictionary", "Set"]
-
-// TO DO: `aeglue` will need an option for typealiasing generics
 
 
 func parseEnumeratedTypeDefinition(_ string: String, classNamePrefix: String) throws -> EnumeratedTypeDefinition {

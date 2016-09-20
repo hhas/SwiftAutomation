@@ -5,22 +5,24 @@
 //  Generate application-specific glue files for SwiftAutomation.
 //
 //  Note: the undocumented `-D` option is used to [re]generate the SwiftAutomation framework's AEApplicationGlue.swift file.
-//  TO DO: would it be simpler just to generate default glue if no apps specified? (if so, -np options should be allowed, so users can create their own default glues)
 //
+
+//  TO DO: would it be simpler just to generate default glue if no apps specified? (if so, -e, -n, -p, etc options should be allowed, so users can create their own default glues which they can then hack on as they like)
+
+// TO DO: add an -x option for excluding the `import SwiftAutomation` line from glue? (Currently, CLI apps have to bake everything directly into the executable as Swift can't yet import third-party frameworks outside of an .app bundle.)
+
+// TO DO: what about adding an option for building glues as importable modules?
+
+// TO DO: change -S option to -a (i.e. use SDEF by default)? (Caution: while using SDEF by default would seem the obvious choice, it is actually less reliable since macOS's AETE-to-SDEF converter can introduce various subtle, hard-to-debug defects during the conversion process; whereas AETEs will always produce valid glues unless the app's 'ascr'/'gdte' handler fails, in which case the glue file will be mostly unusable and the need to switch to SDEF obvious to the user. [Of course, since these failures tend to occur in Carbon apps, there is no guarantee the SDEF-generated glue won't include some of the aforementioned subtle defects, but that's between the user, Apple, and the application vendor to sort out.])
 
 
 import Foundation
 //import SwiftAutomation // TO DO: the `aeglue` target currently bakes everything into CLI executable; if/when Swift finally supports dynamic framework linking, use import instead
 
 
-// TO DO: need `-e` option for excluding `import SwiftAutomation` from glue?
 
-// TO DO: what about adding an option for building glues as importable modules?
+let gOptionsWithArguments = Set<Character>("npeo".characters) // this MUST contain all options that also require arguments (used to separate option key from value if not explicitly separated by whitespace, e.g. '-pABC' -> '-p ABC')
 
-// TO DO: change -s option to -a (i.e. use SDEF by default)? (Caution: while using SDEF by default would seem the obvious choice, it is actually less reliable since macOS's AETE-to-SDEF converter can introduce various subtle, hard-to-debug defects during the conversion process; whereas AETEs will always produce valid glues unless the app's 'ascr'/'gdte' handler fails, in which case the glue file will be mostly unusable and the need to switch to SDEF obvious to the user. [Of course, since these failures tend to occur in Carbon apps, there is no guarantee the SDEF-generated glue won't include some of the aforementioned subtle defects, but that's between the user, Apple, and the application vendor to sort out.])
-
-
-let gValueOptions = "npeo".characters // this MUST contain ALL options that require values; used to separate option key from value if not explicitly separated by whitespace
 
 let gHelp = [
     "Generate SwiftAutomation glue classes and SDEF documentation for",
@@ -28,7 +30,7 @@ let gHelp = [
     "",
     "Usage:",
     "",
-    "    aeglue [-n CLASSNAME] [-p PREFIX] [-rs]",
+    "    aeglue [-n CLASSNAME] [-p PREFIX] [-rS]",
     "           [-e FORMAT ...] [-o OUTDIR] APPNAME ...",
     "",
     "    aeglue [-hv]",
@@ -50,7 +52,7 @@ let gHelp = [
     "    -p PREFIX      Three-character prefix for glue's other classes.",
     "                       Auto-generated if omitted.",
     "    -r             Overwrite existing files.",
-    "    -s             Use SDEF terminology instead of AETE, e.g. if",
+    "    -S             Use SDEF terminology instead of AETE, e.g. if",
     "                       application's ascr/gdte handler is broken.",
     "    -v             Output the SwiftAutomation framework's version",
     "                       and exit.",
@@ -59,16 +61,16 @@ let gHelp = [
     "",
     "    aeglue iTunes",
     "",
-    "    aeglue -r -s Finder",
+    "    aeglue -r -S Finder",
     "",
     "    aeglue -p TE TextEdit ~/Desktop",
     "",
     "Type Support:",
     "",
-    "If an application command parameter/result has multiple types",
-    "(for example, a Symbol OR an Int OR a String), either cast it",
-    "to/from Any at run-time or else use the -e option to add the",
-    "corresponding enumerated type to the generated glue.",
+    "If an application command returns multiple types (for example,",
+    "a Symbol OR an Int OR a String), the -e option can be used to",
+    "add the corresponding enumerated type to the glue, providing",
+    "a type-safe alternative to the Any return type.",
     "",
     "The -e option's argument must have the following format:",
     "",
@@ -81,10 +83,10 @@ let gHelp = [
     "standard SwiftAutomation type: Symbol, Object, Insertion, Item,",
     "or Items (the glue PREFIX will be added automatically).",
     "",
-    "For example, to define an enum named SASymbolOrIntOrString",
+    "For example, to define an enum named MASymbolOrIntOrString", // TO DO: a real-world example would be better
     "which can represent a Symbol, Int, or String:",
     "",
-    "    aeglue -e Symbol+Int+String -p SA SomeApp",
+    "    aeglue -e Symbol+Int+String -p MA 'My App'",
     "",
     ""].joined(separator: "\n")
 
@@ -170,7 +172,7 @@ while let opt = optArgs.popLast() {
         foundOpts.append("\(opt) \(classNamePrefix!)")
     case "-r":
         canOverwrite = true
-    case "-s":
+    case "-S":
         useSDEF = true
         foundOpts.append(opt)
     case "-v":
@@ -183,12 +185,12 @@ while let opt = optArgs.popLast() {
     default: // emulate [hopefully] standard getopt parsing behavior
         if opt.hasPrefix("-") { // if it's multiple short option flags, reinsert them as separate options
             var chars = opt.characters
-            if chars.count > 2 { // e.g. given "-rs", split into "-r" and "-s", and reinsert
+            if chars.count > 2 { // e.g. given "-rS", split into "-r" and "-S", and reinsert
                 chars.removeFirst() // skip leading "-"
                 var tmp: [String] = []
                 while let c = chars.popFirst() {
                     tmp.append("-\(c)")
-                    if gValueOptions.contains(c) && chars.count > 0 { // rejoin remaining chars and put back on optArgs as option's value
+                    if gOptionsWithArguments.contains(c) && chars.count > 0 { // rejoin remaining chars and put back on optArgs as option's value
                         tmp.append(String(chars))
                         chars = "".characters
                     }

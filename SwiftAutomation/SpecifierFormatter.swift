@@ -233,7 +233,7 @@ public class SpecifierFormatter {
         case let obj as String:
             return quoteString(obj)
         case let obj as Date:
-            return "Date(timeIntervalSinceReferenceDate:\(obj.timeIntervalSinceReferenceDate)/*\(obj.description)*/)"
+            return "Date(timeIntervalSinceReferenceDate:\(obj.timeIntervalSinceReferenceDate)) /*\(obj.description)*/"
         case let obj as URL:
             if obj.isFileURL {
                 return "URL(fileURLWithPath:\(self.formatValue(obj.path)))"

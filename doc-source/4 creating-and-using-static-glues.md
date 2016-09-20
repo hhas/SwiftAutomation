@@ -2,6 +2,13 @@
 
 ## Generating a glue
 
+[TO DO: update]
+
+
+Glue files typically follow a standard <code><var>APPLICATION</var>Glue.swift</code> naming convention.
+
+
+
 The SwiftAutomation framework bundle includes an `aeglue` tool for generating static glue files containing high-level terminology-based APIs.
 
 To put `aeglue` on your Bash shell's search path, add the following line to your `~/.bash_profile` (modify the path to `SwiftAutomation.framework` as needed):

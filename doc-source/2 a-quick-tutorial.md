@@ -1,8 +1,8 @@
 # A quick tutorial
 
-[NOTE: this tutorial is incomplete and unfinished, and while it can be read it can't yet be performed as-is due to Swift2's lack of support for building/linking/using 3rd-party frameworks outside of Xcode shared workspaces]
+[CAUTION: This tutorial is incomplete and unfinished, and while it can be read it can't be performed until/unless SwiftAutomation.framework and TextEditGlue.swift can be imported into `/usr/bin/swift`. While the Xcode project does include a playground, this is unsuitable as, unlike the `swift` REPL, it re-evaluates ALL lines of code each time a new line is entered; thus, for example, a `make` command will create multiple new objects while the user is working, while repeated `delete` commands could unintentionally destroy user data.]
 
-[TO DO: should this chapter come before Apple events chapter?]
+[[TO DO: need to figure out how to import SwiftAutomation.framework and TextEditGlue.swift into `/usr/bin/swift` session, and package this into a simple shell script that configures and launches a tutorial session automatically (for bonus points, the script should also take an optional list of app names and generate and import glues for those too).]
 
 [TO DO: TextEdit now returns by-name document specifiers; update code examples accordingly]
 
@@ -11,11 +11,10 @@ The following tutorial provides a practical taste of application scripting with 
 ## 'Hello World' tutorial
 
 
-This tutorial uses SwiftAutomation, TextEdit and the interactive command line `swift` interpreter to perform a simple 'Hello World' exercise.
+This tutorial uses SwiftAutomation, TextEdit and the interactive command line `swift` interpreter to perform a simple 'Hello World' exercise. 
 
 <p class="hilitebox">Caution: It is recommended that you do not have any other documents open in TextEdit during this tutorial, as accidental modifications are easy to make and changes to existing documents are not undoable.</p>
 
-[TO DO: using interactive `swift` in Terminal will only work if SwiftAutomation framework and static glues can be passed via -framework and -F options; need to see if shared workspace+playground will be a better option.  OTOH, if interactive `swift` is a possibility, it would make sense to wrap it in a custom shell script that passes required options automatically, and also takes a list of scriptable apps for which to generate glues if they don't already exist]
 
 To begin, launch Terminal.app and type `swift` followed by a newline to launch the `swift` interpreter:
 
@@ -27,27 +26,40 @@ To begin, launch Terminal.app and type `swift` followed by a newline to launch t
 
 [TO DO: first step is to generate the glue; second step is to import it]
 
-The first step is to import the TextEdit glue module. [TO DO: need to figure out how and where to package and place glues for this to work; given that Swift currently sucks for building/importing third-party frameworks, this might be tricky]
+[TO DO: need to figure out how and where to package and place glues for this to work; given that Swift currently sucks for building/importing third-party frameworks, this might be tricky.]
 
-    import TEDGlue
+The first step is to import the Swift glue file for TextEdit:
 
-Once the glue module is imported, construct a new instance of the `TextEdit` class, identifying the application to be manipulated, and assign it to a variable or constant, `te`, for easy reuse:
+    import TextEditGlue
+
+Each glue file defines the Swift classes needed to control one particular application – in this case TextEdit – using human-readable code. A ready-to-use `TextEditGlue.swift` glue file is included with this tutorial for convenience. (Glues for other applications can be created using SwiftAutomation's `aeglue` tool; see chapter 4 for details.) 
+
+Once the glue is imported, instantiate a new _application_ object as follows:
 
     let textedit = TextEdit()
 
-The application may be identified by name, path, bundle ID (the default, if no arguments are given), creator type or, if running remotely, URL. If the application is local and is not already running, it will be launched automatically for you.
+An application may be identified in various ways, including name (e.g. `"TextEdit"`), path (`"/Applications/TextEdit.app"`), and bundle identifier (`"com.apple.TextEdit"`). For convenience, the glue 
 
 
 ### Create a new document
 
-First, create a new TextEdit document by making a new `document` object. This is done using the `make` command, passing it a single named parameter, `new: TED.document`, indicating the type of object to create:
+First, create a new TextEdit document by making a new `document` object. This is done using the `make` command, passing it a single named parameter, `new:`, indicating the type of object to create; in this case `TED.document`:
 
-    textedit.make(new: TED.document)
-    // TextEdit().documents[1]
+    try textedit.make(new: TED.document)
 
-Because `document` objects are always elements of the root `application` class, applications such as TextEdit can usually infer the location at which the new `document` object should appear. At other times, you need to supply an `at` parameter that indicates the desired location.
+If the application is not already running, it will be launched automatically the first time you send it a command.
 
-As you can see, the `make` command returns an object specifier identifying the newly-created object. This specifier can be assigned to a variable for easy reuse. Use the `make` command to create another document, this time assigning its result to a variable, `doc`:
+On success, TextEdit's `make` command returns an _object specifier_ that identifies the newly created object, for example:
+
+    TextEdit().documents["Untitled.txt"]
+
+This particular object specifier represents one-to-one relationship between TextEdit's main application object and a document object named "Untitled.txt". (In AppleScript jargon, the document object named "Untitled.txt" is an _element_ of the application object named "TextEdit".)
+
+[TO DO: how best to show an example of a one-to-many relationship? Having the user write `TextEdit().documents.paragraphs` might be a good choice as it emphasizes how queries describe abstract relationships rather than literal containment.]
+
+
+
+This specifier can be assigned to a variable for easy reuse. Use the `make` command to create another document, this time assigning its result to a variable, `doc`:
 
     let doc = textedit.make(new: TED.document)
 
@@ -109,6 +121,9 @@ Depending on what sort of attribute(s) the object specifier identifies, `get()` 
 ### More on `make()`
 
 The above exercise uses two commands to create a new TextEdit document containing the text "Hello World". It is also possible to perform both operations using the `make()` command alone by passing the value for the new document's `text` property via the `make()` command's optional `withProperties:` parameter: 
+
+[TO DO: Rephrase and insert in this section: "because `document` objects are elements of the root `application` class, applications such as TextEdit can usually infer the location at which the new `document` object should appear. At other times, you need to supply an `at` parameter that indicates the desired location."]
+
 
     textedit.make(new: TED.document, withProperties=[TED.text: "Hello World"])
     // TextEdit().documents[1]

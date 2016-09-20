@@ -11,7 +11,7 @@ import AppKit
 
 // TO DO: add `var fullyUnpackSpecifiers: Bool = false` compatibility flag; note that the simplest and safest (if not the most efficient) way to do this is to call the specifier's `unpackParentSpecifiers(clearCachedDesc:true)` method immediately after unpacking it, though since this option should almost never be needed (an app should always accept object specifiers it created) efficiency isn't a concern (the unpack...Specifier methods could also unroll the specifier chain, of course, but then there'd be two code paths for doing the same thing which isn't ideal maintenance-wise). (The only known app that requires this compatibility flag is iView Media Pro, which has an amusing pair of bugs that [#1] cause it to return by-index specifiers with a non-standard though still acceptable selector type [typeUInt32, IIRC], but requires by-index specifers passed as parameters to use typeSInt32 selectors and [#2] throws an error if given any other type instead of coercing it to the required type itself. AppleScript masks these because it _always_ fully unpacks and repacks each specifier, coercing indexes to typeSInt32 as it does. However, converting Specifiers<->NSAppleEventDescriptors in SwiftAutomation takes longer than the equivalent reference<->AEDesc conversions in AppleScript, so the only way to match AS for speed is to avoid full unpacking unless/until actually needed [for display purposes].)
 
-
+// TO DO: file system specifiers (typeAlias, typeFileURL, typeFSRef, etc) currently don't roundtrip (they all get coerced down to typeFileURL, regardless of their original type, and URL instances always pack as typeFileURL); this may or may not be a problem
 
 
 public typealias KeywordParameter = (name: String?, code: OSType, value: Any)
@@ -113,9 +113,7 @@ open class AppData {
     private let kNSNumberType = type(of: NSNumber(value: 1))
     
     
-    public func pack(_ value: Any) throws -> NSAppleEventDescriptor { // TO DO: what if value is nil? treat as error or pack as missing value? (note that Swift is annoyingly inconsistent on whether nil is/isn't a member of Any, giving compiler error when assigning a nil literal but none when assigning var of type `Whatever?` to `Any`)
-//        print("PACKING: \(object) \(object.dynamicType)")
-        
+    public func pack(_ value: Any) throws -> NSAppleEventDescriptor {
         // note: Swift's Bool/Int/Double<->NSNumber bridging sucks, so NSNumber instances require special processing to ensure the underlying value's exact type (Bool/Int/Double/etc) isn't lost in translation
         if type(of: value) == self.kNSBooleanType || value is DarwinBoolean { // test for NSNumber(bool:) or Swift Bool (true/false)
             // important: 
@@ -154,13 +152,10 @@ open class AppData {
             return NSAppleEventDescriptor(double: numberObj.doubleValue)
         }
         switch value {
-        // what to use for date, file? NSDate, NSURL/SwiftAEURL?
-        // what to use for typeNull? (don't want to use nil; NSNull?) Q. is there any use case where passing AEApp (which always packs itself as typeNull and should always be included in SwiftAutomation) wouldn't be sufficient?
-        // what about cMissingValue? (currently Symbol) (TBH, deciding optimal representation for 'missing value' is a somewhat intractable problem since app commands that return Any? will be much more annoying than if they return Any - which is already annoying enough)
-        case let obj as NSAppleEventDescriptor:
-            return obj
         case let val as SelfPacking:
             return try val.SwiftAutomation_packSelf(self)
+        case let obj as NSAppleEventDescriptor:
+            return obj
         case var val as Int:
             // Note: to maximize application compatibility, always preferentially pack integers as typeSInt32, as that's the traditional integer type recognized by all apps. (In theory, packing as typeSInt64 shouldn't be a problem as apps should coerce to whatever type they actually require before unpacking, but not-so-well-designed Carbon apps sometimes explicitly typecheck instead, so will fail if the descriptor isn't the assumed typeSInt32.)
             if Int(Int32.min) <= val && val <= Int(Int32.max) {
