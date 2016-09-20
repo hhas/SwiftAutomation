@@ -68,8 +68,6 @@ import AppKit
 /******************************************************************************/
 // abstract base class for _all_ specifier and test clause subclasses
 
-private let gUntargetedAppData = AppData() // dummy instance to keep compiler happy; glues will define their own private gUntargetedAppData constants containing an untargeted AppData instance
-
 
 open class Query: CustomStringConvertible, SelfPacking { // TO DO: Equatable? (TBH, comparing and hashing Query objects would be of limited use; not sure it's worth the effort as, ultimately, only the target app can know if two queries identify the same object or not)
     
@@ -97,8 +95,6 @@ open class Query: CustomStringConvertible, SelfPacking { // TO DO: Equatable? (T
     func SwiftAutomation_packSelf() throws -> NSAppleEventDescriptor { // subclasses must override this to pack themselves
         fatalError("Query.SwiftAutomation_packSelf() must be overridden by subclasses.")
     }
-    
-    // TO DO: better to call fatalError in SwiftAutomation_packSelf, parentQuery, rootSpecifier?
     
     // misc
     
@@ -377,11 +373,23 @@ public struct RangeSelector: SelfPacking { // holds data for by-range selectors 
 // note: glues don't define their own TestClause subclasses as tests don't implement any app-specific vars/methods, only the logical operators defined below, and there's little point doing so for static typechecking purposes as any values not handled by ElementsSpecifierExtension's subscript(test:TestClause) are accepted by its subscript(index:Any), so still wouldn't be caught at runtime (OTOH, it'd be worth considering should subscript(test:) need to be replaced with a separate byTest() method for any reason)
 
 
-// TO DO: currently, TestClauses can be constructed from any root, though only those constructed from Its roots are actually valid; checking this at compile-time would require a more complex class/protocol structure; checking this at runtime would require calling Query.rootSpecifier.rootObject and checking object is 'its' descriptor
+// note: only TestClauses constructed from Its roots are actually valid; however, enfording this at compile-time would require a more complex class/protocol structure, while checking this at runtime would require calling Query.rootSpecifier.rootObject and checking object is 'its' descriptor. As it's highly unlikely users will use an App or Con root by accident, we'll live recklessly and let the gods of AppleScript punish any user foolish enough to do so.
 
-public class TestClause: Query { // AND, OR, and NOT are implemented as &&, ||, and ! operator overrides
-    // TO DO: AND and OR could also be implemented as vararg funcs, but am inclined just to stick to two-arg operators and chain those when unpacking if >2
+public class TestClause: Query {
+    
+    // Logical test constructors
+    
+    public static func &&(lhs: TestClause, rhs: TestClause) -> TestClause {
+        return LogicalTest(operatorType: gAND, operands: [lhs, rhs], appData: lhs.appData, cachedDesc: nil)
+    }
+    public static func ||(lhs: TestClause, rhs: TestClause) -> TestClause {
+        return LogicalTest(operatorType: gOR, operands: [lhs, rhs], appData: lhs.appData, cachedDesc: nil)
+    }
+    public static prefix func !(lhs: TestClause) -> TestClause {
+        return LogicalTest(operatorType: gNOT, operands: [lhs], appData: lhs.appData, cachedDesc: nil)
+    }
 }
+
 
 public class ComparisonTest: TestClause {
     
@@ -448,22 +456,9 @@ public class LogicalTest: TestClause {
 }
 
 
-// Logical test constructors
-
-func &&(lhs: TestClause, rhs: TestClause) -> TestClause {
-    return LogicalTest(operatorType: gAND, operands: [lhs, rhs], appData: lhs.appData, cachedDesc: nil)
-}
-func ||(lhs: TestClause, rhs: TestClause) -> TestClause {
-    return LogicalTest(operatorType: gOR, operands: [lhs, rhs], appData: lhs.appData, cachedDesc: nil)
-}
-prefix func !(lhs: TestClause) -> TestClause {
-    return LogicalTest(operatorType: gNOT, operands: [lhs], appData: lhs.appData, cachedDesc: nil)
-}
-
-
 
 /******************************************************************************/
-// Specifier roots (all Specifier chains must be terminated by one of these)
+// Specifier roots (all Specifier chains must originate from a RootSpecifier instance)
 
 // note: app glues will also define their own untargeted App, Con, and Its roots
 
@@ -471,25 +466,24 @@ open class RootSpecifier: ObjectSpecifier { // app, con, its, custom root (note:
     
     public required init(rootObject: Any, appData: AppData) {
         // rootObject is either one of the three standard AEDescs indicating app/con/its root, or an arbitrary object supplied by caller (e.g. an AEAddressDesc if constructing a fully qualified specifier)
-        super.init(wantType: NSAppleEventDescriptor.null(),
+        super.init(wantType: NSAppleEventDescriptor.null(), // wantType and selectorForm are unused here
                    selectorForm: NSAppleEventDescriptor.null(), selectorData: rootObject,
                    parentQuery: nil, appData: appData, cachedDesc: rootObject as? NSAppleEventDescriptor)
     }
 
-    public required init(wantType: NSAppleEventDescriptor, selectorForm: NSAppleEventDescriptor, selectorData: Any, parentQuery: Query?, appData: AppData, cachedDesc: NSAppleEventDescriptor?) {
-        super.init(wantType: wantType, selectorForm: selectorForm, selectorData: selectorData, parentQuery: parentQuery, appData: appData, cachedDesc: cachedDesc)
+    public required init(wantType: NSAppleEventDescriptor, selectorForm: NSAppleEventDescriptor,
+                         selectorData: Any, parentQuery: Query?, appData: AppData, cachedDesc: NSAppleEventDescriptor?) {
+        super.init(wantType: wantType, selectorForm: selectorForm,
+                   selectorData: selectorData, parentQuery: parentQuery, appData: appData, cachedDesc: cachedDesc)
         
     }
     
     public override func SwiftAutomation_packSelf() throws -> NSAppleEventDescriptor {
         return try self.appData.pack(self.selectorData)
     }
-    
-    // glue-defined root classes must override the following to return their own untargeted AppData instance
-    open class var untargetedAppData: AppData { return gUntargetedAppData }
 
 
-    // TO DO: subclassing ObjectSpecifier is slightly risky, since accidental recursion in the following does very bad things, so it's essential that all Query/Specifier/ObjectSpecifier methods that operate on parent specifier are overridden here:
+    // Query/Specifier/ObjectSpecifier-inherited properties and methods that recursively call their parent specifiers are overridden here to ensure they terminate:
     
     override public var parentQuery: Query { return self }
     
@@ -498,6 +492,11 @@ open class RootSpecifier: ObjectSpecifier { // app, con, its, custom root (note:
     public var rootObject: Any { return self.selectorData } // the objspec chain's terminal 'from' object; this is usually AppRootDesc/ConRootDesc/ItsRootDesc, but not always (e.g. 'fully qualified' specifiers are terminated by an AEAddressDesc)
     
     override func unpackParentSpecifiers() {}
+    
+    
+    // glue-defined root classes must override `untargetedAppData` to return their own untargeted AppData instance
+    
+    open class var untargetedAppData: AppData { fatalError("RootSpecifier.untargetedAppData must be overridden by subclasses.") }
 }
 
 

@@ -8,123 +8,6 @@ import AppKit
 
 
 /******************************************************************************/
-// Specifier and Symbol subclasses pack themselves
-// Set, Array, Dictionary structs pack and unpack themselves
-
-public protocol SelfPacking {
-    func SwiftAutomation_packSelf(_ appData: AppData) throws -> NSAppleEventDescriptor
-}
-
-protocol SelfUnpacking {
-    static func SwiftAutomation_unpackSelf(_ desc: NSAppleEventDescriptor, appData: AppData) throws -> Self
-}
-
-
-/******************************************************************************/
-// `missing value` constant
-
-// note: this design is not yet finalized (ideally we'd just map cMissingValue to nil, but returning nil for commands whose return type is `Any` is a PITA as all of Swift's normal unboxing techniques break, and the only way to unbox is to cast from Any to Optional<T> first, which in turn requires that T is known in advance, in which case what's the point of returning Any in the first place?)
-
-private let MissingValueDesc = NSAppleEventDescriptor(typeCode: SwiftAutomation_cMissingValue)
-
-
-// unlike Swift's `nil` (which is actually an infinite number of values since Optional<T>.none is generic), there is only ever one `MissingValue`, which means it should behave sanely when cast to and from `Any`
-
-public enum MissingValueType: CustomStringConvertible, SelfPacking {
-    
-    case missingValue
-    
-    init() { self = .missingValue }
-    
-    public func SwiftAutomation_packSelf(_ appData: AppData) throws -> NSAppleEventDescriptor {
-        return MissingValueDesc
-    }
-    
-    public var description: String { return "MissingValue" }
-}
-
-public let MissingValue = MissingValueType() // the `missing value` constant
-
-
-// TO DO: define `==`/`!=` operators that treat MayBeMissing<T>.missing(…) and MissingValue and Optional<T>.none as equivalent? Or get rid of `MayBeMissing` enum and (if possible/practical) support `Optional<T> as? MissingValueType` and vice-versa?
-
-// define a generic type for use in command's return type that allows the value to be missing, e.g. `Contacts().people.birthDate.get() as [MayBeMissing<String>]`
-
-// TO DO: it may be simpler for users if commands always return Optional<T>.none when an Optional return type is specified, and MissingValue when one is not
-
-public enum MayBeMissing<T> : SelfPacking, SelfUnpacking {
-    case value(T)
-    case missing
-    
-    public init(_ value: T) {
-        switch value {
-        case is MissingValueType:
-            self = .missing
-        default:
-            self = .value(value)
-        }
-    }
-    
-    public init() {
-        self = .missing
-    }
-    
-    public func SwiftAutomation_packSelf(_ appData: AppData) throws -> NSAppleEventDescriptor {
-        switch self {
-        case .value(let value):
-            return try appData.pack(value)
-        case .missing:
-            return MissingValueDesc
-        }
-    }
-    
-    public static func SwiftAutomation_unpackSelf(_ desc: NSAppleEventDescriptor, appData: AppData) throws -> MayBeMissing<T> {
-        if isMissingValue(desc) {
-            return MayBeMissing<T>.missing
-        } else {
-            return MayBeMissing<T>.value(try appData.unpack(desc) as T)
-        }
-    }
-    
-    public var value: T? { // unbox the actual value, or return `nil` if it was MissingValue; this should allow users to bridge safely from MissingValue to nil
-        switch self {
-        case .value(let value):
-            return value
-        case .missing:
-            return nil
-        }
-    }
-}
-
-
-public func isMissingValue(_ desc: NSAppleEventDescriptor) -> Bool { // check if the given AEDesc is the `missing value` constant
-    return desc.descriptorType == typeType && desc.typeCodeValue == SwiftAutomation_cMissingValue
-}
-
-// allow optionals to be used in place of MayBeMissing… arguably, MayBeMissing won't be needed if this works
-
-extension Optional: SelfPacking, SelfUnpacking {
-    
-    public func SwiftAutomation_packSelf(_ appData: AppData) throws -> NSAppleEventDescriptor {
-        switch self {
-        case .some(let value):
-            return try appData.pack(value)
-        case .none:
-            return MissingValueDesc
-        }
-    }
-    
-    public static func SwiftAutomation_unpackSelf(_ desc: NSAppleEventDescriptor, appData: AppData) throws -> Optional<Wrapped> {
-        if isMissingValue(desc) {
-            return Optional<Wrapped>.none
-        } else {
-            return Optional<Wrapped>.some(try appData.unpack(desc))
-        }
-    }
-}
-
-
-/******************************************************************************/
 // convert between 4-character strings and OSTypes (use these instead of calling UTGetOSTypeFromString/UTCopyStringFromOSType directly)
 
 func FourCharCodeUnsafe(_ string: String) -> OSType { // note: silently returns 0 if string is invalid; where practical, use throwing version below
@@ -222,8 +105,7 @@ private let ProcessNotFoundErrorNumbers: Set<Int> = [procNotFound, connectionInv
 private let LaunchEventSucceededErrorNumbers: Set<Int> = [Int(noErr), errAEEventNotHandled]
 
 private let LaunchEvent = NSAppleEventDescriptor(eventClass: SwiftAutomation_kASAppleScriptSuite, eventID: SwiftAutomation_kASLaunchEvent,
-                                                 targetDescriptor: NSAppleEventDescriptor.null(),
-                                                 returnID: AEReturnID(kAutoGenerateReturnID),
+                                                 targetDescriptor: NSAppleEventDescriptor.null(), returnID: AEReturnID(kAutoGenerateReturnID),
                                                  transactionID: AETransactionID(kAnyTransactionID))
 
 // Application initializers pass application-identifying information to AppData initializer as enum according to which initializer was called

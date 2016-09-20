@@ -19,7 +19,7 @@ let kLegalFirstChars = CharacterSet(charactersIn: UPPERCHAR + LOWERCHAR + OTHER)
 let kLegalOtherChars = CharacterSet(charactersIn: UPPERCHAR + LOWERCHAR + OTHER + NUMERIC)
 
 
-let kSwiftKeywords: Set<String> = [ // Swift 2.0
+let kSwiftKeywords: Set<String> = [ // Swift 2.0 // TO DO: update for Swift 3.0
     // Keywords used in declarations:
     "class", "deinit", "enum", "extension", "func", "import", "init", "internal", "let", "operator",
     "private", "protocol", "public", "static", "struct", "subscript", "typealias", "var",

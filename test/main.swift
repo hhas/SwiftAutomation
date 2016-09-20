@@ -100,8 +100,9 @@ do {
     
     
     // get every file of folder "Documents" of home whose name extension is "txt"
-    print("\nTEST: Finder().home.folders[\"Documents\"].files[FINIts.nameExtension == \"txt\"].name.get()")
-    let q = Finder().home.folders["Documents"].files[FINIts.nameExtension == "txt"].name
+    let date = Date(timeIntervalSinceReferenceDate:0)
+    print("\nTEST: Finder().home.folders[\"Documents\"].files[FINIts.nameExtension == \"txt\" && FINIts.modificationDate > DATE].name.get()")
+    let q = Finder().home.folders["Documents"].files[FINIts.nameExtension == "txt" && FINIts.modificationDate > date].name
     print("// \(q)")
     let result4a = try q.get()
     print("=> \(result4a)")
