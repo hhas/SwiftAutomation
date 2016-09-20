@@ -2,12 +2,12 @@
 //  TextEditGlue.swift
 //  TextEdit.app 1.11
 //  SwiftAutomation.framework 0.1.0
-//  `aeglue 'TextEdit.app'`
+//  `aeglue -e 'Symbol+Int+String' -p TED 'TextEdit.app'`
 //
 
 
 import Foundation
-//import SwiftAutomation
+import SwiftAutomation
 
 
 /******************************************************************************/
@@ -988,4 +988,38 @@ public class TextEdit: TEDRoot, ApplicationExtension {
 public let TEDApp = gUntargetedAppData.app as! TEDRoot
 public let TEDCon = gUntargetedAppData.con as! TEDRoot
 public let TEDIts = gUntargetedAppData.its as! TEDRoot
+
+
+/******************************************************************************/
+// Static types
+
+ // Record descriptors are normally unpacked to the following type:
+typealias TEDDictionary = [TEDSymbol:Any]
+
+
+public enum TEDSymbolOrIntOrString : SelfPacking, SelfUnpacking {
+    case symbol(TEDSymbol)
+    case int(Int)
+    case string(String)
+    
+    public init(_ value: TEDSymbol) { self = .symbol(value) }
+    public init(_ value: Int) { self = .int(value) }
+    public init(_ value: String) { self = .string(value) }
+    
+    public func SwiftAutomation_packSelf(_ appData: AppData) throws -> NSAppleEventDescriptor {
+        switch self {
+        case .symbol(let value): return try appData.pack(value)
+        case .int(let value): return try appData.pack(value)
+        case .string(let value): return try appData.pack(value)
+        }
+    }
+    public static func SwiftAutomation_unpackSelf(_ desc: NSAppleEventDescriptor, appData: AppData) throws -> TEDSymbolOrIntOrString {
+        do { return .symbol(try appData.unpack(desc) as TEDSymbol) } catch {}
+        do { return .int(try appData.unpack(desc) as Int) } catch {}
+        do { return .string(try appData.unpack(desc) as String) } catch {}
+        throw UnpackError(appData: appData, descriptor: desc, type: TEDSymbolOrIntOrString.self,
+                          message: "Can't coerce descriptor to Swift type: \(TEDSymbolOrIntOrString.self)")
+    }
+}
+
 

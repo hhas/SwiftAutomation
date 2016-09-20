@@ -17,8 +17,10 @@ import Foundation
 
 // TO DO: what about adding an option for building glues as importable modules?
 
-// TO DO: `-t` option for defining sum types, e.g. `StringOrSymbol` (Q. should this include `Number` as alias for `IntOrDouble`, c.f. AS?)
+// TO DO: change -s option to -a (i.e. use SDEF by default)? (Caution: while using SDEF by default would seem the obvious choice, it is actually less reliable since macOS's AETE-to-SDEF converter can introduce various subtle, hard-to-debug defects during the conversion process; whereas AETEs will always produce valid glues unless the app's 'ascr'/'gdte' handler fails, in which case the glue file will be mostly unusable and the need to switch to SDEF obvious to the user. [Of course, since these failures tend to occur in Carbon apps, there is no guarantee the SDEF-generated glue won't include some of the aforementioned subtle defects, but that's between the user, Apple, and the application vendor to sort out.])
 
+
+let gValueOptions = "npeo".characters // this MUST contain ALL options that require values; used to separate option key from value if not explicitly separated by whitespace
 
 let gHelp = [
     "Generate SwiftAutomation glue classes and SDEF documentation for",
@@ -26,7 +28,9 @@ let gHelp = [
     "",
     "Usage:",
     "",
-    "    aeglue [-n CLASSNAME] [-p PREFIX] [-rs] [-o OUTDIR] APPNAME ...",
+    "    aeglue [-n CLASSNAME] [-p PREFIX] [-rs]",
+    "           [-e FORMAT ...] [-o OUTDIR] APPNAME ...",
+    "",
     "    aeglue [-hv]",
     "",
     "APPNAME - Name or path to application. If -n and -p options are",
@@ -36,9 +40,10 @@ let gHelp = [
     "",
     "Options:",
     "",
+    "    -e FORMAT      An enumerated type definition; see Type Support.",
     "    -h             Show this help and exit.",
     "    -o OUTDIR      Path to directory in which the glue files will",
-    "                       be created; if omitted, the current working ",
+    "                       be created; if omitted, the current working",
     "                       directory is used.",
     "    -n CLASSNAME   C-style identifier to use as the Application",
     "                       class's name. Auto-generated if omitted.",
@@ -57,8 +62,39 @@ let gHelp = [
     "    aeglue -r -s Finder",
     "",
     "    aeglue -p TE TextEdit ~/Desktop",
+    "",
+    "Type Support:",
+    "",
+    "If an application command parameter/result has multiple types",
+    "(for example, a Symbol OR an Int OR a String), either cast it",
+    "to/from Any at run-time or else use the -e option to add the",
+    "corresponding enumerated type to the generated glue.",
+    "",
+    "The -e option's argument must have the following format:",
+    "",
+    "    [TYPENAME=]TYPE1+TYPE2+...",
+    "",
+    "TYPENAME is the name to be given to the enumerated type, e.g.",
+    "MyType. If omitted, a default name is automatically generated.",
+    "",
+    "TYPEn is the name of an existing Swift type, e.g. String or a",
+    "standard SwiftAutomation type: Symbol, Object, Insertion, Item,",
+    "or Items (the glue PREFIX will be added automatically).",
+    "",
+    "For example, to define an enum named SASymbolOrIntOrString",
+    "which can represent a Symbol, Int, or String:",
+    "",
+    "    aeglue -e Symbol+Int+String -p SA SomeApp",
+    "",
     ""].joined(separator: "\n")
 
+
+func validateOption(opt: String, arg: String?) {
+    if arg == nil || arg!.hasPrefix("-") {
+        print("Missing value for \(opt) option.", to: &errStream)
+        exit(1)
+    }
+}
 
 func quoteForShell(_ string: String) -> String { // single-quote string for use in shell
     return "'" + string.replacingOccurrences(of: "'", with: "'\\''") + "'"
@@ -88,6 +124,7 @@ var classNamePrefix: String?
 var writeDefaultGlue = false
 var canOverwrite = false
 var useSDEF = false
+var enumeratedTypeFormats: [String] = []
 var applicationURLs: [URL?] = []
 var outDir: URL?
 
@@ -100,40 +137,36 @@ if optArgs.count == 0 {
     exit(0)
 }
 
+
 var foundOpts = [String]() // used to create string representation of shell command that will appear in glue
 var applicationPaths = [String]() // application name/path arguments
 
 // parse options
-let gValueOptions = "onp".characters // must contain all options that have values; used to separate option key from value if not explicitly separated by whitespace
 while let opt = optArgs.popLast() {
     switch(opt) {
     case "-D":
         writeDefaultGlue = true
         frameworkImport = ""
         foundOpts.append(opt)
+    case "-e":
+        let enumeratedTypeFormat = optArgs.popLast()
+        validateOption(opt: opt, arg: enumeratedTypeFormat)
+        enumeratedTypeFormats.append(enumeratedTypeFormat!)
+        foundOpts.append("\(opt) \(quoteForShell(enumeratedTypeFormat!))")
     case "-h":
         print(gHelp, to: &errStream)
         exit(0)
     case "-n":
         applicationClassName = optArgs.popLast()
-        if applicationClassName == nil || applicationClassName!.hasPrefix("-") {
-            print("Missing value for -n option.", to: &errStream)
-            exit(1)
-        }
+        validateOption(opt: opt, arg: applicationClassName)
         foundOpts.append("\(opt) \(applicationClassName!)")
     case "-o":
         let path = optArgs.popLast()
-        if path == nil || path!.hasPrefix("-") {
-            print("Missing value for -o option.", to: &errStream)
-            exit(1)
-        }
+        validateOption(opt: opt, arg: path)
         outDir = URL(fileURLWithPath: path!).absoluteURL // TO DO: check path exists and is dir? // TO DO: Swift/Foundation is being janky and not always expanding to absolute path when given relative to CWD or ~; need to find canonical shell path expansion and use that
     case "-p":
         classNamePrefix = optArgs.popLast()
-        if classNamePrefix == nil || classNamePrefix!.hasPrefix("-") {
-            print("Missing value for -p option.", to: &errStream)
-            exit(1)
-        }
+        validateOption(opt: opt, arg: classNamePrefix)
         foundOpts.append("\(opt) \(classNamePrefix!)")
     case "-r":
         canOverwrite = true
@@ -193,7 +226,8 @@ if writeDefaultGlue {
 
 for applicationURL in applicationURLs {
     let glueSpec = GlueSpec(applicationURL: applicationURL, classNamePrefix: classNamePrefix,
-                            applicationClassName: applicationClassName, useSDEF: useSDEF)
+                            applicationClassName: applicationClassName, useSDEF: useSDEF,
+                            enumeratedTypeFormats: enumeratedTypeFormats)
     let shellCommand = "aeglue " + (foundOpts +
             (applicationURL == nil ? [] : [quoteForShell(applicationURL!.lastPathComponent)])).joined(separator: " ")
     let glueFileName = "\(glueSpec.applicationClassName)Glue.swift"

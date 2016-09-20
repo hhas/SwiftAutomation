@@ -8,38 +8,33 @@ import Foundation
 
 // TO DO: finalize API, implementation
 
+/******************************************************************************/
+// Identifiers (legal characters, reserved names, etc)
 
-let UPPERCHAR = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-let LOWERCHAR = "abcdefghijklmnopqrstuvwxyz"
-let NUMERIC   = "0123456789"
-let OTHER     = "_"
-
-
-let kLegalFirstChars = CharacterSet(charactersIn: UPPERCHAR + LOWERCHAR + OTHER)
-let kLegalOtherChars = CharacterSet(charactersIn: UPPERCHAR + LOWERCHAR + OTHER + NUMERIC)
+let UPPERCHAR = Set<Character>("ABCDEFGHIJKLMNOPQRSTUVWXYZ".characters)
+let LOWERCHAR = Set<Character>("abcdefghijklmnopqrstuvwxyz".characters)
+let NUMERIC   = Set<Character>("0123456789".characters)
+let OTHER     = Set<Character>("_".characters)
 
 
-let kSwiftKeywords: Set<String> = [ // Swift 2.0 // TO DO: update for Swift 3.0
-    // Keywords used in declarations:
-    "class", "deinit", "enum", "extension", "func", "import", "init", "internal", "let", "operator",
-    "private", "protocol", "public", "static", "struct", "subscript", "typealias", "var",
-    // Keywords used in statements:
-    "break", "case", "continue", "default", "do", "else", "fallthrough", "for", "if", "in", "return",
-    "switch", "where", "while",
-    // Keywords used in expressions and types:
-    "as", "dynamicType", "false", "is", "nil", "self", "Self", "super", "true",
-    "__COLUMN__", "__FILE__", "__FUNCTION__", "__LINE__",
-    // Keywords reserved in particular contexts:
-    "associativity", "convenience", "dynamic", "didSet", "final", "infix", "inout", "lazy", "left",
-    "mutating", "none", "nonmutating",
-    "optional", "override", "postfix", "precedence", "prefix", "Protocol", "required", "right",
-    "Type", "unowned", "weak", "willSet",
-    // "get"/"set" only used in defining getters/setters so shouldn't conflict with apps' get/set commands
+let kLegalFirstChars = UPPERCHAR.union(LOWERCHAR).union(OTHER)
+let kLegalOtherChars = UPPERCHAR.union(LOWERCHAR).union(OTHER).union(NUMERIC)
+
+
+// TO DO: updated for Swift3, but could be missing some valid keywords - CHECK!!!
+
+let kSwiftKeywords: Set<String> = [
+    // reserved Swift keywords // TO DO: ideally Swift would provide an API for getting an up-to-date list of all known keywords; for now, we use a hardcoded list of keyword names that needs updated manually each time the language changes and hope we didn't miss any out
+    "as", "associatedtype", "autoreleasepool", "break", "case", "catch", "class", "continue", "convenience", "default", "defer", "deinit", "do", "dynamic", "else", "enum", "extension", "fallthrough", "false", "fileprivate", "final", "for", "func", "guard", "if", "import", "in", "infix", "init", "internal", "lazy", "let", "let", "metatype", "mutating", "nil", "nonmutating", "optional", "override", "postfix", "prefix", "private", "protocol", "public", "repeat", "required", "rethrows", "return", "self", "Self", "static", "struct", "subscript", "super", "switch", "throw", "throws", "true", "try", "typealias", "unowned", "var", "var", "weak", "where", "while",
+
+    // "get", "set" are only used in property definitions so shouldn't conflict with apps' get/set commands
     
-    // misc
+    // other
     
-    "missingValue", // represented as MissingValueType, not Symbol
+    "missingValue", // unlike other typeType descriptors, the `missing value` constant (`cMissingValue`) is represented by the `MissingValueType.missing` instance, not a Symbol instance, so that Swift's type system can reliably separate it out when unpacking command results; we reserve its Symbol-based name here just to stop it appearing anywhere and confusing users (reserving it here doesn't prevent it being used, should an application's own dictionary define it for some weird reason; it just ensures that it'll include an underscore suffix if it is)
 ]
+
+
 
 // Swift glue methods
 
@@ -58,7 +53,10 @@ public let kSwiftAESpecifierMethods: Set<String> = [ // TO DO: review; some name
     // ApplicationExtension
     "currentApplication",
     "customRoot",
-    // element(s) selectors
+    "isRunning",
+    "launch",
+    "doTransaction",
+    // Selectors
     "ID",
     "beginning",
     "end",
@@ -70,18 +68,11 @@ public let kSwiftAESpecifierMethods: Set<String> = [ // TO DO: review; some name
     "middle",
     "last",
     "any",
-    // test clause constructors
+    // Test clauses
     "beginsWith",
     "endsWith",
     "contains",
     "isIn",
-    // currently unused
-    "help", // TO DO: uppercase?
-    "its", // TO DO: unused?
-    // miscellaneous
-    "isRunning",
-    "launch",
-    "doTransaction",
 ]
 
 
@@ -98,7 +89,30 @@ public let kSwiftAEParameterNames: Set<String> = [
 public let kReservedPrefixes: Set<String> = ["NS", "AE", "SwiftAutomation_"] // TO DO: decide
 
 
-public let kWordSeparators = CharacterSet(charactersIn: " -/")
+public let kWordSeparators = CharacterSet(charactersIn: " -/") // some AETEs may include hyphens and other non-C-identifier/non-space characters in their keyword names, which are problematic in AppleScript (which [e.g.] compiles `trash-object` to `trash - object`) and a PITA in traditionally C-like languages, so we just bite the bullet and treat them all as if they were just simple spaces between words
+
+
+/******************************************************************************/
+// Checks
+
+func isCIdentifier(_ string: String) -> Bool { // returns true if string is a valid C identifier (caution: the client is responsible for checking identifier string won't conflict with known Swift keywords)
+    var chars = string.characters
+    guard let c = chars.popFirst() else { return false }
+    if !kLegalFirstChars.contains(c) { return false }
+    for c in chars { if !kLegalOtherChars.contains(c) { return false } }
+    return true
+}
+
+
+func validateCIdentifier(_ string: String) throws { // throws if not a legal [C-style] identifier in Swift (i.e. contains invalid characters or conflicts with an existing Swift keyword)
+    // TO DO: this should really check for valid Swift identifiers, though since all supported stdlib and glue types use C-style names this'll do for now
+    if !isCIdentifier(string) || kSwiftKeywords.contains(string) {
+        throw SwiftAutomationError(code: 1, message: "Not a valid type name: '\(string)'")
+    }
+}
+
+
+/******************************************************************************/
 
 
 
@@ -130,18 +144,19 @@ public class KeywordConverter {
             // convert keyword to camelcase, e.g. "audio CD playlist" -> "audioCDPlaylist"
             for i in (0..<tmp.length).reversed() {
                 let c = tmp.character(at: i)
-                if !kLegalOtherChars.contains(UnicodeScalar(c)!) {
+                // note that while application dictionaries were originally intended to be multi-language, dialect support was quietly abandoned circa MacOS8 so all dictionaries nowadays use English-language words only. SDEFs in CocoaScripting-based apps restrict each word to C-identifier-safe characters. Occasionally, however, an old-school Carbon app may contain an AETE resource that includes other characters that aren't valid for C-style identifiers; as this is very rare, we mostly just convert these to underscore-delimited hex values
+                if !kLegalOtherChars.contains(Character(UnicodeScalar(c)!)) {
                     if kWordSeparators.contains(UnicodeScalar(c)!) { // remove word separator character and capitalize next word
                         tmp.replaceCharacters(in: NSMakeRange(i,2), with: tmp.substring(with: NSMakeRange(i+1,1)).uppercased())
                     } else if c == 38 { // replace "&" with "And"
                         tmp.replaceCharacters(in: NSMakeRange(i,1), with: "And")
-                    } else { // replace character with "0xXX" hex code // TO DO: use Swift's backtick identifier quoting where possible?
-                        tmp.replaceCharacters(in: NSMakeRange(i,1), with: NSString(format: "0x%2.2X", c) as String)
+                    } else { // replace non-C-identifier character with "_U0000_"-style hex code
+                        tmp.replaceCharacters(in: NSMakeRange(i,1), with: String(format: "_U%04X_", c))
                     }
                 }
             }
             // sanity check: if first character is digit (which it shouldn't ever be), prefix with underscore
-            if !kLegalFirstChars.contains(UnicodeScalar(tmp.character(at: 0))!) {
+            if !kLegalFirstChars.contains(Character(UnicodeScalar(tmp.character(at: 0))!)) {
                 tmp.insert("_", at: 0)
             }
             result = tmp.copy() as! String // TO DO: check

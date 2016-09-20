@@ -17,6 +17,8 @@ public class GlueSpec {
     public let useSDEF: Bool
     public let bundleInfo: BundleInfoType
     
+    public let enumeratedTypeFormats: [String] // TO DO: could this be better factored (e.g. to take Array<EnumeratedTypeDefinition> directly, allowing the client to build that array however it likes)?
+    
     public typealias BundleInfoType = [String:AnyObject]
     
     public var applicationFileName: String? { return self.applicationURL?.lastPathComponent }
@@ -29,7 +31,8 @@ public class GlueSpec {
     
     // create GlueSpec for specified application (applicationURL is typically a file:// URL, or nil to create default glue)
     public init(applicationURL: URL?, keywordConverter: KeywordConverterProtocol = gSwiftAEKeywordConverter,
-                classNamePrefix: String? = nil, applicationClassName: String? = nil, useSDEF: Bool = false) {
+                classNamePrefix: String? = nil, applicationClassName: String? = nil, useSDEF: Bool = false,
+                enumeratedTypeFormats: [String] = []) {
         self.applicationURL = applicationURL
         self.keywordConverter = keywordConverter
         self.useSDEF = useSDEF
@@ -50,6 +53,7 @@ public class GlueSpec {
                     applicationClassName ?? (bundleInfo["CFBundleName"] as? String) ?? "\(prefix)Application")
             self.applicationClassName = (appName == classNamePrefix) ? keywordConverter.escapeName(appName) : appName
         }
+        self.enumeratedTypeFormats = enumeratedTypeFormats // TO DO: what about auto-generating default definitions from AETE/SDEF? (see also TODOs on generating record structs) (note: ignore auto-type-generation for now and implement manual format-string-based support only - an experimental branch can explore feasibility of automating it later on)
     }
 
     public func buildGlueTable() throws -> GlueTable { // parse application terminology into
@@ -63,10 +67,65 @@ public class GlueSpec {
         }
         return glueTable
     }
+    
+    public func buildEnumeratedTypeDefinitions() throws -> [EnumeratedTypeDefinition] {
+        return try self.enumeratedTypeFormats.map {try parseEnumeratedTypeDefinition($0, classNamePrefix: self.classNamePrefix) }
+    }
 }
 
 
 /******************************************************************************/
+// Enumerated type support
+
+// TO DO: how difficult would it be to auto-generate enum type definitions from an app's AETE/SDEF? (bearing in mind that AETE/SDEF-supplied type info is frequently vague, ambiguous, incomplete, and/or wrong, so a manual option will always be required as well); this basically falls into same camp as how to auto-generate struct-based record definitions as a more static-friendly alternative to AppData's standard AERecordDesc<->[Symbol:Any] mapping; may be worth exploring later (and will need a manual format string option as well, e.g. "STRUCTNAME=PROPERTY1:TYPE1+PROPERTY2:TYPE2+...")
+
+
+let ReservedGlueTypeNames: Set<String> = ["Symbol", "Object", "Insertion", "Item", "Items", "Root"] // enum type renderer will automatically prefix these names with classNamePrefix // TO DO: should probably be on glueSpec.keywordConverter
+
+
+public typealias EnumeratedTypeDefinition = (enumName: String, cases: [(caseName: String, typeName: String)]) // (note: the last unnamed item is only used when auto-generating enum's name; it's the same as the typeName except it doesn't have a classNamePrefix automatically added)
+
+
+// TO DO: needs special-case handling for "Missing" (basically, pull it out of the typeNames list and set a flag that adds `case missing` to the enum) [note: don't need special support for "Optional", but probably should report it as an error just to remind users to typealias it themselves; ditto for "Array", "Dictionary", "Set"]
+
+// TO DO: `aeglue` will need an option for typealiasing generics
+
+
+func parseEnumeratedTypeDefinition(_ string: String, classNamePrefix: String) throws -> EnumeratedTypeDefinition {
+    // an enumerated (aka sum/union) type definition is written as a simple format string: "[TYPENAME=]TYPE1+TYPE2+..."
+    // note that class name prefixes are added automatically to both "TYPENAME" and (as needed) "TYPEn", allowing a format string to be used over multiple glues, e.g. "URL+Item" -> `enum FINURLOrItem { case URL; case FINItem; ...}`, or "FileObject=URL+Item" -> `enum FINFileObject { case URL; case FINItem; ...}`
+    let parts = string.characters.split(maxSplits:1, whereSeparator: {$0=="="})
+    let typeNames = try parts.last!.split(whereSeparator: {$0=="+"}).map {
+        (chars: String.CharacterView) throws -> (String, String, String) in
+        let typeName = String(chars)
+        try validateCIdentifier(typeName)
+        var caseName = typeName.lowercased()
+        if !UPPERCHAR.contains(typeName[typeName.startIndex]) { caseName = "_\(caseName)" }
+        if kSwiftKeywords.contains(caseName) { caseName += "_" }
+        return (caseName, (ReservedGlueTypeNames.contains(typeName) ? (classNamePrefix + typeName) : typeName), typeName)
+    }
+    if typeNames.count < 2 {
+        throw SwiftAutomationError(code: 1, message: "Not a valid enumerated type definition: '\(string)'")
+    }
+    var enumName: String
+    if parts.count == 2 {
+        enumName = String(parts[0])
+        try validateCIdentifier(enumName)
+    } else { // auto-generate from typeNames
+        enumName = typeNames.map {
+            (_, _, name: String) -> String in
+            var chars = name.characters
+            let c = chars.popFirst()!
+            return String(c).uppercased() + String(chars).lowercased()
+            }.joined(separator: "Or")
+        if kSwiftKeywords.contains(enumName) { enumName += "_" }
+    }
+    return (classNamePrefix + enumName, typeNames.map { (caseName, typeName, _) in return (caseName, typeName) })
+}
+
+
+/******************************************************************************/
+// Application glue renderer
 
 
 public class StaticGlueTemplate {
@@ -90,7 +149,7 @@ public class StaticGlueTemplate {
         return self.string
     }
     
-    private func iterate<T>(_ name: String, newContents: [T], emptyContent: String,renderer: (StaticGlueTemplate, T) -> ()) {
+    private func iterate<T>(block name: String, newContents: [T], emptyContent: String, renderer: (StaticGlueTemplate, T) -> ()) {
         let tagLength = ("«+\(name)»" as NSString).length
         while true {
             let range = self._template.range(of: "(?s)«\\+\(name)».*?«-\(name)»",
@@ -102,7 +161,7 @@ public class StaticGlueTemplate {
             self._template.deleteCharacters(in: range)
             var result = ""
             if newContents.count > 0 {
-                for newContent in newContents { // TO DO: if newContents is generator, make sure this doesn't exhaust it (as in python)
+                for newContent in newContents {
                     result += StaticGlueTemplate(string: subString).subRender(newContent, renderer: renderer)
                 }
             }else {
@@ -114,35 +173,49 @@ public class StaticGlueTemplate {
     
     // render tags
     
-    public func insertString(_ name: String, _ newContent: String) {
-        self._template.replaceOccurrences(of: "«\(name)»", with: newContent,
+    public func insertString(_ block: String, _ newContent: String) {
+        self._template.replaceOccurrences(of: "«\(block)»", with: newContent,
                                           options: .literal, range: NSMakeRange(0, _template.length))
     }
     
-    public func insertOSType(_ name: String, _ code: OSType) { // insert OSType as numeric and/or string literal representations (tag for the latter is name+"_STR")
-        self.insertString(name, NSString(format: "0x%08x", code) as String)
-        self.insertString("\(name)_STR", formatFourCharCodeString(code))
+    public func insertOSType(_ block: String, _ code: OSType) { // insert OSType as numeric and/or string literal representations (tag for the latter is name+"_STR")
+        self.insertString(block, NSString(format: "0x%08x", code) as String)
+        self.insertString("\(block)_STR", formatFourCharCodeString(code))
     }
     
-    public func insertKeywords(_ name: String, _ newContents: [KeywordTerm], emptyContent: String = "") {
-        self.iterate(name, newContents: newContents, emptyContent: emptyContent) {
+    public func insertKeywords(_ block: String, _ newContents: [KeywordTerm], emptyContent: String = "") {
+        self.iterate(block: block, newContents: newContents, emptyContent: emptyContent) {
             $0.insertString("NAME", $1.name)
             $0.insertOSType("CODE", $1.code)
         }
     }
-    public func insertKeywords(_ name: String, _ newContents: [(key:OSType, value:String)], emptyContent: String = "") {
-        self.iterate(name, newContents: newContents, emptyContent: emptyContent) {
+    public func insertKeywords(_ block: String, _ newContents: [(key:OSType, value:String)], emptyContent: String = "") {
+        self.iterate(block: block, newContents: newContents, emptyContent: emptyContent) {
             $0.insertString("NAME", $1.1)
             $0.insertOSType("CODE", $1.0)
         }
     }
     
-    public func insertCommands(_ name: String, _ newContents: [CommandTerm], emptyContent: String = "") {
-        self.iterate(name, newContents: newContents, emptyContent: emptyContent) {
+    public func insertCommands(_ block: String, _ newContents: [CommandTerm], emptyContent: String = "") {
+        self.iterate(block: block, newContents: newContents, emptyContent: emptyContent) {
             $0.insertString("COMMAND_NAME", $1.name)
             $0.insertOSType("EVENT_CLASS", $1.eventClass)
             $0.insertOSType("EVENT_ID", $1.eventID)
             $0.insertKeywords("PARAMETER", $1.orderedParameters)
+        }
+    }
+    
+    public func insertEnumeratedTypes(_ block: String, _ enumTypeDefs: [EnumeratedTypeDefinition]) {
+        self.iterate(block: block, newContents: enumTypeDefs, emptyContent: "") {
+            (template: StaticGlueTemplate, enumType: EnumeratedTypeDefinition) in
+            template.insertString("SUM_TYPE_NAME", enumType.enumName)
+            for blockName in ["CASE_DEFINITION", "INIT_DEFINITION", "PACK_CASE", "UNPACK_CASE"] {
+                template.iterate(block: blockName, newContents: enumType.cases, emptyContent: "") {
+                    (template, caseDef) in
+                    template.insertString("CASE_NAME", caseDef.caseName)
+                    template.insertString("CASE_TYPE", caseDef.typeName)
+                }
+            }
         }
     }
     
@@ -184,6 +257,7 @@ public func renderStaticGlueTemplate(_ glueSpec: GlueSpec, extraTags: [String:St
     template.insertKeywords("PROPERTY_SPECIFIER", specifiersByName.filter({$0.kind == TermType.property}) as! [KeywordTerm])
     template.insertKeywords("ELEMENTS_SPECIFIER", specifiersByName.filter({$0.kind == TermType.elementOrType}) as! [KeywordTerm])
     template.insertCommands("COMMAND", specifiersByName.filter({$0.kind == TermType.command}) as! [CommandTerm])
+    template.insertEnumeratedTypes("SUM_TYPE_DEFINITION", try glueSpec.buildEnumeratedTypeDefinitions())
     for (name, value) in extraTags { template.insertString(name, value) }
     return template.string
 }
