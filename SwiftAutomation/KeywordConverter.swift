@@ -38,7 +38,7 @@ let kSwiftKeywords: Set<String> = [
 
 // Swift glue methods
 
-public let kSwiftAESpecifierMethods: Set<String> = [ // TO DO: review; some names have changed, others still need to be added
+public let gReservedSpecifierMethods: Set<String> = [ // TO DO: review; some names have changed, others still need to be added
     // custom property/element specifiers
     // Query
     "appData",
@@ -73,10 +73,12 @@ public let kSwiftAESpecifierMethods: Set<String> = [ // TO DO: review; some name
     "endsWith",
     "contains",
     "isIn",
+    // miscellaneous
+    "description",
 ]
 
 
-public let kSwiftAEParameterNames: Set<String> = [
+public let gReservedParameterNames: Set<String> = [
     // standard parameter+attribute names used in SwiftGlueTemplate
     "directParameter",
     "waitReply",
@@ -235,8 +237,8 @@ public class SwiftKeywordConverter: KeywordConverter, KeywordConverterProtocol {
         return type(of: self)._defaultTerminology!
     }
     
-    private let reservedSpecifierWords = kSwiftKeywords.union(kSwiftAESpecifierMethods)
-    private let reservedParameterWords = kSwiftKeywords.union(kSwiftAEParameterNames)
+    private let reservedSpecifierWords = kSwiftKeywords.union(gReservedSpecifierMethods)
+    private let reservedParameterWords = kSwiftKeywords.union(gReservedParameterNames)
     private let reservedPrefixes = kSwiftKeywords.union(kReservedPrefixes)
     
     public func convertSpecifierName(_ s: String) -> String {

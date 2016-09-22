@@ -11,7 +11,7 @@ import AppKit
 
 // TO DO: add `var fullyUnpackSpecifiers: Bool = false` compatibility flag; note that the simplest and safest (if not the most efficient) way to do this is to call the specifier's `unpackParentSpecifiers(clearCachedDesc:true)` method immediately after unpacking it, though since this option should almost never be needed (an app should always accept object specifiers it created) efficiency isn't a concern (the unpack...Specifier methods could also unroll the specifier chain, of course, but then there'd be two code paths for doing the same thing which isn't ideal maintenance-wise). (The only known app that requires this compatibility flag is iView Media Pro, which has an amusing pair of bugs that [#1] cause it to return by-index specifiers with a non-standard though still acceptable selector type [typeUInt32, IIRC], but requires by-index specifers passed as parameters to use typeSInt32 selectors and [#2] throws an error if given any other type instead of coercing it to the required type itself. AppleScript masks these because it _always_ fully unpacks and repacks each specifier, coercing indexes to typeSInt32 as it does. However, converting Specifiers<->NSAppleEventDescriptors in SwiftAutomation takes longer than the equivalent reference<->AEDesc conversions in AppleScript, so the only way to match AS for speed is to avoid full unpacking unless/until actually needed [for display purposes].)
 
-// TO DO: file system specifiers (typeAlias, typeFileURL, typeFSRef, etc) currently don't roundtrip (they all get coerced down to typeFileURL, regardless of their original type, and URL instances always pack as typeFileURL); this may or may not be a problem
+// TO DO: file system specifiers (typeAlias, typeFileURL, typeFSRef, etc) currently don't roundtrip (they all get coerced down to typeFileURL, regardless of their original type, and URL instances always pack as typeFileURL); this may or may not be a problem when dealing with older Carbon apps. One solution may be an `isFileURLCompatible` flag that, if set to false, packs URLs as as typeAlias if the path identifies an existing FS object and typeFileURL if it does not. (Packing as typeFSRef is redundant and typeFSSpec is defunct, so those should not need supported. The only other use case is HFS path strings and `file` object specifiers [which also take an HFS path as selector data]; the former is still used by some older Carbon apps as a replacement to typeFSSpec; the latter is understood by Cocoa apps but is grossly inferior to typeFileURL so packing as that should never be needed.)
 
 
 public typealias KeywordParameter = (name: String?, code: OSType, value: Any)
@@ -45,14 +45,12 @@ public struct GlueClasses {
 // AppData converts values between Swift and AE types, holds target process information, and provides methods for sending Apple events
 
 
-private let AbsoluteOrdinalCodes = [SwiftAutomation_kAEFirst, SwiftAutomation_kAEMiddle, SwiftAutomation_kAELast, SwiftAutomation_kAEAny, SwiftAutomation_kAEAll]
+private let absoluteOrdinalCodes = [SwiftAutomation_kAEFirst, SwiftAutomation_kAEMiddle, SwiftAutomation_kAELast, SwiftAutomation_kAEAny, SwiftAutomation_kAEAll]
 
 
 open class AppData {
-    
-    // Note: the `isInt64Compatible` flag is currently `true` by default on the assumption that most apps will do the right thing upon receiving `typeUInt32`/`typeSInt64`/`typeUInt64` descriptors (i.e. coerce them to whatever type[s] they actually need), and apps like Excel which only accept `SInt32` and `Double` (which are what AppleScript uses) and fail on anything else are in the minority. If that assumption turns out to be wrong, this flag will need to be made `false` by default (i.e. emulate AppleScript's behavior).
-    
-    public var isInt64Compatible: Bool = true // some older apps don't accept Int64 (e.g. MS Excel), so set this to false when working with those to pack integers as SInt32/Double only
+        
+    public var isInt64Compatible: Bool = true // While AppData.pack() always packs integers within the SInt32.min...SInt32.max range as typeSInt32, if the isInt64Compatible flag is true then it will use typeUInt32/typeSInt64/typeUInt64 for integers outside of that range. Some older Carbon-based apps (e.g. MS Excel) may not accept these larger integer types, so set this flag false when working with those apps to pack large integers as Doubles instead, effectively emulating AppleScript which uses SInt32 and Double only. (Caution: as in AppleScript, integers beyond ±2**52 will lose precision when converted to Double.)
     
     // note: SpecifierFormatter can use the following when rendering app roots
     public let target: TargetApplication
@@ -127,24 +125,24 @@ open class AppData {
                 return NSAppleEventDescriptor(int32: numberObj.int32Value)
             case 73: // (I) UInt32
                 var val = numberObj.uint32Value
-                if self.isInt64Compatible {
-                    return NSAppleEventDescriptor(descriptorType: typeUInt32, bytes: &val, length: MemoryLayout<UInt32>.size)!
-                } else if val <= UInt32(Int32.max) {
+                if val <= UInt32(Int32.max) {
                     return NSAppleEventDescriptor(int32: Int32(val))
+                } else if self.isInt64Compatible {
+                    return NSAppleEventDescriptor(descriptorType: typeUInt32, bytes: &val, length: MemoryLayout<UInt32>.size)!
                 } // else pack as double
             case 108, 113: // (l, q) SInt64
                 var val = numberObj.int64Value
-                if self.isInt64Compatible {
-                    return NSAppleEventDescriptor(descriptorType: typeSInt64, bytes: &val, length: MemoryLayout<Int64>.size)!
-                } else if val >= Int64(Int32.min) && val <= Int64(Int32.max) {
+                if val >= Int64(Int32.min) && val <= Int64(Int32.max) {
                     return NSAppleEventDescriptor(int32: Int32(val))
+                } else if self.isInt64Compatible {
+                    return NSAppleEventDescriptor(descriptorType: typeSInt64, bytes: &val, length: MemoryLayout<Int64>.size)!
                 } // else pack as double, possibly with some loss of precision
             case 76, 81: // (L, Q) UInt64
                 var val = numberObj.uint64Value
-                if self.isInt64Compatible {
-                    return NSAppleEventDescriptor(descriptorType: typeUInt64, bytes: &val, length: MemoryLayout<UInt64>.size)!
-                } else if val <= UInt64(Int32.max) {
+                if val <= UInt64(Int32.max) {
                     return NSAppleEventDescriptor(int32: Int32(val))
+                } else if self.isInt64Compatible {
+                    return NSAppleEventDescriptor(descriptorType: typeUInt64, bytes: &val, length: MemoryLayout<UInt64>.size)!
                 } // else pack as double, possibly with some loss of precision
             default:
                 ()
@@ -172,9 +170,10 @@ open class AppData {
         case let obj as Date:
           return NSAppleEventDescriptor(date: obj)
         case let obj as URL:
+            if obj.isFileURL {
              // TO DO: what about packing as typeAlias if it's a bookmark URL? PROBLEM: Unlike Cocoa's NSURL, Swift's URL struct doesn't implement isFileReferenceURL(), so either need to coerce to NSURL in order to determine whether to pack as typeAlias or typeFileURL, or else cross fingers and hope that always packing as typeFileURL won't cause various crusty/flaky/elderly (Carbon) apps to puke because they're expecting typeAlias and don't have the wits to coerce the given descriptor to that type before trying to unpack it. Ideally we'd cache the original AEDesc within the unpacked Swift value (c.f. Specifier), but we can't do that without subclassing, and URL is a struct so we'd have to subclass NSURL (see AppleEventBridge's AEMURL.m for existing implementation of this), but what happens when that gets coerced to a Swift URL? (Seamless Cocoa-Swift integration my arse...).
-            return NSAppleEventDescriptor(fileURL: obj)
-            
+                return NSAppleEventDescriptor(fileURL: obj)
+            }
             
         // TO DO: will following cases still be needed? (depends on how transparent Swift's ObjC bridging is; if the SelfPacking protocol test matches Swift collections but not their Cocoa equivalents then yes)
         case let obj as NSSet:
@@ -204,34 +203,36 @@ open class AppData {
         case let val as Int32:
             return NSAppleEventDescriptor(int32: Int32(val))
         case var val as UInt32:
-            if self.isInt64Compatible {
-                return NSAppleEventDescriptor(descriptorType: typeUInt32, bytes: &val, length: MemoryLayout<UInt32>.size)!
-            } else if val <= UInt32(Int32.max) {
+            if val <= UInt32(Int32.max) {
                 return NSAppleEventDescriptor(int32: Int32(val))
+            } else if self.isInt64Compatible {
+                return NSAppleEventDescriptor(descriptorType: typeUInt32, bytes: &val, length: MemoryLayout<UInt32>.size)!
             } else {
                 return NSAppleEventDescriptor(double: Double(val))
             }
         case var val as Int64:
-            if self.isInt64Compatible {
-                return NSAppleEventDescriptor(descriptorType: typeSInt64, bytes: &val, length: MemoryLayout<Int64>.size)!
-            } else if val >= Int64(Int32.min) && val <= Int64(Int32.max) {
+            if val >= Int64(Int32.min) && val <= Int64(Int32.max) {
                 return NSAppleEventDescriptor(int32: Int32(val))
+            } else if self.isInt64Compatible {
+                return NSAppleEventDescriptor(descriptorType: typeSInt64, bytes: &val, length: MemoryLayout<Int64>.size)!
             } else {
                 return NSAppleEventDescriptor(double: Double(val)) // caution: may be some loss of precision
             }
         case var val as UInt64:
-            if self.isInt64Compatible {
-                return NSAppleEventDescriptor(descriptorType: typeUInt64, bytes: &val, length: MemoryLayout<UInt64>.size)!
-            } else if val <= UInt64(Int32.max) {
+            if val <= UInt64(Int32.max) {
                 return NSAppleEventDescriptor(int32: Int32(val))
+            } else if self.isInt64Compatible {
+                return NSAppleEventDescriptor(descriptorType: typeUInt64, bytes: &val, length: MemoryLayout<UInt64>.size)!
             } else {
                 return NSAppleEventDescriptor(double: Double(val)) // caution: may be some loss of precision
             }
         case let val as Float:
             return NSAppleEventDescriptor(double: Double(val))
-        default: // TO DO: if value is ErrorType, either rethrow it as-is, or poss. chain it to PackError; e.g. see ObjectSpecifier.unpackParentSpecifiers(), which needs to report [rare] errors but can't throw itself; this should allow APIs that can't raise errors directly (e.g. specifier constructors) to have those errors raised if/when used in commands (which can throw)
-            throw PackError(object: value)
+        default:
+            ()
+            // TO DO: if value is ErrorType, either rethrow it as-is, or poss. chain it to PackError; e.g. see ObjectSpecifier.unpackParentSpecifiers(), which needs to report [rare] errors but can't throw itself; this should allow APIs that can't raise errors directly (e.g. specifier constructors) to have those errors raised if/when used in commands (which can throw)
         }
+        throw PackError(object: value)
     }
     
     /******************************************************************************/
@@ -334,7 +335,9 @@ open class AppData {
     /******************************************************************************/
     // Convert an Apple event descriptor to its preferred Swift type, as determined by its descriptorType
     
-    public func unpackAny(_ desc: NSAppleEventDescriptor) throws -> Any { // TO DO: make sure Optional(VALUE) isn't returned, as that allows the possibility of .None (i.e. nil) as well; whereas nil should only be returned if 'cMissingValue' is mapped to nil (and that has yet to be decided on); e.g. use Any!, or will that mess up type signatures elsewhere?
+    // TO DO: rename the following unpack methods as `unpackAsTYPE(_)`?
+    
+    public func unpackAny(_ desc: NSAppleEventDescriptor) throws -> Any { // TO DO: double-check that Optional<T>.some(VALUE)/Optional<T>.none are never returned here (i.e. cMissingValue AEDescs must always unpack as non-generic MissingValue when return type is Any to avoid dropping user into Optional<T>.some(nil) hell, and only unpack as Optional<T>.none when caller has specified an exact type for T, in which case `unpack<T>(_)->T` will be unpack it itself.)
         switch desc.descriptorType {
             // common AE types
         case typeTrue, typeFalse, typeBoolean:
@@ -344,15 +347,24 @@ open class AppData {
         case typeIEEE64BitFloatingPoint, typeIEEE32BitFloatingPoint, type128BitFloatingPoint:
             return desc.doubleValue
         case typeChar, typeIntlText, typeUTF8Text, typeUTF16ExternalRepresentation, typeStyledText, typeUnicodeText, typeVersion:
-            return desc.stringValue ?? desc // TO DO: NSAEDesc returns nil on failure (which should only happen here if the desc data is corrupt); return [problematic] desc or throw UnpackError("corrupt data") error? (e.g. unpackable objspecs currently throw rather than return defective desc, and users relying on type system will be confused as to why requesting String fails while Any returns NSDesc)
+            guard let result = desc.stringValue else { //  this should never fail unless the AEDesc contains mis-encoded text data (e.g. claims to be typeUTF8Text but contains non-UTF8 byte sequences)
+                throw UnpackError(appData: self, descriptor: desc, type: Any.self, message: "Corrupt descriptor.")
+            }
+            return result
         case typeLongDateTime:
-            return desc.dateValue ?? desc // ditto
+            guard let result = desc.dateValue else { // ditto
+                throw UnpackError(appData: self, descriptor: desc, type: Any.self, message: "Corrupt descriptor.")
+            }
+            return result
         case typeAEList:
             return try Array.SwiftAutomation_unpackSelf(desc, appData: self) as [Any]
         case typeAERecord:
             return try Dictionary.SwiftAutomation_unpackSelf(desc, appData: self) as [Symbol:Any]
-        case typeAlias, typeBookmarkData, typeFileURL, typeFSRef, SwiftAutomation_typeFSS:
-            return desc.fileURLValue ?? desc // ditto
+        case typeAlias, typeBookmarkData, typeFileURL, typeFSRef, SwiftAutomation_typeFSS: // note that typeFSS is long defunct so shouldn't be encountered unless dealing with exceptionally old 32-bit Carbon apps, while a `file "HFS:PATH:"` object specifier (typeObjectSpecifier of cFile; basically an AppleScript kludge-around to continue supporting the `file [specifier] "HFS:PATH:"` syntax form despite typeFSS going away) is indistinguishable from any other object specifier so will unpack as an explicit `APPLICATION().files["HFS:PATH:"]` or `APPLICATION().elements("file")["HFS:PATH:"]` specifier depending on whether or not the glue defines a `file[s]` keyword (TBH, not sure if there are any apps do return AEDescs that represent file system locations this way.)
+            guard let result = desc.fileURLValue else { // ditto
+                throw UnpackError(appData: self, descriptor: desc, type: Any.self, message: "Corrupt descriptor.")
+            }
+            return result
         case typeType, typeEnumerated, typeProperty, typeKeyword:
             return isMissingValue(desc) ? MissingValue : self.unpackSymbol(desc)
             // object specifiers
@@ -419,8 +431,8 @@ open class AppData {
         return self.glueClasses.symbolType.symbol(code: desc.typeCodeValue, type: desc.descriptorType, descriptor: desc)
     }
     
-    func unpackAEProperty(_ code: OSType) -> Symbol { // used to unpack AERecord keys as Dictionary keys
-        return self.glueClasses.symbolType.symbol(code: code, type: typeProperty, descriptor: nil) // TO DO: use typeType? (TBH, am tempted to use it throughout, leaving AEM to coerce as necessary, as it'd simplify implementation a bit; also, note that type and property names can often overlap, e.g. `TED.document` may be either)
+    func unpackAEProperty(_ code: OSType) -> Symbol { // used by Dictionary extension to unpack AERecord's OSType-based keys as glue-defined Symbols
+        return self.glueClasses.symbolType.symbol(code: code, type: typeProperty, descriptor: nil) // TO DO: confirm using `typeProperty` here won't cause any problems (AppleScript/AEM can be a bit loose on which DescTypes to use on AEDescs that hold OSType data, tending to use typeType for everything that isn't typeEnumerated)
     }
     
     func unpackInsertionLoc(_ desc: NSAppleEventDescriptor) throws -> Specifier {
@@ -444,14 +456,14 @@ open class AppData {
         do {
             let formCode = selectorForm.enumCodeValue
             // unpack selectorData, unless it's a property code or absolute/relative ordinal (in which case use its prop/enum descriptor as-is)
-            let selectorData = formCode == SwiftAutomation_formPropertyID
-                            || formCode == SwiftAutomation_formRelativePosition // TO DO: shouldn't this check seld is prev/next, same as abs. ordinals?
-                            || formCode == SwiftAutomation_formAbsolutePosition
-                               && selectorDesc.descriptorType == typeEnumerated && AbsoluteOrdinalCodes.contains(selectorDesc.enumCodeValue)
-                    ? selectorDesc : try self.unpackAny(selectorDesc)
+            let selectorData = (formCode == SwiftAutomation_formPropertyID
+                || formCode == SwiftAutomation_formRelativePosition // TO DO: shouldn't this check seld is prev/next, same as abs. ordinals?
+                || formCode == SwiftAutomation_formAbsolutePosition
+                && selectorDesc.descriptorType == typeEnumerated
+                && absoluteOrdinalCodes.contains(selectorDesc.enumCodeValue)) ? selectorDesc : try self.unpackAny(selectorDesc)
             // TO DO: need 'strict AS emulation' option to fully unpack and repack specifiers, re-setting cachedDesc (TBH, only app that ever had this problem was iView Media Pro, since it takes a double whammy of app bugs to cause an app to puke on receiving objspecs it previously created itself)
-            if formCode == SwiftAutomation_formRange || formCode == SwiftAutomation_formTest ||
-                           (formCode == SwiftAutomation_formAbsolutePosition && selectorDesc.enumCodeValue == SwiftAutomation_kAEAll) {
+            if formCode == SwiftAutomation_formRange || formCode == SwiftAutomation_formTest
+                || (formCode == SwiftAutomation_formAbsolutePosition && selectorDesc.enumCodeValue == SwiftAutomation_kAEAll) {
                 return self.glueClasses.multiObjectSpecifierType.init(wantType: wantType, selectorForm: selectorForm, selectorData: selectorData,
                                                                       parentQuery: nil, appData: self, cachedDesc: desc)
             } else {
@@ -472,15 +484,17 @@ open class AppData {
         if let operatorType = desc.forKeyword(SwiftAutomation_keyAECompOperator),
             let operand1Desc = desc.forKeyword(SwiftAutomation_keyAEObject1),
             let operand2Desc = desc.forKeyword(SwiftAutomation_keyAEObject2) {
-                // TO DO: also check operatorType is valid?
-                let operand1 = try self.unpackAny(operand1Desc), operand2 = try self.unpackAny(operand2Desc) // TO DO: catch and rethrow with additional details
+                // TO DO: sanity-check that operatorType is valid (kAELessThan, etc)?
+                // TO DO: if the following fail, catch and rethrow with the full comparison descriptor for context? or is this just getting overly paranoid for non-user errors that'll never occur in practice
+                let operand1 = try self.unpackAny(operand1Desc)
+                let operand2 = try self.unpackAny(operand2Desc)
                 if operatorType.typeCodeValue == kAEContains && !(operand1 is ObjectSpecifier) {
                     if let op2 = operand2 as? ObjectSpecifier {
                         return ComparisonTest(operatorType: gIsIn, operand1: op2, operand2: operand1, appData: self, cachedDesc: desc)
-                    }
+                    } // else fall through to throw
                 } else if let op1 = operand1 as? ObjectSpecifier {
                     return ComparisonTest(operatorType: operatorType, operand1: op1, operand2: operand2, appData: self, cachedDesc: desc)
-                }
+                } // else fall through to throw
         }
         throw UnpackError(appData: self, descriptor: desc, type: TestClause.self, message: "Can't unpack comparison test: malformed descriptor.")
         
@@ -703,7 +717,7 @@ open class AppData {
 // used by AppData.sendAppleEvent() to pack ConsideringOptions as enumConsiderations (old-style) and enumConsidsAndIgnores (new-style) attributes
 
 
-let gConsiderationsTable: [(Considerations, NSAppleEventDescriptor, UInt32, UInt32)] = [
+let considerationsTable: [(Considerations, NSAppleEventDescriptor, UInt32, UInt32)] = [
     // note: Swift mistranslates considering/ignoring mask constants as Int, not UInt32, so redefine them here
     (.case,             NSAppleEventDescriptor(enumCode: SwiftAutomation_kAECase),              0x00000001, 0x00010000),
     (.diacritic,        NSAppleEventDescriptor(enumCode: SwiftAutomation_kAEDiacritic),         0x00000002, 0x00020000),
@@ -717,7 +731,7 @@ let gConsiderationsTable: [(Considerations, NSAppleEventDescriptor, UInt32, UInt
 private func packConsideringAndIgnoringFlags(_ considerations: ConsideringOptions) -> (NSAppleEventDescriptor, NSAppleEventDescriptor) {
     let considerationsListDesc = NSAppleEventDescriptor.list()
     var consideringIgnoringFlags: UInt32 = 0
-    for (consideration, considerationDesc, consideringMask, ignoringMask) in gConsiderationsTable {
+    for (consideration, considerationDesc, consideringMask, ignoringMask) in considerationsTable {
         if considerations.contains(consideration) {
             consideringIgnoringFlags |= consideringMask
             considerationsListDesc.insert(considerationDesc, at: 0)

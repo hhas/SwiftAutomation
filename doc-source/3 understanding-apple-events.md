@@ -117,7 +117,7 @@ though only the first specifier describes the files' location by physical contai
 
     finder.startupDisk.folders["Users:jsmith:Desktop:"].files
 
-    finder.items[NSURL(string:"file:///Users/jsmith/Desktop")].files
+    finder.items[URL(string:"file:///Users/jsmith/Desktop")].files
 
 Some specifiers may identify different objects at different times, according to changes in the application's state, e.g.:
 

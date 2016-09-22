@@ -47,7 +47,7 @@ do {
     
     print("// \(TEDApp.documents[1].text)")
     print("// \(te.documents[1].text)")
-
+/*
     // send `open` and `get` AEs using raw four-char codes
     //let result = try te.sendAppleEvent(kCoreEventClass, kAEOpenDocuments, [keyDirectObject:NSURL.fileURLWithPath("/Users/has/todos.txt")])
     //print(result)
@@ -111,11 +111,21 @@ do {
     let result4c = try Finder().home.folders["Documents"].files[FINIts.nameExtension == "txt"].properties.get() as [[FINSymbol:Any]]
     print("=> \(result4c)")
     
+    
+    print("\nTEST: TextEdit().documents.properties.get() as [TEDDocumentRecord]")
+    let result4d = try TextEdit().documents.properties.get() as [TEDDocumentRecord]
+    print("=> \(result4d)")
 
+*/
+    
+    print("\nTEST: TextEdit().documents[1].properties.get() as TEDDocumentRecord")
+    let result4e = try TextEdit().documents[1].properties.get() as TEDDocumentRecord
+    print("=> \(result4e)")
+    
 //    try te.documents.close(saving: TED.no) // close every document saving no
     
     //
-    try teDocRef.close(saving: TED.no)
+//    try teDocRef.close(saving: TED.no)
     
 
 } catch {

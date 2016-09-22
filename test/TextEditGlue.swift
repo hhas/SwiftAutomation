@@ -2,7 +2,7 @@
 //  TextEditGlue.swift
 //  TextEdit.app 1.11
 //  SwiftAutomation.framework 0.1.0
-//  `aeglue -e 'Symbol+Int+String' -p TED 'TextEdit.app'`
+//  `aeglue -e 'Symbol+Int+String' -t 'Strings=Array<String>' -t 'Fub=Dictionary<Symbol,Optional<Item>>' -s 'Document:document=name:String+modified:Bool+path:Optional<String>' -p TED 'TextEdit.app'`
 //
 
 
@@ -993,11 +993,14 @@ public let TEDIts = gUntargetedAppData.its as! TEDRoot
 /******************************************************************************/
 // Static types
 
- // Record descriptors are normally unpacked to the following type:
-typealias TEDDictionary = [TEDSymbol:Any]
+public typealias TEDRecord = [TEDSymbol:Any] // default Swift type for AERecordDescs
 
 
-public enum TEDSymbolOrIntOrString : SelfPacking, SelfUnpacking {
+public typealias TEDStrings = Array<String>
+public typealias TEDFub = Dictionary<TEDSymbol, Optional<TEDItem>>
+
+
+public enum TEDSymbolOrIntOrString: SelfPacking, SelfUnpacking {
     case symbol(TEDSymbol)
     case int(Int)
     case string(String)
@@ -1022,4 +1025,43 @@ public enum TEDSymbolOrIntOrString : SelfPacking, SelfUnpacking {
     }
 }
 
+
+
+public struct TEDDocumentRecord: SelfPacking, SelfUnpacking {
+
+    public let class_ = TEDSymbol.document
+    public var name: String
+    public var modified: Bool
+    public var path: Optional<String>
+
+    private static func SwiftAutomation_unpackProperty<T>(_ recordDesc: NSAppleEventDescriptor,
+                                                          appData: AppData, name: String, code: OSType) throws -> T {
+        guard let desc = recordDesc.paramDescriptor(forKeyword: code) else {
+            throw UnpackError(appData: appData, descriptor: recordDesc, type: self, message: "Can't find '\(name)' property in record.")
+        }
+        do {
+            return try appData.unpack(desc)
+        } catch {
+            throw UnpackError(appData: appData, descriptor: recordDesc, type: self, message: "Can't unpack record's '\(name)' property: \(error)")
+        }
+    }
+
+    public func SwiftAutomation_packSelf(_ appData: AppData) throws -> NSAppleEventDescriptor {
+        let desc = NSAppleEventDescriptor.record().coerce(toDescriptorType: self.class_.code)!
+        desc.setParam(try appData.pack(self.name), forKeyword: 0x706e616d)
+        desc.setParam(try appData.pack(self.modified), forKeyword: 0x696d6f64)
+        desc.setParam(try appData.pack(self.path), forKeyword: 0x70707468)
+        return desc
+    }
+    public static func SwiftAutomation_unpackSelf(_ desc: NSAppleEventDescriptor, appData: AppData) throws -> TEDDocumentRecord {
+        if !desc.isRecordDescriptor {
+           throw UnpackError(appData: appData, descriptor: desc, type: self, message: "Not a record.")
+        }
+        return TEDDocumentRecord(
+            name: try self.SwiftAutomation_unpackProperty(desc, appData: appData, name: "name", code: 0x706e616d),
+            modified: try self.SwiftAutomation_unpackProperty(desc, appData: appData, name: "modified", code: 0x696d6f64),
+            path: try self.SwiftAutomation_unpackProperty(desc, appData: appData, name: "path", code: 0x70707468)
+        )
+    }
+}
 

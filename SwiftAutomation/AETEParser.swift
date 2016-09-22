@@ -10,7 +10,7 @@ import Foundation
 
 
 // kAEInheritedProperties isn't defined in OpenScripting.h for some reason
-let kSwiftAEInheritedProperties = try! FourCharCode("c@#^")
+let SwiftAutomation_kAEInheritedProperties = try! FourCharCode("c@#^")
 
 
 /**********************************************************************/
@@ -202,7 +202,7 @@ public class AETEParser: ApplicationTerminology {
             self.skipString()   // description
             self.alignCursor()
             let flags = self.short()
-            if propertyCode != kSwiftAEInheritedProperties { // it's a normal property definition, not a superclass  definition
+            if propertyCode != SwiftAutomation_kAEInheritedProperties { // it's a normal property definition, not a superclass  definition
                 let propertyDef = KeywordTerm(name: propertyName, kind: .property, code: propertyCode)
                 if (flags % 2 != 0) { // class name is plural
                     isPlural = true

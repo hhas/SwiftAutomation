@@ -199,7 +199,7 @@ extension ApplicationExtension {
         return self.init(rootObject: AppRootDesc, appData: appData)
     }
     
-    public func customRoot(_ object: Any) -> Self { // TO DO: should AppData also provide an option to set default app root object, to be used in building and unpacking _all_ object specifiers?
+    public func customRoot(_ object: Any) -> Self {
         return type(of: self).init(rootObject: object, appData: self.appData)
     }
     

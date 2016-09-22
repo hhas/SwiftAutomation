@@ -62,19 +62,19 @@ public func formatAppleEvent(descriptor event: NSAppleEventDescriptor, useTermin
 /******************************************************************************/
 // cache previously parsed terminology for efficiency
 
-private let gCacheMaxLength = 10
-private var gCache = [(NSAppleEventDescriptor, TerminologyType, DynamicAppData)]()
+private let cacheMaxLength = 10
+private var cachedTerms = [(NSAppleEventDescriptor, TerminologyType, DynamicAppData)]()
 
 private func appDataForAppleEvent(_ event: NSAppleEventDescriptor, useTerminology: TerminologyType) throws -> DynamicAppData {
     let addressDesc = event.attributeDescriptor(forKeyword: keyAddressAttr)!
-    for (desc, terminologyType, appData) in gCache {
+    for (desc, terminologyType, appData) in cachedTerms {
         if desc.descriptorType == addressDesc.descriptorType && desc.data == addressDesc.data && terminologyType == useTerminology {
             return appData
         }
     }
     let appData = try DynamicAppData.dynamicAppDataForAddress(addressDesc, useTerminology: useTerminology) // TO DO: are there any cases where keyAddressArrr won't return correct desc? (also, double-check what reply event uses)
-    if gCache.count > gCacheMaxLength { gCache.removeFirst() } // TO DO: ideally this should trim least used, not longest cached
-    gCache.append((addressDesc, useTerminology, appData))
+    if cachedTerms.count > cacheMaxLength { cachedTerms.removeFirst() } // TO DO: ideally this should trim least used, not longest cached
+    cachedTerms.append((addressDesc, useTerminology, appData))
     return appData
 }
 
@@ -122,7 +122,7 @@ public class DynamicAppData: AppData { // TO DO: can this be used as-is/with mod
                                       applicationType: AERoot.self, symbolType: Symbol.self, formatter: specifierFormatter) // TO DO: what applicationType?
         let appData = self.init(target: TargetApplication.url(applicationURL), launchOptions: DefaultLaunchOptions,
                                 relaunchMode: DefaultRelaunchMode, glueClasses: glueClasses) // TO DO: because this uses app path (to ensure it targets the right process if multiple app versions with same bundle ID are installed) instead of bundle ID, SpecifierFormatter will display as "APPLICATION(name:...)" instead of "APPLICATION()", which is best for debugging AEs (since it provides the most information) but not ideal for AppleScriptToSwift translations (which are usually best using idiomatic representation and leaving user to customize the Application constructor syntax according to their own needs)
-        appData.glueSpec = glueSpec
+        appData.glueSpec = glueSpec // TO DO: why initialize DynamicppData and then assign glueSpec and glueTable to it, instead of overriding init and passing glueSpec and glueTable as args? (see above TODO on why this constructor is a class method - it can't be right)
         appData.glueTable = glueTable
         return appData
     }
@@ -237,7 +237,7 @@ public struct AppleEventDescription { // TO DO: split AE unpacking from CommandT
             var considersAndIgnores: UInt32 = 0
             (considersAndIgnoresDesc.data as NSData).getBytes(&considersAndIgnores, length: MemoryLayout<UInt32>.size)
             if considersAndIgnores != gDefaultConsidersIgnoresMask {
-                for (option, _, considersFlag, ignoresFlag) in gConsiderationsTable {
+                for (option, _, considersFlag, ignoresFlag) in considerationsTable {
                     if option == .case {
                         if considersAndIgnores & ignoresFlag > 0 { self.considering.remove(option) }
                     } else {

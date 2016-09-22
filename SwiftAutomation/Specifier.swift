@@ -504,6 +504,9 @@ open class RootSpecifier: ObjectSpecifier { // app, con, its, custom root (note:
 // constants
 
 
+// TO DO: fix naming convention, e.g. `propertyTypeDesc`
+
+
 let gPropertyType = NSAppleEventDescriptor(typeCode: typeProperty)
 // selector forms
 let gPropertyForm           = NSAppleEventDescriptor(enumCode: SwiftAutomation_formPropertyID) // specifier.NAME or specifier.property(CODE)

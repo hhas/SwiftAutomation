@@ -38,6 +38,7 @@ public class SpecifierFormatter {
         self.elementsNames = elementsNames
     }
     
+    // TO DO: improve naming conventions, e.g. `format(object: Any)`, `format(symbol:Symbol)`
     
     public func format(_ object: Any) -> String { // TO DO: optional `nested: Bool = false` parameter
         // formats Specifier, Symbol as literals
@@ -68,7 +69,7 @@ public class SpecifierFormatter {
     
     func formatSymbol(name: String?, code: OSType, type: OSType) -> String {
         if name != nil { // either a string-based record key or a standard symbol
-            return "\(self.classNamePrefix)" + (type == NoOSType ? "(\(self.formatValue(name!)))" : ".\(name!)")
+            return "\(self.classNamePrefix)" + (type == noOSType ? "(\(self.formatValue(name!)))" : ".\(name!)")
         } else if let typeName = self.typeNames[code] {
             return "\(self.classNamePrefix).\(typeName)"
         } else {

@@ -10,7 +10,7 @@ import Foundation
 // TO DO: one disadvantage of using class rather than enum is that dictionary keys have to be written longhand, e.g. `FIN.name` rather than `.name`; the flipside is that enums are ostensibly finite whereas AE types/enums/properties can be any OSType; that said, non-glue-defined AE types could be represented by parameterized cases, e.g. `.custom(String)`, `.code(OSType)`
 
 
-let NoOSType: OSType = 0 // valid OSTypes should always be non-zero, so just use 0 instead of nil to indicate omitted OSType and avoid the extra Optional<OSType> boxing/unboxing
+let noOSType: OSType = 0 // valid OSTypes should always be non-zero, so just use 0 instead of nil to indicate omitted OSType and avoid the extra Optional<OSType> boxing/unboxing
 
 
 open class Symbol: Hashable, Equatable, CustomStringConvertible, SelfPacking {
@@ -33,7 +33,7 @@ open class Symbol: Hashable, Equatable, CustomStringConvertible, SelfPacking {
     // e.g. the AppleScript record `{name:"Bob", isMyUser:true}` maps to the Swift Dictionary `[Symbol.name:"Bob", Symbol("isMyUser"):true]`
     
     public convenience init(_ name: String, cachedDesc: NSAppleEventDescriptor? = nil) {
-        self.init(name: name, code: NoOSType, type: NoOSType, cachedDesc: cachedDesc)
+        self.init(name: name, code: noOSType, type: noOSType, cachedDesc: cachedDesc)
     }
     
     // convenience constructors for creating Symbols using raw four-char codes
@@ -53,7 +53,7 @@ open class Symbol: Hashable, Equatable, CustomStringConvertible, SelfPacking {
     
     // this is called by AppData when unpacking string-based record keys
     public class func symbol(string: String, descriptor: NSAppleEventDescriptor? = nil) -> Symbol {
-        return self.init(name: string, code: NoOSType, type: NoOSType, cachedDesc: descriptor)
+        return self.init(name: string, code: noOSType, type: noOSType, cachedDesc: descriptor)
     }
     
     public var hashValue: Int {return self.nameOnly ? self.name!.hashValue : Int(self.code)}
@@ -67,7 +67,7 @@ open class Symbol: Hashable, Equatable, CustomStringConvertible, SelfPacking {
     }
     
     // returns true if Symbol contains name but not code (i.e. it represents a string-based record property key)
-    public var nameOnly: Bool { return self.type == NoOSType && self.name != nil }
+    public var nameOnly: Bool { return self.type == noOSType && self.name != nil }
     
     // TO DO: implement overrideable SwiftAutomation_unpackSelf static method for unpacking descs as glue-defined (and/or standard) Symbols? (Q. what benefit would this provide? glue-specific Symbol subclasses already have to be stored in AppData.glueClasses)
     

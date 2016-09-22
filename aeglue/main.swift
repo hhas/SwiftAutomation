@@ -7,13 +7,15 @@
 //  Note: the undocumented `-D` option is used to [re]generate the SwiftAutomation framework's AEApplicationGlue.swift file.
 //
 
-//  TO DO: would it be simpler just to generate default glue if no apps specified? (if so, -e, -n, -p, etc options should be allowed, so users can create their own default glues which they can then hack on as they like)
+//  TO DO: would it be simpler just to generate default glue if no apps specified? (if so, -e, -n, -p, etc options should be allowed, so users can create their own default glues which they can then hack on as they like, and undocumented -D option can be discarded)
 
 // TO DO: add an -x option for excluding the `import SwiftAutomation` line from glue? (Currently, CLI apps have to bake everything directly into the executable as Swift can't yet import third-party frameworks outside of an .app bundle.)
 
-// TO DO: what about adding an option for building glues as importable modules?
+// TO DO: what about adding an option for building glues as importable modules? (this can always be added later, once general packaging and distribution issues are all worked out)
 
-// TO DO: change -S option to -a (i.e. use SDEF by default)? (Caution: while using SDEF by default would seem the obvious choice, it is actually less reliable since macOS's AETE-to-SDEF converter can introduce various subtle, hard-to-debug defects during the conversion process; whereas AETEs will always produce valid glues unless the app's 'ascr'/'gdte' handler fails, in which case the glue file will be mostly unusable and the need to switch to SDEF obvious to the user. [Of course, since these failures tend to occur in Carbon apps, there is no guarantee the SDEF-generated glue won't include some of the aforementioned subtle defects, but that's between the user, Apple, and the application vendor to sort out.])
+// TO DO: change -S option to -A (i.e. use SDEF by default)? (Caution: while using SDEF by default would seem the obvious choice, it is actually less reliable since macOS's AETE-to-SDEF converter can introduce various subtle, hard-to-debug defects during the conversion process; whereas AETEs will always produce valid glues unless the app's 'ascr'/'gdte' handler fails, in which case the glue file will be mostly unusable and the need to switch to SDEF obvious to the user. [Of course, since these failures tend to occur in Carbon apps, there is no guarantee the SDEF-generated glue won't include some of the aforementioned subtle defects, but that's between the user, Apple, and the application vendor to sort out.])
+
+// TO DO: add -t (-a?) option for typealiases, -s option for record structs
 
 
 import Foundation
@@ -21,18 +23,17 @@ import Foundation
 
 
 
-let gOptionsWithArguments = Set<Character>("npeo".characters) // this MUST contain all options that also require arguments (used to separate option key from value if not explicitly separated by whitespace, e.g. '-pABC' -> '-p ABC')
+let optionsWithArguments = Set<Character>("npeo".characters) // this MUST contain all options that also require arguments (used to separate option key from value if not explicitly separated by whitespace, e.g. '-pABC' -> '-p ABC')
 
 
-let gHelp = [
+let helpText = [
     "Generate SwiftAutomation glue classes and SDEF documentation for",
     " controllingan \"AppleScriptable\" application from Swift.",
     "",
     "Usage:",
     "",
     "    aeglue [-n CLASSNAME] [-p PREFIX] [-rS]",
-    "           [-e FORMAT ...] [-o OUTDIR] APPNAME ...",
-    "",
+    "           [-est FORMAT ...] [-o OUTDIR] APPNAME ...",
     "    aeglue [-hv]",
     "",
     "APPNAME - Name or path to application. If -n and -p options are",
@@ -54,6 +55,8 @@ let gHelp = [
     "    -r             Overwrite existing files.",
     "    -S             Use SDEF terminology instead of AETE, e.g. if",
     "                       application's ascr/gdte handler is broken.",
+    "    -s FORMAT      A record struct definition; see Type Support.",
+    "    -t FORMAT      A type alias definition; see Type Support.",
     "    -v             Output the SwiftAutomation framework's version",
     "                       and exit.",
     "",
@@ -87,9 +90,12 @@ let gHelp = [
     "which can represent a Symbol, Int, or String:",
     "",
     "    aeglue -e Symbol+Int+String -p MA 'My App'",
+    // TO DO: document struct and typealias format strings too
     "",
     ""].joined(separator: "\n")
 
+
+// utility functions
 
 func validateOption(opt: String, arg: String?) {
     if arg == nil || arg!.hasPrefix("-") {
@@ -118,7 +124,7 @@ public struct StderrStream: TextOutputStream {
 public var errStream = StderrStream()
 
 
-// parse ARGV
+// parsed options
 
 var frameworkImport = "import SwiftAutomation"
 var applicationClassName: String?
@@ -126,24 +132,25 @@ var classNamePrefix: String?
 var writeDefaultGlue = false
 var canOverwrite = false
 var useSDEF = false
-var enumeratedTypeFormats: [String] = []
 var applicationURLs: [URL?] = []
 var outDir: URL?
 
-var optArgs = ProcessInfo.processInfo.arguments.reversed() as [String] // bug workaround: popping/inserting at start of Array[Slice] is buggy, so reverse it and work from end
-
-optArgs.removeLast() // skip path to this executable
-
-if optArgs.count == 0 {
-    print(gHelp, to: &errStream)
-    exit(0)
-}
-
+var enumeratedTypeFormats: [String] = []
+var recordStructFormats: [String] = []
+var typeAliasFormats: [String] = []
 
 var foundOpts = [String]() // used to create string representation of shell command that will appear in glue
 var applicationPaths = [String]() // application name/path arguments
 
-// parse options
+
+// parse ARGV
+
+var optArgs = ProcessInfo.processInfo.arguments.reversed() as [String] // bug workaround: popping/inserting at start of Array[Slice] is buggy, so reverse it and work from end
+optArgs.removeLast() // skip path to this executable
+if optArgs.count == 0 {
+    print(helpText, to: &errStream)
+    exit(0)
+}
 while let opt = optArgs.popLast() {
     switch(opt) {
     case "-D":
@@ -156,7 +163,7 @@ while let opt = optArgs.popLast() {
         enumeratedTypeFormats.append(enumeratedTypeFormat!)
         foundOpts.append("\(opt) \(quoteForShell(enumeratedTypeFormat!))")
     case "-h":
-        print(gHelp, to: &errStream)
+        print(helpText, to: &errStream)
         exit(0)
     case "-n":
         applicationClassName = optArgs.popLast()
@@ -175,6 +182,16 @@ while let opt = optArgs.popLast() {
     case "-S":
         useSDEF = true
         foundOpts.append(opt)
+    case "-s":
+        let recordStructFormat = optArgs.popLast()
+        validateOption(opt: opt, arg: recordStructFormat)
+        recordStructFormats.append(recordStructFormat!)
+        foundOpts.append("\(opt) \(quoteForShell(recordStructFormat!))")
+    case "-t":
+        let typeAliasFormat = optArgs.popLast()
+        validateOption(opt: opt, arg: typeAliasFormat)
+        typeAliasFormats.append(typeAliasFormat!)
+        foundOpts.append("\(opt) \(quoteForShell(typeAliasFormat!))")
     case "-v":
         print("0.0.0") // TO DO: print SwiftAutomation.framework bundle version
         exit(0)
@@ -190,7 +207,7 @@ while let opt = optArgs.popLast() {
                 var tmp: [String] = []
                 while let c = chars.popFirst() {
                     tmp.append("-\(c)")
-                    if gOptionsWithArguments.contains(c) && chars.count > 0 { // rejoin remaining chars and put back on optArgs as option's value
+                    if optionsWithArguments.contains(c) && chars.count > 0 { // rejoin remaining chars and put back on optArgs as option's value
                         tmp.append(String(chars))
                         chars = "".characters
                     }
@@ -206,7 +223,6 @@ while let opt = optArgs.popLast() {
         }
     }
 }
-
 if outDir == nil { // use current working directory by default
     outDir = URL(fileURLWithPath: "./").absoluteURL
 }
@@ -224,23 +240,21 @@ if writeDefaultGlue {
         exit(1)
 }
 
-// create glue spec
+// render glue file and documentation for each app
 
 for applicationURL in applicationURLs {
     let glueSpec = GlueSpec(applicationURL: applicationURL, classNamePrefix: classNamePrefix,
-                            applicationClassName: applicationClassName, useSDEF: useSDEF,
-                            enumeratedTypeFormats: enumeratedTypeFormats)
+                            applicationClassName: applicationClassName, useSDEF: useSDEF)
+    let typeSupportSpec = TypeSupportSpec(enumeratedTypeFormats: enumeratedTypeFormats,
+                                          recordStructFormats: recordStructFormats, typeAliasFormats: typeAliasFormats)
     let shellCommand = "aeglue " + (foundOpts +
             (applicationURL == nil ? [] : [quoteForShell(applicationURL!.lastPathComponent)])).joined(separator: " ")
     let glueFileName = "\(glueSpec.applicationClassName)Glue.swift"
     // generate SwiftAutomation glue file
     do {
-        let code = try renderStaticGlueTemplate(glueSpec, extraTags: ["AEGLUE_COMMAND": shellCommand,
-                                                                      "GLUE_NAME":      glueFileName,
-                                                                      "IMPORT_SWIFTAE": frameworkImport])
-        guard let data = code.data(using: String.Encoding.utf8) else {
-            throw TerminologyError("Invalid UTF8 data.")
-        }
+        let extraTags = ["AEGLUE_COMMAND": shellCommand, "GLUE_NAME": glueFileName, "IMPORT_SWIFTAE": frameworkImport]
+        let code = try renderStaticGlueTemplate(glueSpec: glueSpec, typeSupportSpec: typeSupportSpec, extraTags: extraTags)
+        guard let data = code.data(using: String.Encoding.utf8) else { throw TerminologyError("Invalid UTF8 data.") }
         let outGlueURL = outDir!.appendingPathComponent(glueFileName)
         try writeData(data as NSData, toURL: outGlueURL, overwriting: canOverwrite)
         print(outGlueURL.path)

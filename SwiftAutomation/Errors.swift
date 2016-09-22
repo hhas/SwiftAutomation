@@ -134,6 +134,8 @@ public class ConnectionError: SwiftAutomationError {
 }
 
 
+// TO DO: these error classes should also support exception chaining (e.g. when unpacking a list/dictionary and an item/property fails to unpack, that error should be embedded within a more general error message that describes the entire value):
+
 public class PackError: SwiftAutomationError { // TO DO: include AppData? (c.f. UnpackError)
     
     let object: Any

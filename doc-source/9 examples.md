@@ -20,7 +20,7 @@
 
     // application "iTunes" of machine "eppc://jsmith@media-mac.local"
 
-    let itunes = ITunes(url: NSURL(string: "eppc://jsmith@media-mac.local/iTunes"))
+    let itunes = ITunes(url: URL(string: "eppc://jsmith@media-mac.local/iTunes"))
 
 
 ## Property references

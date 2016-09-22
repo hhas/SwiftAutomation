@@ -71,7 +71,7 @@ public func ==(lhs: KeywordTerm, rhs: KeywordTerm) -> Bool {
 
 
 
-public class CommandTerm : Term, Hashable, CustomStringConvertible {
+public class CommandTerm: Term, Hashable, CustomStringConvertible {
 
     public let eventClass: OSType
     public let eventID: OSType

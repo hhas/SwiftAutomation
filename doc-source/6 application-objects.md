@@ -2,13 +2,13 @@
 
 ## Creating application objects
 
-Before you can communicate with a scriptable application you must create an application object. When targeting local applications, the glue's default constructor is usually the best choice. For example, to target TextEdit:
+Before you can communicate with a scriptable application you must create an application object. When targeting local applications, the glue's own default constructor is usually the best choice. For example, to target TextEdit:
 
     let textedit = TextEdit()
 
-This uses the bundle identifier of the application from which the glue was originally generated (e.g. "com.apple.TextEdit") to locate the application on the current machine, or returns `nil` if no match is found. (See `-[NSWorkspace URLForApplicationWithBundleIdentifier:]` for more information.)
+This locates the target application using the same bundle identifier as the application from which the glue was originally generated (in this case "com.apple.TextEdit").
 
-Alternatively, one of the following initializers may be used (e.g. if multiple versions of the application are installed, or the application is running on another machine):
+Alternatively, one of the following initializers may be used to target the desired application more precisely (for example, if more than one version is installed or if it's running on another machine):
 
     // application's name or full path (`.app` suffix is optional)
     SomeApplication(name: String, ...)
@@ -25,23 +25,22 @@ Alternatively, one of the following initializers may be used (e.g. if multiple v
     // AEAddressDesc
     SomeApplication(descriptor: NSAppleEventDescriptor, ...)
 
-Or, should you need to target the current (i.e. host) process:
+    // current (i.e. host) process
+    SomeApplication.currentApplication()
 
-    SomeApplication.currentApplication
-
-For example, to target a specific version of InDesign by name:
+For example, to target a specific version of Adobe InDesign by its name:
 
     let indesign = AdobeInDesign(name: "Adobe InDesign CS6.app")
 
-Each of the above initializers also accepts the following optional arguments:
+Except for `currentApplication()`, the above initializers can also accept the following optional arguments:
 
 * `launchOptions: NSWorkspaceLaunchOptions` – determines behavior when launching a local application; see NSWorkspace documentation for details. If omitted, the `NSWorkspaceLaunchOptions.WithoutActivation` option is used.
 
 * `relaunchMode: RelaunchMode` - determines behavior if the target process no longer exists; see Restarting applications section below. If omitted, `RelaunchMode.Limited` is used.
 
-Note that local applications will be launched if not already running when the `SomeApplication()`, `SomeApplication(name:String)`, `SomeApplication(bundleIdentifier:String)` or `SomeApplication(url:NSURL)` constructors are invoked, and events will be sent to the running application according to its process ID. If the process is later terminated, that process ID is no longer valid and events sent subsequently using this application object will fail as application objects currently don't provide a 'reconnect' facility.
+Note that local applications will be launched if not already running when the `SomeApplication()`, `SomeApplication(name:)`, `SomeApplication(bundleIdentifier:)` or `SomeApplication(url:)` constructors are invoked, and events will be sent to the running application according to its process ID. If the process is later terminated, that process ID is no longer valid and events sent subsequently using this application object will fail as application objects currently don't provide a 'reconnect' facility.
 
-If the `SomeApplication(url:NSURL)` constructor is invoked with an `eppc://` URL, or if the `SomeApplication(processIdentifier:pid_t)` or `SomeApplication(descriptor:NSAppleEventDescriptor)` constructors are used, the caller is responsible for ensuring the target application is running before sending any events to it.
+If the `SomeApplication(url:)` constructor is invoked with an `eppc://` URL, or if the `SomeApplication(processIdentifier:)` or `SomeApplication(descriptor:)` constructors are used, the caller is responsible for ensuring the target application is running before sending any events to it.
 
 
 ## Basic commands
@@ -90,7 +89,7 @@ Note: the following information only applies to local applications as SwiftAutom
 
 When you create an Application object by application name, bundle id or creator type, SwiftAutomation uses LaunchServices to locate an application matching that description. If you have more than one copy of the same application installed, you can identify the one you want by providing its full path, otherwise LaunchServices will identify the newest copy for you.
 
-SwiftAutomation identifies locally run applications by their process ids so it's possible to control multiple versions of an application running at the same time if their Application objects are created using process ids or `eppc://` URLs.
+SwiftAutomation targets local running applications by process ID, so it's possible to have multiple copies/versions of an application running at the same time if their Application objects are created using process IDs (or `eppc://` URLs that include pid).
 
 
 ### Checking if an application is running

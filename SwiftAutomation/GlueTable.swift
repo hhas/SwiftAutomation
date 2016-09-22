@@ -116,7 +116,6 @@ public class GlueTable {
         }
     }
 
-    // TO DO: confirm tables are passed by ref
     private func add(specifierKeywords keywords: KeywordTerms,
                      nameTable: inout [String:KeywordTerm], codeTable: inout [OSType:String]) {
         let len = keywords.count
@@ -161,7 +160,6 @@ public class GlueTable {
     }
 
     // called by parseAETE/parseSDEF 
-    // TO DO: what about adding manually exported+edited lookup tables? (it's be simpler just to use manually edited SDEFs, but SDEFs can't represent all four-char codes correctly [non-printing control characters are disallowed in XML, and SDEF format doesn't have a way to escape unprintable 'MacRoman characters', e.g. as '\x00', so FCCs that are valid in AETEs and used by some Carbon apps/osaxen get omitted when converted to SDEF, breaking that SDEF's compatibility with the target app])
     // (note: default terminology is added automatically when GlueTable is instantiated; users should not add it themselves)
     public func add(terminology terms: ApplicationTerminology) {
         // build type tables

@@ -91,6 +91,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		4F4C1A241D943D52004F9083 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4F63C41C1B7CF06E000D74EE /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4FFF5D231D899F0D008ED4F5;
+			remoteInfo = SwiftAutomation;
+		};
 		4FFF5D291D899F0D008ED4F5 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 4F63C41C1B7CF06E000D74EE /* Project object */;
@@ -340,8 +347,8 @@
 				4F0E394E1BA8D2F600FF2A96 /* AETEParser.swift */,
 				4F0E39481BA8717D00FF2A96 /* SDEFParser.swift */,
 				4F0E39501BA9A7EA00FF2A96 /* GlueTable.swift */,
-				4FFF5D491D89A26C008ED4F5 /* SwiftAEGlueTemplate.swift */,
 				4F0E396D1BAA9BA700FF2A96 /* StaticGlueBuilder.swift */,
+				4FFF5D491D89A26C008ED4F5 /* SwiftAEGlueTemplate.swift */,
 				4F0E39951BADD58500FF2A96 /* AppleEventFormatter.swift */,
 			);
 			name = "terminology support";
@@ -524,6 +531,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				4F4C1A251D943D52004F9083 /* PBXTargetDependency */,
 			);
 			name = test;
 			productName = test;
@@ -720,6 +728,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		4F4C1A251D943D52004F9083 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4FFF5D231D899F0D008ED4F5 /* SwiftAutomation */;
+			targetProxy = 4F4C1A241D943D52004F9083 /* PBXContainerItemProxy */;
+		};
 		4FFF5D2A1D899F0D008ED4F5 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 4FFF5D231D899F0D008ED4F5 /* SwiftAutomation */;

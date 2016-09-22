@@ -12,6 +12,7 @@ import Foundation
 // Set, Array, Dictionary structs pack and unpack themselves
 // Optional and MayBeMissing enums pack and unpack themselves
 
+// note that packSelf/unpackSelf protocol methods are mixed in to standard Swift types (Array, Dictionary, etc), hence the `SwiftAutomation_` prefixes for maximum paranoia
 
 public protocol SelfPacking {
     func SwiftAutomation_packSelf(_ appData: AppData) throws -> NSAppleEventDescriptor
@@ -27,7 +28,7 @@ protocol SelfUnpacking {
 
 // note: this design is not yet finalized (ideally we'd just map cMissingValue to nil, but returning nil for commands whose return type is `Any` is a PITA as all of Swift's normal unboxing techniques break, and the only way to unbox is to cast from Any to Optional<T> first, which in turn requires that T is known in advance, in which case what's the point of returning Any in the first place?)
 
-private let MissingValueDesc = NSAppleEventDescriptor(typeCode: SwiftAutomation_cMissingValue)
+let missingValueDesc = NSAppleEventDescriptor(typeCode: SwiftAutomation_cMissingValue)
 
 
 // unlike Swift's `nil` (which is actually an infinite number of values since Optional<T>.none is generic), there is only ever one `MissingValue`, which means it should behave sanely when cast to and from `Any`
@@ -39,13 +40,13 @@ public enum MissingValueType: CustomStringConvertible, SelfPacking {
     init() { self = .missingValue }
     
     public func SwiftAutomation_packSelf(_ appData: AppData) throws -> NSAppleEventDescriptor {
-        return MissingValueDesc
+        return missingValueDesc
     }
     
     public var description: String { return "MissingValue" }
 }
 
-public let MissingValue = MissingValueType() // the `missing value` constant
+public let MissingValue = MissingValueType() // the `missing value` constant, basically an analog of `Optional<T>.none`, aka `nil`, except that it's non-generic so isn't a giant PITA to deal with when cast to/from `Any` // TO DO: not sure about capitalization here; may be best to make exception from standard Swift naming convention for visual clarity
 
 
 // TO DO: define `==`/`!=` operators that treat MayBeMissing<T>.missing(…) and MissingValue and Optional<T>.none as equivalent? Or get rid of `MayBeMissing` enum and (if possible/practical) support `Optional<T> as? MissingValueType` and vice-versa?
@@ -54,7 +55,7 @@ public let MissingValue = MissingValueType() // the `missing value` constant
 
 // TO DO: it may be simpler for users if commands always return Optional<T>.none when an Optional return type is specified, and MissingValue when one is not
 
-public enum MayBeMissing<T> : SelfPacking, SelfUnpacking {
+public enum MayBeMissing<T>: SelfPacking, SelfUnpacking { // TO DO: rename 'MissingOr<T>'? this'd be more in keeping with TypeSupportSpec-generated enum names (e.g. 'IntOrStringOrMissing')
     case value(T)
     case missing
     
@@ -76,7 +77,7 @@ public enum MayBeMissing<T> : SelfPacking, SelfUnpacking {
         case .value(let value):
             return try appData.pack(value)
         case .missing:
-            return MissingValueDesc
+            return missingValueDesc
         }
     }
     
@@ -99,7 +100,7 @@ public enum MayBeMissing<T> : SelfPacking, SelfUnpacking {
 }
 
 
-public func isMissingValue(_ desc: NSAppleEventDescriptor) -> Bool { // check if the given AEDesc is the `missing value` constant
+func isMissingValue(_ desc: NSAppleEventDescriptor) -> Bool { // check if the given AEDesc is the `missing value` constant
     return desc.descriptorType == typeType && desc.typeCodeValue == SwiftAutomation_cMissingValue
 }
 
@@ -112,7 +113,7 @@ extension Optional: SelfPacking, SelfUnpacking {
         case .some(let value):
             return try appData.pack(value)
         case .none:
-            return MissingValueDesc
+            return missingValueDesc
         }
     }
     
@@ -130,7 +131,7 @@ extension Optional: SelfPacking, SelfUnpacking {
 // extend Swift's standard collection types to pack and unpack themselves
 
 
-extension Set : SelfPacking, SelfUnpacking { // note: AEM doesn't define a standard AE type for Sets, so pack/unpack as typeAEList (we'll assume client code has its own reasons for suppling/requesting Set<T> instead of Array<T>)
+extension Set: SelfPacking, SelfUnpacking { // note: AEM doesn't define a standard AE type for Sets, so pack/unpack as typeAEList (we'll assume client code has its own reasons for suppling/requesting Set<T> instead of Array<T>)
     
     public func SwiftAutomation_packSelf(_ appData: AppData) throws -> NSAppleEventDescriptor {
         let desc = NSAppleEventDescriptor.list()
@@ -157,7 +158,7 @@ extension Set : SelfPacking, SelfUnpacking { // note: AEM doesn't define a stand
 }
 
 
-extension Array : SelfPacking, SelfUnpacking {
+extension Array: SelfPacking, SelfUnpacking {
     
     public func SwiftAutomation_packSelf(_ appData: AppData) throws -> NSAppleEventDescriptor {
         let desc = NSAppleEventDescriptor.list()
@@ -200,7 +201,7 @@ extension Array : SelfPacking, SelfUnpacking {
 }
 
 
-extension Dictionary : SelfPacking, SelfUnpacking {
+extension Dictionary: SelfPacking, SelfUnpacking {
     
     public func SwiftAutomation_packSelf(_ appData: AppData) throws -> NSAppleEventDescriptor {
         var desc = NSAppleEventDescriptor.record()
@@ -286,26 +287,18 @@ extension Dictionary : SelfPacking, SelfUnpacking {
 
 
 
-// may be used in commands to return the _entire_ reply event as a raw AppleEvent descriptor
+// specialized return type for use in commands to return the _entire_ reply AppleEvent as a raw AppleEvent descriptor
 
 public struct ReplyEventDescriptor {
     
-    let descriptor: NSAppleEventDescriptor
+    let descriptor: NSAppleEventDescriptor // the reply AppleEvent
     
-    public var result: NSAppleEventDescriptor? {
+    public var result: NSAppleEventDescriptor? { // the application-returned result value, if any
         return descriptor.paramDescriptor(forKeyword: keyDirectObject)
     }
     
-    public var errorNumber: Int? {
-        if let err = descriptor.paramDescriptor(forKeyword: keyErrorNumber)?.int32Value {
-            return Int(err)
-        } else {
-            return nil
-        }
-    }
-    
-    public var errorMessage: String? {
-        return descriptor.paramDescriptor(forKeyword: keyErrorString)?.stringValue
+    public var errorNumber: Int { // the application-returned error number, if any; 0 = noErr
+        return Int(descriptor.paramDescriptor(forKeyword: keyErrorNumber)?.int32Value ?? 0)
     }
 }
 
