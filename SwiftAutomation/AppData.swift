@@ -52,9 +52,9 @@ open class AppData {
         
     public var isInt64Compatible: Bool = true // While AppData.pack() always packs integers within the SInt32.min...SInt32.max range as typeSInt32, if the isInt64Compatible flag is true then it will use typeUInt32/typeSInt64/typeUInt64 for integers outside of that range. Some older Carbon-based apps (e.g. MS Excel) may not accept these larger integer types, so set this flag false when working with those apps to pack large integers as Doubles instead, effectively emulating AppleScript which uses SInt32 and Double only. (Caution: as in AppleScript, integers beyond ±2**52 will lose precision when converted to Double.)
     
-    // note: SpecifierFormatter can use the following when rendering app roots
+    // the following properties are mainly for internal use, but SpecifierFormatter may also them when rendering app roots
     public let target: TargetApplication
-    public let launchOptions: LaunchOptions
+    public let launchOptions: LaunchOptions // TO DO: should launchOptions and relaunchMode move to TargetApplication?
     public let relaunchMode: RelaunchMode
     
     public let glueClasses: GlueClasses // holds all glue-defined Specifier and Symbol classes so unpack() can instantiate them as needed (also contains SpecifierFormatter, though since only one formatter instance is needed it's already instantiated for convenience)
@@ -276,7 +276,7 @@ open class AppData {
                 return result
             }
         } else if T.self is Symbol.Type {
-            if SymbolTypes.contains(desc.descriptorType) {
+            if symbolDescriptorTypes.contains(desc.descriptorType) {
                 return self.unpackSymbol(desc) as! T
             }
         } else if T.self == Date.self {

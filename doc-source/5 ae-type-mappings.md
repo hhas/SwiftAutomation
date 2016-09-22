@@ -66,14 +66,14 @@ When packing and unpacking `String` values, SwiftAutomation uses the `NSAppleEve
 
 Note that while the CoreServices framework's `AEDataModel.h` header states that `typeUnicodeText` is deprecated in favor `typeUTF8Text` and `typeUTF16ExternalRepresentation`, it remains in widespread use; therefore SwiftAutomation continues to use `typeUnicodeText` to ensure the broadest compatibility with existing scriptable applications.
 
-Some older applications may return text values as descriptors of `typeChar`, `typeIntlText`, or `typeStyledText`. These types are long-deprecated and their use strongly discouraged in macOS. SwiftAutomation will coerce these descriptors to `typeUnicodeText` before unpacking them, or throw an `UnpackError` if the coercion fails.
+Some older Carbon applications might return text values as descriptors of `typeChar`, `typeIntlText`, or `typeStyledText`. These types are long-deprecated and their use strongly discouraged in macOS. SwiftAutomation will coerce these descriptors to `typeUnicodeText` before unpacking them, or throw an `UnpackError` if the coercion fails.
 
 
 ### File system references
 
 // TO DO: SwiftAutomation currently uses Swift's URL struct, which doesn't provide the extra descriptor caching or explicit coercion methods (it also currently doesn't distinguish between path-style URLs and bookmark-style URLs, and treats everything as typeFileURL, which might cause problems on any older, poorly designed Carbon apps that explicitly typecheck their params as typeAlias instead of coercing them to that type as they're supposed to)
 
-The Apple Event Manager defines a number of modern (`typeFileURL`, `typeBookmarkData`), legacy (`typeAlias`), and deprecated (`typeFSRef`, `typeFSS`) descriptor types for identifying file system objects. Object specifiers of form `{want:file,from:null,form:name,seld:"HFS:PATH:STRING"}` (an AppleScript-ism) are also recognized by most applications. Fortunately, the Apple Event Manager also implements a number of coercion handlers for coercing between these types, so when interacting with most applications you should not need to know or care exactly which of these types are used: the application should coerce supplied values to whichever type(s) it requires.
+The Apple Event Manager defines a number of modern (`typeFileURL`, `typeBookmarkData`), legacy (`typeAlias`), and deprecated (`typeFSRef`, `typeFSS`) descriptor types for identifying file system objects. (Object specifiers of form `{want:file,from:null,form:name,seld:"HFS:PATH:STRING"}` are also recognized by most applications, though not recommended.) Fortunately, the Apple Event Manager also implements a number of coercion handlers for coercing between these types, so when interacting with most applications you should not need to know or care exactly which of these types are used: the application should coerce supplied values to whichever type(s) it requires.
 
 SwiftAutomation packs `URL` instances containing `file://` URLs as descriptors of `typeFileURL`, which the majority of applications should accept. Non-file URLs are not supported and will result in a `PackError` being thrown.
 
@@ -112,7 +112,9 @@ Be aware when specifying a command's required/result type, you must specify the 
 
 The `typeAERecord` AE type is a struct-like data structure containing zero or more properties. SwiftAutomation represents AE records as `Dictionary<Symbol,Any>` instances. The keys in this dictionary are normally instances of `Symbol` or glue-defined subclass representing SwiftAutomation-style property names, e.g. `TEDSymbol.text`. Dictionary keys may also be `Symbol` instances created with raw four-char codes (if no equivalent human-readable terminology exists), e.g. `Symbol(code: "docu")` or `String` instances representing "user-defined" keys (an AppleScript-ism, rarely used by applications).
 
-If a dictionary includes a `Symbol.class_` (or `Symbol(code:"pcls")`) key whose value is also a `Symbol`, SwiftAutomation will pack the other items into an AE record coerced to that value's' type. Similarly, when unpacking an record-based descriptor that isn't `typeAERecord`, `typeObjectSpecifier` or other known type, SwiftAutomation will unpack it as an `Dictionary` instance with an additional `Symbol.class_` key and `Symbol` value to indicate the descriptor's type.
+If a dictionary includes a `Symbol.class_` (or `Symbol(code:"pcls")`) key whose value is also a `Symbol`, SwiftAutomation will pack the other items into an AE record coerced to that value's' type. [TO DO: add example for clarity] Similarly, when unpacking an record-based descriptor that isn't `typeAERecord`, `typeObjectSpecifier` or other known type, SwiftAutomation will unpack it as an `Dictionary` instance with an additional `Symbol.class_` key and `Symbol` value to indicate the descriptor's type.
+
+AERecords can also be packed/unpacked to/from glue-defined record structs; see the discussion of the `aeglue` tool's `-s` option in Chapter 4.
 
 
 ### Types and enumerators

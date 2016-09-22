@@ -7,9 +7,7 @@ import Foundation
 import AppKit
 
 
-// TO DO: utility functions for converting between POSIX and HFS path strings? (HFS paths are nasty and rightly deprecated, but some older Carbon apps still refuse to take anything except an HFS path string, particularly when saving documents; fortunately these conversions can be performed solely using AE coercions - no deprecated C function calls required - but it's a pain for user to do as it requires multiple lower-level NSAppleEventDescriptor calls, so including public functions for performing these conversions, while smelly, is probably the least horrid compromise.)
-
-// TO DO: what about converting URLs to typeAlias and other filesystem-related descriptor types? (In theory, applications should always accept typeFileURL and coerce it to whatever type they actually need themselves; in practice, not-so-well-designed Carbon apps may require one specific type - e.g. typeAlias - and refuse to accept any other, in which case it's the client's problem to give it what it needs. Again, nasty, but probably better to include smelly utility functions than leave users to deal with arcane NSAppleEventDescriptor calls.)
+// TO DO: what about converting URLs to typeAlias and other filesystem-related descriptor types? e.g. `aliasDescriptor(fromFileURL:URL)` (or take an optional enum of `.alias|.FSRef|etc.`) (In theory, applications should always accept typeFileURL and coerce it to whatever type they actually need themselves; in practice, not-so-well-designed Carbon apps may require one specific type - e.g. typeAlias - and refuse to accept any other, in which case it's the client's problem to give it what it needs. Again, nasty, but probably better to include smelly utility functions than leave users to deal with arcane NSAppleEventDescriptor calls.)
 
 
 /******************************************************************************/
@@ -38,19 +36,19 @@ func FourCharCodeString(_ code: OSType) -> String {
 
 // misc AEDesc packing functions
 
-func FourCharCodeDescriptor(_ type: OSType, _ data: OSType) -> NSAppleEventDescriptor {
+func FourCharCodeDescriptor(_ type: OSType, _ data: OSType) -> NSAppleEventDescriptor { // TO DO: rename `descriptor(forSymbolType:value:)`
     var data = data
     return NSAppleEventDescriptor(descriptorType: type, bytes: &data, length: MemoryLayout<OSType>.size)!
 }
 
-func UInt32Descriptor(_ data: UInt32) -> NSAppleEventDescriptor {
+func UInt32Descriptor(_ data: UInt32) -> NSAppleEventDescriptor { // rename `descriptor`
     var data = data // note: Swift's ObjC bridge appears to ignore the `const` on the `-[NSAppleEventDescriptor initWithDescriptorType:bytes:length:]` method's 'bytes' parameter, so need to rebind to `var` as workaround
     return NSAppleEventDescriptor(descriptorType: SwiftAutomation_typeUInt32, bytes: &data, length: MemoryLayout<UInt32>.size)!
 }
 
 
 // the following AEDesc types will be mapped to Symbol instances
-let SymbolTypes: Set<DescType> = [typeType, typeEnumerated, typeProperty, typeKeyword]
+let symbolDescriptorTypes: Set<DescType> = [typeType, typeEnumerated, typeProperty, typeKeyword]
 
 
 /******************************************************************************/
@@ -312,6 +310,24 @@ public let ConRootDesc = NSAppleEventDescriptor(descriptorType: typeCurrentConta
 // root descriptor for an object specifier describing an element whose state is being compared in a by-test specifier
 // e.g. `every track where (rating of «typeObjectBeingExamined» > 50)`
 public let ItsRootDesc = NSAppleEventDescriptor(descriptorType: typeObjectBeingExamined, data: nil)!
+
+
+/******************************************************************************/
+// compatibility functions for use with any older Carbon-based applications that still require HFS path strings
+
+// TO DO: are there any situations where the following method calls could return nil? (think they'll always succeed, though the resulting paths may be nonsense); if so, need to throw error on failure (currently these will raise an exception, but that's based on the assumption that they'll never fail in practice: the paths supplied will be arbitrary, so if failures do occur they'll need to be treated as user errors, not implementation bugs)
+
+public func HFSPath(fromFileURL url: URL) -> String {
+    return NSAppleEventDescriptor(fileURL: url).coerce(toDescriptorType: typeUnicodeText)!.stringValue!
+}
+
+public func fileURL(fromHFSPath path: String) -> URL {
+    return NSAppleEventDescriptor(string: path).coerce(toDescriptorType: typeFileURL)!.fileURLValue!
+}
+
+
+
+
 
 
 
