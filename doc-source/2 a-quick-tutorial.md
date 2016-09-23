@@ -6,7 +6,10 @@
 
 [TO DO: TextEdit now returns by-name document specifiers; update code examples accordingly]
 
+[TO DO: could probably do with getting user to open sdef in Script Editor for an overview of how API docs are structured]
+
 The following tutorial provides a practical taste of application scripting with Swift and SwiftAutomation. Later chapters cover the technical details of SwiftAutomation usage that are mostly skimmed over here.
+
 
 ## 'Hello World' tutorial
 
@@ -58,17 +61,53 @@ This particular object specifier represents one-to-one relationship between Text
 [TO DO: how best to show an example of a one-to-many relationship? Having the user write `TextEdit().documents.paragraphs` might be a good choice as it emphasizes how queries describe abstract relationships rather than literal containment.]
 
 
+This specifier can be assigned to a constant or variable for easy reuse. Use the `make` command to create another document, this time assigning its result to a variable named `doc` as shown:
 
-This specifier can be assigned to a variable for easy reuse. Use the `make` command to create another document, this time assigning its result to a variable, `doc`:
+    let doc = textedit.make(new: TED.document) as TEDItem
 
-    let doc = textedit.make(new: TED.document)
+Explicitly declaring the command's return type (in this case, as `TEDItem`) is not mandatory. If omitted, the Swift compiler will infer `doc`'s static type to be `Any`, allowing it to hold whatever type of object the application actually returns. However, the Swift compiler won't let you refer to the object's properties and methods until you cast that variable to a specific type. Applying the (`... as TEDItem`) cast directly to the command has two benefits: not only allows the Swift compiler to infer the `doc` variable's own type (`TEDItem`), it also tells SwiftAutomation that it _must_ convert the Apple event data returned by the application to that specific type or else throw an error if that conversion isn't supported. This enables SwiftAutomation to map data from Apple event's weak, dynamic type system to Swift's strong, static one in a fully type-safe way.
+
+[TO DO: don't say what TEDItem actually means...when should that be clarified?]
+
+
+[TO DO: this will work better if the above `make` command is expanded to include `withProperties: [TED.text:"Hello World!"]`]. The next task will be to `get()` that document's text, which makes the point that object specifiers are only used to construct _queries_; to actually get a value from the application you _have_ to use a command, e.g. `get()`. (Kinda like the difference between putting together a file path, e.g. "/Users/jsmith/" + "TODO.txt", that describes the location of some data, and passing that path to a `read()` command to actually obtain the data from that location.) Once getting is covered, the `set()` example can show how to change that content to something else. In addition, the `get()` example can explain the shorthand form that allows the command's direct parameter to be used as its subject for conciseness, i.e. `textedit.get(doc.text)` -> `doc.text.get()]
+
+
+
+### Get the document's content
+
+Retrieving the document's text is done using the `get()` command:
+
+doc.text.get()
+// "Hello World"
+
+This may seem counter-intuitive if you're used to dealing with AppleScript or Swift, where evaluating a literal reference returns the _value_ identified by that reference. However, SwiftAutomation only uses object-oriented references to construct object specifiers, not to resolve them. Always remember that an object specifier is really a first-class query object, so while the syntax may look similar to that of an object-oriented reference, its behavior is very different. For example, when evaluating the literal reference:
+
+textedit.documents[1].text
+
+the result is an object specifier, `TextEdit().documents[1].text`, not the value being specified (`"Hello World"`). To get the value being specified, you have to pass the object specifier as the direct argument to TextEdit's `get()` command:
+
+textedit.get(doc.text)
+// "Hello World!"
+
+As before, SwiftAutomation provides alternative convenience forms that allow the above command to be written more neatly as this:
+
+doc.text.get()
+
+
 
 
 ### Set the document's content
 
-The next step is to set the document's content to the string `"Hello World"`. Every TextEdit document has a property, `text`, that represents the entire text of the document. This property is both readable and writeable, allowing you to retrieve and/or modify the document's textual content as unstyled unicode text.
+The next step is to set the document's content to the string `"Hello World"`. Every TextEdit document has a property, `text`, that represents the entire text of the document. This property is both readable and writeable, allowing you to retrieve and/or modify the document's textual content as unstyled text.
 
-Setting a property's value is done using the `set()` command. The `set()` command is exposed as a method of the root `application` class and has two parameters: a direct (positional) parameter containing an object specifier identifying the property (or properties) to be modified, and a named parameter, `to:`, containing the new value. In this case, the direct parameter is an object specifier identifying the new document's `text` property, `doc.text`, and the `to:` parameter is the string `"Hello World"`:
+Setting a property's value is done using the application's '`set()` command, which is represented as an instance method on the `TextEditGlue.swift` file's `TextEdit` class. The `set()` command takes two parameters: a direct (unnamed) parameter, and a named parameter, `to:`. The direct parameter must be an object specifier (represented by the TextEdit glue's `TEDItem` and `TEDItems` classes) that identifies the property or properties to be modified, while the `to:` parameter supplies the new value to assign to that property – in this case a `String`.
+
+As we've already stored an object specifier for our target document in the `doc` variable, we'll use that to contruct a new object specifier that identifies that document's `text` property: `doc.text`. Evaluating this expression is evaluated, the result will 
+
+
+
+In this case, the direct parameter is an object specifier identifying the new document's `text` property, `doc.text`, and the `to:` parameter is the string `"Hello World"`:
 
     textedit.set(doc.text, to: "Hello World")
 
@@ -78,29 +117,11 @@ Because the above expression is a bit unwieldy to write, SwiftAutomation allows 
 
     doc.text.set(to: "Hello World")
 
-Appscript converts this second form to the first form internally, so the end result is exactly the same. Appscript supports several such special cases, and these are described in the chapter on Application Commands. Using these special cases produces more elegant, readable source code, and is recommended.
+SwiftAutomation converts this second form to the first form internally, so the end result is exactly the same. SwiftAutomation supports several such special cases, and these are described in the chapter on Application Commands. Using these special cases produces more elegant, readable source code, and is recommended.
 
 
-### Get the document's content
 
-Retrieving the document's text is done using the `get()` command:
-
-    doc.text.get()
-    // "Hello World"
-
-This may seem counter-intuitive if you're used to dealing with AppleScript or Swift, where evaluating a literal reference returns the _value_ identified by that reference. However, SwiftAutomation only uses object-oriented references to construct object specifiers, not to resolve them. Always remember that an object specifier is really a first-class query object, so while the syntax may look similar to that of an object-oriented reference, its behavior is very different. For example, when evaluating the literal reference:
-
-    textedit.documents[1].text
-
-the result is an object specifier, `TextEdit().documents[1].text`, not the value being specified (`"Hello World"`). To get the value being specified, you have to pass the object specifier as the direct argument to TextEdit's `get()` command:
-
-    textedit.get(doc.text)
-    // "Hello World!"
-
-As before, SwiftAutomation provides alternative convenience forms that allow the above command to be written more neatly as this:
-
-    doc.text.get()
-
+### More on using commands type-safely 
 
 Depending on what sort of attribute(s) the object specifier identifies, `get()` may return a primitive value (number, string, list, dict, etc.), or it may return another object specifier, or list of object specifiers, e.g.:
 

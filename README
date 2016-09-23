@@ -9,13 +9,13 @@ to control "AppleScriptable" macOS applications directly. For example:
   try ITunes().play()
 
   // tell application "Finder" to set fileNames to name of every file of home
-  let fileNames: [String] = try Finder().home.files.name.get()
+  let fileNames = try Finder().home.files.name.get() as [String]
 
 
   // tell application "TextEdit" to make new document ¬
   //                                     with properties {text:"Hello World!"}
   try TextEdit().make(new: TED.document, 
-                      withProperties: {TED.text: "Hello World!"})
+                      withProperties: [TED.text: "Hello World!"])
 
 
 The SwiftAutomation framework defines the basic functionality for constructing

@@ -529,7 +529,7 @@ open class AppData {
     let NoTimeout: TimeInterval = -2
     let DefaultTimeout: TimeInterval = -1
 
-    let DefaultSendMode = NSAppleEventDescriptor.SendOptions.canSwitchLayer
+    let DefaultSendMode = SendOptions.canSwitchLayer
     let DefaultConsiderations = packConsideringAndIgnoringFlags([.case])
     
     let NoResult = MissingValue // returned by commands that have no return value (since returning `void` will be an even bigger PITA)
@@ -539,7 +539,7 @@ open class AppData {
     // if relaunchMode = .Limited, only 'launch' and 'run' are allowed to restart a local application that's been quit
     let LimitedRelaunchEvents: [(OSType,OSType)] = [(kCoreEventClass, kAEOpenApplication), (SwiftAutomation_kASAppleScriptSuite, SwiftAutomation_kASLaunchEvent)]
     
-    private func send(event: NSAppleEventDescriptor, sendMode: NSAppleEventDescriptor.SendOptions, timeout: TimeInterval) throws -> NSAppleEventDescriptor { // used by sendAppleEvent()
+    private func send(event: NSAppleEventDescriptor, sendMode: SendOptions, timeout: TimeInterval) throws -> NSAppleEventDescriptor { // used by sendAppleEvent()
         do {
             return try event.sendEvent(options: sendMode, timeout: timeout) // throws NSError on AEM errors (but not app errors)
         } catch { // 'launch' events normally return 'not handled' errors, so just ignore those
@@ -557,9 +557,9 @@ open class AppData {
                                   parentSpecifier: Specifier, // the Specifier on which the command method was called; see special-case packing logic below
                                   directParameter: Any = NoParameter, // the first (unnamed) parameter to the command method; see special-case packing logic below
                                   keywordParameters: [KeywordParameter] = [], // the remaining named parameters
-                                  requestedType: Symbol? = nil, // event's `as` parameter, if any
-                                  waitReply: Bool = true, // wait for application to respond before returning? ignored when `sendOptions:` is given
-                                  sendOptions: NSAppleEventDescriptor.SendOptions? = nil, // raw send options (these are rarely needed)
+                                  requestedType: Symbol? = nil, // event's `as` parameter, if any; note: if given, any `keyAERequestedType` parameter supplied via `keywordParameters:` will be ignored
+                                  waitReply: Bool = true, // wait for application to respond before returning?
+                                  sendOptions: SendOptions? = nil, // raw send options (these are rarely needed); if given, `waitReply:` is ignored
                                   withTimeout: TimeInterval? = nil, // no. of seconds to wait before raising timeout error (-1712); may also be default/never
                         //        returnID: AEReturnID, // TO DO: need to check correct procedure for this; should send return auto-generated returnID?
                                   considering: ConsideringOptions? = nil) throws -> T { // coerce and unpack result as this type or return raw reply event if T is NSDescriptor; default is Any
@@ -667,7 +667,7 @@ open class AppData {
     // convenience shortcut for dispatching events using raw OSType codes only (the above method also requires human-readable command and parameter names to be supplied for error reporting purposes); users should call this via one of the `sendAppleEvent` methods on `AEApplication`/`AEItem`
     
     public func sendAppleEvent<T>(eventClass: OSType, eventID: OSType, parentSpecifier: Specifier, parameters: [OSType:Any] = [:],
-                                  requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: NSAppleEventDescriptor.SendOptions? = nil,
+                                  requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
                                   withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T
     {
         var parameters = parameters

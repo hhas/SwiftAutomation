@@ -167,27 +167,29 @@ open class Specifier: Query, SpecifierProtocol {
     // convenience methods for sending Apple events using four-char codes (either OSTypes or Strings)
     
     public func sendAppleEvent<T>(_ eventClass: OSType, _ eventID: OSType, _ parameters: [OSType:Any] = [:],
-                                  waitReply: Bool = true, sendOptions: NSAppleEventDescriptor.SendOptions? = nil,
+                                  requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
                                   withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(eventClass: eventClass, eventID: eventID,
-                                               parentSpecifier: self, parameters: parameters, waitReply: waitReply,
+                                               parentSpecifier: self, parameters: parameters,
+                                               requestedType: requestedType, waitReply: waitReply,
                                                sendOptions: sendOptions, withTimeout: withTimeout, considering: considering)
     }
     
     public func sendAppleEvent<T>(_ eventClass: String, _ eventID: String, _ parameters: [String:Any] = [:],
-                                  waitReply: Bool = true, sendOptions: NSAppleEventDescriptor.SendOptions? = nil,
+                                  requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
                                   withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
         var params = [OSType:Any]()
         for (k, v) in parameters { params[FourCharCodeUnsafe(k)] = v } // TO DO: use safe FCC converters? (the problem is that while sendAppleEvent() can throw, property() and elements() cannot, so throwing on one but not the other would be inconsistent; the only alternative is for property() and elements() to construct an invalid Specifier instance that capture the exception, e.g. one with an AppData subclass whose sendAppleEvent methods _always_ throw the captured exception when called, but given that four-char-code strings are only intended for low-level users who know what they're doing it's arguable that this is more effort than it's worth and it's simplest just to leave the user to ensure their four-char-code strings are correctly formed and catch and correct any invalid ones in their own testing)
         return try self.appData.sendAppleEvent(eventClass: FourCharCodeUnsafe(eventClass), eventID: FourCharCodeUnsafe(eventID),
-                                               parentSpecifier: self, parameters: params, waitReply: waitReply,
+                                               parentSpecifier: self, parameters: params,
+                                               requestedType: requestedType, waitReply: waitReply,
                                                sendOptions: sendOptions, withTimeout: withTimeout, considering: considering)
     }
     
     // non-generic versions of the above methods; these are bound when T can't be inferred (either because caller doesn't use the return value or didn't declare a specific type for it, e.g. `let result = cmd.call()`), in which case Any is used
     
     @discardableResult public func sendAppleEvent(_ eventClass: OSType, _ eventID: OSType, _ parameters: [OSType:Any] = [:],
-                                                  waitReply: Bool = true, sendOptions: NSAppleEventDescriptor.SendOptions? = nil,
+                                                  waitReply: Bool = true, sendOptions: SendOptions? = nil,
                                                   withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(eventClass: eventClass, eventID: eventID,
                                                parentSpecifier: self, parameters: parameters, waitReply: waitReply,
@@ -195,7 +197,7 @@ open class Specifier: Query, SpecifierProtocol {
     }
     
     @discardableResult public func sendAppleEvent(_ eventClass: String, _ eventID: String, _ parameters: [String:Any] = [:],
-                                                  waitReply: Bool = true, sendOptions: NSAppleEventDescriptor.SendOptions? = nil,
+                                                  waitReply: Bool = true, sendOptions: SendOptions? = nil,
                                                   withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         var params = [OSType:Any]()
         for (k, v) in parameters { params[FourCharCodeUnsafe(k)] = v } // TO DO: use safe FCC converters?

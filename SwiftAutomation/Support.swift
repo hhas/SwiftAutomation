@@ -68,6 +68,9 @@ public enum Considerations {
 public typealias ConsideringOptions = Set<Considerations>
 
 
+public typealias SendOptions = NSAppleEventDescriptor.SendOptions
+
+
 /******************************************************************************/
 // launch and relaunch options used in Application initializers
 

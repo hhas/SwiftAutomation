@@ -1,30 +1,37 @@
 # Commands
 
-[TO DO: this chapter is still rough, and there's little commonality between ObjC and Swift text; the ObjC API is also not finalized and may change slightly/drastically in future]
+[TO DO: this chapter is still rough and not fully updated; amongst other things it doesn't discuss how return types work]
 
 ## Syntax
 
-For convenience, SwiftAutomation makes application commands available as methods on every object specifier. (Note: due to the limitations of aete-based terminology, the user must determine for themselves which commands can operate on a particular reference. Some applications document this information separately.) All application commands have the same basic structure: a single, optional direct parameter, followed by zero or more named parameters specific to that command, followed by zero or more event attributes that determine how the Apple event is processed:
+All application commands have the same basic structure: a single, optional direct parameter, followed by zero or more named parameters specific to that command, followed by zero or more event attributes that determine how the Apple event is processed:
 
-<pre><code>func <var>commandName</var>(directParameter: Any = NoParameter,
-                 <var>namedParameter1:</var> Any = NoParameter,
-                 <var>namedParameter2:</var> Any = NoParameter,
+<pre><code>func <var>commandName</var>&lt;T&gt;(directParameter: Any  = NoParameter,
+                 <var>namedParameter1:</var> Any  = NoParameter,
+                 <var>namedParameter2:</var> Any  = NoParameter,
                  ...
-                 waitReply:       Bool                = true,
-                 withTimeout:     NSTimeInterval?     = nil,
-                 considering:     ConsideringOptions? = nil) throws -> Any</code></pre>
+                 resultType:  Symbol?             = nil,
+                 waitReply:   Bool                = true,
+                 sendOptions: SendOptions?        = nil,
+                 withTimeout: NSTimeInterval?     = nil,
+                 considering: ConsideringOptions? = nil) throws -> T</pre>
 
 * `directParameter:` -- An application command can have either zero or one direct parameters. The application's dictionary indicates which commands take a direct parameter, and if it is optional or required.
 
 * `namedParameterN:`An application command can have zero or more named parameters. The application's dictionary describes the named parameters for each command, and if they are optional or required.
 
-* `returnType:` -- Some applications may allow the return value's type to be specified for certain commands (typically `get`). For example, the Finder's `get` command returns filesystem references as alias objects if the resulttype is `FIN.alias`. [TO DO: this is preliminary and subject to change]
+* `resultType:` -- Some application commands (e.g. `get`) can return the same result as more than one type. [TO DO: rephrase, making clear that this only indicates the caller's preference as to what type it'd like the command's result to be - a very basic form of content negotiation - there is no guarantee the target app will respect it. Most apps ignore it, and even those that do support it often only do so for `get`.] For example, `Finder().home.get()` normally returns an object specifier, but will return a `URL` value instead if its `resultType:` is `FIN.alias`: `Finder().home.get(resultType: FIN.alias)`. [Note that in AS, `COMMAND as TYPE` does double duty, both indicating its preferred result type to the app _and_ coercing the actual result when it arrives. In SA, `COMMAND as TYPE` only performs the latter; the former is done via `resultType:`.]
 
 * `waitReply:` -- If `true` (the default), the command will block until the application sends a reply or the request times out. If `false`, it will return as soon as the request is sent, ignoring any return values or application errors.
+
+* `sendOptions:` -- May be used instead of `waitReply:` if additional/alternative Apple event send options need to be sent. See the `NSAppleEventDescriptor.SendOptions` documentation for details. (For example, if the `.queueReply` option is used, the command will immediately return the expected reply event's' return ID as `Int`, allowing the client to recognize the target application's reply event when it later arrives in its main event queue.)
 
 * `withTimeout:` -- The number of seconds to wait for the application to reply before raising a timeout error. The default timeout (`DefaultTimeout`) is 120 seconds but this can be changed if necessary; use `NoTimeout` to wait indefinitely. For example, a longer timeout may be needed to prevent a timeout error occurring during a particularly long-running application command. Note: due to a quirk in the Apple Event Manager API, timeout errors may be reported as either error -1712 (the Apple event timed out) or -609 (connection invalid, which is also raised when an application unexpectedly quits while handling a command).
 
 * `considering:` -- Some applications may allow the client to specify text attributes that should be considered when performing string comparisons, e.g. when resolving by-test references. When specifying the attributes to consider, the set should contain zero or more of the following symbols: `AE.case`, `AE.diacriticals`, `AE.numericStrings`, `AE.hyphens`, `AE.punctuation`, `AE.whitespace` [TO DO: and/or use the glue's own prefix code, e.g. `TED.case`]. If omitted, `[AE.case]` is used as the default. Note that most applications currently ignore this setting and always use the default behaviour, which is to ignore case but consider everything else.
+
+
+For convenience, SwiftAutomation makes application commands available as methods on every object specifier. (Note: due to the limitations of aete-based terminology, the user must determine for themselves which commands can operate on a particular reference. Some applications document this information separately.) 
 
 
 
