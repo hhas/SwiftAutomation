@@ -22,7 +22,7 @@ characters/words/paragraphs of documents by index/relative-position/range/filter
 
 ### Property
 
-<pre><code>var PROPERTY: <var>PREFIX</var>Object</code> {get}</pre>
+<pre><code>var PROPERTY: <var>PREFIX</var>Item</code> {get}</pre>
 
 Syntax:
 
@@ -36,7 +36,7 @@ finder.<strong>home</strong>.files.<strong>name</strong></code></pre>
 
 ### All elements
 
-<pre><code>var ELEMENTS: <var>PREFIX</var>Elements {get}</code></pre>
+<pre><code>var ELEMENTS: <var>PREFIX</var>Items {get}</code></pre>
 
 Syntax:
 
@@ -51,7 +51,7 @@ textedit.<strong>documents</strong>.<strong>paragraphs</strong>.<strong>words</s
 
 ### Element by index
 
-<pre><code>subscript(index: Any) -> <var>PREFIX</var>Object</code></pre>
+<pre><code>subscript(index: Any) -> <var>PREFIX</var>Item</code></pre>
 
 Syntax:
 
@@ -73,8 +73,8 @@ Examples:
 
 ### Element by name
 
-<pre><code>subscript(index: String) -> <var>PREFIX</var>Object
-func named(name: Any) -> <var>PREFIX</var>Object</code></pre>
+<pre><code>subscript(index: String) -> <var>PREFIX</var>Item
+func named(name: Any) -> <var>PREFIX</var>Item</code></pre>
 
 Specifies the first element with the given name. (The subscript syntax is preferred; the `named` method would only need used if a non-string value was required.)
 
@@ -93,7 +93,7 @@ Examples:
 
 ### Element by ID
 
-  func ID(elementID:Any) -> <var>PREFIX</var>Object
+  func ID(elementID:Any) -> <var>PREFIX</var>Item
 
 Syntax:
 
@@ -106,10 +106,10 @@ Examples:
 
 ### Element by absolute position
 
-  var first: <var>PREFIX</var>Object {get}
-  var middle: <var>PREFIX</var>Object {get}
-  var last: <var>PREFIX</var>Object {get}
-  var any: <var>PREFIX</var>Object {get}
+  var first: <var>PREFIX</var>Item {get}
+  var middle: <var>PREFIX</var>Item {get}
+  var last: <var>PREFIX</var>Item {get}
+  var any: <var>PREFIX</var>Item {get}
 
 Syntax:
 
@@ -127,8 +127,8 @@ Examples:
 
 ### Element by relative position
 
-  func previous(elementClass: Symbol? = nil) -> <var>PREFIX</var>Object
-  func next(elementClass: Symbol? = nil) -> <var>PREFIX</var>Object
+  func previous(elementClass: Symbol? = nil) -> <var>PREFIX</var>Item
+  func next(elementClass: Symbol? = nil) -> <var>PREFIX</var>Item
 
 Syntax:
 
@@ -148,13 +148,13 @@ Examples:
 
 ### Elements by range
 
-  subscript(from: Any, to: Any) -> <var>PREFIX</var>Elements
+  subscript(from: Any, to: Any) -> <var>PREFIX</var>Items
 
 Syntax:
 
 <pre><code>elements<strong>[</strong><var>start</var><strong>,</strong> <var>end</var><strong>]</strong>
-        <var>start</var> : Int | String | <var>PREFIX</var>Object -- start of range
-        <var>end</var> : Int | String | <var>PREFIX</var>Object -- end of range</code></pre>
+        <var>start</var> : Int | String | <var>PREFIX</var>Item -- start of range
+        <var>end</var> : Int | String | <var>PREFIX</var>Item -- end of range</code></pre>
 
 Range references select all elements between and including two object specifiers indicating the start and end of the range. The start and end specifiers are normally declared relative to the container of the elements being selected. 
 
@@ -183,7 +183,7 @@ Examples:
 
 ### Elements by test
 
-  subscript(test: TestClause) -> <var>PREFIX</var>Elements
+  subscript(test: TestClause) -> <var>PREFIX</var>Items
 
 A specifier to each element that satisfies one or more conditions specified by a test specifier:
 

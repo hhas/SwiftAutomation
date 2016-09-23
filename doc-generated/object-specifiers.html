@@ -1,0 +1,295 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+        <title>SwiftAutomation | Object specifiers</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <style type="text/css" media="all"><!--@import url(full.css);--></style>
+    </head>
+    <body>
+        <div id="wrap">
+            <div id="main">
+                <h1>Object specifiers</h1>
+                <div class="navbar"><a href="application-objects.html">back</a> | <a href="index.html">index</a> | <a href="commands.html">next</a></div>
+                <h2>How object specifiers work</h2>
+
+<p>[TO DO: document class hierarchy as used in glues]</p>
+
+<p>[TO DO: finish (note that this is a bit of a rehash of ch.2; might be simpler just to refer users back to that)]</p>
+
+<p>A property contains either a simple value describing an object attribute (<code>name</code>, <code>class</code>, <code>creationDate</code>, etc.) or an object specifier representing a one-to-one relationship between objects (e.g. <code>home</code>, <code>currentTrack</code>).</p>
+
+<p>Elements represent a one-to-many relationship between objects (<code>documents</code>, <code>folders</code>, <code>fileTracks</code>, etc). </p>
+
+<p>[TO DO: note that both appear as read-only properties on glue-defined ObjectSpecifier+RootSpecifier subclasses; users don't instantiate Specifier classes directly but instead construct via chained property/method calls from glue's Application class or untargeted <code>RootSpecifier</code> constants (<var>PREFIX</var>App, <var>PREFIX</var>Con, <var>PREFIX</var>Its)]</p>
+
+<p>characters/words/paragraphs of documents by index/relative-position/range/filter</p>
+
+<p>[TO DO: list of supported reference forms, with links to sections below]</p>
+
+<p>[TO DO: following sections should include AppleScript syntax equivalents for reference]</p>
+
+<h2>Reference forms</h2>
+
+<h3>Property</h3>
+
+<pre><code>var PROPERTY: <var>PREFIX</var>Item</code> {get}</pre>
+
+<p>Syntax:</p>
+
+<pre><code>specifier<strong>.</strong><var>property</var></code></pre>
+
+<p>Examples:</p>
+
+<pre><code>textedit.<strong>name</strong>
+textedit.documents[1].<strong>text</strong>
+finder.<strong>home</strong>.files.<strong>name</strong></code></pre>
+
+<h3>All elements</h3>
+
+<pre><code>var ELEMENTS: <var>PREFIX</var>Items {get}</code></pre>
+
+<p>Syntax:</p>
+
+<pre><code>specifier<strong>.</strong><var>elements</var></code></pre>
+
+<p>Examples:</p>
+
+<pre><code>finder.home.<strong>folders</strong>
+textedit.<strong>documents</strong>
+textedit.<strong>documents</strong>.<strong>paragraphs</strong>.<strong>words</strong></code></pre>
+
+<h3>Element by index</h3>
+
+<pre><code>subscript(index: Any) -> <var>PREFIX</var>Item</code></pre>
+
+<p>Syntax:</p>
+
+<pre><code>elements<strong>[</strong><var>selector</var><strong>]</strong>
+
+    <var>selector</var> : Int | Any -- the object's index (1-indexed), or other identifying value [1]</code></pre>
+
+<p>[1] While element indexes are normally integers, some applications may also accept other types (e.g. Finder's file/folder/disk specifiers also accept alias values). The only exceptions are <code>String</code> and <code>&lt;var&gt;PREFIX&lt;/var&gt;Specifier</code>, which are used to construct by-name and by-test specifiers respectively.</p>
+
+<p class="hilitebox">Be aware that index-based object specifiers always use _one-indexing_ (i.e. the first item is 1, the second is 2, etc.), not zero-indexing as in Swift (where the first item is 0, the second is 1, etc.).</p>
+
+<p>Examples:</p>
+
+<p>[TO DO: this and subsequent examples should appear as complete code, as above, with relevant portions emphasized]</p>
+
+<pre><code>words[3]
+items[-1]
+</code></pre>
+
+<h3>Element by name</h3>
+
+<pre><code>subscript(index: String) -> <var>PREFIX</var>Item
+func named(name: Any) -> <var>PREFIX</var>Item</code></pre>
+
+<p>Specifies the first element with the given name. (The subscript syntax is preferred; the <code>named</code> method would only need used if a non-string value was required.)</p>
+
+<p>Syntax:</p>
+
+<pre><code>elements<strong>[</strong><var>selector</var><strong>]</strong>
+        <var>selector</var> : String -- the object's name (as defined in its 'name' property)</code></pre>
+
+<p class="hilitebox">Applications usually treat object names as case-insensitive. Where multiple element have the same name, a by-name specifier only identifies the first element found with that name. (To identify <em>all</em> elements with a particular name, use a by-test specifier instead.)</p>
+
+<p>Examples:</p>
+
+<pre><code>disks["Macintosh HD"]
+files["index.html"]
+</code></pre>
+
+<h3>Element by ID</h3>
+
+<pre><code>func ID(elementID:Any) -&gt; &lt;var&gt;PREFIX&lt;/var&gt;Item
+</code></pre>
+
+<p>Syntax:</p>
+
+<pre><code>elements<strong>.ID(</strong><var>selector</var><strong>)</strong>
+        <var>selector</var> : Any -- the object's id (as defined in its 'id' property)</code></pre>
+
+<p>Examples:</p>
+
+<pre><code>windows.ID(4321)
+</code></pre>
+
+<h3>Element by absolute position</h3>
+
+<pre><code>var first: &lt;var&gt;PREFIX&lt;/var&gt;Item {get}
+var middle: &lt;var&gt;PREFIX&lt;/var&gt;Item {get}
+var last: &lt;var&gt;PREFIX&lt;/var&gt;Item {get}
+var any: &lt;var&gt;PREFIX&lt;/var&gt;Item {get}
+</code></pre>
+
+<p>Syntax:</p>
+
+<pre><code>elements<strong>.first</strong> -- first element
+elements<strong>.middle</strong> -- middle element
+elements<strong>.last</strong> -- last element
+elements<strong>.any</strong> -- random element</code></pre>
+
+<p>Examples:</p>
+
+<pre><code>documents.first
+paragraphs.last
+files.any
+</code></pre>
+
+<h3>Element by relative position</h3>
+
+<pre><code>func previous(elementClass: Symbol? = nil) -&gt; &lt;var&gt;PREFIX&lt;/var&gt;Item
+func next(elementClass: Symbol? = nil) -&gt; &lt;var&gt;PREFIX&lt;/var&gt;Item
+</code></pre>
+
+<p>Syntax:</p>
+
+<pre><code>// nearest element of a given class to appear before the specified element:
+element.<strong>previous(<var>elementClass</var>)</strong>
+
+// nearest element of a given class to appear after the specified element
+element.<strong>next(<var>elementClass</var>)</strong>
+
+        <var>elementClass</var> : Symbol -- the name of the previous/next element's class;
+                                            if omitted, the current element's class is used</code></pre>
+
+<p>Examples:</p>
+
+<pre><code>words[3].next() // word 4
+paragraphs[-1].previous(TED.character) // the last character before the last paragraph
+</code></pre>
+
+<h3>Elements by range</h3>
+
+<pre><code>subscript(from: Any, to: Any) -&gt; &lt;var&gt;PREFIX&lt;/var&gt;Items
+</code></pre>
+
+<p>Syntax:</p>
+
+<pre><code>elements<strong>[</strong><var>start</var><strong>,</strong> <var>end</var><strong>]</strong>
+        <var>start</var> : Int | String | <var>PREFIX</var>Item -- start of range
+        <var>end</var> : Int | String | <var>PREFIX</var>Item -- end of range</code></pre>
+
+<p>Range references select all elements between and including two object specifiers indicating the start and end of the range. The start and end specifiers are normally declared relative to the container of the elements being selected. </p>
+
+<p>These sub-specifiers are constructed using the glue's' <code>&lt;var&gt;PREFIX&lt;/var&gt;Con</code> constant, e.g. <code>TEDCon</code>, as their root. For example, to indicate the third paragraph relative to the currrent container object:</p>
+
+<pre><code>TEDCon.paragraphs[3]
+</code></pre>
+
+<p>Thus, to specify all paragraphs from paragraph 3 to paragraph -1:</p>
+
+<pre><code>paragraphs[TEDCon.paragraphs[3], TEDCon.paragraphs[-1]]
+</code></pre>
+
+<p>For convenience, sub-specifiers can be written in shorthand form where their element class is the same as the elements being selected; thus the above can be written more concisely as:</p>
+
+<pre><code>paragraphs[3, -1]
+</code></pre>
+
+<p>Some applications can handle more complex range references. For example, the following will work in Tex-Edit Plus:</p>
+
+<pre><code>words[TEPCon.characters[5], TEPCon.paragraphs[-2]]
+</code></pre>
+
+<p>Examples:</p>
+
+<pre><code>documents[1, 3]
+folders["Documents", "Movies"]
+text[TEPCon.characters[5], TEPCon.words[-2]]
+</code></pre>
+
+<h3>Elements by test</h3>
+
+<pre><code>subscript(test: TestClause) -&gt; &lt;var&gt;PREFIX&lt;/var&gt;Items
+</code></pre>
+
+<p>A specifier to each element that satisfies one or more conditions specified by a test specifier:</p>
+
+<pre><code>elements<strong>[<var>selector</var>]</strong>
+        <var>selector</bar> : <var>PREFIX</var>Specifier -- test specifier</code></pre>
+
+<p>Test expressions consist of the following:</p>
+
+<ul>
+<li><p>A test specifier relative to each element being tested. This specifier must be constructed using the glue's '<var>PREFIX</var>Its' root, e.g. <code>TEDIts</code>. Its-based references support all valid reference forms, allowing you to construct references to its properties and elements. For example:</p>
+
+<pre><code>TEDIts
+TEDIts.size
+TEDIts.words.first
+</code></pre></li>
+<li><p>One or more conditional/containment tests, implemented as operators/methods on the specifier being tested. The left-hand operand/receiver must be a <code>&lt;var&gt;PREFIX&lt;/var&gt;Specifier</code> instance; the other operand/argument can be anything.</p>
+
+<p>Syntax:</p>
+
+<pre><code>specifier <strong>&lt;</strong> <var>value</var>
+specifier <strong>&lt;=</strong> <var>value</var>
+specifier <strong>==</strong> <var>value</var>
+specifier <strong>!=</strong> <var>value</var>
+specifier <strong>&gt;</strong> <var>value</var>
+specifier <strong>&gt;=</strong> <var>value</var>
+specifier.<strong>beginsWith(</strong><var>value</var><strong>)</strong>
+specifier.<strong>endsWith(</strong><var>value</var><strong>)</strong>
+specifier.<strong>contains(</strong><var>value</var><strong>)</strong>
+specifier.<strong>isIn(</strong><var>value</var><strong>)</strong></code></pre>
+
+<p>Examples:</p>
+
+<pre><code>TEDIts == ""
+FINits.size &gt; 1024
+TEDIts.words.first.beginsWith("A")
+TEDIts.characters.first == TEDIts.characters.last
+</code></pre>
+
+<p>Caution: if assigning a test specifier to a variable, the variable must be explicitly typed to ensure the compiler uses the correct operator overload, e.g.: [TO DO: this sort of thing should be discouraged in practice; at most, it should be a footnote re. <code>==</code> overloading quirk]</p>
+
+<pre><code>let test: TEDSpecifier = TEDIts.color == [0,0,0]
+let query = textedit.documents[1].words[test]
+</code></pre></li>
+<li><p>Zero or more logical tests, implemented as properties/methods on conditional tests. All operands must be conditional/containment and/or logic test specifiers.</p>
+
+<p>Syntax:</p>
+
+<pre><code><var>test</var> <strong>&amp;&amp;</strong> <var>test</var>
+<var>test</var> <strong>||</strong> <var>test</var>
+<strong>!</strong><var>test</var></code></pre></li>
+</ul>
+
+<p>Examples:</p>
+
+<pre><code>  !(TEDIts.contains("?"))
+
+  FINIts.size &gt; 1024 &amp;&amp; FINIts.size &lt; 10240
+
+  TEDIts.words[1].beginsWith("A") || TEDIts.words[1].contains("ce") || TEDIts.words[2] == "foo"
+</code></pre>
+
+<h3>Element insertion location</h3>
+
+<p>Insertion locations can be specified at the beginning or end of all elements, or before or after a specified element or element range.</p>
+
+<pre><code>var beginning: &lt;var&gt;PREFIX&lt;/var&gt;Specifier
+var end: &lt;var&gt;PREFIX&lt;/var&gt;Specifier
+var before: &lt;var&gt;PREFIX&lt;/var&gt;Specifier
+var after: &lt;var&gt;PREFIX&lt;/var&gt;Specifier
+</code></pre>
+
+<p>Syntax:</p>
+
+<pre><code>elements<strong>.beginning</strong>
+elements<strong>.end</strong>
+element<strong>.before</strong>
+element<strong>.after</strong></code></pre>
+
+<p>Examples:</p>
+
+<pre><code>documents.end
+paragraphs.last.before
+</code></pre>
+
+            </div>
+        </div>
+        <div id="footer"><div class="navbar"><a href="application-objects.html">back</a> | <a href="index.html">index</a> | <a href="commands.html">next</a></div></div>
+    </body>
+</html>

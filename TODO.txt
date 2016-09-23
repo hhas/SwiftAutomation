@@ -1,78 +1,52 @@
 TO DO:
 
-- In 10.11/Xcode7 GM, the following convenience init crashes with EXC_BAD_ACCESS immediately on returning from self.init(...):
+
+- For convenience, generated glues include a convenience initializer containing the bundleID for the target application, allowing user to write [e.g.] `TextEdit()` as shorthand for `TextEdit(bundleIndentifier: "com.apple.TextEdit")`. However, in Swift3/Xcode8, if the glue's application class uses the following convenience initializer, it crashes with EXC_BAD_ACCESS, presumably due to a Swift bug:
 
         public class TextEdit: TEDRoot, ApplicationExtension {
+
             public convenience init(launchOptions: LaunchOptions = DefaultLaunchOptions, relaunchMode: RelaunchMode = DefaultRelaunchMode) {
-                self.init(bundleIdentifier: "com.apple.TextEdit", launchOptions: launchOptions, relaunchMode: relaunchMode)
+                // call the by-bundleID convenience initializer defined in ApplicationExtension
+                self.init(bundleIdentifier: "com.apple.TextEdit", launchOptions: launchOptions, relaunchMode: relaunchMode) // CRASHES
             }
         }
 
-    Looks like problem is with calling inits in TextEdit class's protocol extension from TextEdit class's own init; calling super.init() works. File bug report, and use workaround in glue template for now.
+    For now, the workaround is for the initializer to call the superclass's required initializer `RootSpecifier.init(rootObject:appData:)` directly.
 
 
 
-- framework target
-
-- include tutorial playground? (see manual ch.4) Q. just how predictable is playground-based execution when performing commands with side effects?
+- Is it possible to use application glues directly from the interactive `swift` CLI tool? Unlike Xcode playgrounds, the `swift` "REPL" does not automatically re-execute all previous lines whenever a new line is entered, so would be a much better, safer choice for the SwiftAutomation tutorial and user experimentation. In addition, could a Swift REPL be integrated into the AppleScriptToSwift application to create a general-purpose 'SwiftAutomationExplorer.app'? (Such an application would also benefit from a built-in dictionary viewer that can display Swift-style application dictionaries without the user having to manually generate them.)
 
 
+- support sum types for return values; best option is probably to include `--enum` (`--enum-type`?) option in aeglue that takes a description of [self-packing+self-unpacking] enums that user wants to have available and includes them in glue, similar to how `--struct` option might create custom structs based on dictionary's class/record types (note that some of these enums might be generated automatically, based on known aete and sdef-defined 'sum types'), e.g. `-t String/Symbol` -> `enum StringOrSymbol {...}`
 
-- explicit 'asType:Symbol' (requestType:? as_:?) parameter on command methods? keyAERequestedType can't always be inferred from return type, plus it should prob. only be passed when user explicitly states it; note that while some apps may explicitly define `as` param for `get` command, it's something AS will add regardless (TODO: need to check this is true), so it might make more sense to make it a fixed param in glue (so that it appears on _all_ commands) and ignore it in commandInfo (so that it doesn't appear more than once). Might be wise to look at commands that already contain this param, e.g. `get` and `dataSize` in Finder (though note that Finder's dictionary doesn't explicitly define `get`, at least not in SDEF [which is what we're stuck with these days]) (what else? e.g. StdAdds has `read...as...`, which isn't directly relevant but may provide some clue as to how consistently it's named)
-
-    As an example of why this option is needed, in Python app('Finder').files.get(returntype=k.alias) is used to return a list of aliases; in Swift, this is not inferrable from static type Array<NSURL> since 1. NSURL type declaration can't distinguish bookmark-style from path-style, and 2. it would need to ignore the Array part of the type (since types expressed as typeType descs can't be parameterized) which is a major assumption to which other apps may not hold so could well backfire in practice;
+- one problem with T coercion is that AEM allows typeType/typeEnum descriptors to coerce to typeUnicodeText, giving four-char strings ("docu", "yes\0x20", etc.); however, this is arguably unsafe, as these FCC strings can't be distinguished from actual string results, so should be unpacked as a Symbol only (assuming T = Any/StringOrSymbol sum type) or else throw an UnpackError
 
 
 
-- extra problem with Dictionary unpack: returnType: currently only accepts [Symbol:U], not Symbol subclasses (e.g. AESymbol)
-
-
-
-- SpecifierFormatter.format() currently never shows Application(...) root as returned specifiers use generic AppRoot which never contains appData. This doesn't affect subsequent use of those specifiers, since the rest of the specifier consists of SpecifierNodes that do retain the AppData used to unpack them, but does screw up introspection a bit. Simplest fix here might be to pass existing appData as [optional] arg to SpecifierFormatter.format(). Best solution may be for Application constructors to pass weakrefd self to AppData constructor, so that returned specifiers always have targeted absolute root, and rely purely on formatter to deal with abbreviating nested specifiers. (Note: AppleEventBridge never had this issue since all nodes including root were represented by single wrapper class.)
-
-
-
-- what methods need to go on Application? e.g. launch, transaction support
-
-
-
-- how to support sum types for return values? (this will be problematic given poor type introspection support in Swift2)
-
-
-
-- need to check app commands will reliably match on return type (e.g. one potential problem is that swiftc complains unless type is already inferrable)
-
-
-
-- 'class' property support for Dictionary-AERecord mapping (i.e. AERecords with custom descriptorType need to unpack that type as dict's' 'Symbol.class_' key, and vice-versa when packing); also, support glue option for unpacking as structs based on dictionary '[record] class' definitions (this will be unreliable since app terminology is often flaky/incomplete/incorrect, so unpacking records as dicts would remain the default behavior, but on occasions where it does work would be convenient for users; '[PREFIX][CLASSNAME]' struct types would need to implement their own 'unpack-self' initializer and be passed via glue info, probably also define a 'Record' protocol)
-
-
-
-- if nil is not used as missingValue, should command args use Any! rather than Any (or AnyObject! rather than AnyObject) in order to implicitly unwrap optionals? (this'd save users having to unwrap optionals themselves, but would raise exception if a param wasn't nil); need to give more thought to supporting sum types in general
-
-- one problem with T coercion is that cMissingType can coerce to typeUnicodeText, giving "msng" - this is arguably unsafe, since it can't be distinguished from actual string results, and should either be treated as a Symbol or nil (in which case an error will be raised unless an appropriate sum type is specified)
-
-
-- should command methods support optional throwable trailing closure for custom-converting values that can't automatically be coerced to the required type? (this'd require passing both the unpacked-as-Any value and T.self; the problem is that complex structures such as lists and records could call this in all sorts of places with all sorts of different Ts so the same closure needs to return Any)
-
-
-
-
-- option to disable desc caching in specifiers (i.e. emulate exactly how AS does it)? (actually, it's not caching that's the issue so much as unpacking; it would be sufficient to do a full unpack, then repack as cachedDesc - a little inefficent if the objspec won't be re-sent to app, but since it's an extremely rare problem case this won't matter); option to enable 64-bit integer pack/unpack
+- option to disable desc caching in specifiers (i.e. emulate exactly how AS does it)? (actually, it's not caching that's the issue so much as unpacking; it would be sufficient to do a full unpack, then repack as cachedDesc - a little inefficent if the objspec won't be re-sent to app, but since it's an extremely rare problem case this won't matter)
 
 
 - by-test selector currently doesn't confirm ITS-based root before packing test clause; similarly, by-range selector doesn't confirm APP/CON-based roots for start+stop specifiers; implementing this either means extra mixin subclasses (so type system can enforce it) or pack-time checking (so it can be reported as a command error) - though whether it's worth doing has yet to be decided (having a complete set of specifier variants just for constructing `its` based specifiers will add code complexity and would be problematic for unpacking since objspecs need to be fully unpacked to determine root type but standard behavior is to shallow unpack objspecs for efficiency and only fully unpack when necessary)
 
+
+- should glues use `as:` rather than `resultType:`? Q. is it practical to do so, given that `as` is an app-definable parameter, not an AEM-defined attribute? (terminology parsers would need to ignore `("as",keyAERequestedType)` if it appears in a command definition, and escape any partial matches - e.g. StdAdds commands use 'as..' and 'as.A' as well as 'rtyp', so the former should always appear as `as_:`)
 
 
 
 -  unlike AppleScript, which allows `every element of...` to be used as an explicit alternative to `elements of...`, there is not an `all` by-ordinal selector var defined on ElementsSpecifier. While one could be added, there's never been a reported use case to indicate the need for it (specifically, where an app's terminology fails to distinguish a property vs elements name, the classic example being the `text` keyword which is such a mess it has special-case treatment built into AppleEventBridge's terminology parsers to ensure AppleEventBridge glues disambiguate it in exactly the same way that AppleScript does). (note: symbols can also be passed to elements[idx]; however, it's more about forcing a 'property' specifier to be an all-elements specifier so don't think that helps in itself)
 
 
-- could/should Symbol.symbol() use dictionary instead of switch? (possible downside is that dictionary would initialize all static lets unless closures were used, whereas switch only initializes them on first use)
+- check Symbol.symbol() lookup performance on on very large switches [e.g. InDesign]; if noticeable, a dictionary could be used to cache previous lookups
 
 
-- need to check how (e.g) iTunes handles 'rawData' property vs elements; it's possible both need to be supported (see also text vs text) (note: tdta is defined by iTunes hidden types suite solely for use as `rawData` property's declared type - it doesn't actually appear as an element; other apps with conflicting keywords may be different, however)
+- canonicize most/all Swift method names, e.g. pack(value:) instead of pack(_ value:)?
 
 
-- check why iTunes, etc. activates when getting aete
+- add option to `aeglue` for exporting manually editable lookup tables as an ApplicationTerminology-compliant Swift class (see `DefaultTerminology` for an example) or JSON file (probably better since `aeglue` needs to read it at run-time), for use when an application's original terminology has defects that can't easily be worked around (the alternative, of course, is to drop down to four-char-codes - equivalent to using raw chevron syntax in AppleScript - but that's a PITA too as one needs to know the correct codes in order to use those APIs). Notes: in an ideal world users would just export the problem app's dictionary as an .sdef file, then manually fix and reimport that, but half the reason for having these sorts of trapdoors in the first place is to work around problems caused by flaky crap like SDEFs in the first place. For example, the SDEF format can't represent all possible four-char-codes correctly: non-printing control characters are disallowed in XML, and SDEF format doesn't have a way to escape unprintable 'MacRoman characters', e.g. as '\x00', so FCCs that are valid in AETEs and used by some Carbon apps/osaxen get omitted when converted to SDEF, breaking compatibility with the target app by making those properties/elements/commands/symbols/etc unusable. (AppleScript doesn't have this problem when dealing with local apps as it still uses the old deprecated `OSAGetAppTerminology()` API to fetch their terminology directly in AETE format.) -- Note that this capability is only relevant to dynamic languages that don't have static glues; for Swift it's simplest just to hack corrections into the `APPLICATIONGlue.swift` file. (For sharing patches with other users, just use standard `diff` tools.)
+
+
+- the `isInt64Compatible` flag's' default is `true` on the assumption that most apps will do the right thing upon receiving `typeUInt32`/`typeSInt64`/`typeUInt64` descriptors (i.e. coerce them to whatever type[s] they actually need, e.g. Double), and apps like Excel which only accept `SInt32` and `Double` (which are what AppleScript uses) and fail on anything else are in the minority. If that assumption turns out to be wrong, this flag will need to be made `false` by default (i.e. emulate AppleScript's behavior). Note that this only affects integers beyond ±2**31; integers than can be packed into SInt32 always will be.
+
+
+- currently Application.customRoot(object) allows the creation of individual object specifiers with a non-typeNull terminator, e.g. `Finder().customRoot(aURL).name` is equivalent to `tell app "Finder" to name of POSIX file "..."`. In practice, this is almost never neeeded (or supported by apps), but it's included for maximum AppleScript 'quirk-for-quirk' compatibility. Should AppData also provide an option to set the default app root object to be used in building and unpacking _all_ object specifiers? The only place this might be useful is in Automator when packing fully qualified object specifiers; OTOH, fully qualified object specifiers always were a bad solution to the problem of binding AEAddressDescs to objspec descriptors, and Automator's a dead-end and largely moribund product anyway.

@@ -1,0 +1,41 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+        <title>SwiftAutomation | Notes</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <style type="text/css" media="all"><!--@import url(full.css);--></style>
+    </head>
+    <body>
+        <div id="wrap">
+            <div id="main">
+                <h1>Notes</h1>
+                <div class="navbar"><a href="low-level-apis.html">back</a> | <a href="index.html">index</a></div>
+                <p>// TO DO: update</p>
+
+<h2>Security issues</h2>
+
+<p>If including user names and/or passwords in remote application URLs, please note that <code><var>XX</var>Application</code> and <code><var>XX</var>Specifier</code> objects will retain those URL strings over their entire lifetime. Security here is the developer's responsibility, as it's their code that creates and retains these objects.</p>
+
+<h2>GUI Scripting</h2>
+
+<p>Non-scriptable applications may in some cases be controlled from SwiftAutomation by using System Events to manipulate their graphical user interface. Note that the "Enable access for assistive devices" checkbox must be selected in the Universal Access system preferences pane for GUI Scripting to work.</p>
+
+<h2>Type bridging limitations</h2>
+
+<p>Some applications (e.g. QuarkXpress) may return values which SwiftAutomation cannot convert to equivalent Cocoa types. These values are usually of types which are defined, used and understood only by that particular application, and will be represented in Objective-C as <code>NSAppleEventDescriptor</code> instances which should generally be treated as opaque values.</p>
+
+<p>A few standard but rarely used AE types are also currently unbridged with Cocoa counterparts, such as image types (<code>typePict</code>, <code>typeTIFF</code>, etc.). Client code should perform any necessary conversions itself.</p>
+
+<h2>SwiftAutomation and threads</h2>
+
+<p>SwiftAutomation is thread-safe and events can be sent (and their replies received) from any thread.</p>
+
+<h2>Credits</h2>
+
+<p>Many thanks to all those who have contributed comments, suggestions and bug reports.</p>
+
+            </div>
+        </div>
+        <div id="footer"><div class="navbar"><a href="low-level-apis.html">back</a> | <a href="index.html">index</a></div></div>
+    </body>
+</html>

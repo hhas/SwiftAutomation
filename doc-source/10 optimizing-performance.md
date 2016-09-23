@@ -27,8 +27,8 @@ While iterating over application objects and manipulating each in turn is a comm
   let desiredEmail = "sam.brown@example.com"
     
   var foundNames: [String] = []
-  for person in contacts.people.get() as! [CONSpecifier] {
-      for email in people.emails.get() as! [CONSpecifier] {
+  for person in contacts.people.get() as [CONItem] {
+      for email in people.emails.get() as [CONItem] {
           if email.value.get() == desiredEmail {
               foundNames += person.name.get()
           }
@@ -51,7 +51,7 @@ In this case, the entire search can be performed using a single complex query se
     
   let desiredEmail = "sam.brown@example.com"
     
-  let foundNames = contacts.people[CONIts.emails.value.contains(desiredEmail)].name.get() as! [String]
+  let foundNames = contacts.people[CONIts.emails.value.contains(desiredEmail)].name.get() as [String]
 
   print(foundNames)
 
@@ -74,10 +74,10 @@ While AEOM queries can be surprisingly powerful, there are still many problems t
   let desiredDomain = "@example.com"
 
   // get a list of name strings
-  let names = contacts.people.name.get() as! [String]
+  let names = contacts.people.name.get() as [String]
 
   // get a list of lists of email strings
-  let emails = contacts.people.emails.value.get() as! [[String]]
+  let emails = contacts.people.emails.value.get() as [[String]]
 
   var foundNames = []
   for i in (0 ... names.count) { // TO DO: how does zipping both lists and iterating over that compare?

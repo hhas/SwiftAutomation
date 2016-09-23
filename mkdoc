@@ -41,10 +41,10 @@ def  render_toc(pages): # (url, title, content)
     navbar = kNavlink.format(pages[0][1], u'next')
     toc = u'<h2>Table of contents</h2>\n<ol>\n{}</ol>'.format(
             u'\n'.join(u'\t<li><a href="{}">{}</a></li>\n'.format(p[1], esc(p[2])) for p in pages))
-    return kPageTemplate.format(title=u'SwiftAE', heading=u'SwiftAE', navbar=navbar, content=toc)
+    return kPageTemplate.format(title=u'SwiftAutomation', heading=u'SwiftAutomation', navbar=navbar, content=toc)
 
 def render_page(links, title, content):
-    return kPageTemplate.format(title=u'SwiftAE | '+esc(title), heading=esc(title),
+    return kPageTemplate.format(title=u'SwiftAutomation | '+esc(title), heading=esc(title),
             navbar=u' | '.join(kNavlink.format(url, esc(title)) for url, title in links), 
             content=markdown(content.strip(), tab_width=2) )
     
@@ -87,7 +87,7 @@ def render(sourcedir, destdir):
 
 if __name__ == '__main__':
     if len(sys.argv) != 3:
-        src, dest = 'doc-source', 'swiftae-manual'
+        src, dest = 'doc-source', 'doc-generated'
     else:
         src, dest = sys.argv[1:]
     sourcedir = os.path.abspath(os.path.expanduser(src.decode('utf-8')))

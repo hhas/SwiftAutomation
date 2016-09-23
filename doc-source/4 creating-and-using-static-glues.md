@@ -2,11 +2,18 @@
 
 ## Generating a glue
 
-The SwiftAE framework bundle includes an `aeglue` tool for generating static glue files containing high-level terminology-based APIs.
+[TO DO: update]
 
-To put `aeglue` on your Bash shell's search path, add the following line to your `~/.bash_profile` (modify the path to `SwiftAE.framework` as needed):
 
-    export $PATH="$PATH:/Library/Frameworks/SwiftAE.framework/Resources/bin"
+Glue files typically follow a standard <code><var>APPLICATION</var>Glue.swift</code> naming convention.
+
+
+
+The SwiftAutomation framework bundle includes an `aeglue` tool for generating static glue files containing high-level terminology-based APIs.
+
+To put `aeglue` on your Bash shell's search path, add the following line to your `~/.bash_profile` (modify the path to `SwiftAutomation.framework` as needed):
+
+    export $PATH="$PATH:/Library/Frameworks/SwiftAutomation.framework/Resources/bin"
 
 To view the `aeglue` tool's full documentation:
 
@@ -24,7 +31,7 @@ The `aeglue` tool also creates an `.sdef` file containing the application's dict
 
     open -a 'Script Editor' ~/Desktop/TEGlue/TextEditGlue.swift.sdef
 
-Refer to this documentation when using SwiftAE glues in your own code, as it shows element, property, command, etc. names as they appear in the generated glue classes. (Make sure Script Editor's dictionary viewer is set to "AppleScript" language; other formats are for use with OS X's Scripting Bridge/JavaScript for Automation bridges only.)
+Refer to this documentation when using SwiftAutomation glues in your own code, as it shows element, property, command, etc. names as they appear in the generated glue classes. (Make sure Script Editor's dictionary viewer is set to "AppleScript" language; other formats are for use with macOS's Scripting Bridge/JavaScript for Automation bridges only.)
 
 If an identically named folder already exists at the same location, `aeglue` will normally fail with a "path already exists" error. If you wish to force it to overwrite the existing folder without warning, add an `-r` option:
 
@@ -34,7 +41,7 @@ For compatibility, `aeglue` normally sends the application an `ascr/gdte` event 
 
     aeglue -s Finder
 
-(Be aware that OS X's AETE-to-SDEF converter is not 100% reliable; for example, some four-char codes may fail to translate, in which case `aeglue` will warn of their omission. You'll have to correct the glue files manually should you need to use the affected features, or use SwiftAE's' `OSType`-based APIs instead.)
+(Be aware that macOS's AETE-to-SDEF converter is not 100% reliable; for example, some four-char codes may fail to translate, in which case `aeglue` will warn of their omission. You'll have to correct the glue files manually should you need to use the affected features, or use SwiftAutomation's' `OSType`-based APIs instead.)
 
 
 ## Using a glue
@@ -51,7 +58,7 @@ Each glue contains the following classes:
 
 * <code><var>XXX</var>Symbol</code> -- represents Apple event type, enumerator, and property names, e.g. `TEDSymbol`
 
-* <code><var>XXX</var>Insertion</code>, <code><var>XXX</var>Object</code>, <code><var>XXX</var>Elements</code>, <code><var>XXX</var>Root</code> -- represents the various forms of Apple Event Object Model queries (a.k.a. object specifiers), e.g. `TEDObject`
+* <code><var>XXX</var>Insertion</code>, <code><var>XXX</var>Item</code>, <code><var>XXX</var>Items</code>, <code><var>XXX</var>Root</code> -- represents the various forms of Apple Event Object Model queries (a.k.a. object specifiers), e.g. `TEDItem`
 
 * <code><var>ApplicationName</var></code> -- represents an application to which you can send commands, e.g. `TextEdit`
 
@@ -79,7 +86,7 @@ Because scriptable applications' terminology resources supply class, property, c
 
 * Names that begin with '_' have an underscore appended.
 
-* Names that match Swift keywords or properties/methods already defined on SwiftAE classes have an underscore appended.
+* Names that match Swift keywords or properties/methods already defined on SwiftAutomation classes have an underscore appended.
 
-* SwiftAE provides default terminology for standard type classes such as `integer` and `unicodeText`, and standard commands such as `open` and `quit`. If an application-defined name matches a built-in name but has a different Apple event code, SwiftAE will append an underscore to the application-defined name.
+* SwiftAutomation provides default terminology for standard type classes such as `integer` and `unicodeText`, and standard commands such as `open` and `quit`. If an application-defined name matches a built-in name but has a different Apple event code, SwiftAutomation will append an underscore to the application-defined name.
 

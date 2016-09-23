@@ -1,0 +1,98 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+        <title>SwiftAutomation | Creating and using static glues</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <style type="text/css" media="all"><!--@import url(full.css);--></style>
+    </head>
+    <body>
+        <div id="wrap">
+            <div id="main">
+                <h1>Creating and using static glues</h1>
+                <div class="navbar"><a href="a-quick-tutorial.html">back</a> | <a href="index.html">index</a> | <a href="ae-type-mappings.html">next</a></div>
+                <h2>Generating a glue</h2>
+
+<p>The SwiftAutomation framework bundle includes an <code>aeglue</code> tool for generating static glue files containing high-level terminology-based APIs.</p>
+
+<p>To put <code>aeglue</code> on your Bash shell's search path, add the following line to your <code>~/.bash_profile</code> (modify the path to <code>SwiftAutomation.framework</code> as needed):</p>
+
+<pre><code>  export $PATH="$PATH:/Library/Frameworks/SwiftAutomation.framework/Resources/bin"
+</code></pre>
+
+<p>To view the <code>aeglue</code> tool's full documentation:</p>
+
+<pre><code>  aeglue -h
+</code></pre>
+
+<p>The following example generates a glue for the TextEdit application, using an auto-generated class name prefix (in this case <code>TED</code>), creating a new <code>TextEditGlue.swift</code> file in your current working directory:</p>
+
+<pre><code>  aeglue TextEdit
+</code></pre>
+
+<p>while the following command uses a custom class name prefix, <code>TE</code>, and creates the new <code>TextEditGlue.swift</code> file on your desktop:</p>
+
+<pre><code>  aeglue -p TE -o ~/Desktop TextEdit
+</code></pre>
+
+<p>The <code>aeglue</code> tool also creates an <code>.sdef</code> file containing the application's dictionary (interface documentation) in Swift format. For example, to view the <code>TextEditGlue.swift</code> terminology in Script Editor: </p>
+
+<pre><code>  open -a 'Script Editor' ~/Desktop/TEGlue/TextEditGlue.swift.sdef
+</code></pre>
+
+<p>Refer to this documentation when using SwiftAutomation glues in your own code, as it shows element, property, command, etc. names as they appear in the generated glue classes. (Make sure Script Editor's dictionary viewer is set to "AppleScript" language; other formats are for use with macOS's Scripting Bridge/JavaScript for Automation bridges only.)</p>
+
+<p>If an identically named folder already exists at the same location, <code>aeglue</code> will normally fail with a "path already exists" error. If you wish to force it to overwrite the existing folder without warning, add an <code>-r</code> option:</p>
+
+<pre><code>  aeglue -r TextEdit
+</code></pre>
+
+<p>For compatibility, <code>aeglue</code> normally sends the application an <code>ascr/gdte</code> event to retrieve its terminology in AETE format. However, some Carbon-based applications (e.g. Finder) may have buggy <code>ascr/gdte</code> event handlers that return Cocoa Scripting's default terminology instead of the application's own. To work around this, add an <code>-s</code> option to retrieve the terminology in SDEF format instead:</p>
+
+<pre><code>  aeglue -s Finder
+</code></pre>
+
+<p>(Be aware that macOS's AETE-to-SDEF converter is not 100% reliable; for example, some four-char codes may fail to translate, in which case <code>aeglue</code> will warn of their omission. You'll have to correct the glue files manually should you need to use the affected features, or use SwiftAutomation's' <code>OSType</code>-based APIs instead.)</p>
+
+<h2>Using a glue</h2>
+
+<p>To include the generated glue file in your project:</p>
+
+<ol>
+<li><p>Right-click on the Classes group in the left-hand Groups &amp; Files pane of the Xcode project window, and select Add &gt; Existing Files... from the contextual menu.</p></li>
+<li><p>Select the generated glue file (e.g. <code>TextEditGlue.swift</code>) and click Add.</p></li>
+<li><p>In the following sheet, check the "Copy items into destination group's folder" and "Recursively create groups for any added folders" options, and click Add.</p></li>
+</ol>
+
+<p>Each glue contains the following classes:</p>
+
+<ul>
+<li><p><code><var>XXX</var>Symbol</code> -- represents Apple event type, enumerator, and property names, e.g. <code>TEDSymbol</code></p></li>
+<li><p><code><var>XXX</var>Insertion</code>, <code><var>XXX</var>Item</code>, <code><var>XXX</var>Items</code>, <code><var>XXX</var>Root</code> -- represents the various forms of Apple Event Object Model queries (a.k.a. object specifiers), e.g. <code>TEDItem</code></p></li>
+<li><p><code><var>ApplicationName</var></code> -- represents an application to which you can send commands, e.g. <code>TextEdit</code></p></li>
+</ul>
+
+<p>Each glue also provides three predefined constants - <code><var>XXX</var>App</code>, <code><var>XXX</var>Con</code> and <code><var>XXX</var>Its</code> - for use in constructing object specifiers.</p>
+
+<p class="hilitebox">Note that subsequent code examples in this manual assume the presence of suitable glues; e.g. TextEdit-based examples assume a TextEdit glue with the prefix <code>TED</code>, Finder-based examples assume a Finder glue with the prefix <code>FIN</code>, etc.</p>
+
+<h2>How keywords are converted</h2>
+
+<p>[TO DO: review this once terminology parser is ported]</p>
+
+<p>Because scriptable applications' terminology resources supply class, property, command, etc. names in AppleScript keyword format, <code>aeglue</code> must convert these terms to valid Swift identifiers when generating the glue files and accompanying <code>.sdef</code> documentation file. For reference, here are the conversion rules used:</p>
+
+<ul>
+<li><p>Characters a-z, A-Z, 0-9 and underscores (_) are preserved.</p></li>
+<li><p>Spaces, hyphens (-) and forward slashes (/) are removed, and the first character of all but the first word is capitalised, e.g. <code>document file</code> is converted to <code>documentFile</code>.</p></li>
+<li><p>Ampersands (&amp;) are replaced by the word 'And'.</p></li>
+<li><p>All other characters are converted to 0x00-style hexadecimal representations.</p></li>
+<li><p>Names that begin with '_' have an underscore appended.</p></li>
+<li><p>Names that match Swift keywords or properties/methods already defined on SwiftAutomation classes have an underscore appended.</p></li>
+<li><p>SwiftAutomation provides default terminology for standard type classes such as <code>integer</code> and <code>unicodeText</code>, and standard commands such as <code>open</code> and <code>quit</code>. If an application-defined name matches a built-in name but has a different Apple event code, SwiftAutomation will append an underscore to the application-defined name.</p></li>
+</ul>
+
+            </div>
+        </div>
+        <div id="footer"><div class="navbar"><a href="a-quick-tutorial.html">back</a> | <a href="index.html">index</a> | <a href="ae-type-mappings.html">next</a></div></div>
+    </body>
+</html>

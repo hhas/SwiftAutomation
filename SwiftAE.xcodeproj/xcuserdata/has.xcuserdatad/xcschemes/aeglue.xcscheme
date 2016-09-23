@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "0700"
+   LastUpgradeVersion = "0800"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "4F0E39571BAA97D400FF2A96"
+               BlueprintIdentifier = "4F0E39641BAA98A900FF2A96"
                BuildableName = "aeglue"
                BlueprintName = "aeglue"
                ReferencedContainer = "container:SwiftAE.xcodeproj">
@@ -32,7 +32,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "4F0E39571BAA97D400FF2A96"
+            BlueprintIdentifier = "4F0E39641BAA98A900FF2A96"
             BuildableName = "aeglue"
             BlueprintName = "aeglue"
             ReferencedContainer = "container:SwiftAE.xcodeproj">
@@ -55,7 +55,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "4F0E39571BAA97D400FF2A96"
+            BlueprintIdentifier = "4F0E39641BAA98A900FF2A96"
             BuildableName = "aeglue"
             BlueprintName = "aeglue"
             ReferencedContainer = "container:SwiftAE.xcodeproj">
@@ -74,7 +74,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "4F0E39571BAA97D400FF2A96"
+            BlueprintIdentifier = "4F0E39641BAA98A900FF2A96"
             BuildableName = "aeglue"
             BlueprintName = "aeglue"
             ReferencedContainer = "container:SwiftAE.xcodeproj">
