@@ -75,37 +75,25 @@ Some older Carbon applications might return text values as descriptors of `typeC
 
 The Apple Event Manager defines a number of modern (`typeFileURL`, `typeBookmarkData`), legacy (`typeAlias`), and deprecated (`typeFSRef`, `typeFSS`) descriptor types for identifying file system objects. (Object specifiers of form `{want:file,from:null,form:name,seld:"HFS:PATH:STRING"}` are also recognized by most applications, though not recommended.) Fortunately, the Apple Event Manager also implements a number of coercion handlers for coercing between these types, so when interacting with most applications you should not need to know or care exactly which of these types are used: the application should coerce supplied values to whichever type(s) it requires.
 
-SwiftAutomation packs `URL` instances containing `file://` URLs as descriptors of `typeFileURL`, which the majority of applications should accept. Non-file URLs are not supported and will result in a `PackError` being thrown.
+SwiftAutomation packs `URL` instances containing `file://` URLs as descriptors of `typeFileURL`, which the majority of applications should accept. Non-file URLs are not supported and will result in a `PackError` being thrown. Occasionally, an older Carbon application may not accept file URL descriptor, in which case it may be necessary to convert the `URL` to a different form before passing it to the application command. For example, if an application _requires_ an alias descriptor, then pre-pack the `URL` as a `typeAlias` descriptor as follows:
 
+let myFile = URL(fileURLWithPath: "/Users/jsmith/MyFile.txt")
 
+let myFileDesc = NSAppleEventDescriptor(fileURL: myFile).coerce(toDescriptorType:typeAlias)
 
-[TO DO: update the following once a 'compatibility' API has been implemented]
+Similarly, some older Carbon applications may occasionally use colon-delimited HFS path strings even though macOS has long since deprecated these in favor of standard POSIX paths. SwiftAutomation includes the following compatibility functions for converting to and from HFS path strings where unavoidable:
 
-While macOS has deprecated HFS path strings in favor of POSIX, some older Carbon applications may still occasionally require these. `AEURL` provides the following compatibility methods for converting to and from HFS path strings:
+    HFSPath(fromFileURL: URL) -> String
+    fileURL(fromHFSPath: String) -> URL
 
-  init(HFSPath: String)
-  var HFSPath {get}
+For example:
 
-`AEURL` also defines the following method in case the underlying descriptor needs to be coerced to a specific AE type:
+    let myFile = URL(fileURLWithPath: "/Users/jsmith/MyFile.txt")
+    
+    let myHFSPath = HFSPath(fromFileURL: myFile)
+    // "Macintosh HD:Users/jsmith/MyFile.txt"
 
-  - (instancetype)coerceToDescriptorType:(DescType)descType;
-
-The `descType` argument should be one of the following: `typeAlias`, `typeFileURL`, `typeObjectSpecifier`, or `typeBookmarkData`. (`typeFSRef` or `typeFSS` may also be used, but as these are deprecated/not fully supported they are not guaranteed to work correctly).
-
-For example, if an application requires a `typeAlias` descriptor but doesn't coerce the given value itself:
-
-  let url = AEMURL(path:"/path/to...").coerce(toDescriptorType:typeAlias)
-
-Be aware when specifying a command's required/result type, you must specify the exact AE type (`AEMSymbol.alias`/`typeAlias`, `AEMSymbol.fileURL`/`typeFileURL`, etc). For example, the Finder normally returns file system references as object specifiers:
-
-  let finder = Finder()
-  let objSpec = finder.home.get()
-  // Finder().startupDisk.folders["Users"].folders["Users"]
-
- To get the current user's home folder as an `NSURL` instead:
-
-  let url = finder.home.get(as: AESymbol.fileURL)
-  // NSURL(string:"///Users/jsmith")
+However, be aware that non-existent paths may not convert correctly, and that HFS paths, unlike POSIX paths, cannot distinguish between two mounted volumes which both have the same name (one of the reasons HFS was deprecated).
 
 
 ### Records
@@ -119,26 +107,35 @@ AERecords can also be packed/unpacked to/from glue-defined record structs; see t
 
 ### Types and enumerators
 
-For your convenience, SwiftAutomation represents Apple event type names and application-specific class and enumerator names as instances of the glue's `Symbol` subclass. For example, a standard TextEdit glue defines a `TEDSymbol` subclass, along with a `TED` typealias as a convenient shorthand. Examples:
+SwiftAutomation represents both standard Apple event type names and application-defined class, property, and enumerator names as instances of the glue's `Symbol` subclass. For example, a standard TextEdit glue defines a `TEDSymbol` subclass, typealiased as `TED` for convenience:
 
-  // AEM-defined data types
-  TED.boolean // a.k.a. TEDSymbol.boolean
+  // Standard Apple event data types
+  TED.boolean
   TED.unicodeText
   TED.list
+  ...
 
   // Application-defined class names
   TED.document
   TED.window
   TED.disk
+  ...
+
+  // Application-defined property names
+  TED.class_
+  TED.name
+  TED.color
+  ...
 
   // Application-defined enumerators
   TED.yes
   TED.no
   TED.ask
+  ...
 
-Descriptors of `typeType`, `typeEnumerated`, and `typeProperty` are unpacked as `AESymbol` subclass instances, using raw four-char codes instead of names when the corresponding terminology is not available, e.g.:
+Descriptors of `typeType`, `typeEnumerated`, and `typeProperty` are unpacked as `Symbol` subclass instances, using raw four-char codes instead of names when the corresponding terminology is not available, e.g.:
 
-  Symbol(code:"abcd")
+  TEDSymbol(code:"abcd")
 
 
 ### Other types

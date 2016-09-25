@@ -2,6 +2,7 @@
 //  KeywordConverter.swift
 //  SwiftAutomation
 //
+//  Convert AETE/SDEF-defined keywords from AppleScript syntax to a form suitable for use in Swift (or other client language)
 //
 
 import Foundation

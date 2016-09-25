@@ -10,28 +10,33 @@
             <div id="main">
                 <h1>Commands</h1>
                 <div class="navbar"><a href="object-specifiers.html">back</a> | <a href="index.html">index</a> | <a href="examples.html">next</a></div>
-                <p>[TO DO: this chapter is still rough, and there's little commonality between ObjC and Swift text; the ObjC API is also not finalized and may change slightly/drastically in future]</p>
+                <p>[TO DO: this chapter is still rough and not fully updated; amongst other things it doesn't discuss how return types work]</p>
 
 <h2>Syntax</h2>
 
-<p>For convenience, SwiftAutomation makes application commands available as methods on every object specifier. (Note: due to the limitations of aete-based terminology, the user must determine for themselves which commands can operate on a particular reference. Some applications document this information separately.) All application commands have the same basic structure: a single, optional direct parameter, followed by zero or more named parameters specific to that command, followed by zero or more event attributes that determine how the Apple event is processed:</p>
+<p>All application commands have the same basic structure: a single, optional direct parameter, followed by zero or more named parameters specific to that command, followed by zero or more event attributes that determine how the Apple event is processed:</p>
 
-<pre><code>func <var>commandName</var>(directParameter: Any = NoParameter,
-                 <var>namedParameter1:</var> Any = NoParameter,
-                 <var>namedParameter2:</var> Any = NoParameter,
+<pre><code>func <var>commandName</var>&lt;T&gt;(directParameter: Any  = NoParameter,
+                 <var>namedParameter1:</var> Any  = NoParameter,
+                 <var>namedParameter2:</var> Any  = NoParameter,
                  ...
-                 waitReply:       Bool                = true,
-                 withTimeout:     NSTimeInterval?     = nil,
-                 considering:     ConsideringOptions? = nil) throws -> Any</code></pre>
+                 resultType:  Symbol?             = nil,
+                 waitReply:   Bool                = true,
+                 sendOptions: SendOptions?        = nil,
+                 withTimeout: NSTimeInterval?     = nil,
+                 considering: ConsideringOptions? = nil) throws -> T</pre>
 
 <ul>
 <li><p><code>directParameter:</code> -- An application command can have either zero or one direct parameters. The application's dictionary indicates which commands take a direct parameter, and if it is optional or required.</p></li>
 <li><p><code>namedParameterN:</code>An application command can have zero or more named parameters. The application's dictionary describes the named parameters for each command, and if they are optional or required.</p></li>
-<li><p><code>returnType:</code> -- Some applications may allow the return value's type to be specified for certain commands (typically <code>get</code>). For example, the Finder's <code>get</code> command returns filesystem references as alias objects if the resulttype is <code>FIN.alias</code>. [TO DO: this is preliminary and subject to change]</p></li>
+<li><p><code>resultType:</code> -- Some application commands (e.g. <code>get</code>) can return the same result as more than one type. [TO DO: rephrase, making clear that this only indicates the caller's preference as to what type it'd like the command's result to be - a very basic form of content negotiation - there is no guarantee the target app will respect it. Most apps ignore it, and even those that do support it often only do so for <code>get</code>.] For example, <code>Finder().home.get()</code> normally returns an object specifier, but will return a <code>URL</code> value instead if its <code>resultType:</code> is <code>FIN.alias</code>: <code>Finder().home.get(resultType: FIN.alias)</code>. [Note that in AS, <code>COMMAND as TYPE</code> does double duty, both indicating its preferred result type to the app <em>and</em> coercing the actual result when it arrives. In SA, <code>COMMAND as TYPE</code> only performs the latter; the former is done via <code>resultType:</code>.]</p></li>
 <li><p><code>waitReply:</code> -- If <code>true</code> (the default), the command will block until the application sends a reply or the request times out. If <code>false</code>, it will return as soon as the request is sent, ignoring any return values or application errors.</p></li>
+<li><p><code>sendOptions:</code> -- May be used instead of <code>waitReply:</code> if additional/alternative Apple event send options need to be sent. See the <code>NSAppleEventDescriptor.SendOptions</code> documentation for details. (For example, if the <code>.queueReply</code> option is used, the command will immediately return the expected reply event's' return ID as <code>Int</code>, allowing the client to recognize the target application's reply event when it later arrives in its main event queue.)</p></li>
 <li><p><code>withTimeout:</code> -- The number of seconds to wait for the application to reply before raising a timeout error. The default timeout (<code>DefaultTimeout</code>) is 120 seconds but this can be changed if necessary; use <code>NoTimeout</code> to wait indefinitely. For example, a longer timeout may be needed to prevent a timeout error occurring during a particularly long-running application command. Note: due to a quirk in the Apple Event Manager API, timeout errors may be reported as either error -1712 (the Apple event timed out) or -609 (connection invalid, which is also raised when an application unexpectedly quits while handling a command).</p></li>
 <li><p><code>considering:</code> -- Some applications may allow the client to specify text attributes that should be considered when performing string comparisons, e.g. when resolving by-test references. When specifying the attributes to consider, the set should contain zero or more of the following symbols: <code>AE.case</code>, <code>AE.diacriticals</code>, <code>AE.numericStrings</code>, <code>AE.hyphens</code>, <code>AE.punctuation</code>, <code>AE.whitespace</code> [TO DO: and/or use the glue's own prefix code, e.g. <code>TED.case</code>]. If omitted, <code>[AE.case]</code> is used as the default. Note that most applications currently ignore this setting and always use the default behaviour, which is to ignore case but consider everything else.</p></li>
 </ul>
+
+<p>For convenience, SwiftAutomation makes application commands available as methods on every object specifier. (Note: due to the limitations of aete-based terminology, the user must determine for themselves which commands can operate on a particular reference. Some applications document this information separately.) </p>
 
 <h2>Examples</h2>
 
@@ -55,6 +60,28 @@
 
   // tell application "Finder" to get items of home as alias list
   Finder().home.items.get(returnType: FIN.alias)
+</code></pre>
+
+<h2>TO DO: return types</h2>
+
+<ul>
+<li><p>Any</p></li>
+<li><p>generic</p></li>
+<li><p>note that some commands</p></li>
+</ul>
+
+<p>When specifying a command's return type, you may also need tell the application the exact descriptor type (<code>Symbol.alias</code>, <code>Symbol.fileURL</code>, etc). For example, the Finder normally returns file system references as object specifiers:</p>
+
+<pre><code>  let finder = Finder()
+
+  finder.home.get()
+  // Finder().startupDisk.folders["Users"].folders["Users"]
+</code></pre>
+
+<p>To get the current user's home folder as a <code>URL</code> instead:</p>
+
+<pre><code>  finder.home.get(resultType: FIN.fileURL) as URL
+  // URL(string:"file:///Users/jsmith")
 </code></pre>
 
 <h2>Special cases</h2>
@@ -101,13 +128,13 @@ The conventional form is also supported should you ever wish (or need) to use it
 
 <p>[TO DO: Error class implementation is not yet finalized; update this section when done]</p>
 
-<p>If a command fails due to an error raised by the target application or Apple Event Manager, or if a given parameter or attribute was not of a <a href="objc-ae-type-mappings.html">supported type</a>, a <code>CommandError</code> is thrown. SwiftAutomation errors have the domain <code>SwiftAutomationErrorDomain</code>, an error code that is typically an <code>OSStatus</code> value or custom value defined by the target application, and a <code>userInfo</code> dictionary containing a standard <code>NSLocalizedDescription</code> key containing the error description string, plus zero or more of the following SwiftAutomation-defined keys:</p>
+<p>If a command fails due to an error raised by the target application or Apple Event Manager, or if a given parameter or attribute was not of a <a href="type-mappings.html">supported type</a>, a <code>CommandError</code> is thrown.</p>
 
 <ul>
 <li><p>Standard Apple event/OSA error information:</p>
 
 <ul>
-<li><code>errorNumber</code> – the error code (<code>Int</code>); this is the same as <code>NSError.code</code></li>
+<li><code>errorNumber</code> – the error code (<code>Int</code>); this is the same as <code>SwiftAutomationError.code</code></li>
 <li><code>errorMessage</code> – the error message (<code>String</code>) provided by the application, if any, otherwise a default description if the error number is a standard AE error code</li>
 <li><code>errorBriefMessage</code> – short version of the above; not normally used by applications, but included here for completeness</li>
 <li><code>errorExpectedType</code> – if a coercion error (-1700) occurred, a <code>Symbol</code> describing the type of value that was required</li>

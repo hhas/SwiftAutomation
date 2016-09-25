@@ -9,7 +9,7 @@
         <div id="wrap">
             <div id="main">
                 <h1>Understanding Apple events</h1>
-                <div class="navbar"><a href="introduction.html">back</a> | <a href="index.html">index</a> | <a href="a-quick-tutorial.html">next</a></div>
+                <div class="navbar"><a href="a-quick-tutorial.html">back</a> | <a href="index.html">index</a> | <a href="creating-and-using-static-glues.html">next</a></div>
                 <p>This chapter introduces the main concepts behind Apple event-based application scripting.</p>
 
 <h2>What are Apple events?</h2>
@@ -125,7 +125,7 @@
 
   finder.startupDisk.folders["Users:jsmith:Desktop:"].files
 
-  finder.items[NSURL(string:"file:///Users/jsmith/Desktop")].files
+  finder.items[URL(string:"file:///Users/jsmith/Desktop")].files
 </code></pre>
 
 <p>Some specifiers may identify different objects at different times, according to changes in the application's state, e.g.:</p>
@@ -219,6 +219,6 @@
 
             </div>
         </div>
-        <div id="footer"><div class="navbar"><a href="introduction.html">back</a> | <a href="index.html">index</a> | <a href="a-quick-tutorial.html">next</a></div></div>
+        <div id="footer"><div class="navbar"><a href="a-quick-tutorial.html">back</a> | <a href="index.html">index</a> | <a href="creating-and-using-static-glues.html">next</a></div></div>
     </body>
 </html>

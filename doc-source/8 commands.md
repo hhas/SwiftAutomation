@@ -59,6 +59,29 @@ For convenience, SwiftAutomation makes application commands available as methods
     Finder().home.items.get(returnType: FIN.alias)
 
 
+## TO DO: return types
+
+- Any
+
+- generic
+
+- note that some commands
+
+When specifying a command's return type, you may also need tell the application the exact descriptor type (`Symbol.alias`, `Symbol.fileURL`, etc). For example, the Finder normally returns file system references as object specifiers:
+
+    let finder = Finder()
+
+    finder.home.get()
+    // Finder().startupDisk.folders["Users"].folders["Users"]
+
+To get the current user's home folder as a `URL` instead:
+
+    finder.home.get(resultType: FIN.fileURL) as URL
+    // URL(string:"file:///Users/jsmith")
+
+
+
+
 
 ## Special cases
 
@@ -93,15 +116,16 @@ the specifier upon which it is called will be packed as the Apple event's "subje
    If the `make` command is called on an object specifier, SwiftAutomation will pack that specifier as the Apple event's "subject" attribute. Be aware that some applications may not handle this attribute correctly, in which case the specifier should be passed via the `make` command's `at:` parameter. [TO DO: clarify this; also, note again that the convenience form only works when specifier is constructed from a targeted Application object]
 
 
+
 ## Command errors
 
 [TO DO: Error class implementation is not yet finalized; update this section when done]
 
-If a command fails due to an error raised by the target application or Apple Event Manager, or if a given parameter or attribute was not of a [supported type](objc-ae-type-mappings.html), a `CommandError` is thrown. SwiftAutomation errors have the domain `SwiftAutomationErrorDomain`, an error code that is typically an `OSStatus` value or custom value defined by the target application, and a `userInfo` dictionary containing a standard `NSLocalizedDescription` key containing the error description string, plus zero or more of the following SwiftAutomation-defined keys:
+If a command fails due to an error raised by the target application or Apple Event Manager, or if a given parameter or attribute was not of a [supported type](type-mappings.html), a `CommandError` is thrown.
 
 * Standard Apple event/OSA error information:
 
-  * `errorNumber` – the error code (`Int`); this is the same as `NSError.code`
+  * `errorNumber` – the error code (`Int`); this is the same as `SwiftAutomationError.code`
   * `errorMessage` – the error message (`String`) provided by the application, if any, otherwise a default description if the error number is a standard AE error code
   * `errorBriefMessage` – short version of the above; not normally used by applications, but included here for completeness
   * `errorExpectedType` – if a coercion error (-1700) occurred, a `Symbol` describing the type of value that was required

@@ -14,9 +14,7 @@
 //
 // FWIW, if a pure-Swift AEOM handler framework ever gets built, it could address all these issues by radically simplifying and comprehensively prescribing the AEOM spec, then generate a formal IDL from the implementation which could be used to generate a robust glue (not to mention much more detailed user documentation, free test suites, and reliable implementation). Until then, the only value in auto-generating these definitions (as format strings only, not as Swift code) would be to give users a starting point from which to make their own corrections; and under the circumstances it'd simpler for them just to write minimal format strings for the bits of records they'll actually use, or just use the standard [Symbol:Any] dictionaries and do their own checking/casting of property values as needed. (Though if SwiftAutomation ever catches on then app developers might consider creating and distributing ready-to-use glue modules themselves, saving users the hassle of generating their own, at which point more powerful tools might be of some advantage).
 
-// TO DO: parseEnumeratedTypeDefinition needs special-case handling for "Missing" (basically, pull it out of the typeNames list and set a flag that adds `case missing` to the enum) [note: don't need special support for "Optional", but probably should report it as an error just to remind users to typealias it themselves; ditto for "Array", "Dictionary", "Set" as generics aren't [yet] supported directly]
-
-// TO DO: this code is pretty messy; tidy up later
+// TO DO: this code is pretty messy; tidy up later (e.g. divide ad-hoc parsing code into lexer + LL(1) parser)
 
 
 import Foundation
@@ -28,7 +26,7 @@ import Foundation
 
 // glue renderer consumes the following data structures
 
-public typealias EnumeratedTypeDefinition = (name: String, cases: [(name: String, type: String)]) // TO DO: add `mayBeMissing: Bool`? alternatively, just map "MissingValue" to case missing(MissingValueType), and include an `init(_ value: MissingValueType=MissingValue)` in enum, thereby avoiding the need to parse and format "MissingValue" as special case (TO DO: for consistency, the `MayBeMissing<T>` enum should probably have the same structure - currently it uses `case missing` without the MissingValue argument; alternatively, could ditch `MayBeMissing<T>` altogether and just require users to specify all of the enums they'll need - basically convenience [in the common case] vs consistency [we wouldn't need to code-generate enums at all if T could be a vararg. but that's not going to happen without a decent macro system])
+public typealias EnumeratedTypeDefinition = (name: String, cases: [(name: String, type: String)])
 
 public typealias RecordStructDefinition = (name: String, className: String, properties: [(name: String, code: OSType, type: String)])
 
@@ -36,7 +34,7 @@ public typealias TypeAliasDefinition = (name: String, type: String)
 
 
 // the following names are reserved by glue generator
-let ReservedGlueTypeNames: Set<String> = ["symbol", "object", "insertion", "item", "items", "root", "record"] // enum/typealias/struct format string parsers will automatically prefix these names with classNamePrefix // TO DO: should probably be on glueSpec.keywordConverter
+let ReservedGlueTypeNames: Set<String> = ["symbol", "object", "insertion", "item", "items", "root", "record"] // enum/typealias/struct format string parsers will automatically prefix these names with classNamePrefix
 
 func isReservedGlueTypeName(_ string: String) -> Bool {
     return ReservedGlueTypeNames.contains(string.lowercased())
@@ -72,6 +70,18 @@ let kBindChar = Character("=")
 let kConcatChar = Character("+")
 
 
+func lowercasedFirstCharacter(_ string: String) -> String {
+    var chars = string.characters
+    let c = String(chars.popFirst()!).lowercased()
+    return c + String(chars)
+}
+
+func sentenceCased(_ string: String) -> String {
+    var chars = string.characters
+    let c = chars.popFirst()!
+    return String(c).uppercased() + String(chars).lowercased()
+}
+
 // TO DO: skipSpace(_ chars: inout String.CharacterView)
 
 func advanceOne(_ chars: inout String.CharacterView, character c: Character, after: String) throws {
@@ -97,10 +107,10 @@ func parseIdentifier(_ chars: inout String.CharacterView) throws -> String {
     return name
 }
 
-func parseType(_ chars: inout String.CharacterView, classNamePrefix: String) throws -> String {
+func parseType(_ chars: inout String.CharacterView, classNamePrefix: String, name: String? = nil) throws -> String {
     // reads a C-identifier optionally followed by <TYPE[,TYPE,...]> generic parameters, as used on right side of typealias and struct property definitions; characters are consumed from chars parameter until the name is fully read, then the name is returned as String
     // if the name is one of the base names used by SwiftAutomation (Symbol, Object, etc), a class name prefix is automatically added; this allows the same format string to be reused for multiple glues
-    var name = try parseIdentifier(&chars)
+    var name = try name ?? parseIdentifier(&chars)
     if isReservedGlueTypeName(name) { name = classNamePrefix + name }
     if chars.first == kOpenChar {
         name += String(chars.popFirst()!)
@@ -122,6 +132,8 @@ func parseType(_ chars: inout String.CharacterView, classNamePrefix: String) thr
 func parseProperty(_ chars: inout String.CharacterView, classNamePrefix: String) throws -> (String, String) {
     // parse "NAME:TYPE" pair
     let propertyName = try parseIdentifier(&chars)
+    // `class` property is a special case that's used to store the AERecord's descriptorType
+    if ["class", "class_"].contains(propertyName.lowercased()) { throw SyntaxError("Invalid record property name: \(propertyName)") }
     try advanceOne(&chars, character: kPairChar, after: propertyName)
     return (propertyName, try parseType(&chars, classNamePrefix: classNamePrefix))
 }
@@ -148,37 +160,51 @@ public func parseTypeAliasDefinition(_ string: String, classNamePrefix: String) 
 func parseEnumeratedTypeDefinition(_ string: String, classNamePrefix: String) throws -> EnumeratedTypeDefinition {
     // an enumerated (aka sum/union) type definition is written as a simple format string: "[TYPENAME=]TYPE1+TYPE2+..."
     // note that class name prefixes are added automatically to both "TYPENAME" and (as needed) "TYPEn", allowing a format string to be used over multiple glues, e.g. "URL+Item" -> `enum FINURLOrItem { case URL; case FINItem; ...}`, or "FileObject=URL+Item" -> `enum FINFileObject { case URL; case FINItem; ...}`
-    
-    // TO DO: allow this to take generic types on RHS on condition that an enumName is specified (since autogenerating names for Array/Dictionary/Set/Optional generic types is a bit too complicated)
-    
-    // TO DO: also needs to support 'MissingValue' as a special case, e.g. 'Int+String+MissingValue' would include a `case missing`, similar to MayBeMissing<T> enum but flattened out (since MayBeMissing)
-    
     let parts = string.characters.split(maxSplits:1, whereSeparator: {$0=="="})
-    let typeNames = try parts.last!.split(whereSeparator: {$0=="+"}).map {
-        (chars: String.CharacterView) throws -> (String, String, String) in
-        let typeName = String(chars)
-        try validateCIdentifier(typeName)
-        var caseName = typeName.lowercased()
-        if !UPPERCHAR.contains(typeName[typeName.startIndex]) { caseName = "_\(caseName)" }
-        if kSwiftKeywords.contains(caseName) { caseName += "_" }
-        return (caseName, (isReservedGlueTypeName(typeName) ? (classNamePrefix + typeName) : typeName), typeName)
-    }
-    if typeNames.count < 2 { throw SyntaxError("Not a valid enumerated type definition: '\(string)'") }
-    var enumName: String
-    if parts.count == 2 {
-        enumName = String(parts[0])
-        try validateCIdentifier(enumName)
-    } else { // auto-generate from typeNames
-        enumName = typeNames.map {
-            (_, _, name: String) -> String in
-            var chars = name.characters
-            let c = chars.popFirst()!
-            return String(c).uppercased() + String(chars).lowercased()
-            }.joined(separator: "Or")
+    var enumName: String = parts.count == 2 ? String(parts[0]) : ""
+    var enumNameParts = [String]()
+    var chars = parts.last!
+    var cases = [(name: String, type: String)]()
+    var nc: Character?
+    repeat {
+        var caseName: String
+        var typeName = try parseIdentifier(&chars)
+        if chars.first == kPairChar { // "CASENAME:TYPENAME" (a clean lexer + LL(1) parser design would've looked ahead for ":" _before_ parsing the previous token as either identifier or type, but just kludging it for now)
+            caseName = typeName
+            try advanceOne(&chars, character: ":", after: caseName)
+            typeName = try parseType(&chars, classNamePrefix: classNamePrefix) // read actual type name
+        } else { // else auto-generate case name from type name
+            caseName = lowercasedFirstCharacter(typeName) // e.g. `SomeType` -> `someType`
+            typeName = try parseType(&chars, classNamePrefix: classNamePrefix, name: typeName) // read rest of type name
+            if typeName.hasSuffix(String(kCloseChar)) { // e.g. "foo<x>" is invalid
+                throw SyntaxError("Can't generate case name from parameterized type name: \(typeName)")
+            }
+        }
+        if typeName == "MissingValue" { // for convenience, the format string may also include `MissingValue`, in which case a `.missing(_)` case is also included in the enum; this avoids the need for an extra level of MayBeMissing<> boxing; TO DO: finalize naming
+            cases.insert((name: "missing", type: "MissingValueType"), at: 0) // (ignore any property name caller might have given)
+        } else {
+            if caseName == "missing" { throw SyntaxError("Invalid case name: \(typeName)") }
+            if typeName == caseName { caseName = "_\(caseName)" } // caution: type names _should_ start with uppercase char and case name with lower, but check to be sure and disambiguate if necessary
+            if kSwiftKeywords.contains(caseName) { caseName += "_" }
+            cases.append((name: caseName, type: (isReservedGlueTypeName(typeName) ? (classNamePrefix + typeName) : typeName)))
+            if enumName.isEmpty {
+                var name = typeName
+                if name.hasPrefix(classNamePrefix) { name.removeSubrange(classNamePrefix.startIndex...classNamePrefix.endIndex) }
+                enumNameParts.append(name)
+            }
+        }
+        nc = chars.popFirst()
+    } while nc == kConcatChar
+    if cases.count < 2 { throw SyntaxError("Not a valid enumerated type definition: '\(string)'") }
+    if !chars.isEmpty { throw SyntaxError("Expected end of text but found \(String(chars)).") }
+    if enumName.isEmpty {
+        enumName = enumNameParts.joined(separator: "Or") // TO DO: remove CNP
         if kSwiftKeywords.contains(enumName) { enumName += "_" }
+    } else {
+        try validateCIdentifier(enumName)
     }
     if isReservedGlueTypeName(enumName) { throw SyntaxError("Invalid enum name: \(enumName)") }
-    return (classNamePrefix + enumName, typeNames.map { (caseName, typeName, _) in return (caseName, typeName) })
+    return (classNamePrefix + enumName, cases)
 }
 
 
@@ -234,8 +260,13 @@ public class TypeSupportSpec { // converts custom format strings into enum/struc
     //
     
     public func enumeratedTypeDefinitions(classNamePrefix: String) throws -> [EnumeratedTypeDefinition] {
+        do {
         return try self.enumeratedTypeFormats.map {
             try parseEnumeratedTypeDefinition($0, classNamePrefix: classNamePrefix)
+        }
+        }catch {
+         print(error)
+            throw error
         }
     }
     

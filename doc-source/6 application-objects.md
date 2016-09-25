@@ -11,22 +11,22 @@ This locates the target application using the same bundle identifier as the appl
 Alternatively, one of the following initializers may be used to target the desired application more precisely (for example, if more than one version is installed or if it's running on another machine):
 
     // application's name or full path (`.app` suffix is optional)
-    SomeApplication(name: String, ...)
+    Application(name: String, ...)
     
     // application's bundle ID
-    SomeApplication(bundleIdentifier: String, ...)
+    Application(bundleIdentifier: String, ...)
 
     // `file:` URL for local application or `eppc:` URL for remote process
-    SomeApplication(url: NSURL, ...)
+    Application(url: URL, ...)
 
     // Unix process id
-    SomeApplication(processIdentifier: pid_t, ...)
+    Application(processIdentifier: pid_t, ...)
 
     // AEAddressDesc
-    SomeApplication(descriptor: NSAppleEventDescriptor, ...)
+    Application(descriptor: NSAppleEventDescriptor, ...)
 
     // current (i.e. host) process
-    SomeApplication.currentApplication()
+    Application.currentApplication()
 
 For example, to target a specific version of Adobe InDesign by its name:
 
@@ -38,39 +38,49 @@ Except for `currentApplication()`, the above initializers can also accept the fo
 
 * `relaunchMode: RelaunchMode` - determines behavior if the target process no longer exists; see Restarting applications section below. If omitted, `RelaunchMode.Limited` is used.
 
-Note that local applications will be launched if not already running when the `SomeApplication()`, `SomeApplication(name:)`, `SomeApplication(bundleIdentifier:)` or `SomeApplication(url:)` constructors are invoked, and events will be sent to the running application according to its process ID. If the process is later terminated, that process ID is no longer valid and events sent subsequently using this application object will fail as application objects currently don't provide a 'reconnect' facility.
+Note that local applications will be launched if not already running when the `Application()`, `Application(name:)`, `Application(bundleIdentifier:)` or `Application(url:)` constructors are invoked, and events will be sent to the running application according to its process ID. If the process is later terminated, that process ID is no longer valid and events sent subsequently using this application object will fail as application objects currently don't provide a 'reconnect' facility.
 
-If the `SomeApplication(url:)` constructor is invoked with an `eppc://` URL, or if the `SomeApplication(processIdentifier:)` or `SomeApplication(descriptor:)` constructors are used, the caller is responsible for ensuring the target application is running before sending any events to it.
+If the `Application(url:)` constructor is invoked with an `eppc://` URL, or if the `Application(processIdentifier:)` or `Application(descriptor:)` constructors are used, the caller is responsible for ensuring the target application is running before sending any events to it.
 
 
 ## Basic commands
 
-[TO DO: how best to format commands?]
+All applications should respond to the following commands, which are added to all glue files by default:
 
-All applications should respond to the following commands (note: all application commands return `throws -> Any` as standard):
-
-    run() // Run an application
+    run()      // Run an application
 
     activate() // Bring the application to the front
 
-    reopen() // Reactivate a running application
+    reopen()   // Reactivate a running application
 
-    open(Any) // Open the specified file(s), e.g. an NSArray of NSURL
+    open(Any)  // Open the specified file(s) (typically URL or Array<URL>)
 
-    print(Any) // Print the specified file(s), e.g. an NSArray of NSURL
+    print(Any) // Print the specified file(s) (typically URL or Array<URL>)
 
     quit( [ saving: AE.yes | AE.ask | AE.no ] )
-                 // Quit an application optionally specifying if currently open documents be saved first
+               // Quit an application, optionally saving any open documents first
 
-Some applications may provide their own definitions of some or all of these commands, so check their terminology before use.
+Some applications may provide their own definitions of some or all of these commands, so check their terminology before use. For example, many applications' `open` command will also return a `Specifier` or `Array<Specifier>` value identifying the newly opened documents.
 
-SwiftAutomation also defines `get` and `set` commands for any scriptable application that doesn't supply its own definitions:
+Standard `get` and `set` commands are also included as most scriptable applications' dictionaries don't define these commands themselves, though are only applicable to applications that define an Apple Event Object Model:
 
-    get(Specifier) // Get the value of the given object specifier
+    get(Specifier) -> Any   // Get the value of the given object specifier
 
     set(Specifier, to: Any) // Set the value of the given object specifier to the new value
 
-Note that these commands are only useful in applications that define an Apple Event Object Model as part of their Apple event interface.
+<div class="hilitebox">
+
+<p>Be aware that all glue-defined application commands come in two standard forms, one with a generic return type and one with an `Any` return type:</p>
+
+<pre><code><var>commandName</var>&lt;T&gt;([_ directParameter: Any,][<var>keywordParameter</var>: Any,...]) throws -> T
+
+<var>commandName</var>([_ directParameter: Any,][<var>keywordParameter</var>: Any,...]) throws -> Any</code></pre>
+
+<p>For brevity, this documentation omits the `throws` keyword and only indicates a return type for application commands that are expected to return a result.</p>
+
+<p>Also be aware that all command parameters are typed as `Any` – it is the caller's responsibility to supply values of appropriate types for a given command. (While application dictionaries may suggest appropriate parameter types, this information is neither complete nor accurate enough for the glue generator to be any more specific.)</p>
+
+</div>
 
 
 ## Transaction support
@@ -94,16 +104,18 @@ SwiftAutomation targets local running applications by process ID, so it's possib
 
 ### Checking if an application is running
 
-You can check if the application specified by an Application object is currently running by checking its `isRunning` property. This is useful if you don't want to perform commands on an application that isn't already running. For example:
+You can check if the target application is currently running by getting the value of its `isRunning` Boolean property:
 
-    let textedit = TextEdit()
+    Finder().isRunning
+
+For example, SwiftAutomation will automatically launch a non-running application the first time it sends a command, so if you don't want to interact with that application unless it is already running, enclose all of its commands in a conditional block that only executes if its `isRunning` property is `true`:
+
+    let iTunes = iTunes()
     
-    // Only perform TextEdit-related commands if it's already running:
-    if textedit.isRunning {
-        // all TextEdit-related commands go here...
+    // Only perform iTunes-related commands if it's already running:
+    if iTunes.isRunning {
+        // all iTunes-related commands go here...
     }
-
-SwiftAutomation automatically launches a non-running application the first time your script makes sends a command. To avoid accidental launches, _all_ commands relating to that application must be included in a conditional block that only executes if `isRunning` returns `true`.
 
 
 ### Launching applications via `launch()`
@@ -119,15 +131,21 @@ When SwiftAutomation launches a non-running application, it normally sends it a 
 
 As soon as you start to construct a reference or command using a newly created Application objects, if the application is not already running then SwiftAutomation will automatically launch it in order to obtain its terminology.
 
-Be default, if the target application has stopped running since the Application object was created, trying to send it a command using that Application object will result in an invalid connection error (-609), unless that command is `run` or `launch`. This restriction prevents SwiftAutomation accidentally restarting an application that has unexpectedly quit while a script is controlling it. You can restart an application by sending an explicit `run` or `launch` command, or by creating a new Application object for it. To change this behavior, use one of the following `RelaunchMode` values as the initializer's `relaunchMode:` argument:
+Be default, if the target application has stopped running since the Application object was created, trying to send it a command using that Application object will result in an invalid connection error (-609), unless that command is `run` or `launch`. This restriction prevents SwiftAutomation accidentally restarting an application that has unexpectedly quit while a script is controlling it. You can restart an application by sending an explicit `run` or `launch` command, or by creating a new Application object for it. 
+
+To change this relaunch behavior, use one of the following `RelaunchMode` values as the initializer's `relaunchMode:` argument:
 
 * `.never` -- prevent the Application object automatically relaunching the application, even for a `run` or `launch` command
 * `.limited` -- allow the Application object to relaunch the application before sending a `run` or `launch` command (SwiftAutomation's default behavior)
 * `.always` -- allow the Application object to relaunch the application before sending any command (AppleScript's behavior)
 
-Note that you can still use Application objects to control applications that have been quit _and_ restarted since the Application object was created. SwiftAutomation will automatically update the Application object's process id information as needed. [TO DO: check this is correct; also check how it behaves when .Never is used]
+For example:
+
+    let illustrator = AdobeIllustrator(relaunchMode: .never) 
+
+Note that you can still use Application objects to control applications that have been quit _and_ restarted since the Application object was created. SwiftAutomation will automatically update the Application object's process ID information as needed. [TO DO: check this is correct; also check how it behaves when .never is used]
 
 
-<p class="hilitebox">There is a known problem with quitting and immediately relaunching an application via SwiftAutomation, where the relaunch instruction is sent to the application before it has actually quit. This timing issue appears to be the OS's fault; one workaround is to send the `quit` command, wait until `isRunning` returns `false`, then send the `run`/`launch` command.</p>
+<p class="hilitebox">There is a known problem with quitting and immediately relaunching an application via SwiftAutomation, where the relaunch instruction is sent to the application before it has actually quit. This timing issue appears to be macOS's fault; one workaround is to send the `quit` command, wait until `isRunning` returns `false`, then send the `run`/`launch` command.</p>
 
 

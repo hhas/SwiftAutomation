@@ -28,9 +28,9 @@ let optionsWithArguments = Set<Character>("npeo".characters) // this MUST contai
 
 let helpText = [
     "Generate SwiftAutomation glue classes and SDEF documentation for",
-    " controllingan \"AppleScriptable\" application from Swift.",
+    " controlling an \"AppleScriptable\" application from Swift.",
     "",
-    "Usage:",
+    "\0x1B[1mUSAGE\0x1B[m", // TO DO: only use ANSI control chars if connected to tty
     "",
     "    aeglue [-n CLASSNAME] [-p PREFIX] [-rS]",
     "           [-est FORMAT ...] [-o OUTDIR] APPNAME ...",
@@ -41,7 +41,7 @@ let helpText = [
     "",
     "On completion, the generated files' paths are written to STDOUT.",
     "",
-    "Options:",
+    "\0x1B[1mOPTIONS\0x1B[1",
     "",
     "    -e FORMAT      An enumerated type definition; see Type Support.",
     "    -h             Show this help and exit.",
@@ -60,7 +60,7 @@ let helpText = [
     "    -v             Output the SwiftAutomation framework's version",
     "                       and exit.",
     "",
-    "Examples:",
+    "\0x1B[1mEXAMPLES\0x1B[m",
     "",
     "    aeglue iTunes",
     "",
@@ -68,23 +68,38 @@ let helpText = [
     "",
     "    aeglue -p TE TextEdit ~/Desktop",
     "",
-    "Type Support:",
+    "\0x1B[1mTYPE SUPPORT\0x1B[m",
     "",
-    "If an application command returns multiple types (for example,",
-    "a Symbol OR an Int OR a String), the -e option can be used to",
-    "add the corresponding enumerated type to the glue, providing",
-    "a type-safe alternative to the Any return type.",
+    "The -e, -s, and -t options can be used to add custom Swift enums,",
+    "structs, and typealiases into the generated glue files, providing",
+    "better integration between Swift's strong, static type system and",
+    "the Apple Event Manager's weak, dynamic types. Each option may",
+    "appear any number of times and takes a format string as argument.",
+    "",
+    "\0x1B[4mEnumerated types\0x1B[m",
+    "",
+    "Enumerated types enable commands whose results can have multiple",
+    "types to return those values in a type-safe way.",
+    "",
+    "For example, if a command can return a Symbol \0x1B[1mor\0x1B[m a String, include",
+    "the following -e option in the aeglue command:",
+    "",
+    "    -e Symbol+String",
     "",
     "The -e option's argument must have the following format:",
     "",
-    "    [TYPENAME=]TYPE1+TYPE2+...",
+    "    [TYPENAME=][CASE1:]TYPE1+[CASE1:]TYPE2+...",
     "",
     "TYPENAME is the name to be given to the enumerated type, e.g.",
     "MyType. If omitted, a default name is automatically generated.",
     "",
     "TYPEn is the name of an existing Swift type, e.g. String or a",
     "standard SwiftAutomation type: Symbol, Object, Insertion, Item,",
-    "or Items (the glue PREFIX will be added automatically).",
+    "or Items (the glue PREFIX will be added automatically). CASEn is",
+    "the name of the case to which values of that type are assigned.",
+    "If the TYPE is parameterized, e.g. Array<String>, the CASE name",
+    "must also be given, otherwise it can be omitted and a default",
+    "name will be derived from the TYPE name, e.g. Int -> int.",
     "",
     "For example, to define an enum named MASymbolOrIntOrString", // TO DO: a real-world example would be better
     "which can represent a Symbol, Int, or String:",
@@ -113,8 +128,7 @@ func writeData(_ data: NSData, toURL: URL, overwriting: Bool) throws {
     do {
         try data.write(to: toURL as URL, options: (overwriting ? .atomic : .withoutOverwriting))
     } catch {
-        throw NSError(domain: NSCocoaErrorDomain, code: error._code,
-                      userInfo: [NSLocalizedDescriptionKey: "Can't write file: \(toURL.path). \((error as NSError).localizedDescription)"])
+        throw SwiftAutomationError(code: error._code, message: "Can't write file: \(toURL.path). \(error)")
     }
 }
 
@@ -259,7 +273,7 @@ for applicationURL in applicationURLs {
         try writeData(data as NSData, toURL: outGlueURL, overwriting: canOverwrite)
         print(outGlueURL.path)
     } catch {
-        print("Couldn't generate glue: \(error.localizedDescription)", to: &errStream) // TO DO: check this works with non-NSErrors too
+        print("Couldn't generate glue: \(error)", to: &errStream)
         exit(Int32(error._code))
     }
     // generate cheap-n-dirty user documentation
@@ -270,7 +284,7 @@ for applicationURL in applicationURLs {
             try writeData(sdef as NSData, toURL: outSDEFURL, overwriting: canOverwrite)
             print(outSDEFURL.path)
         } catch {
-            print("Couldn't write SDEF: \(error.localizedDescription)", to: &errStream)
+            print("Couldn't write SDEF: \(error)", to: &errStream)
             exit(Int32(error._code))
         }
     }

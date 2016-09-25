@@ -47,6 +47,8 @@ public struct GlueClasses {
 
 private let absoluteOrdinalCodes = [SwiftAutomation_kAEFirst, SwiftAutomation_kAEMiddle, SwiftAutomation_kAELast, SwiftAutomation_kAEAny, SwiftAutomation_kAEAll]
 
+private let relativeOrdinalCodes = [SwiftAutomation_kAEPrevious, SwiftAutomation_kAENext]
+
 
 open class AppData {
         
@@ -239,18 +241,15 @@ open class AppData {
     // Convert an Apple event descriptor to the specified Swift type, coercing it as necessary
     
     public func unpack<T>(_ desc: NSAppleEventDescriptor) throws -> T {
-        
-        // TO DO: also have to allow for possibility of Optional<T> in case client requests that? (the optional should be ignored); one benefit of this is it allows results to be assigned to an existing var of type Optional<T>; currently user would need to explicitly cast the command's result to T first; the problem here is that it's impossible to test if T is an Optional (same problem as with Array<T> and other generic types); thus the solution would be to extend Optional with SelfPacking and SelfUnpacking (same as for Array, etc above)
-        
+                
         // TO DO: will these tests also match NSString, NSDate, NSArray, etc, or do those need tested for separately?
         
         if T.self == Any.self || T.self == AnyObject.self {
             return try self.unpackAny(desc) as! T
-        } else if let t = T.self as? SelfUnpacking.Type { // Array, Dictionary
+        } else if let t = T.self as? SelfUnpacking.Type { // note: Symbol, MissingValueType, Array<>, Dictionary<>, Set<>, and Optional<> types unpack the descriptor themselves, as do any custom structs and enums defined in glues
             return try t.SwiftAutomation_unpackSelf(desc, appData: self) as! T
         } else if isMissingValue(desc) {
-            // TO DO: ALWAYS handle `missing value` as special case; DON'T allow it to coerce to any other type (e.g. typeUnicodeText) even if AEM allows it
-            throw UnpackError(appData: self, descriptor: desc, type: T.self, message: "Can't coerce 'missing value' descriptor to Swift type (not a supported sum type): \(T.self)") // TO DO: raise a MissingValueError instead? that'd make it easier to distinguish errors caused by app returning 'missing value' when client wants a normal value (e.g. string)? or is it better to force user to be a good type citizen and always state exactly what they want, e.g. StringOrMissingValue?
+            throw UnpackError(appData: self, descriptor: desc, type: T.self, message: "Can't coerce 'missing value' descriptor to \(T.self).") // Important: AppData must not unpack a 'missing value' constant as anything except `MissingValue` or `nil` (i.e. the types to which it self-unpacks). AppleScript doesn't have this problem as all descriptors unpack to their own preferred type, but unpack<T>() forces a descriptor to unpack as a specific type or fail trying. While its role is to act as a `nil`-style placeholder when no other value is given, its descriptor type is typeType so left to its own devices it would naturally unpack the same as any other typeType descriptor. e.g. One of AEM's vagaries is that it supports typeType to typeUnicodeText coercions, so while permitting cDocument to coerce to "docu" might be acceptable [if not exactly helpful], allowing cMissingValue to coerce to "msng" would defeat its whole purpose.
         } else if T.self == Bool.self {
             return desc.booleanValue as! T
         } else if T.self == Int.self { // TO DO: this assumes Int will _always_ be 64-bit (on macOS); is that safe?
@@ -328,7 +327,7 @@ open class AppData {
             return desc as! T
         }
         // desc couldn't be coerced to the specified type
-        throw UnpackError(appData: self, descriptor: desc, type: T.self, message: "Can't coerce descriptor to Swift type: \(T.self)")
+        throw UnpackError(appData: self, descriptor: desc, type: T.self, message: "Can't coerce descriptor to \(T.self).")
     }
     
     
@@ -392,6 +391,7 @@ open class AppData {
             return self.unpackUInt(desc)!
         case typeQDPoint, typeQDRectangle, typeRGBColor:
             return try self.unpack(desc) as [Int]
+            // note: while there are also several AEAddressDesc types used to identify applications, these are very rarely used as command results (e.g. the `choose application` OSAX) and there's little point unpacking them anway as the only type they can automatically be mapped to is AEApplication, which has only minimal functionality anyway. Also unsupported are unit types as they only cover a handful of measurement types and in practice aren't really used for anything except measurement conversions in AppleScript.
         default:
             if desc.isRecordDescriptor {
                 return try Dictionary.SwiftAutomation_unpackSelf(desc, appData: self) as [Symbol:Any]
@@ -414,7 +414,7 @@ open class AppData {
     }
     
     private func unpackUInt(_ desc: NSAppleEventDescriptor) -> UInt? {
-            // same as above, except for unsigned
+            // as above, but for unsigned ints
         if let intDesc = desc.coerce(toDescriptorType: typeUInt64) {
             var result: UInt64 = 0
             (intDesc.data as NSData).getBytes(&result, length: MemoryLayout<UInt64>.size)
@@ -436,7 +436,7 @@ open class AppData {
     }
     
     func unpackInsertionLoc(_ desc: NSAppleEventDescriptor) throws -> Specifier {
-        guard let _ = desc.forKeyword(keyAEObject), // only used to check InsertionLoc record is correctly formed // TO DO: in unlikely event of receiving a malformed record, would be simpler for unpackParentSpecifiers to use a RootSpecifier that throws error on use, avoiding need for extra check here
+        guard let _ = desc.forKeyword(keyAEObject), // only used to check InsertionLoc record is correctly formed
             let insertionLocation = desc.forKeyword(keyAEPosition) else {
                 throw UnpackError(appData: self, descriptor: desc, type: self.glueClasses.insertionSpecifierType,
                                   message: "Can't unpack malformed insertion specifier.")
@@ -446,30 +446,44 @@ open class AppData {
     }
     
     func unpackObjectSpecifier(_ desc: NSAppleEventDescriptor) throws -> Specifier {
-        guard let _ = desc.forKeyword(SwiftAutomation_keyAEContainer), // container desc is only used in unpackParentSpecifiers, but confirm its existence
+        guard let _ = desc.forKeyword(SwiftAutomation_keyAEContainer), // the 'from' descriptor is unused here (it's only required in `unpackParentSpecifiers()` when fully unpacking an object specifier to [e.g.] generate a description string)
             let wantType = desc.forKeyword(SwiftAutomation_keyAEDesiredClass),
             let selectorForm = desc.forKeyword(SwiftAutomation_keyAEKeyForm),
             let selectorDesc = desc.forKeyword(SwiftAutomation_keyAEKeyData) else {
                 throw UnpackError(appData: self, descriptor: desc, type: self.glueClasses.objectSpecifierType,
                                   message: "Can't unpack malformed object specifier.")
         }
-        do {
-            let formCode = selectorForm.enumCodeValue
-            // unpack selectorData, unless it's a property code or absolute/relative ordinal (in which case use its prop/enum descriptor as-is)
-            let selectorData = (formCode == SwiftAutomation_formPropertyID
-                || formCode == SwiftAutomation_formRelativePosition // TO DO: shouldn't this check seld is prev/next, same as abs. ordinals?
-                || formCode == SwiftAutomation_formAbsolutePosition
-                && selectorDesc.descriptorType == typeEnumerated
-                && absoluteOrdinalCodes.contains(selectorDesc.enumCodeValue)) ? selectorDesc : try self.unpackAny(selectorDesc)
-            // TO DO: need 'strict AS emulation' option to fully unpack and repack specifiers, re-setting cachedDesc (TBH, only app that ever had this problem was iView Media Pro, since it takes a double whammy of app bugs to cause an app to puke on receiving objspecs it previously created itself)
-            if formCode == SwiftAutomation_formRange || formCode == SwiftAutomation_formTest
-                || (formCode == SwiftAutomation_formAbsolutePosition && selectorDesc.enumCodeValue == SwiftAutomation_kAEAll) {
-                return self.glueClasses.multiObjectSpecifierType.init(wantType: wantType, selectorForm: selectorForm, selectorData: selectorData,
-                                                                      parentQuery: nil, appData: self, cachedDesc: desc)
-            } else {
-                return self.glueClasses.objectSpecifierType.init(wantType: wantType, selectorForm: selectorForm, selectorData: selectorData,
-                                                                 parentQuery: nil, appData: self, cachedDesc: desc)
+        do { // unpack selectorData, unless it's a property code or absolute/relative ordinal (in which case use its 'prop'/'enum' descriptor as-is)
+            // TO DO: this'll need dedicated tests to confirm correct behavior, as it's rare for app commands to return anything except by-index/name/ID specifiers
+            var selectorData: Any = selectorDesc // the selector won't be unpacked if it's a property/relative/absolute ordinal
+            var objectSpecifierClass = self.glueClasses.objectSpecifierType // most reference forms describe one-to-one relationships
+            switch selectorForm.enumCodeValue {
+            case SwiftAutomation_formPropertyID: // property
+                if ![typeType, typeProperty].contains(selectorDesc.descriptorType) {
+                    throw UnpackError(appData: self, descriptor: desc, type: self.glueClasses.objectSpecifierType,
+                                      message: "Can't unpack malformed object specifier.")
+                }
+            case SwiftAutomation_formRelativePosition: // before/after
+                if !(selectorDesc.descriptorType == typeEnumerated && relativeOrdinalCodes.contains(selectorDesc.enumCodeValue)) {
+                    throw UnpackError(appData: self, descriptor: desc, type: self.glueClasses.objectSpecifierType,
+                                      message: "Can't unpack malformed object specifier.")
+                }
+            case SwiftAutomation_formAbsolutePosition: // by-index or first/middle/last/any/all ordinal
+                if selectorDesc.descriptorType == typeEnumerated && absoluteOrdinalCodes.contains(selectorDesc.enumCodeValue) { // don't unpack ordinals
+                    if selectorDesc.enumCodeValue == SwiftAutomation_kAEAll { // `all` ordinal = one-to-many relationship
+                        objectSpecifierClass = self.glueClasses.multiObjectSpecifierType
+                    }
+                } else { // unpack index (normally Int32, though the by-index form can take any type of selector as long as the app understands it)
+                    selectorData = try self.unpack(selectorDesc)
+                }
+            case SwiftAutomation_formRange, SwiftAutomation_formTest: // by-range or by-test = one-to-many relationship
+                objectSpecifierClass = self.glueClasses.multiObjectSpecifierType
+                selectorData = try self.unpack(selectorDesc)
+            default: // by-name or by-ID
+                selectorData = try self.unpack(selectorDesc)
             }
+            return objectSpecifierClass.init(wantType: wantType, selectorForm: selectorForm, selectorData: selectorData,
+                                             parentQuery: nil, appData: self, cachedDesc: desc)
         } catch {
             throw UnpackError(appData: self, descriptor: desc, type: self.glueClasses.objectSpecifierType,
                               message: "Can't unpack object specifier's selector data.") // TO DO: need to chain errors

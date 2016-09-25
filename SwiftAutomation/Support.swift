@@ -7,9 +7,6 @@ import Foundation
 import AppKit
 
 
-// TO DO: what about converting URLs to typeAlias and other filesystem-related descriptor types? e.g. `aliasDescriptor(fromFileURL:URL)` (or take an optional enum of `.alias|.FSRef|etc.`) (In theory, applications should always accept typeFileURL and coerce it to whatever type they actually need themselves; in practice, not-so-well-designed Carbon apps may require one specific type - e.g. typeAlias - and refuse to accept any other, in which case it's the client's problem to give it what it needs. Again, nasty, but probably better to include smelly utility functions than leave users to deal with arcane NSAppleEventDescriptor calls.)
-
-
 /******************************************************************************/
 // convert between 4-character strings and OSTypes (use these instead of calling UTGetOSTypeFromString/UTCopyStringFromOSType directly)
 
@@ -230,15 +227,21 @@ public enum TargetApplication {
         } else {
             switch self {
             case .name(let name):
-                if let url = fileURLForLocalApplication(name) { try self.launch(url: url) }
-            case .url(let url):
-                if url.isFileURL { try self.launch(url: url) }
+                if let url = fileURLForLocalApplication(name) {
+                    try self.launch(url: url)
+                    return
+                }
+            case .url(let url) where url.isFileURL:
+                try self.launch(url: url)
+                return
             case .bundleIdentifier(let bundleID, _):
-                NSWorkspace.shared().launchApplication(withBundleIdentifier: bundleID, options: [.withoutActivation],
-                                                       additionalEventParamDescriptor: LaunchEvent, launchIdentifier: nil)
+                if let url = NSWorkspace.shared().urlForApplication(withBundleIdentifier: bundleID) {
+                    try self.launch(url: url)
+                    return
+                }
             default:
                 ()
-            }
+            } // fall through on failure
             throw ConnectionError(target: self, message: "Can't launch application.")
         }
     }

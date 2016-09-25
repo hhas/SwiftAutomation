@@ -295,7 +295,7 @@
             <access-group identifier="com.apple.iTunes.library.read" access="r"></access-group>
             <access-group identifier="com.apple.iTunes.library.read-write" access="rw"></access-group>
             <property name="data" code="pPCT" type="picture" description="data for this artwork, in the form of a picture"></property>
-            <property name="description" code="pDes" type="text" description="description of artwork as a string"></property>
+            <property name="description_" code="pDes" type="text" description="description of artwork as a string"></property>
             <property name="downloaded" code="pDlA" type="boolean" access="r" description="was this artwork downloaded by iTunes?"></property>
             <property name="format" code="pFmt" type="type" access="r" description="the data format for this piece of artwork"></property>
             <property name="kind" code="pKnd" type="integer" description="kind or purpose of this piece of artwork"></property>
@@ -380,7 +380,7 @@
             <access-group identifier="com.apple.iTunes.library.read-write" access="rw"></access-group>
             <element type="track"></element>
             <element type="artwork"></element>
-            <property name="description" code="pDes" type="text" description="the description of the playlist"></property>
+            <property name="description_" code="pDes" type="text" description="the description of the playlist"></property>
             <property name="disliked" code="pHat" type="boolean" description="is this playlist disliked?"></property>
             <property name="duration" code="pDur" type="integer" access="r" description="the total length of all songs (in seconds)"></property>
             <property name="name" code="pnam" type="text" description="the name of the playlist"></property>
@@ -452,7 +452,7 @@
             <property name="composer" code="pCmp" type="text" description="the composer of the track"></property>
             <property name="databaseID" code="pDID" type="integer" access="r" description="the common, unique ID for this track. If two tracks in different playlists have the same database ID, they are sharing the same data."></property>
             <property name="dateAdded" code="pAdd" type="date" access="r" description="the date the track was added to the playlist"></property>
-            <property name="description" code="pDes" type="text" description="the description of the track"></property>
+            <property name="description_" code="pDes" type="text" description="the description of the track"></property>
             <property name="discCount" code="pDsC" type="integer" description="the total number of discs in the source album"></property>
             <property name="discNumber" code="pDsN" type="integer" description="the index of the disc containing this track on the source album"></property>
             <property name="disliked" code="pHat" type="boolean" description="is this track disliked?"></property>
@@ -579,7 +579,7 @@
             <enumerator name="ITU.songs" code="kSrS" description="song names only"></enumerator>
         </enumeration>
         <enumeration name="eSpK" code="eSpK">
-            <enumerator name="ITU.none_" code="kNon"></enumerator>
+            <enumerator name="ITU.none" code="kNon"></enumerator>
             <enumerator name="ITU.Books" code="kSpA"></enumerator>
             <enumerator name="ITU.folder" code="kSpF"></enumerator>
             <enumerator name="ITU.Genius" code="kSpG"></enumerator>
@@ -607,7 +607,7 @@
             <enumerator name="ITU.unknown" code="kUnk"></enumerator>
         </enumeration>
         <enumeration name="eVdK" code="eVdK">
-            <enumerator name="ITU.none_" code="kNon" description="not a video or unknown video kind"></enumerator>
+            <enumerator name="ITU.none" code="kNon" description="not a video or unknown video kind"></enumerator>
             <enumerator name="ITU.homeVideo" code="kVdH" description="home video track"></enumerator>
             <enumerator name="ITU.movie" code="kVdM" description="movie track"></enumerator>
             <enumerator name="ITU.musicVideo" code="kVdV" description="music video track"></enumerator>

@@ -65,6 +65,12 @@
         </command>
     </suite>
     <suite name="Finder Basics" code="fndr" description="Commonly-used Finder commands and object classes">
+        <command name="openVirtualLocation" hidden="yes" code="fndrovir" description="Private event to open a virtual location">
+            <access-group identifier="com.apple.private.siri"></access-group>
+            <direct-parameter type="text" description="the location to open">
+                <access-group identifier="com.apple.private.siri"></access-group>
+            </direct-parameter>
+        </command>
         <command name="copy" code="misccopy" description="(NOT AVAILABLE YET) Copy the selected items to the clipboard (the Finder must be the front application)"></command>
         <command name="sort" code="DATASORT" description="Return the specified object(s) in a sorted list">
             <direct-parameter type="specifier" description="a list of finder objects to sort"></direct-parameter>
@@ -112,7 +118,7 @@
         </command>
         <command name="empty" code="fndrempt" description="Empty the trash">
             <direct-parameter type="specifier" optional="yes" description="“empty” and “empty trash” both do the same thing"></direct-parameter>
-            <parameter name="security:" code="sec?" type="boolean" optional="yes" description="Specifies whether or not to empty the trash securely"></parameter>
+            <parameter name="security:" code="sec?" type="boolean" optional="yes" description="(obsolete)"></parameter>
         </command>
         <command name="erase" code="fndrfera" description="(NOT AVAILABLE) Erase the specified disk(s)">
             <direct-parameter type="specifier" description="the items to erase"></direct-parameter>
@@ -122,7 +128,7 @@
         </command>
         <command name="update" code="fndrfupd" description="Update the display of the specified object(s) to match their on-disk representation">
             <direct-parameter type="specifier" description="the item to update"></direct-parameter>
-            <parameter name="necessity:" code="nec?" type="boolean" optional="yes" description="only update if necessary (i.e. a finder window is open).  default is false"></parameter>
+            <parameter name="necessity:" code="nec?" type="boolean" optional="yes" description="only update if necessary (i.e. a finder window is open). default is false"></parameter>
             <parameter name="registeringApplications:" code="reg?" type="boolean" optional="yes" description="register applications. default is true"></parameter>
         </command>
         <class name="item" code="cobj" description="An item" plural="items">
@@ -139,7 +145,7 @@
             <property name="labelIndex" code="labi" type="integer" description="the label of the item"></property>
             <property name="locked" code="aslk" type="boolean" description="Is the file locked?"></property>
             <property name="kind" code="kind" type="text" access="r" description="the kind of the item"></property>
-            <property name="description" code="dscr" type="text" access="r" description="a description of the item"></property>
+            <property name="description_" code="dscr" type="text" access="r" description="a description of the item"></property>
             <property name="comment" code="comt" type="text" description="the comment of the item, displayed in the “Get Info” window"></property>
             <property name="size" code="ptsz" type="double integer" access="r" description="the logical size of the item"></property>
             <property name="physicalSize" code="phys" type="double integer" access="r" description="the actual space used by the item on disk"></property>
@@ -160,7 +166,7 @@
             <enumerator name="FIN.readOnly" code="read"></enumerator>
             <enumerator name="FIN.readWrite" code="rdwr"></enumerator>
             <enumerator name="FIN.writeOnly" code="writ"></enumerator>
-            <enumerator name="FIN.none_" code="none"></enumerator>
+            <enumerator name="FIN.none" code="none"></enumerator>
         </enumeration>
     </suite>
     <suite name="Containers and folders" code="fndr" description="Classes that can contain other file system items">
@@ -455,7 +461,7 @@
             <property name="maximumWidth" code="clwm" type="integer" access="r" description="the maximum allowed width of this column"></property>
             <property name="visible" code="pvis" type="boolean" description="is this column visible"></property>
         </class>
-        <class name="aliasList" code="alst" description="A list of aliases.  Use ‘as alias list’ when a list of aliases is needed (instead of a list of file system item references)."></class>
+        <class name="aliasList" code="alst" description="A list of aliases. Use ‘as alias list’ when a list of aliases is needed (instead of a list of file system item references)."></class>
         <enumeration name="earr" code="earr">
             <enumerator name="FIN.notArranged" code="narr"></enumerator>
             <enumerator name="FIN.snapToGrid" code="grda"></enumerator>
@@ -467,7 +473,7 @@
             <enumerator name="FIN.arrangedByLabel" code="laba"></enumerator>
         </enumeration>
         <enumeration name="epos" code="epos">
-            <enumerator name="FIN.right_" code="lrgt"></enumerator>
+            <enumerator name="FIN.right" code="lrgt"></enumerator>
             <enumerator name="FIN.bottom" code="lbot"></enumerator>
         </enumeration>
         <enumeration name="sodr" code="sodr">
@@ -505,5 +511,20 @@
             <enumerator name="FIN.comment" code="comt"></enumerator>
             <enumerator name="FIN.version" code="vers"></enumerator>
         </enumeration>
+        <value-type name="unsignedInteger" code="magn"></value-type>
+        <value-type name="doubleInteger" code="comp"></value-type>
+        <value-type name="RGBColor" code="cRGB"></value-type>
+        <value-type name="list" code="list"></value-type>
+        <value-type name="property_" code="prop"></value-type>
+        <value-type name="ICN_U0023_" code="ICN#"></value-type>
+        <value-type name="icl4" code="icl4"></value-type>
+        <value-type name="icl8" code="icl8"></value-type>
+        <value-type name="ics_U0023_" code="ics#"></value-type>
+        <value-type name="ics4" code="ics4"></value-type>
+        <value-type name="ics8" code="ics8"></value-type>
+        <value-type name="il32" code="il32"></value-type>
+        <value-type name="is32" code="is32"></value-type>
+        <value-type name="l8mk" code="l8mk"></value-type>
+        <value-type name="s8mk" code="s8mk"></value-type>
     </suite>
 </dictionary>

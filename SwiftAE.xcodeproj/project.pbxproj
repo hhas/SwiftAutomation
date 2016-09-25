@@ -162,7 +162,7 @@
 		4F0E39201BA76D8400FF2A96 /* 3 understanding-apple-events.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "3 understanding-apple-events.md"; path = "doc-source/3 understanding-apple-events.md"; sourceTree = "<group>"; };
 		4F0E39211BA76D8400FF2A96 /* 2 a-quick-tutorial.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "2 a-quick-tutorial.md"; path = "doc-source/2 a-quick-tutorial.md"; sourceTree = "<group>"; };
 		4F0E39221BA76D8400FF2A96 /* 4 creating-and-using-static-glues.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "4 creating-and-using-static-glues.md"; path = "doc-source/4 creating-and-using-static-glues.md"; sourceTree = "<group>"; };
-		4F0E39231BA76D8400FF2A96 /* 5 ae-type-mappings.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "5 ae-type-mappings.md"; path = "doc-source/5 ae-type-mappings.md"; sourceTree = "<group>"; };
+		4F0E39231BA76D8400FF2A96 /* 5 type-mappings.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "5 type-mappings.md"; path = "doc-source/5 type-mappings.md"; sourceTree = "<group>"; };
 		4F0E39241BA76D8400FF2A96 /* 6 application-objects.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "6 application-objects.md"; path = "doc-source/6 application-objects.md"; sourceTree = "<group>"; };
 		4F0E39251BA76D8400FF2A96 /* 7 object-specifiers.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "7 object-specifiers.md"; path = "doc-source/7 object-specifiers.md"; sourceTree = "<group>"; };
 		4F0E39261BA76D8400FF2A96 /* 8 commands.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "8 commands.md"; path = "doc-source/8 commands.md"; sourceTree = "<group>"; };
@@ -294,7 +294,7 @@
 				4F0E39211BA76D8400FF2A96 /* 2 a-quick-tutorial.md */,
 				4F0E39201BA76D8400FF2A96 /* 3 understanding-apple-events.md */,
 				4F0E39221BA76D8400FF2A96 /* 4 creating-and-using-static-glues.md */,
-				4F0E39231BA76D8400FF2A96 /* 5 ae-type-mappings.md */,
+				4F0E39231BA76D8400FF2A96 /* 5 type-mappings.md */,
 				4F0E39241BA76D8400FF2A96 /* 6 application-objects.md */,
 				4F0E39251BA76D8400FF2A96 /* 7 object-specifiers.md */,
 				4F0E39261BA76D8400FF2A96 /* 8 commands.md */,

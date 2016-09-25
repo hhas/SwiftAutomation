@@ -9,10 +9,10 @@
         <div id="wrap">
             <div id="main">
                 <h1>Introduction</h1>
-                <div class="navbar"><a href="index.html">index</a> | <a href="understanding-apple-events.html">next</a></div>
+                <div class="navbar"><a href="index.html">index</a> | <a href="a-quick-tutorial.html">next</a></div>
                 <h2>What is SwiftAutomation?</h2>
 
-<p>SwiftAutomation allows you to control Apple event-aware ("AppleScriptable") macOS applications from Swift programs.</p>
+<p>SwiftAutomation allows you to control "AppleScriptable" macOS applications using Apple's <a href="https://swift.org/">Swift</a> language. SwiftAutomation makes Swift a true alternative to AppleScript for automating your Mac.</p>
 
 <p>For example, to get the value of the first paragraph of the topmost document in TextEdit:</p>
 
@@ -24,17 +24,34 @@
 <pre><code>  tell application id "com.apple.TextEdit" to get paragraph 1 of document 1
 </code></pre>
 
-<h2>"Hello World!" example</h2>
+<p>Or to create a new "Hello World!" document in TextEdit:</p>
 
-<p>The following example uses SwiftAutomation to create a new "Hello World!" document in TextEdit:</p>
+<pre><code>  // tell application id "com.apple.TextEdit"
+  //    make new document with properties {text:"Hello World!"}
+  // end tell
 
-<pre><code>  let textedit = TextEdit()
-
+  let textedit = TextEdit()
   try textedit.make(new: TED.document, withProperties: [TED.text: "Hello World!"])
 </code></pre>
 
+<h2>Before you start...</h2>
+
+<p>In order to use SwiftAutomation effectively, you will need to understand the differences between the Apple event and Swift/Cocoa object systems.</p>
+
+<p>In contrast to the familiar object-oriented approach of other inter-process communication systems such as COM and Distributed Objects, Apple event IPC is based on a combination of remote procedure calls and first-class queries - somewhat analogous to using XPath over XML-RPC.</p>
+
+<p>While SwiftAutomation uses an object-oriented-like syntax for conciseness and readability, like AppleScript, it behaves according to Apple event rules. As a result, Swift users will discover that some things work differently in SwiftAutomation from what they're used to. For example:</p>
+
+<ul>
+<li><p>Object elements are one-indexed, not zero-indexed like Swift Arrays.</p></li>
+<li><p>Referencing a property of an application object does not automatically return the property's value (you need a get command for that).</p></li>
+<li><p>Many applications allow a single command to operate on multiple objects at the same time, providing significant performance benefits when manipulating large numbers of application objects. (Conversely, sending lots of commands to manipulate single objects one at a time can severely degrade performance.)</p></li>
+</ul>
+
+<p>Chapters 2 and 3 of this manual provide further information on how Apple event IPC works and a tutorial-based introduction to the SwiftAutomation bridge. Chapter 4 explains how to generate glue files for controlling specific appications. Chapters 5 through 9 cover the SwiftAutomation API, and chapter 10 discusses techniques for optimising performance.</p>
+
             </div>
         </div>
-        <div id="footer"><div class="navbar"><a href="index.html">index</a> | <a href="understanding-apple-events.html">next</a></div></div>
+        <div id="footer"><div class="navbar"><a href="index.html">index</a> | <a href="a-quick-tutorial.html">next</a></div></div>
     </body>
 </html>

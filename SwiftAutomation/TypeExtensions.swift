@@ -33,7 +33,7 @@ let missingValueDesc = NSAppleEventDescriptor(typeCode: SwiftAutomation_cMissing
 
 // unlike Swift's `nil` (which is actually an infinite number of values since Optional<T>.none is generic), there is only ever one `MissingValue`, which means it should behave sanely when cast to and from `Any`
 
-public enum MissingValueType: CustomStringConvertible, SelfPacking {
+public enum MissingValueType: CustomStringConvertible, SelfPacking, SelfUnpacking {
     
     case missingValue
     
@@ -43,10 +43,14 @@ public enum MissingValueType: CustomStringConvertible, SelfPacking {
         return missingValueDesc
     }
     
+    public static func SwiftAutomation_unpackSelf(_ desc: NSAppleEventDescriptor, appData: AppData) throws -> MissingValueType {
+        return MissingValue
+    }
+    
     public var description: String { return "MissingValue" }
 }
 
-public let MissingValue = MissingValueType() // the `missing value` constant, basically an analog of `Optional<T>.none`, aka `nil`, except that it's non-generic so isn't a giant PITA to deal with when cast to/from `Any` // TO DO: not sure about capitalization here; may be best to make exception from standard Swift naming convention for visual clarity
+public let MissingValue = MissingValueType() // the `missing value` constant; serves a similar purpose to `Optional<T>.none` (`nil`), except that it's non-generic so isn't a giant PITA to deal with when casting to/from `Any`
 
 
 // TO DO: define `==`/`!=` operators that treat MayBeMissing<T>.missing(…) and MissingValue and Optional<T>.none as equivalent? Or get rid of `MayBeMissing` enum and (if possible/practical) support `Optional<T> as? MissingValueType` and vice-versa?
@@ -57,33 +61,33 @@ public let MissingValue = MissingValueType() // the `missing value` constant, ba
 
 public enum MayBeMissing<T>: SelfPacking, SelfUnpacking { // TO DO: rename 'MissingOr<T>'? this'd be more in keeping with TypeSupportSpec-generated enum names (e.g. 'IntOrStringOrMissing')
     case value(T)
-    case missing
+    case missing(MissingValueType)
     
     public init(_ value: T) {
         switch value {
         case is MissingValueType:
-            self = .missing
+            self = .missing(MissingValue)
         default:
             self = .value(value)
         }
     }
     
     public init() {
-        self = .missing
+        self = .missing(MissingValue)
     }
     
     public func SwiftAutomation_packSelf(_ appData: AppData) throws -> NSAppleEventDescriptor {
         switch self {
         case .value(let value):
             return try appData.pack(value)
-        case .missing:
+        case .missing(_):
             return missingValueDesc
         }
     }
     
     public static func SwiftAutomation_unpackSelf(_ desc: NSAppleEventDescriptor, appData: AppData) throws -> MayBeMissing<T> {
         if isMissingValue(desc) {
-            return MayBeMissing<T>.missing
+            return MayBeMissing<T>.missing(MissingValue)
         } else {
             return MayBeMissing<T>.value(try appData.unpack(desc) as T)
         }
@@ -93,7 +97,7 @@ public enum MayBeMissing<T>: SelfPacking, SelfUnpacking { // TO DO: rename 'Miss
         switch self {
         case .value(let value):
             return value
-        case .missing:
+        case .missing(_):
             return nil
         }
     }

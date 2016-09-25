@@ -167,19 +167,15 @@ let SwiftAEGlueTemplate = [
 "«+ENUM_TYPE_DEFINITION»",
 "public enum «ENUM_TYPE_NAME»: SelfPacking, SelfUnpacking {«+CASE_DEFINITION»",
 "    case «CASE_NAME»(«CASE_TYPE»)«-CASE_DEFINITION»",
-    // TO DO: «+MISSING_CASE»case missing«-MISSING_CASE»
 "    «+INIT_DEFINITION»",
 "    public init(_ value: «CASE_TYPE») { self = .«CASE_NAME»(value) }«-INIT_DEFINITION»",
 "    ",
 "    public func SwiftAutomation_packSelf(_ appData: AppData) throws -> NSAppleEventDescriptor {",
 "        switch self {«+PACK_CASE»",
-        // TO DO: "«+PACK_MISSING»case .missing: return missingValueDesc«-PACK_MISSING»"
 "        case .«CASE_NAME»(let value): return try appData.pack(value)«-PACK_CASE»",
 "        }",
 "    }",
 "    public static func SwiftAutomation_unpackSelf(_ desc: NSAppleEventDescriptor, appData: AppData) throws -> «ENUM_TYPE_NAME» {«+UNPACK_CASE»",
-        // TO DO: "«+UNPACK_MISSING»if isMissingValue(desc) { return MissingValue }«-UNPACK_MISSING»"
-        // try unpacking the AEDesc as each type in specified order of preference, until one succeeds or all fail
 "        do { return .«CASE_NAME»(try appData.unpack(desc) as «CASE_TYPE») } catch {}«-UNPACK_CASE»",
 "        throw UnpackError(appData: appData, descriptor: desc, type: «ENUM_TYPE_NAME».self,",
 "                          message: \"Can't coerce descriptor to Swift type: \\(«ENUM_TYPE_NAME».self)\")",
@@ -188,7 +184,7 @@ let SwiftAEGlueTemplate = [
 "«-ENUM_TYPE_DEFINITION»",
 "",
 "«+RECORD_STRUCT_DEFINITION»",
-"public struct «STRUCT_NAME»: SelfPacking, SelfUnpacking {", // TO DO: if autogenerating record structs from terminology, would there be a worthwhile performance improvement if record properties unpack themselves lazily when returned as command result
+"public struct «STRUCT_NAME»: SelfPacking, SelfUnpacking {",
 "",
 "    public let class_ = «PREFIX»Symbol.«CLASS_NAME»«+RECORD_PROPERTY»",
 "    public var «PROPERTY_NAME»: «PROPERTY_TYPE»«-RECORD_PROPERTY»",

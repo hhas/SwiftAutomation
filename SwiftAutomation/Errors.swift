@@ -42,6 +42,7 @@ let gDescriptionForError: [Int:String] = [ // error descriptions from ASLG/MacEr
         -607: "Buffer is too small.",
         -608: "No outstanding high-level event.",
         -609: "Connection is invalid.",
+        -610: "No user interaction allowed.",
         -904: "Not enough system memory to connect to remote application.",
         -905: "Remote access is not allowed.",
         -906: "Application isn't running or program linking isn't enabled.",
@@ -104,9 +105,9 @@ let gDescriptionForError: [Int:String] = [ // error descriptions from ASLG/MacEr
 
 // errors
 
-public class SwiftAutomationError: Error, CustomStringConvertible { // TO DO: should all errors be chained? or just CommandError?
+public class SwiftAutomationError: Error, CustomStringConvertible { // TO DO: support error chaining
     public let _domain = "SwiftAutomation"
-    public let _code: Int // TO DO: use custom codes for error types, or standard OSStatus codes?
+    public let _code: Int // TO DO: use custom codes for error types, or standard OSStatus codes? // TO DO: should probably have a default code (e.g. 1) for non-OSStatus errors, and otherwise use OSStatus when known
     public let message: String?
     
     init(code: Int, message: String? = nil) {
@@ -176,7 +177,7 @@ public class UnpackError: SwiftAutomationError {
     }
 }
 
-public class CommandError: SwiftAutomationError {
+public class CommandError: SwiftAutomationError { // note: this should probably wrap all errors occuring in a command, including pack/unpack (which aren't application errors, but will be easier for user to debug with the additional context)
     
     let appData: AppData
     let event: NSAppleEventDescriptor?
@@ -197,20 +198,20 @@ public class CommandError: SwiftAutomationError {
         self.replyEvent = replyEvent
         self.commandInfo = commandInfo
         self.parentError = parentError
-        message += " " + ((parentError as NSError?)?.localizedDescription ?? "") // TO DO: fix
+        if parentError != nil { message += " \(parentError)"}
         
         var errorNumber = 0
         if let error = parentError {
-            print("! SwiftAutomation/AppleEventManager error: \(error)")
+            print("! DEBUG: SwiftAutomation/AppleEventManager error: \(error)")
             errorNumber = error._code
         } else if let reply = replyEvent {
-            print("! App reply event: \(reply)")
+            print("! DEBUG: App reply event: \(reply)")
             if let appError = reply.forKeyword(SwiftAutomation_keyErrorNumber) {
                 errorNumber = Int(appError.int32Value)
                 // TO DO: [lazily] unpack any other available error info
             }
         }
-        // if errorNumber == 0, report as 'unknown' error? (what code?)
+        // if errorNumber == 0, report as 'general error'? (use default error code)
         
         
         super.init(code: errorNumber, message: message) // TO DO: implement
