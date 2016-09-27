@@ -6,14 +6,6 @@
 //
 //
 
-// TO DO: how difficult would it be to auto-generate enum/struct/typealias type definitions from an app's AETE/SDEF? (bearing in mind that AETE/SDEF-supplied type info is frequently vague, ambiguous, incomplete, and/or wrong, so a manual option will always be required as well); this basically falls into same camp as how to auto-generate struct-based record definitions as a more static-friendly alternative to AppData's standard AERecordDesc<->[Symbol:Any] mapping; may be worth exploring later (and will need a manual format string option as well, e.g. "STRUCTNAME=PROPERTY1:TYPE1+PROPERTY2:TYPE2+..."). 
-//
-// ANSWER: it'd be doable, but practically useless. Incomplete/incorrect type info is commoner than muck in app dictionaries - even the `path` property of Standard Suite's `document` class is wrong, declaring its type as `text` when it's really `text or missing value`; furthermore, because most Cocoa apps use `text` for both cText and typeUnicodeText, it's impossible to know which of these a given property actually holds. (Note: this also buggers up dictionary viewers and AEOM browsers by making it impossible to distinguish a property that represents an object attribute from a property that represents a one-to-one relationship with another object. Meantime, if the `text` property was declared correctly as a reference, getting document's properties as a record struct would break because the app automatically resolves the request to return text, not a reference.) 
-//
-// In other words, generating correct glue classes is impossible without additional manual correction; if Apple's own devs can't get this information right in CocoaScripting's standard terminology and CocoaScripting lets them away with it too, what chance have Cocoa app developers of getting their app-specific terms correct; never mind Carbon apps which don't care about or use crappy AETE (or SDEF) type info at all? 
-//
-// FWIW, if a pure-Swift AEOM handler framework ever gets built, it could address all these issues by radically simplifying and comprehensively prescribing the AEOM spec, then generate a formal IDL from the implementation which could be used to generate a robust glue (not to mention much more detailed user documentation, free test suites, and reliable implementation). Until then, the only value in auto-generating these definitions (as format strings only, not as Swift code) would be to give users a starting point from which to make their own corrections; and under the circumstances it'd simpler for them just to write minimal format strings for the bits of records they'll actually use, or just use the standard [Symbol:Any] dictionaries and do their own checking/casting of property values as needed. (Though if SwiftAutomation ever catches on then app developers might consider creating and distributing ready-to-use glue modules themselves, saving users the hassle of generating their own, at which point more powerful tools might be of some advantage).
-
 // TO DO: this code is pretty messy; tidy up later (e.g. divide ad-hoc parsing code into lexer + LL(1) parser)
 
 
@@ -43,7 +35,7 @@ func isReservedGlueTypeName(_ string: String) -> Bool {
 
 
 
-class SyntaxError: SwiftAutomationError {
+public class SyntaxError: SwiftAutomationError {
     
     init(_ message: String) {
         super.init(code: 1, message: message)

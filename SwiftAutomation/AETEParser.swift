@@ -10,7 +10,7 @@ import Foundation
 
 
 // kAEInheritedProperties isn't defined in OpenScripting.h for some reason
-let SwiftAutomation_kAEInheritedProperties = try! FourCharCode("c@#^")
+let SwiftAutomation_kAEInheritedProperties = try! fourCharCode("c@#^")
 
 
 /**********************************************************************/

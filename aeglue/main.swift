@@ -105,7 +105,10 @@ let helpText = [
     "which can represent a Symbol, Int, or String:",
     "",
     "    aeglue -e Symbol+Int+String -p MA 'My App'",
+    // TO DO: note that `Symbol` must come before `String`, to avoid type/enum codes being coerced to four-char-code strings (which AEM allows)
+    
     // TO DO: document struct and typealias format strings too
+    
     "",
     ""].joined(separator: "\n")
 

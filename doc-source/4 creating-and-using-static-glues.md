@@ -37,11 +37,11 @@ If an identically named folder already exists at the same location, `aeglue` wil
 
     aeglue -r TextEdit
 
-For compatibility, `aeglue` normally sends the application an `ascr/gdte` event to retrieve its terminology in AETE format. However, some Carbon-based applications (e.g. Finder) may have buggy `ascr/gdte` event handlers that return Cocoa Scripting's default terminology instead of the application's own. To work around this, add an `-s` option to retrieve the terminology in SDEF format instead:
+For compatibility, `aeglue` normally sends the application an `ascr/gdte` event to retrieve its terminology in AETE format. However, some Carbon-based applications (e.g. Finder) may have buggy `ascr/gdte` event handlers that return Cocoa Scripting's default terminology instead of the application's own. To work around this, add an `-S` option to retrieve the terminology in SDEF format instead:
 
-    aeglue -s Finder
+    aeglue -S Finder
 
-(Be aware that macOS's AETE-to-SDEF converter is not 100% reliable; for example, some four-char codes may fail to translate, in which case `aeglue` will warn of their omission. You'll have to correct the glue files manually should you need to use the affected features, or use SwiftAutomation's' `OSType`-based APIs instead.)
+(Be aware that macOS's AETE-to-SDEF converter is not 100% reliable; for example, some four-char codes may fail to translate, in which case `aeglue` will warn of their omission. You'll have to correct the glue files manually should you need to use the affected features, or use SwiftAutomation's lower-level `OSType`-based APIs instead.)
 
 
 ## Using a glue

@@ -7,7 +7,7 @@
 
 
 import Foundation
-//import SwiftAutomation
+import SwiftAutomation
 
 
 /******************************************************************************/
@@ -1039,5 +1039,6 @@ public struct TEDDocumentRecord: SelfPacking, SelfUnpacking {
             text: try self.SwiftAutomation_unpackProperty(desc, appData: appData, name: "text", code: 0x63747874)
         )
     }
+    public static func SwiftAutomation_noValue() throws -> TEDDocumentRecord { throw SwiftAutomationError(code: 1) }
 }
 

@@ -77,6 +77,8 @@ The Apple Event Object Model (AEOM) is a View-Controller layer that provides an 
 
 ## How does the AEOM work?
 
+[TO DO: might be worth drawing comparison between an AEOM 'class' and a Swift protocol, in that AEOM classes don't actually [have to] describe distinct types of objects, but rather describe how you can interact with them - e.g. `paragraph`]
+
 The AEOM is a tree-like structure made up of objects. These objects may have attributes (descriptive values such as class, name, id, size, bounds; usually primitive AE types but occasionally other application objects), e.g.:
 
     finder.name

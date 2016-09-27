@@ -10,11 +10,10 @@ import AppKit
 /******************************************************************************/
 // convert between 4-character strings and OSTypes (use these instead of calling UTGetOSTypeFromString/UTCopyStringFromOSType directly)
 
-func FourCharCodeUnsafe(_ string: String) -> OSType { // note: silently returns 0 if string is invalid; where practical, use throwing version below // TO DO: pretty sure the safe version can always be used: the non-throwing property() and elements() methods just need to trap the error and store it in the returned specifier (as its selector data), and it will be re-thrown when the specifier is used in an application command method (which can throw).
-    return UTGetOSTypeFromString(string as CFString)
-}
 
-func FourCharCode(_ string: String) throws -> OSType { // note: use this instead of FourCharCode to get better error reporting
+func fourCharCode(_ string: String) throws -> OSType {
+    // convert four-character string containing MacOSRoman characters to OSType
+    // (this is safer than using UTGetOSTypeFromString, which silently fails if string is malformed)
     guard let data = string.data(using: String.Encoding.macOSRoman) else {
         throw SwiftAutomationError(code: 1, message: "Invalid four-char code (bad encoding): \(quoteString(string))") // TO DO: what error?
     }
@@ -26,21 +25,25 @@ func FourCharCode(_ string: String) throws -> OSType { // note: use this instead
     return CFSwapInt32HostToBig(tmp)
 }
 
-func FourCharCodeString(_ code: OSType) -> String {
+func fourCharCode(_ code: OSType) -> String {
+    // convert an OSType to four-character string containing MacOSRoman characters
     return UTCreateStringForOSType(code).takeRetainedValue() as String
 }
 
 
 // misc AEDesc packing functions
 
-func FourCharCodeDescriptor(_ type: OSType, _ data: OSType) -> NSAppleEventDescriptor { // TO DO: rename `descriptor(forSymbolType:value:)`
-    var data = data
-    return NSAppleEventDescriptor(descriptorType: type, bytes: &data, length: MemoryLayout<OSType>.size)!
-}
-
-func UInt32Descriptor(_ data: UInt32) -> NSAppleEventDescriptor { // rename `descriptor`
-    var data = data // note: Swift's ObjC bridge appears to ignore the `const` on the `-[NSAppleEventDescriptor initWithDescriptorType:bytes:length:]` method's 'bytes' parameter, so need to rebind to `var` as workaround
-    return NSAppleEventDescriptor(descriptorType: SwiftAutomation_typeUInt32, bytes: &data, length: MemoryLayout<UInt32>.size)!
+extension NSAppleEventDescriptor { // TO DO: how safe/advisable is extending system-defined classes?
+    
+    convenience init(type: OSType, code: OSType) {
+        var data = code
+        self.init(descriptorType: type, bytes: &data, length: MemoryLayout<OSType>.size)!
+    }
+    
+    convenience init(uint32 data: UInt32) {
+        var data = data
+        self.init(descriptorType: SwiftAutomation_typeUInt32, bytes: &data, length: MemoryLayout<UInt32>.size)!
+    }
 }
 
 

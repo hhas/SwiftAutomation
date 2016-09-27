@@ -1,4 +1,4 @@
-# A quick tutorial
+# A tutorial introduction
 
 [CAUTION: This tutorial is incomplete and unfinished, and while it can be read it can't be performed until/unless SwiftAutomation.framework and TextEditGlue.swift can be imported into `/usr/bin/swift`. While the Xcode project does include a playground, this is unsuitable as, unlike the `swift` REPL, it re-evaluates ALL lines of code each time a new line is entered; thus, for example, a `make` command will create multiple new objects while the user is working, while repeated `delete` commands could unintentionally destroy user data.]
 
@@ -8,24 +8,20 @@
 
 [TO DO: could probably do with getting user to open sdef in Script Editor for an overview of how API docs are structured]
 
-The following tutorial provides a practical taste of application scripting with Swift and SwiftAutomation. Later chapters cover the technical details of SwiftAutomation usage that are mostly skimmed over here.
+This chapter provides a practical taste of application scripting with Swift and SwiftAutomation. Later chapters cover the technical details of SwiftAutomation usage that are mostly skimmed over here.
 
+The following tutorial uses SwiftAutomation, TextEdit and the interactive command line `swift` interpreter to perform a simple 'Hello World' exercise. 
 
-## 'Hello World' tutorial
-
-
-This tutorial uses SwiftAutomation, TextEdit and the interactive command line `swift` interpreter to perform a simple 'Hello World' exercise. 
-
-<p class="hilitebox">Caution: It is recommended that you do not have any other documents open in TextEdit during this tutorial, as accidental modifications are easy to make and changes to existing documents are not undoable.</p>
+<p class="hilitebox">Caution: It is recommended that you do not have any other documents open in TextEdit during this tutorial, as accidental alterations to existing documents are easy to make and may not be undoable.</p>
 
 
 To begin, launch Terminal.app and type `swift` followed by a newline to launch the `swift` interpreter:
 
-    tim$ swift
+    jsmith$ swift
     Welcome to Apple Swift version 2.0 (700.0.38.1 700.0.53). Type :help for assistance.
 
 
-### Target TextEdit
+## Target TextEdit
 
 [TO DO: first step is to generate the glue; second step is to import it]
 
@@ -37,14 +33,14 @@ The first step is to import the Swift glue file for TextEdit:
 
 Each glue file defines the Swift classes needed to control one particular application – in this case TextEdit – using human-readable code. A ready-to-use `TextEditGlue.swift` glue file is included with this tutorial for convenience. (Glues for other applications can be created using SwiftAutomation's `aeglue` tool; see chapter 4 for details.) 
 
-Once the glue is imported, instantiate a new _application_ object as follows:
+Once the glue is imported, instantiate a new `Application` object as follows:
 
     let textedit = TextEdit()
 
-An application may be identified in various ways, including name (e.g. `"TextEdit"`), path (`"/Applications/TextEdit.app"`), and bundle identifier (`"com.apple.TextEdit"`). For convenience, the glue 
+An application may be identified in various ways, including name (e.g. `"TextEdit"`), path (`"/Applications/TextEdit.app"`), and bundle identifier (`"com.apple.TextEdit"`). This argument can usually be omitted, in which case the new `Application` object will use the bundle identifier of the application from which the glue was created.
 
 
-### Create a new document
+## Create a new document
 
 First, create a new TextEdit document by making a new `document` object. This is done using the `make` command, passing it a single named parameter, `new:`, indicating the type of object to create; in this case `TED.document`:
 
@@ -54,7 +50,7 @@ If the application is not already running, it will be launched automatically the
 
 On success, TextEdit's `make` command returns an _object specifier_ that identifies the newly created object, for example:
 
-    TextEdit().documents["Untitled.txt"]
+    TextEdit().documents["Untitled"]
 
 This particular object specifier represents one-to-one relationship between TextEdit's main application object and a document object named "Untitled.txt". (In AppleScript jargon, the document object named "Untitled.txt" is an _element_ of the application object named "TextEdit".)
 
@@ -74,7 +70,7 @@ Explicitly declaring the command's return type (in this case, as `TEDItem`) is n
 
 
 
-### Get the document's content
+## Get the document's content
 
 Retrieving the document's text is done using the `get()` command:
 
@@ -97,7 +93,7 @@ doc.text.get()
 
 
 
-### Set the document's content
+## Set the document's content
 
 The next step is to set the document's content to the string `"Hello World"`. Every TextEdit document has a property, `text`, that represents the entire text of the document. This property is both readable and writeable, allowing you to retrieve and/or modify the document's textual content as unstyled text.
 
@@ -121,7 +117,7 @@ SwiftAutomation converts this second form to the first form internally, so the e
 
 
 
-### More on using commands type-safely 
+## More on using commands type-safely 
 
 Depending on what sort of attribute(s) the object specifier identifies, `get()` may return a primitive value (number, string, list, dict, etc.), or it may return another object specifier, or list of object specifiers, e.g.:
 
@@ -129,17 +125,17 @@ Depending on what sort of attribute(s) the object specifier identifies, `get()` 
     // "Hello World!"
     
     textedit.documents[1].get()
-    // TextEdit().documents[1]
+    // TextEdit().documents["Untitled"]
     
     textedit.documents.get()
-    // [TextEdit().documents[1], 
-        TextEdit().documents[2]]
+    // [TextEdit().documents["Untitled"], 
+        TextEdit().documents["Untitled 2"]]
         
     textedit.documents.text.get()
     // ["Hello World", ""]
 
 
-### More on `make()`
+## More on `make()`
 
 The above exercise uses two commands to create a new TextEdit document containing the text "Hello World". It is also possible to perform both operations using the `make()` command alone by passing the value for the new document's `text` property via the `make()` command's optional `withProperties:` parameter: 
 
@@ -152,7 +148,7 @@ The above exercise uses two commands to create a new TextEdit document containin
 [TO DO: TextEdit now returns by-name document specifiers; update this paragraph accordingly] Incidentally, you might note that every time the `make()` command is used, it returns an object specifier to document _1_. TextEdit identifies `document` objects according to the stacking order of their windows, with document 1 being frontmost. When the window stacking order changes, whether as a result of a script command or GUI-based interaction, so does the order of their corresponding `document` objects. This means that a previously created object specifier such as `TextEdit().documents[1]` may now identify a different `document` object to before! Some applications prefer to return object specifiers that identify objects by name or unique ID rather than index to reduce or eliminate the potential for confusion, but it's an issue you should be aware of, particularly with long-running scripts where there is greater opportunity for unexpected third-party interactions to throw a spanner in the works.
 
 
-### More on manipulating `text`
+## More on manipulating `text`
 
 In addition to getting and setting a document's entire text by applying `get()` and `set()` commands to `text` property, it's also possible to manipulate selected sections of a document's text directly. TextEdit's `text` property contains a `text` object, which in turn has `character`, `word` and `paragraph` elements, all of which can be manipulated using a variety of commands - `get()`, `set()`, `make()`, `move`, `delete`, etc. For example, to set the size of the first character of every paragraph of the front document to 24pt:
 

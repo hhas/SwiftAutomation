@@ -167,8 +167,8 @@ public class DefaultTerminology: ApplicationTerminology {
                                        ("set", kAECoreSuite, kAESetData, [("to", keyAEData)]),
     ]
     
-    private static let _GURL = try! FourCharCode("GURL")
-    private static let _WIND = try! FourCharCode("WIND")
-    private static let _pALL = try! FourCharCode("pALL")
+    private static let _GURL = try! fourCharCode("GURL")
+    private static let _WIND = try! fourCharCode("WIND")
+    private static let _pALL = try! fourCharCode("pALL")
 }
 

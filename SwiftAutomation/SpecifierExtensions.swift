@@ -13,6 +13,11 @@
 //  and cannot be used standalone but only as part of a glue (a default AEApplicationGlue is included for convenience).
 //
 
+// TO DO: remove the `Extension` suffix from the `Application` protocol so that the documentation can refer to `Application` when discussing the root `application` object used to control an[y] application
+
+// TO DO: also define `any` var which would replace the parent ObjSpec [if it's gPropertyForm] with formAbsolutePosition and gAll? (as with `named()`, it would provide parity with AS and cover all eventualities; see also special handling of 'text' keyword in GlueTable.add())
+
+
 import Foundation
 
 
@@ -27,58 +32,77 @@ public protocol ObjectSpecifierExtension: ObjectSpecifierProtocol {
 
 public extension ObjectSpecifierExtension {
 
-    public func userProperty(_ name: String) -> ObjectSpecifierType {
-        return ObjectSpecifierType(wantType: gPropertyType,
-				selectorForm: gUserPropertyForm, selectorData: NSAppleEventDescriptor(string: name),
-				parentQuery: (self as! Query), appData: self.appData, cachedDesc: nil)
+    public func userProperty(_ name: String) -> Self.ObjectSpecifierType {
+        return Self.ObjectSpecifierType(wantType: gPropertyType,
+                                        selectorForm: gUserPropertyForm, selectorData: NSAppleEventDescriptor(string: name),
+                                        parentQuery: (self as! Query), appData: self.appData, cachedDesc: nil)
     }
 
-    public func property(_ code: OSType) -> ObjectSpecifierType {
-		return ObjectSpecifierType(wantType: gPropertyType,
-				selectorForm: gPropertyForm, selectorData: NSAppleEventDescriptor(typeCode: code),
-				parentQuery: (self as! Query), appData: self.appData, cachedDesc: nil)
+    public func property(_ code: OSType) -> Self.ObjectSpecifierType {
+		return Self.ObjectSpecifierType(wantType: gPropertyType,
+		                                selectorForm: gPropertyForm, selectorData: NSAppleEventDescriptor(typeCode: code),
+		                                parentQuery: (self as! Query), appData: self.appData, cachedDesc: nil)
     }
     
-    public func property(_ code: String) -> ObjectSpecifierType { // caution: string must be valid four-char code; if not, 0x00000000 is used
-		return self.property(FourCharCodeUnsafe(code)) // TO DO: use FourCharCode()throws, capturing error in custom root specifier to be rethrown if/when specifier is used in a command? (see notes on corresponding AppData.sendAppleEvent() method; since FCC strings are low-level, users who use them already need to know what they're doing so shouldn't pass invalid strings in the first place); actually, storing a SwiftAutomationError in ObjectSpecifier's selectorData should work as AppData.pack will rethrow it (once that feature's implemented) when packing the specifier for dispatch, so the safe FCC() version can be used here
+    public func property(_ code: String) -> Self.ObjectSpecifierType {
+        let data: Any
+        do {
+            data = NSAppleEventDescriptor(typeCode: try fourCharCode(code))
+        } catch {
+            data = error
+        }
+        return Self.ObjectSpecifierType(wantType: gPropertyType,
+                                        selectorForm: gPropertyForm, selectorData: data,
+                                        parentQuery: (self as! Query), appData: self.appData, cachedDesc: nil)
     }
     
-    public func elements(_ code: OSType) -> MultipleObjectSpecifierType {
-        return MultipleObjectSpecifierType(wantType: NSAppleEventDescriptor(typeCode: code),
-                selectorForm: gAbsolutePositionForm, selectorData: gAll,
-                parentQuery: (self as! Query), appData: self.appData, cachedDesc: nil)
+    public func elements(_ code: OSType) -> Self.MultipleObjectSpecifierType {
+        return Self.MultipleObjectSpecifierType(wantType: NSAppleEventDescriptor(typeCode: code),
+                                                selectorForm: gAbsolutePositionForm, selectorData: gAll,
+                                                parentQuery: (self as! Query), appData: self.appData, cachedDesc: nil)
     }
     
-    public func elements(_ code: String) -> MultipleObjectSpecifierType { // caution: string must be valid four-char code; if not, 0x00000000 is used
-        return self.elements(FourCharCodeUnsafe(code)) // TO DO: ditto?
+    public func elements(_ code: String) -> Self.MultipleObjectSpecifierType {
+        let want: NSAppleEventDescriptor, data: Any
+        do {
+            want = NSAppleEventDescriptor(typeCode: try fourCharCode(code))
+            data = gAll
+        } catch {
+            want = NSAppleEventDescriptor.null()
+            data = error
+        } 
+        return Self.MultipleObjectSpecifierType(wantType: want,
+                                                selectorForm: gAbsolutePositionForm, selectorData: data,
+                                                parentQuery: (self as! Query), appData: self.appData, cachedDesc: nil)
     }
 
     
     // relative position selectors
-    public func previous(_ elementClass: Symbol? = nil) -> ObjectSpecifierType {
-        return ObjectSpecifierType(wantType: elementClass == nil ? self.wantType : elementClass!.descriptor,
-				selectorForm: gRelativePositionForm, selectorData: gPrevious,
-				parentQuery: (self as! Query), appData: self.appData, cachedDesc: nil)
+    public func previous(_ elementClass: Symbol? = nil) -> Self.ObjectSpecifierType {
+        // TO DO: getting `elementClass!.descriptor` here will be problematic in dynamic glues, where all Symbol instances are name-only and their four-char-codes are looked up dynamically when packing the Apple event, as that's the only time a targeted AppData instance containing the target app's own terminology tables is guaranteed to be available as commands can only be dispatched by object specifiers that have a full Application root (self.appData will be untargeted if the specifier was constructed from an App/Con/Its root)
+        return Self.ObjectSpecifierType(wantType: elementClass == nil ? self.wantType : elementClass!.descriptor,
+                                        selectorForm: gRelativePositionForm, selectorData: gPrevious,
+                                        parentQuery: (self as! Query), appData: self.appData, cachedDesc: nil)
     }
     
-    public func next(_ elementClass: Symbol? = nil) -> ObjectSpecifierType {
-        return ObjectSpecifierType(wantType: elementClass == nil ? self.wantType : elementClass!.descriptor,
-				selectorForm: gRelativePositionForm, selectorData: gNext,
-				parentQuery: (self as! Query), appData: self.appData, cachedDesc: nil)
+    public func next(_ elementClass: Symbol? = nil) -> Self.ObjectSpecifierType {
+        return Self.ObjectSpecifierType(wantType: elementClass == nil ? self.wantType : elementClass!.descriptor,
+                                        selectorForm: gRelativePositionForm, selectorData: gNext,
+                                        parentQuery: (self as! Query), appData: self.appData, cachedDesc: nil)
     }
     
     // insertion specifiers
-    public var beginning: InsertionSpecifierType {
-        return InsertionSpecifierType(insertionLocation: gBeginning, parentQuery: (self as! Query), appData: self.appData, cachedDesc: nil)
+    public var beginning: Self.InsertionSpecifierType {
+        return Self.InsertionSpecifierType(insertionLocation: gBeginning, parentQuery: (self as! Query), appData: self.appData, cachedDesc: nil)
     }
-    public var end: InsertionSpecifierType {
-        return InsertionSpecifierType(insertionLocation: gEnd, parentQuery: (self as! Query), appData: self.appData, cachedDesc: nil)
+    public var end: Self.InsertionSpecifierType {
+        return Self.InsertionSpecifierType(insertionLocation: gEnd, parentQuery: (self as! Query), appData: self.appData, cachedDesc: nil)
     }
-    public var before: InsertionSpecifierType {
-        return InsertionSpecifierType(insertionLocation: gBefore, parentQuery: (self as! Query), appData: self.appData, cachedDesc: nil)
+    public var before: Self.InsertionSpecifierType {
+        return Self.InsertionSpecifierType(insertionLocation: gBefore, parentQuery: (self as! Query), appData: self.appData, cachedDesc: nil)
     }
-    public var after: InsertionSpecifierType {
-        return InsertionSpecifierType(insertionLocation: gAfter, parentQuery: (self as! Query), appData: self.appData, cachedDesc: nil)
+    public var after: Self.InsertionSpecifierType {
+        return Self.InsertionSpecifierType(insertionLocation: gAfter, parentQuery: (self as! Query), appData: self.appData, cachedDesc: nil)
     }
 }
 
@@ -96,57 +120,65 @@ extension ElementsSpecifierExtension {
     } // TO DO: fix (Q. is this TODO still relevant?)
     
     // by-index, by-name, by-test
-    public subscript(index: Any) -> ObjectSpecifierType { // TO DO: make sure this doesn't receive TestClause
+    public subscript(index: Any) -> Self.ObjectSpecifierType {
         var form: NSAppleEventDescriptor
         switch (index) {
         case is TestClause:
-            print("FAIL: TestClause was handled by subscript(index:) instead of subscript(test:)") // make sure this never happens; if it does, will need to rethink design (in theory it shouldn't, since we'd expect Swift to match the _most_ specific overload, not the least specific; in practice...)
-            form = gTestForm
+            return self[index as! TestClause]
         case is String:
             form = gNameForm
         default:
             form = gAbsolutePositionForm
         }
-        return ObjectSpecifierType(wantType: self.wantType, selectorForm: form, selectorData: index,
-            parentQuery: self.baseQuery, appData: self.appData, cachedDesc: nil)
+        return Self.ObjectSpecifierType(wantType: self.wantType,
+                                        selectorForm: form, selectorData: index,
+                                        parentQuery: self.baseQuery, appData: self.appData, cachedDesc: nil)
     }
 
-    public subscript(test: TestClause) -> MultipleObjectSpecifierType {
-        return MultipleObjectSpecifierType(wantType: self.wantType, selectorForm: gTestForm, selectorData: test,
-            parentQuery: self.baseQuery, appData: self.appData, cachedDesc: nil)
+    public subscript(test: TestClause) -> Self.MultipleObjectSpecifierType {
+        return Self.MultipleObjectSpecifierType(wantType: self.wantType,
+                                                selectorForm: gTestForm, selectorData: test,
+                                                parentQuery: self.baseQuery, appData: self.appData, cachedDesc: nil)
     }
     
     // by-name, by-id, by-range
-    public func named(_ name: Any) -> ObjectSpecifierType { // use this if name is not a String, else use subscript // TO DO: trying to think of a use case where this has been found necessary
-        return ObjectSpecifierType(wantType: self.wantType, selectorForm: gNameForm, selectorData: name,
-            parentQuery: self.baseQuery, appData: self.appData, cachedDesc: nil)
+    public func named(_ name: Any) -> Self.ObjectSpecifierType { // use this if name is not a String, else use subscript // TO DO: trying to think of a use case where this has ever been found necessary; DELETE?
+        return Self.ObjectSpecifierType(wantType: self.wantType,
+                                        selectorForm: gNameForm, selectorData: name,
+                                        parentQuery: self.baseQuery, appData: self.appData, cachedDesc: nil)
     }
-    public func ID(_ id: Any) -> ObjectSpecifierType {
-        return ObjectSpecifierType(wantType: self.wantType, selectorForm: gUniqueIDForm, selectorData: id,
-            parentQuery: self.baseQuery, appData: self.appData, cachedDesc: nil)
+    public func ID(_ id: Any) -> Self.ObjectSpecifierType {
+        return Self.ObjectSpecifierType(wantType: self.wantType,
+                                        selectorForm: gUniqueIDForm, selectorData: id,
+                                        parentQuery: self.baseQuery, appData: self.appData, cachedDesc: nil)
     }
-    public subscript(from: Any, to: Any) -> MultipleObjectSpecifierType {
-        return MultipleObjectSpecifierType(wantType: self.wantType, selectorForm: gRangeForm,
-            selectorData: RangeSelector(start: from, stop: to, wantType: self.wantType),
-            parentQuery: self.baseQuery, appData: self.appData, cachedDesc: nil)
+    public subscript(from: Any, to: Any) -> Self.MultipleObjectSpecifierType {
+        return Self.MultipleObjectSpecifierType(wantType: self.wantType,
+                                                selectorForm: gRangeForm,
+                                                selectorData: RangeSelector(start: from, stop: to, wantType: self.wantType),
+                                                parentQuery: self.baseQuery, appData: self.appData, cachedDesc: nil)
     }
     
     // by-ordinal
-    public var first: ObjectSpecifierType {
-        return ObjectSpecifierType(wantType: self.wantType, selectorForm: gAbsolutePositionForm, selectorData: gFirst,
-                parentQuery: self.baseQuery, appData: self.appData, cachedDesc: nil)
+    public var first: Self.ObjectSpecifierType {
+        return Self.ObjectSpecifierType(wantType: self.wantType,
+                                        selectorForm: gAbsolutePositionForm, selectorData: gFirst,
+                                        parentQuery: self.baseQuery, appData: self.appData, cachedDesc: nil)
     }
-    public var middle: ObjectSpecifierType {
-        return ObjectSpecifierType(wantType: self.wantType, selectorForm: gAbsolutePositionForm, selectorData: gMiddle,
-                parentQuery: self.baseQuery, appData: self.appData, cachedDesc: nil)
+    public var middle: Self.ObjectSpecifierType {
+        return Self.ObjectSpecifierType(wantType: self.wantType,
+                                        selectorForm: gAbsolutePositionForm, selectorData: gMiddle,
+                                        parentQuery: self.baseQuery, appData: self.appData, cachedDesc: nil)
     }
-    public var last: ObjectSpecifierType {
-        return ObjectSpecifierType(wantType: self.wantType, selectorForm: gAbsolutePositionForm, selectorData: gLast,
-                parentQuery: self.baseQuery, appData: self.appData, cachedDesc: nil)
+    public var last: Self.ObjectSpecifierType {
+        return Self.ObjectSpecifierType(wantType: self.wantType,
+                                        selectorForm: gAbsolutePositionForm, selectorData: gLast,
+                                        parentQuery: self.baseQuery, appData: self.appData, cachedDesc: nil)
     }
-    public var any: ObjectSpecifierType {
-        return ObjectSpecifierType(wantType: self.wantType, selectorForm: gAbsolutePositionForm, selectorData: gAny,
-                parentQuery: self.baseQuery, appData: self.appData, cachedDesc: nil)
+    public var any: Self.ObjectSpecifierType {
+        return Self.ObjectSpecifierType(wantType: self.wantType,
+                                        selectorForm: gAbsolutePositionForm, selectorData: gAny,
+                                        parentQuery: self.baseQuery, appData: self.appData, cachedDesc: nil)
     }
 }
 

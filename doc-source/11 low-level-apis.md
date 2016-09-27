@@ -1,3 +1,16 @@
 # Using the low-level `AEApplication` glue
 
-[TO DO: AppleEventBridge's  'Low-level APIs' chapter needs to be completely rewritten for this as SwiftAutomation's architecture is quite different]
+[TO DO]
+
+* ObjectSpecifier
+
+    * userProperty(String) -- user-defined identifier
+
+    * property(OSType/String) -- four-char code
+
+    * elements(OSType/String)
+
+    * sendAppleEvent(...)
+
+
+* Symbol(code: OSType, type: OSType)

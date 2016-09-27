@@ -76,8 +76,8 @@ public class SDEFParser: NSObject, XMLParserDelegate, ApplicationTerminology {
                 }
                 var eventClass: OSType, eventID: OSType
                 do {
-                    eventClass = try FourCharCode(codeString.substring(to: 4))
-                    eventID = try FourCharCode(codeString.substring(from: 4))
+                    eventClass = try fourCharCode(codeString.substring(to: 4))
+                    eventID = try fourCharCode(codeString.substring(from: 4))
                 } catch {
                     throw TerminologyError("Malformed \(tagName) in SDEF: invalid 'code' attribute (\(error)).")
                 }
@@ -115,7 +115,7 @@ public class SDEFParser: NSObject, XMLParserDelegate, ApplicationTerminology {
             throw TerminologyError("Malformed \(tagName) in SDEF: empty 'name' attribute.")
         }
         do {
-            return (name, try FourCharCode(codeString))
+            return (name, try fourCharCode(codeString))
         } catch {
             throw TerminologyError("Malformed \(tagName) in SDEF: invalid 'code' attribute (\(error)).")
         }

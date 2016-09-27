@@ -20,6 +20,7 @@ public protocol SelfPacking {
 
 protocol SelfUnpacking {
     static func SwiftAutomation_unpackSelf(_ desc: NSAppleEventDescriptor, appData: AppData) throws -> Self
+    static func SwiftAutomation_noValue() throws -> Self
 }
 
 
@@ -46,6 +47,8 @@ public enum MissingValueType: CustomStringConvertible, SelfPacking, SelfUnpackin
     public static func SwiftAutomation_unpackSelf(_ desc: NSAppleEventDescriptor, appData: AppData) throws -> MissingValueType {
         return MissingValue
     }
+    
+    static func SwiftAutomation_noValue() throws -> MissingValueType { return MissingValueType() }
     
     public var description: String { return "MissingValue" }
 }
@@ -93,6 +96,8 @@ public enum MayBeMissing<T>: SelfPacking, SelfUnpacking { // TO DO: rename 'Miss
         }
     }
     
+    static func SwiftAutomation_noValue() throws -> MayBeMissing<T> { return MayBeMissing<T>() }
+    
     public var value: T? { // unbox the actual value, or return `nil` if it was MissingValue; this should allow users to bridge safely from MissingValue to nil
         switch self {
         case .value(let value):
@@ -128,6 +133,8 @@ extension Optional: SelfPacking, SelfUnpacking {
             return Optional<Wrapped>.some(try appData.unpack(desc))
         }
     }
+    
+    static func SwiftAutomation_noValue() throws -> Optional<Wrapped> { return Optional<Wrapped>.none }
 }
 
 
@@ -159,6 +166,8 @@ extension Set: SelfPacking, SelfUnpacking { // note: AEM doesn't define a standa
         }
         return result
     }
+    
+    static func SwiftAutomation_noValue() throws -> Set<Element> { return Set<Element>() }
 }
 
 
@@ -202,6 +211,8 @@ extension Array: SelfPacking, SelfUnpacking {
             return [try appData.unpack(desc) as Element]
         }
     }
+    
+    static func SwiftAutomation_noValue() throws -> Array<Element> { return Array<Element>() }
 }
 
 
@@ -272,7 +283,7 @@ extension Dictionary: SelfPacking, SelfUnpacking {
                 }
             } else {
                 // unpack record property whose key is a four-char code (typically corresponding to a dictionary-defined property name)
-                guard let key = appData.unpackAEProperty(property) as? Key else {
+                guard let key = appData.recordKey(forCode: property) as? Key else {
                     throw UnpackError(appData: appData, descriptor: desc, type: Key.self,
                                       message: "Can't unpack record keys as non-Symbol type: \(Key.self)")
                 }
@@ -286,6 +297,8 @@ extension Dictionary: SelfPacking, SelfUnpacking {
         }
         return result
     }
+    
+    static func SwiftAutomation_noValue() throws -> Dictionary<Key,Value> { return Dictionary<Key,Value>() }
 }
 
 

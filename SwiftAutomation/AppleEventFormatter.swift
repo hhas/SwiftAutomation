@@ -48,7 +48,7 @@ public func formatAppleEvent(descriptor event: NSAppleEventDescriptor, useTermin
             let errs = event.paramDescriptor(forKeyword: keyErrorString)?.stringValue
             return SwiftAutomationError(code: Int(errn), message: errs).description // TO DO: use CommandError? (need to check it's happy with only replyEvent arg)
         } else if let reply = event.paramDescriptor(forKeyword: keyDirectObject) { // format return value
-            return appData.formatter.format((try? appData.unpackAny(reply)) ?? reply)
+            return appData.formatter.format((try? appData.unpackAsAny(reply)) ?? reply)
         } else {
             return "<noreply>" // TO DO: what to return?
         }
@@ -135,14 +135,14 @@ public class DynamicAppData: AppData { // TO DO: can this be used as-is/with mod
         return appData      
     }
     
-    override func unpackSymbol(_ desc: NSAppleEventDescriptor) -> Symbol {
+    override func unpackAsSymbol(_ desc: NSAppleEventDescriptor) -> Symbol {
         return self.glueClasses.symbolType.init(name: self.glueTable.typesByCode[desc.typeCodeValue],
-                                                code: desc.typeCodeValue, type: desc.descriptorType, cachedDesc: desc)
+                                                code: desc.typeCodeValue, type: desc.descriptorType, descriptor: desc)
     }
     
-    override func unpackAEProperty(_ code: OSType) -> Symbol {
+    override func recordKey(forCode code: OSType) -> Symbol {
         return self.glueClasses.symbolType.init(name: self.glueTable.typesByCode[code],
-                                                code: code, type: typeProperty, cachedDesc: nil)
+                                                code: code, type: typeProperty, descriptor: nil)
     }
 }
 
@@ -186,22 +186,22 @@ public struct AppleEventDescription { // TO DO: split AE unpacking from CommandT
         // unpack subject attribute and/or direct parameter, if given
         if let desc = event.attributeDescriptor(forKeyword: SwiftAutomation_keySubjectAttr) {
             if desc.descriptorType != typeNull { // typeNull = root application object
-                self.subject = (try? appData.unpackAny(desc)) ?? desc
+                self.subject = (try? appData.unpackAsAny(desc)) ?? desc
             }
         }
         if let desc = event.paramDescriptor(forKeyword: keyDirectObject) {
-            self.directParameter = (try? appData.unpackAny(desc)) ?? desc
+            self.directParameter = (try? appData.unpackAsAny(desc)) ?? desc
         }
         // unpack `as` parameter, if given // TO DO: this needs to appear as resultType: arg
         if let desc = event.paramDescriptor(forKeyword: keyAERequestedType) {
-            self.requestedType = (try? appData.unpackAny(desc)) ?? desc
+            self.requestedType = (try? appData.unpackAsAny(desc)) ?? desc
         }
         // unpack keyword parameters
         if commandInfo != nil {
             self.keywordParameters = []
             for paramInfo in commandInfo!.orderedParameters { // this ignores parameters that don't have a keyword name; it should also ignore ("as",keyAERequestedType) parameter (this is probably best done by ensuring that command parsers always omit it)
                 if let desc = event.paramDescriptor(forKeyword: paramInfo.code) {
-                    self.keywordParameters!.append((paramInfo.name, ((try? appData.unpackAny(desc)) ?? desc)))
+                    self.keywordParameters!.append((paramInfo.name, ((try? appData.unpackAsAny(desc)) ?? desc)))
                 }
             }
             if event.numberOfItems > self.keywordParameters!.count + (parameterExists(self.directParameter) ? 1 : 0)
@@ -214,7 +214,7 @@ public struct AppleEventDescription { // TO DO: split AE unpacking from CommandT
             for i in 1..<(event.numberOfItems+1) {
                 let desc = event.atIndex(i)!
                 //if ![keyDirectObject, keyAERequestedType].contains(desc.descriptorType) {
-                self.rawParameters[event.keywordForDescriptor(at: i)] = (try? appData.unpackAny(desc)) ?? desc
+                self.rawParameters[event.keywordForDescriptor(at: i)] = (try? appData.unpackAsAny(desc)) ?? desc
                 //}
             }
         } else {

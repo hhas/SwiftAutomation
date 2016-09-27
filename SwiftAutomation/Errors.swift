@@ -8,7 +8,9 @@ import Foundation
 // TO DO: how best to compose/chain exceptions?
 
 
-// TO DO: can/should Errors be implemented as enums? TBH, only error user should see directly is CommandError (though currently sendAppleEvent throws non-CommandError if called on untargeted specifier); specific errors (which may be SwiftAutomation or NSError [sub]classes) should be encapsulated in that, and are really only included for informational purposes. Any specialized error handling would be decided according to OSStatus code (which cannot be defined as an enum as it's completely arbitrary) so will require a switch block instead.
+// TO DO: Swift docs recommend simple Errors are implemented as enums and complex Errors as structs (presumably using protocols instead of inheritance to describe related errors); what if any benefit would this provide over current classes? TBH, except for Application.init() errors, the only error type user should see directly is CommandError (except maybe when a command is called on an untargeted specifier, as that's an obvious implementation error on the client's part); deeper errors such as PackError, UnpackError, and NSErrors thrown by underlying Cocoa APIs (e.g. when an Apple Event Manager error occurs) should be wrapped in that before being returned by the command.
+
+// Note that OSStatus codes are inherent to Apple event IPC and completely arbitrary (since apps are free to define their own codes as well as use the standard Carbon/AE error codes), so cannot be mapped to enums themselves. Client code that needs to know _why_ an error occurred will need to check the CommandError's error number against known error codes to determine the cause. (TO DO: Not sure if there's any way to do this within a do...catch block's own limited pattern matching capabilities, so clients will probably need to catch the error first then pass its code to a switch block to dispatch accordingly.)
 
 
 let gDescriptionForError: [Int:String] = [ // error descriptions from ASLG/MacErrors.h
@@ -171,7 +173,7 @@ public class UnpackError: SwiftAutomationError {
         do {
             value = try self.appData.unpack(self.descriptor)
         } catch {
-            msg = "Can't unpack descriptor as \(self.type)"
+            msg = "Can't unpack descriptor as \(self.type)" // TO DO: this message is potentially misleading: if it fails here, it's because the descriptor can't be unpacked at all without an error occurring (i.e. the descriptor's a known type but its data is fatally malformed), as opposed to failing because it can't be coerced to the Swift type specified by caller (e.g. caller specified Int but app returned a non-numeric String)
         }
         return "Error \(self._code): \(msg):\n\n\t\(value)" + (self.message == nil ? "" : "\n\n\(self.message!)")
     }

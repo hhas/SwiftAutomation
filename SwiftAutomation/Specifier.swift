@@ -179,8 +179,8 @@ open class Specifier: Query, SpecifierProtocol {
                                   requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
                                   withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
         var params = [OSType:Any]()
-        for (k, v) in parameters { params[FourCharCodeUnsafe(k)] = v } // TO DO: use safe FCC converters? (the problem is that while sendAppleEvent() can throw, property() and elements() cannot, so throwing on one but not the other would be inconsistent; the only alternative is for property() and elements() to construct an invalid Specifier instance that capture the exception, e.g. one with an AppData subclass whose sendAppleEvent methods _always_ throw the captured exception when called, but given that four-char-code strings are only intended for low-level users who know what they're doing it's arguable that this is more effort than it's worth and it's simplest just to leave the user to ensure their four-char-code strings are correctly formed and catch and correct any invalid ones in their own testing)
-        return try self.appData.sendAppleEvent(eventClass: FourCharCodeUnsafe(eventClass), eventID: FourCharCodeUnsafe(eventID),
+        for (k, v) in parameters { params[try fourCharCode(k)] = v }
+        return try self.appData.sendAppleEvent(eventClass: try fourCharCode(eventClass), eventID: try fourCharCode(eventID),
                                                parentSpecifier: self, parameters: params,
                                                requestedType: requestedType, waitReply: waitReply,
                                                sendOptions: sendOptions, withTimeout: withTimeout, considering: considering)
@@ -200,8 +200,8 @@ open class Specifier: Query, SpecifierProtocol {
                                                   waitReply: Bool = true, sendOptions: SendOptions? = nil,
                                                   withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         var params = [OSType:Any]()
-        for (k, v) in parameters { params[FourCharCodeUnsafe(k)] = v } // TO DO: use safe FCC converters?
-        return try self.appData.sendAppleEvent(eventClass: FourCharCodeUnsafe(eventClass), eventID: FourCharCodeUnsafe(eventID),
+        for (k, v) in parameters { params[try fourCharCode(k)] = v }
+        return try self.appData.sendAppleEvent(eventClass: try fourCharCode(eventClass), eventID: try fourCharCode(eventID),
                                                parentSpecifier: self, parameters: params, waitReply: waitReply,
                                                sendOptions: sendOptions, withTimeout: withTimeout, considering: considering)
     }
@@ -322,6 +322,12 @@ public struct RangeSelector: SelfPacking { // holds data for by-range selectors 
     let stop: Any
     let wantType: NSAppleEventDescriptor
     
+    init(start: Any, stop: Any, wantType: NSAppleEventDescriptor) {
+        self.start = start
+        self.stop = stop
+        self.wantType = wantType
+    }
+    
     private func packSelector(_ selectorData: Any, appData: AppData) throws -> NSAppleEventDescriptor {
         var selectorForm: NSAppleEventDescriptor
         switch selectorData {
@@ -337,25 +343,6 @@ public struct RangeSelector: SelfPacking { // holds data for by-range selectors 
             desc.setDescriptor(selectorForm, forKeyword: SwiftAutomation_keyAEKeyForm)
             desc.setDescriptor(try appData.pack(selectorData), forKeyword: SwiftAutomation_keyAEKeyData)
             return desc
-        }
-    }
-    
-    init(start: Any, stop: Any, wantType: NSAppleEventDescriptor) {
-        self.start = start
-        self.stop = stop
-        self.wantType = wantType
-    }
-    
-    init(appData: AppData, desc: NSAppleEventDescriptor) throws {
-        guard let startDesc = desc.forKeyword(keyAERangeStart), let stopDesc = desc.forKeyword(keyAERangeStop) else {
-            throw UnpackError(appData: appData, descriptor: desc, type: RangeSelector.self, message: "Missing start/stop specifier in by-range specifier.")
-        }
-        do {
-            self.start = try appData.unpackAny(startDesc)
-            self.stop = try appData.unpackAny(stopDesc)
-            self.wantType = NSAppleEventDescriptor(typeCode: typeType) // TO DO: wantType is incorrect; in principle this shouldn't matter as start and stop descs _should_ always be object specifiers, but paranoia is best; will need to rethink as it can't be reliably inferred here (since range desc should only appear in by-range object specifier desc, might be simplest just to unpack it directly from there instead of AppData)
-        } catch {
-            throw UnpackError(appData: appData, descriptor: desc, type: RangeSelector.self, message: "Failed to unpack start/stop specifier in by-range specifier.") // TO DO: or just return RangeSelector containing the original AEDescs?
         }
     }
     
@@ -525,11 +512,11 @@ let gEnd        = NSAppleEventDescriptor(enumCode: kAEEnd)
 let gBefore     = NSAppleEventDescriptor(enumCode: kAEBefore)
 let gAfter      = NSAppleEventDescriptor(enumCode: kAEAfter)
 // absolute positions
-let gFirst  = FourCharCodeDescriptor(typeAbsoluteOrdinal, SwiftAutomation_kAEFirst)
-let gMiddle = FourCharCodeDescriptor(typeAbsoluteOrdinal, SwiftAutomation_kAEMiddle)
-let gLast   = FourCharCodeDescriptor(typeAbsoluteOrdinal, SwiftAutomation_kAELast)
-let gAny    = FourCharCodeDescriptor(typeAbsoluteOrdinal, SwiftAutomation_kAEAny)
-let gAll    = FourCharCodeDescriptor(typeAbsoluteOrdinal, SwiftAutomation_kAEAll)
+let gFirst  = NSAppleEventDescriptor(type: typeAbsoluteOrdinal, code: SwiftAutomation_kAEFirst)
+let gMiddle = NSAppleEventDescriptor(type: typeAbsoluteOrdinal, code: SwiftAutomation_kAEMiddle)
+let gLast   = NSAppleEventDescriptor(type: typeAbsoluteOrdinal, code: SwiftAutomation_kAELast)
+let gAny    = NSAppleEventDescriptor(type: typeAbsoluteOrdinal, code: SwiftAutomation_kAEAny)
+let gAll    = NSAppleEventDescriptor(type: typeAbsoluteOrdinal, code: SwiftAutomation_kAEAll)
 // relative positions
 let gPrevious   = NSAppleEventDescriptor(enumCode: SwiftAutomation_kAEPrevious)
 let gNext       = NSAppleEventDescriptor(enumCode: SwiftAutomation_kAENext)

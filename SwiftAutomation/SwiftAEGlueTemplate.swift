@@ -216,6 +216,7 @@ let SwiftAEGlueTemplate = [
 "            «PROPERTY_NAME»: try self.SwiftAutomation_unpackProperty(desc, appData: appData, name: \"«PROPERTY_NAME»\", code: «PROPERTY_CODE»)«-UNPACK_PROPERTY»",
 "        )",
 "    }",
+"    public static func SwiftAutomation_noValue() throws -> «STRUCT_NAME» { throw SwiftAutomationError(code: 1) }",
 "}«-RECORD_STRUCT_DEFINITION»",
 "",
 ""].joined(separator: "\n")
