@@ -81,71 +81,71 @@ The Apple Event Object Model (AEOM) is a View-Controller layer that provides an 
 
 The AEOM is a tree-like structure made up of objects. These objects may have attributes (descriptive values such as class, name, id, size, bounds; usually primitive AE types but occasionally other application objects), e.g.:
 
-    finder.name
-    finder.version
-    finder.FinderPreferences
+  finder.name
+  finder.version
+  finder.FinderPreferences
 
 and may 'contain' other objects, e.g.:
 
-    finder.FinderWindows
-    textedit.documents
+  finder.FinderWindows
+  textedit.documents
 
 However, unlike other object models such as DOM, objects within the AEOM are associated with one another by _relationships_ rather than simple physical containment. Think of AEOM as combining aspects of procedural RPC, object-oriented object model and relational database mechanics.
 
 Relationships between objects may be one-to-one, e.g.:
 
-    finder.home
-    itunes.currentTrack
+  finder.home
+  itunes.currentTrack
 
 or one-to-many, e.g.:
 
-    finder.folders
+  finder.folders
 
 While relationships often follow the containment structure of the underlying data structures, e.g.
 
-    textedit.documents
+  textedit.documents
 
 this is not always the case. For example, the following object specifiers all identify the same objects (files on the user's desktop):
 
-    finder.disks["Macintosh HD"].folders["Users"].folders["jsmith"].folders["Desktop"].files
+  finder.disks["Macintosh HD"].folders["Users"].folders["jsmith"].folders["Desktop"].files
 
-    finder.desktop.files
+  finder.desktop.files
 
-    finder.files
+  finder.files
 
 though only the first specifier describes the files' location by physical containment; the other two use other relationships provided by the application as convenient shortcuts. Some applications can be surprisingly flexible in interpreting and evaluating queries against this relational object graph:
 
-    finder.home.folders["Desktop"].files
+  finder.home.folders["Desktop"].files
 
-    finder.startupDisk.folders["Users:jsmith:Desktop:"].files
+  finder.startupDisk.folders["Users:jsmith:Desktop:"].files
 
-    finder.items[URL(string:"file:///Users/jsmith/Desktop")].files
+  finder.items[URL(string:"file:///Users/jsmith/Desktop")].files
 
 Some specifiers may identify different objects at different times, according to changes in the application's state, e.g.:
 
-    itunes.currentTrack
+  itunes.currentTrack
 
 Specifiers may identify objects that do not actually exist as discreet entities within the application's underlying data structures, but are interpreted on the fly as proxies to the relevant portions of implementation-level data structures, e.g.:
 
-    textedit.documents[1].text.characters
+  textedit.documents[1].text.characters
 
-    textedit.documents[1].text.words
+  textedit.documents[1].text.words
 
-    textedit.documents[1].text.paragraphs
+  textedit.documents[1].text.paragraphs
 
 all refer to sections of data that's actually stored in a single `NSTextStorage` object within TextEdit's Model layer. This decoupling of the AEOM from the Model layer's structure allows applications to present data in a way that is convenient to the user, i.e. easy and intuitive to understand and use.
 
 Finally, one-to-many relationships may be selective in identifying a subset of related elements according to their individual class or shared superclasses. For example:
 
-    finder.items
+  finder.items
 
 identifies all objects that are a subclass of class 'item' (i.e. disks, folders, document files, alias files, etc.).
 
-    finder.files
+  finder.files
 
 identifies all objects that are a subclass of class 'file' (i.e. document files, alias files, etc.).
 
-    finder.documentFiles
+  finder.documentFiles
 
 identifies all objects of class 'document file' only.
 
@@ -177,27 +177,26 @@ In addition, `aeglue` can use the target application's dictionary (AETE/SDEF res
 
 For example, the following AppleScript sets the size of the first character of every non-empty paragraph in every document of TextEdit to 24 pt:
 
-    tell application id "com.apple.TextEdit"
-       set size of character 1 of (every paragraph where it ≠ "\n") of every document to 24
-    end tell
+  tell application id "com.apple.TextEdit"
+    set size of character 1 of (every paragraph where it ≠ "\n") of every document to 24
+  end tell
 
 Here is the equivalent Swift code using SwiftAutomation's default `AE` glue:
 
-    let textedit = AEApplication(bundleIdentifier: "com.apple.TextEdit")
+  let textedit = AEApplication(bundleIdentifier: "com.apple.TextEdit")
 
-    let objSpec = AEApp.elements("docu")
+  let specifier = AEApp.elements("docu")
                        .property("ctxt")
                        .elements("cpar")[AEIts != "\n"]
                        .elements("cha ")[1]
                        .property("ptsz")
-
-    try textedit.sendAppleEvent("core", "getd", ["----": objSpec, "data": 24])
+  try textedit.sendAppleEvent("core", "getd", ["----": specifier, "data": 24])
 
 and using glue classes generated specifically for TextEdit:
 
-    let textedit = TextEdit()
+  let textedit = TextEdit()
 
-    try textedit.documents.text.paragraphs[TEDIts != "\n"].characters[1].size.set(to: 24)
+  try textedit.documents.text.paragraphs[TEDIts != "\n"].characters[1].size.set(to: 24)
 
 -------
 

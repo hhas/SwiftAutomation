@@ -9,7 +9,7 @@
         <div id="wrap">
             <div id="main">
                 <h1>Understanding Apple events</h1>
-                <div class="navbar"><a href="a-quick-tutorial.html">back</a> | <a href="index.html">index</a> | <a href="creating-and-using-static-glues.html">next</a></div>
+                <div class="navbar"><a href="tutorial-introduction.html">back</a> | <a href="index.html">index</a> | <a href="creating-and-using-static-glues.html">next</a></div>
                 <p>This chapter introduces the main concepts behind Apple event-based application scripting.</p>
 
 <h2>What are Apple events?</h2>
@@ -79,84 +79,86 @@
 
 <h2>How does the AEOM work?</h2>
 
+<p>[TO DO: might be worth drawing comparison between an AEOM 'class' and a Swift protocol, in that AEOM classes don't actually [have to] describe distinct types of objects, but rather describe how you can interact with them - e.g. <code>paragraph</code>]</p>
+
 <p>The AEOM is a tree-like structure made up of objects. These objects may have attributes (descriptive values such as class, name, id, size, bounds; usually primitive AE types but occasionally other application objects), e.g.:</p>
 
-<pre><code>  finder.name
-  finder.version
-  finder.FinderPreferences
+<pre><code>finder.name
+finder.version
+finder.FinderPreferences
 </code></pre>
 
 <p>and may 'contain' other objects, e.g.:</p>
 
-<pre><code>  finder.FinderWindows
-  textedit.documents
+<pre><code>finder.FinderWindows
+textedit.documents
 </code></pre>
 
 <p>However, unlike other object models such as DOM, objects within the AEOM are associated with one another by <em>relationships</em> rather than simple physical containment. Think of AEOM as combining aspects of procedural RPC, object-oriented object model and relational database mechanics.</p>
 
 <p>Relationships between objects may be one-to-one, e.g.:</p>
 
-<pre><code>  finder.home
-  itunes.currentTrack
+<pre><code>finder.home
+itunes.currentTrack
 </code></pre>
 
 <p>or one-to-many, e.g.:</p>
 
-<pre><code>  finder.folders
+<pre><code>finder.folders
 </code></pre>
 
 <p>While relationships often follow the containment structure of the underlying data structures, e.g.</p>
 
-<pre><code>  textedit.documents
+<pre><code>textedit.documents
 </code></pre>
 
 <p>this is not always the case. For example, the following object specifiers all identify the same objects (files on the user's desktop):</p>
 
-<pre><code>  finder.disks["Macintosh HD"].folders["Users"].folders["jsmith"].folders["Desktop"].files
+<pre><code>finder.disks["Macintosh HD"].folders["Users"].folders["jsmith"].folders["Desktop"].files
 
-  finder.desktop.files
+finder.desktop.files
 
-  finder.files
+finder.files
 </code></pre>
 
 <p>though only the first specifier describes the files' location by physical containment; the other two use other relationships provided by the application as convenient shortcuts. Some applications can be surprisingly flexible in interpreting and evaluating queries against this relational object graph:</p>
 
-<pre><code>  finder.home.folders["Desktop"].files
+<pre><code>finder.home.folders["Desktop"].files
 
-  finder.startupDisk.folders["Users:jsmith:Desktop:"].files
+finder.startupDisk.folders["Users:jsmith:Desktop:"].files
 
-  finder.items[URL(string:"file:///Users/jsmith/Desktop")].files
+finder.items[URL(string:"file:///Users/jsmith/Desktop")].files
 </code></pre>
 
 <p>Some specifiers may identify different objects at different times, according to changes in the application's state, e.g.:</p>
 
-<pre><code>  itunes.currentTrack
+<pre><code>itunes.currentTrack
 </code></pre>
 
 <p>Specifiers may identify objects that do not actually exist as discreet entities within the application's underlying data structures, but are interpreted on the fly as proxies to the relevant portions of implementation-level data structures, e.g.:</p>
 
-<pre><code>  textedit.documents[1].text.characters
+<pre><code>textedit.documents[1].text.characters
 
-  textedit.documents[1].text.words
+textedit.documents[1].text.words
 
-  textedit.documents[1].text.paragraphs
+textedit.documents[1].text.paragraphs
 </code></pre>
 
 <p>all refer to sections of data that's actually stored in a single <code>NSTextStorage</code> object within TextEdit's Model layer. This decoupling of the AEOM from the Model layer's structure allows applications to present data in a way that is convenient to the user, i.e. easy and intuitive to understand and use.</p>
 
 <p>Finally, one-to-many relationships may be selective in identifying a subset of related elements according to their individual class or shared superclasses. For example:</p>
 
-<pre><code>  finder.items
+<pre><code>finder.items
 </code></pre>
 
 <p>identifies all objects that are a subclass of class 'item' (i.e. disks, folders, document files, alias files, etc.).</p>
 
-<pre><code>  finder.files
+<pre><code>finder.files
 </code></pre>
 
 <p>identifies all objects that are a subclass of class 'file' (i.e. document files, alias files, etc.).</p>
 
-<pre><code>  finder.documentFiles
+<pre><code>finder.documentFiles
 </code></pre>
 
 <p>identifies all objects of class 'document file' only.</p>
@@ -186,29 +188,28 @@
 
 <p>For example, the following AppleScript sets the size of the first character of every non-empty paragraph in every document of TextEdit to 24 pt:</p>
 
-<pre><code>  tell application id "com.apple.TextEdit"
-     set size of character 1 of (every paragraph where it ≠ "\n") of every document to 24
-  end tell
+<pre><code>tell application id "com.apple.TextEdit"
+  set size of character 1 of (every paragraph where it ≠ "\n") of every document to 24
+end tell
 </code></pre>
 
 <p>Here is the equivalent Swift code using SwiftAutomation's default <code>AE</code> glue:</p>
 
-<pre><code>  let textedit = AEApplication(bundleIdentifier: "com.apple.TextEdit")
+<pre><code>let textedit = AEApplication(bundleIdentifier: "com.apple.TextEdit")
 
-  let objSpec = AEApp.elements("docu")
+let specifier = AEApp.elements("docu")
                      .property("ctxt")
                      .elements("cpar")[AEIts != "\n"]
                      .elements("cha ")[1]
                      .property("ptsz")
-
-  try textedit.sendAppleEvent("core", "getd", ["----": objSpec, "data": 24])
+try textedit.sendAppleEvent("core", "getd", ["----": specifier, "data": 24])
 </code></pre>
 
 <p>and using glue classes generated specifically for TextEdit:</p>
 
-<pre><code>  let textedit = TextEdit()
+<pre><code>let textedit = TextEdit()
 
-  try textedit.documents.text.paragraphs[TEDIts != "\n"].characters[1].size.set(to: 24)
+try textedit.documents.text.paragraphs[TEDIts != "\n"].characters[1].size.set(to: 24)
 </code></pre>
 
 <hr />
@@ -219,6 +220,6 @@
 
             </div>
         </div>
-        <div id="footer"><div class="navbar"><a href="a-quick-tutorial.html">back</a> | <a href="index.html">index</a> | <a href="creating-and-using-static-glues.html">next</a></div></div>
+        <div id="footer"><div class="navbar"><a href="tutorial-introduction.html">back</a> | <a href="index.html">index</a> | <a href="creating-and-using-static-glues.html">next</a></div></div>
     </body>
 </html>

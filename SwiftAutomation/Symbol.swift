@@ -14,18 +14,18 @@ import Foundation
 let noOSType: OSType = 0 // valid OSTypes should always be non-zero, so just use 0 instead of nil to indicate omitted OSType and avoid the extra Optional<OSType> boxing/unboxing
 
 
-open class Symbol: Hashable, Equatable, CustomStringConvertible, SelfPacking {
+open class Symbol: Hashable, Equatable, CustomStringConvertible, CustomDebugStringConvertible, SelfPacking {
     
     private var _descriptor: NSAppleEventDescriptor?
     public let name: String?, code: OSType, type: OSType
     
     open var typeAliasName: String {return "Symbol"} // provides prefix used in description var; glue subclasses override this with their own strings (e.g. "FIN" for Finder)
     
-    public required init(name: String?, code: OSType, type: OSType = typeType, descriptor: NSAppleEventDescriptor? = nil) {
+    public required init(name: String?, code: OSType, type: OSType = typeType, descriptor: NSAppleEventDescriptor? = nil) { // (When unpacking a symbol descriptor returned by an application command, if the returned AEDesc is passed here it'll be cached here for reuse, avoiding the need to fully-repack the new Symbol instance if/when it's subsequently used in another application command. In practice, this is mostly irrelevant to static glues, as Symbol subclasses in static glues are normally constructed via Symbol.symbol(), which lazily instantiates existing glue-defined static vars instead. Whether it makes any noticeable difference to dynamic bridges remains to be seen [it's not likely to be a major bottleneck], but it costs nothing for AppData to include it if it has it.)
         self.name = name
         self.code = code
         self.type = type
-        self._descriptor = descriptor
+        self._descriptor = descriptor // The SwiftAutomation_packSelf() method below will cache the resulting descriptor the first time it is called, avoiding the need to fully-repack the same Symbol on subsequent calls.
     }
     
     // special constructor for string-based record keys (avoids the need to wrap dictionary keys in a `StringOrSymbol` enum when unpacking)
@@ -64,6 +64,8 @@ open class Symbol: Hashable, Equatable, CustomStringConvertible, SelfPacking {
             return "\(self.typeAliasName)(code:\(formatFourCharCodeString(self.code)),type:\(formatFourCharCodeString(self.type)))"
         }
     }
+    
+    public var debugDescription: String { return self.description }
     
     public var hashValue: Int {return self.nameOnly ? self.name!.hashValue : Int(self.code)}
     

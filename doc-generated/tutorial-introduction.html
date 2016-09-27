@@ -1,15 +1,15 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
     <head>
-        <title>SwiftAutomation | A quick tutorial</title>
+        <title>SwiftAutomation | A tutorial introduction</title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <style type="text/css" media="all"><!--@import url(full.css);--></style>
     </head>
     <body>
         <div id="wrap">
             <div id="main">
-                <h1>A quick tutorial</h1>
-                <div class="navbar"><a href="introduction.html">back</a> | <a href="index.html">index</a> | <a href="understanding-apple-events.html">next</a></div>
+                <h1>A tutorial introduction</h1>
+                <div class="navbar"><a href="welcome.html">back</a> | <a href="index.html">index</a> | <a href="understanding-apple-events.html">next</a></div>
                 <p>[CAUTION: This tutorial is incomplete and unfinished, and while it can be read it can't be performed until/unless SwiftAutomation.framework and TextEditGlue.swift can be imported into <code>/usr/bin/swift</code>. While the Xcode project does include a playground, this is unsuitable as, unlike the <code>swift</code> REPL, it re-evaluates ALL lines of code each time a new line is entered; thus, for example, a <code>make</code> command will create multiple new objects while the user is working, while repeated <code>delete</code> commands could unintentionally destroy user data.]</p>
 
 <p>[[TO DO: need to figure out how to import SwiftAutomation.framework and TextEditGlue.swift into <code>/usr/bin/swift</code> session, and package this into a simple shell script that configures and launches a tutorial session automatically (for bonus points, the script should also take an optional list of app names and generate and import glues for those too).]</p>
@@ -18,21 +18,19 @@
 
 <p>[TO DO: could probably do with getting user to open sdef in Script Editor for an overview of how API docs are structured]</p>
 
-<p>The following tutorial provides a practical taste of application scripting with Swift and SwiftAutomation. Later chapters cover the technical details of SwiftAutomation usage that are mostly skimmed over here.</p>
+<p>This chapter provides a practical taste of application scripting with Swift and SwiftAutomation. Later chapters cover the technical details of SwiftAutomation usage that are mostly skimmed over here.</p>
 
-<h2>'Hello World' tutorial</h2>
+<p>The following tutorial uses SwiftAutomation, TextEdit and the interactive command line <code>swift</code> interpreter to perform a simple 'Hello World' exercise. </p>
 
-<p>This tutorial uses SwiftAutomation, TextEdit and the interactive command line <code>swift</code> interpreter to perform a simple 'Hello World' exercise. </p>
-
-<p class="hilitebox">Caution: It is recommended that you do not have any other documents open in TextEdit during this tutorial, as accidental modifications are easy to make and changes to existing documents are not undoable.</p>
+<p class="hilitebox">Caution: It is recommended that you do not have any other documents open in TextEdit during this tutorial, as accidental alterations to existing documents are easy to make and may not be undoable.</p>
 
 <p>To begin, launch Terminal.app and type <code>swift</code> followed by a newline to launch the <code>swift</code> interpreter:</p>
 
-<pre><code>  tim$ swift
-  Welcome to Apple Swift version 2.0 (700.0.38.1 700.0.53). Type :help for assistance.
+<pre><code>jsmith$ swift
+Welcome to Apple Swift version 2.0 (700.0.38.1 700.0.53). Type :help for assistance.
 </code></pre>
 
-<h3>Target TextEdit</h3>
+<h2>Target TextEdit</h2>
 
 <p>[TO DO: first step is to generate the glue; second step is to import it]</p>
 
@@ -40,30 +38,30 @@
 
 <p>The first step is to import the Swift glue file for TextEdit:</p>
 
-<pre><code>  import TextEditGlue
+<pre><code>import TextEditGlue
 </code></pre>
 
 <p>Each glue file defines the Swift classes needed to control one particular application – in this case TextEdit – using human-readable code. A ready-to-use <code>TextEditGlue.swift</code> glue file is included with this tutorial for convenience. (Glues for other applications can be created using SwiftAutomation's <code>aeglue</code> tool; see chapter 4 for details.) </p>
 
-<p>Once the glue is imported, instantiate a new <em>application</em> object as follows:</p>
+<p>Once the glue is imported, instantiate a new <code>Application</code> object as follows:</p>
 
-<pre><code>  let textedit = TextEdit()
+<pre><code>let textedit = TextEdit()
 </code></pre>
 
-<p>An application may be identified in various ways, including name (e.g. <code>"TextEdit"</code>), path (<code>"/Applications/TextEdit.app"</code>), and bundle identifier (<code>"com.apple.TextEdit"</code>). For convenience, the glue </p>
+<p>An application may be identified in various ways, including name (e.g. <code>"TextEdit"</code>), path (<code>"/Applications/TextEdit.app"</code>), and bundle identifier (<code>"com.apple.TextEdit"</code>). This argument can usually be omitted, in which case the new <code>Application</code> object will use the bundle identifier of the application from which the glue was created.</p>
 
-<h3>Create a new document</h3>
+<h2>Create a new document</h2>
 
 <p>First, create a new TextEdit document by making a new <code>document</code> object. This is done using the <code>make</code> command, passing it a single named parameter, <code>new:</code>, indicating the type of object to create; in this case <code>TED.document</code>:</p>
 
-<pre><code>  try textedit.make(new: TED.document)
+<pre><code>try textedit.make(new: TED.document)
 </code></pre>
 
 <p>If the application is not already running, it will be launched automatically the first time you send it a command.</p>
 
 <p>On success, TextEdit's <code>make</code> command returns an <em>object specifier</em> that identifies the newly created object, for example:</p>
 
-<pre><code>  TextEdit().documents["Untitled.txt"]
+<pre><code>TextEdit().documents["Untitled"]
 </code></pre>
 
 <p>This particular object specifier represents one-to-one relationship between TextEdit's main application object and a document object named "Untitled.txt". (In AppleScript jargon, the document object named "Untitled.txt" is an <em>element</em> of the application object named "TextEdit".)</p>
@@ -72,7 +70,7 @@
 
 <p>This specifier can be assigned to a constant or variable for easy reuse. Use the <code>make</code> command to create another document, this time assigning its result to a variable named <code>doc</code> as shown:</p>
 
-<pre><code>  let doc = textedit.make(new: TED.document) as TEDItem
+<pre><code>let doc = textedit.make(new: TED.document) as TEDItem
 </code></pre>
 
 <p>Explicitly declaring the command's return type (in this case, as <code>TEDItem</code>) is not mandatory. If omitted, the Swift compiler will infer <code>doc</code>'s static type to be <code>Any</code>, allowing it to hold whatever type of object the application actually returns. However, the Swift compiler won't let you refer to the object's properties and methods until you cast that variable to a specific type. Applying the (<code>... as TEDItem</code>) cast directly to the command has two benefits: not only allows the Swift compiler to infer the <code>doc</code> variable's own type (<code>TEDItem</code>), it also tells SwiftAutomation that it <em>must</em> convert the Apple event data returned by the application to that specific type or else throw an error if that conversion isn't supported. This enables SwiftAutomation to map data from Apple event's weak, dynamic type system to Swift's strong, static one in a fully type-safe way.</p>
@@ -81,7 +79,7 @@
 
 <p>[TO DO: this will work better if the above <code>make</code> command is expanded to include <code>withProperties: [TED.text:"Hello World!"]</code>]. The next task will be to <code>get()</code> that document's text, which makes the point that object specifiers are only used to construct <em>queries</em>; to actually get a value from the application you <em>have</em> to use a command, e.g. <code>get()</code>. (Kinda like the difference between putting together a file path, e.g. "/Users/jsmith/" + "TODO.txt", that describes the location of some data, and passing that path to a <code>read()</code> command to actually obtain the data from that location.) Once getting is covered, the <code>set()</code> example can show how to change that content to something else. In addition, the <code>get()</code> example can explain the shorthand form that allows the command's direct parameter to be used as its subject for conciseness, i.e. <code>textedit.get(doc.text)</code> -> `doc.text.get()]</p>
 
-<h3>Get the document's content</h3>
+<h2>Get the document's content</h2>
 
 <p>Retrieving the document's text is done using the <code>get()</code> command:</p>
 
@@ -101,7 +99,7 @@
 
 <p>doc.text.get()</p>
 
-<h3>Set the document's content</h3>
+<h2>Set the document's content</h2>
 
 <p>The next step is to set the document's content to the string <code>"Hello World"</code>. Every TextEdit document has a property, <code>text</code>, that represents the entire text of the document. This property is both readable and writeable, allowing you to retrieve and/or modify the document's textual content as unstyled text.</p>
 
@@ -111,66 +109,66 @@
 
 <p>In this case, the direct parameter is an object specifier identifying the new document's <code>text</code> property, <code>doc.text</code>, and the <code>to:</code> parameter is the string <code>"Hello World"</code>:</p>
 
-<pre><code>  textedit.set(doc.text, to: "Hello World")
+<pre><code>textedit.set(doc.text, to: "Hello World")
 </code></pre>
 
 <p>The front TextEdit document should now contain the text "Hello World".</p>
 
 <p>Because the above expression is a bit unwieldy to write, SwiftAutomation allows it to be written in a more elegant OO-like format as a special case, where the <code>set()</code> command is called upon the document's object specifier:</p>
 
-<pre><code>  doc.text.set(to: "Hello World")
+<pre><code>doc.text.set(to: "Hello World")
 </code></pre>
 
 <p>SwiftAutomation converts this second form to the first form internally, so the end result is exactly the same. SwiftAutomation supports several such special cases, and these are described in the chapter on Application Commands. Using these special cases produces more elegant, readable source code, and is recommended.</p>
 
-<h3>More on using commands type-safely</h3>
+<h2>More on using commands type-safely</h2>
 
 <p>Depending on what sort of attribute(s) the object specifier identifies, <code>get()</code> may return a primitive value (number, string, list, dict, etc.), or it may return another object specifier, or list of object specifiers, e.g.:</p>
 
-<pre><code>  doc.text.get()
-  // "Hello World!"
+<pre><code>doc.text.get()
+// "Hello World!"
 
-  textedit.documents[1].get()
-  // TextEdit().documents[1]
+textedit.documents[1].get()
+// TextEdit().documents["Untitled"]
 
-  textedit.documents.get()
-  // [TextEdit().documents[1], 
-      TextEdit().documents[2]]
+textedit.documents.get()
+// [TextEdit().documents["Untitled"], 
+    TextEdit().documents["Untitled 2"]]
 
-  textedit.documents.text.get()
-  // ["Hello World", ""]
+textedit.documents.text.get()
+// ["Hello World", ""]
 </code></pre>
 
-<h3>More on <code>make()</code></h3>
+<h2>More on <code>make()</code></h2>
 
 <p>The above exercise uses two commands to create a new TextEdit document containing the text "Hello World". It is also possible to perform both operations using the <code>make()</code> command alone by passing the value for the new document's <code>text</code> property via the <code>make()</code> command's optional <code>withProperties:</code> parameter: </p>
 
 <p>[TO DO: Rephrase and insert in this section: "because <code>document</code> objects are elements of the root <code>application</code> class, applications such as TextEdit can usually infer the location at which the new <code>document</code> object should appear. At other times, you need to supply an <code>at</code> parameter that indicates the desired location."]</p>
 
-<pre><code>  textedit.make(new: TED.document, withProperties=[TED.text: "Hello World"])
-  // TextEdit().documents[1]
+<pre><code>textedit.make(new: TED.document, withProperties=[TED.text: "Hello World"])
+// TextEdit().documents[1]
 </code></pre>
 
 <p>[TO DO: TextEdit now returns by-name document specifiers; update this paragraph accordingly] Incidentally, you might note that every time the <code>make()</code> command is used, it returns an object specifier to document <em>1</em>. TextEdit identifies <code>document</code> objects according to the stacking order of their windows, with document 1 being frontmost. When the window stacking order changes, whether as a result of a script command or GUI-based interaction, so does the order of their corresponding <code>document</code> objects. This means that a previously created object specifier such as <code>TextEdit().documents[1]</code> may now identify a different <code>document</code> object to before! Some applications prefer to return object specifiers that identify objects by name or unique ID rather than index to reduce or eliminate the potential for confusion, but it's an issue you should be aware of, particularly with long-running scripts where there is greater opportunity for unexpected third-party interactions to throw a spanner in the works.</p>
 
-<h3>More on manipulating <code>text</code></h3>
+<h2>More on manipulating <code>text</code></h2>
 
 <p>In addition to getting and setting a document's entire text by applying <code>get()</code> and <code>set()</code> commands to <code>text</code> property, it's also possible to manipulate selected sections of a document's text directly. TextEdit's <code>text</code> property contains a <code>text</code> object, which in turn has <code>character</code>, <code>word</code> and <code>paragraph</code> elements, all of which can be manipulated using a variety of commands - <code>get()</code>, <code>set()</code>, <code>make()</code>, <code>move</code>, <code>delete</code>, etc. For example, to set the size of the first character of every paragraph of the front document to 24pt:</p>
 
-<pre><code>  textedit.documents[1].text.paragraphs.size.set(to: 24)
+<pre><code>textedit.documents[1].text.paragraphs.size.set(to: 24)
 </code></pre>
 
 <p>Or to insert a new paragraph at the end of the document:</p>
 
-<pre><code>  textedit.make(new: TED.paragraph,
-                 at: TEDApp.documents[1].text.paragraphs.end,
-           withData: "Hello Again, World\n")
+<pre><code>textedit.make(new: TED.paragraph,
+               at: TEDApp.documents[1].text.paragraphs.end,
+         withData: "Hello Again, World\n")
 </code></pre>
 
 <p>[TO DO: add note that unlike AS, Swift is sensitive to parameter order, so named params must appear in same order as in glue]</p>
 
             </div>
         </div>
-        <div id="footer"><div class="navbar"><a href="introduction.html">back</a> | <a href="index.html">index</a> | <a href="understanding-apple-events.html">next</a></div></div>
+        <div id="footer"><div class="navbar"><a href="welcome.html">back</a> | <a href="index.html">index</a> | <a href="understanding-apple-events.html">next</a></div></div>
     </body>
 </html>

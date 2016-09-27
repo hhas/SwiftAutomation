@@ -64,12 +64,14 @@ import AppKit
 
 // TO DO: debugDescription that displays raw FCC representation?
 
+// TO DO: Mirror support? currently playground displays a list of specifiers as `[{{...}},{{...}},...]`, although they print() fine elsewhere
+
 
 /******************************************************************************/
 // abstract base class for _all_ specifier and test clause subclasses
 
 
-open class Query: CustomStringConvertible, SelfPacking { // TO DO: Equatable? (TBH, comparing and hashing Query objects would be of limited use; not sure it's worth the effort as, ultimately, only the target app can know if two queries identify the same object or not)
+open class Query: CustomStringConvertible, CustomDebugStringConvertible, SelfPacking { // TO DO: Equatable? (TBH, comparing and hashing Query objects would be of limited use; not sure it's worth the effort as, ultimately, only the target app can know if two queries identify the same object or not)
     
     public let appData: AppData
     internal private(set) var cachedDesc: NSAppleEventDescriptor?
@@ -110,6 +112,8 @@ open class Query: CustomStringConvertible, SelfPacking { // TO DO: Equatable? (T
     }
     
     public var description: String { return self.appData.formatter.format(self) }
+    
+    public var debugDescription: String { return self.description }
 }
 
 
@@ -266,44 +270,43 @@ open class ObjectSpecifier: Specifier, ObjectSpecifierProtocol { // represents p
         desc.setDescriptor(try self.appData.pack(self.selectorData), forKeyword: SwiftAutomation_keyAEKeyData)
         return desc
     }
+
+    // Comparison test constructors
+
+    public static func <(lhs: ObjectSpecifier, rhs: Any) -> TestClause {
+        return ComparisonTest(operatorType: gLT, operand1: lhs, operand2: rhs, appData: lhs.appData, cachedDesc: nil)
+    }
+    public static func <=(lhs: ObjectSpecifier, rhs: Any) -> TestClause {
+        return ComparisonTest(operatorType: gLE, operand1: lhs, operand2: rhs, appData: lhs.appData, cachedDesc: nil)
+    }
+    public static func ==(lhs: ObjectSpecifier, rhs: Any) -> TestClause {
+        return ComparisonTest(operatorType: gEQ, operand1: lhs, operand2: rhs, appData: lhs.appData, cachedDesc: nil)
+    }
+    public static func !=(lhs: ObjectSpecifier, rhs: Any) -> TestClause {
+        return ComparisonTest(operatorType: gNE, operand1: lhs, operand2: rhs, appData: lhs.appData, cachedDesc: nil)
+    }
+    public static func >(lhs: ObjectSpecifier, rhs: Any) -> TestClause {
+        return ComparisonTest(operatorType: gGT, operand1: lhs, operand2: rhs, appData: lhs.appData, cachedDesc: nil)
+    }
+    public static func >=(lhs: ObjectSpecifier, rhs: Any) -> TestClause {
+        return ComparisonTest(operatorType: gGE, operand1: lhs, operand2: rhs, appData: lhs.appData, cachedDesc: nil)
+    }
         
     // Containment test constructors
     // TO DO: ideally the following should only appear on objects constructed from an Its root; however, this will make the class/protocol hierarchy more complicated, so may be more hassle than it's worth - maybe explore this later, once the current implementation is fully working
     
-    func beginsWith(_ value: Any) -> TestClause {
+    public func beginsWith(_ value: Any) -> TestClause {
         return ComparisonTest(operatorType: gBeginsWith, operand1: self, operand2: value, appData: self.appData, cachedDesc: nil)
     }
-    func endsWith(_ value: Any) -> TestClause {
+    public func endsWith(_ value: Any) -> TestClause {
         return ComparisonTest(operatorType: gEndsWith, operand1: self, operand2: value, appData: self.appData, cachedDesc: nil)
     }
-    func contains(_ value: Any) -> TestClause {
+    public func contains(_ value: Any) -> TestClause {
         return ComparisonTest(operatorType: gContains, operand1: self, operand2: value, appData: self.appData, cachedDesc: nil)
     }
-    func isIn(_ value: Any) -> TestClause {
+    public func isIn(_ value: Any) -> TestClause {
         return ComparisonTest(operatorType: gIsIn, operand1: self, operand2: value, appData: self.appData, cachedDesc: nil)
     }
-}
-
-
-// Comparison test constructors
-
-func <(lhs: ObjectSpecifier, rhs: Any) -> TestClause {
-    return ComparisonTest(operatorType: gLT, operand1: lhs, operand2: rhs, appData: lhs.appData, cachedDesc: nil)
-}
-func <=(lhs: ObjectSpecifier, rhs: Any) -> TestClause {
-    return ComparisonTest(operatorType: gLE, operand1: lhs, operand2: rhs, appData: lhs.appData, cachedDesc: nil)
-}
-func ==(lhs: ObjectSpecifier, rhs: Any) -> TestClause {
-    return ComparisonTest(operatorType: gEQ, operand1: lhs, operand2: rhs, appData: lhs.appData, cachedDesc: nil)
-}
-func !=(lhs: ObjectSpecifier, rhs: Any) -> TestClause {
-    return ComparisonTest(operatorType: gNE, operand1: lhs, operand2: rhs, appData: lhs.appData, cachedDesc: nil)
-}
-func >(lhs: ObjectSpecifier, rhs: Any) -> TestClause {
-    return ComparisonTest(operatorType: gGT, operand1: lhs, operand2: rhs, appData: lhs.appData, cachedDesc: nil)
-}
-func >=(lhs: ObjectSpecifier, rhs: Any) -> TestClause {
-    return ComparisonTest(operatorType: gGE, operand1: lhs, operand2: rhs, appData: lhs.appData, cachedDesc: nil)
 }
 
 

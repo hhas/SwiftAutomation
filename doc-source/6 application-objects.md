@@ -4,33 +4,33 @@
 
 Before you can communicate with a scriptable application you must create an application object. When targeting local applications, the glue's own default constructor is usually the best choice. For example, to target TextEdit:
 
-    let textedit = TextEdit()
+  let textedit = TextEdit()
 
 This locates the target application using the same bundle identifier as the application from which the glue was originally generated (in this case "com.apple.TextEdit").
 
 Alternatively, one of the following initializers may be used to target the desired application more precisely (for example, if more than one version is installed or if it's running on another machine):
 
-    // application's name or full path (`.app` suffix is optional)
-    Application(name: String, ...)
-    
-    // application's bundle ID
-    Application(bundleIdentifier: String, ...)
+  // application's name or full path (`.app` suffix is optional)
+  Application(name: String, ...)
+  
+  // application's bundle ID
+  Application(bundleIdentifier: String, ...)
 
-    // `file:` URL for local application or `eppc:` URL for remote process
-    Application(url: URL, ...)
+  // `file:` URL for local application or `eppc:` URL for remote process
+  Application(url: URL, ...)
 
-    // Unix process id
-    Application(processIdentifier: pid_t, ...)
+  // Unix process id
+  Application(processIdentifier: pid_t, ...)
 
-    // AEAddressDesc
-    Application(descriptor: NSAppleEventDescriptor, ...)
+  // AEAddressDesc
+  Application(descriptor: NSAppleEventDescriptor, ...)
 
-    // current (i.e. host) process
-    Application.currentApplication()
+  // current (i.e. host) process
+  Application.currentApplication()
 
 For example, to target a specific version of Adobe InDesign by its name:
 
-    let indesign = AdobeInDesign(name: "Adobe InDesign CS6.app")
+  let indesign = AdobeInDesign(name: "Adobe InDesign CS6.app")
 
 Except for `currentApplication()`, the above initializers can also accept the following optional arguments:
 
@@ -47,26 +47,26 @@ If the `Application(url:)` constructor is invoked with an `eppc://` URL, or if t
 
 All applications should respond to the following commands, which are added to all glue files by default:
 
-    run()      // Run an application
+  run()      // Run an application
 
-    activate() // Bring the application to the front
+  activate() // Bring the application to the front
 
-    reopen()   // Reactivate a running application
+  reopen()   // Reactivate a running application
 
-    open(Any)  // Open the specified file(s) (typically URL or Array<URL>)
+  open(Any)  // Open the specified file(s) (typically URL or Array<URL>)
 
-    print(Any) // Print the specified file(s) (typically URL or Array<URL>)
+  print(Any) // Print the specified file(s) (typically URL or Array<URL>)
 
-    quit( [ saving: AE.yes | AE.ask | AE.no ] )
-               // Quit an application, optionally saving any open documents first
+  quit( [ saving: AE.yes | AE.ask | AE.no ] )
+             // Quit an application, optionally saving any open documents first
 
 Some applications may provide their own definitions of some or all of these commands, so check their terminology before use. For example, many applications' `open` command will also return a `Specifier` or `Array<Specifier>` value identifying the newly opened documents.
 
 Standard `get` and `set` commands are also included as most scriptable applications' dictionaries don't define these commands themselves, though are only applicable to applications that define an Apple Event Object Model:
 
-    get(Specifier) -> Any   // Get the value of the given object specifier
+  get(Specifier) -> Any   // Get the value of the given object specifier
 
-    set(Specifier, to: Any) // Set the value of the given object specifier to the new value
+  set(Specifier, to: Any) // Set the value of the given object specifier to the new value
 
 <div class="hilitebox">
 
@@ -106,25 +106,25 @@ SwiftAutomation targets local running applications by process ID, so it's possib
 
 You can check if the target application is currently running by getting the value of its `isRunning` Boolean property:
 
-    Finder().isRunning
+  Finder().isRunning
 
 For example, SwiftAutomation will automatically launch a non-running application the first time it sends a command, so if you don't want to interact with that application unless it is already running, enclose all of its commands in a conditional block that only executes if its `isRunning` property is `true`:
 
-    let iTunes = iTunes()
-    
-    // Only perform iTunes-related commands if it's already running:
-    if iTunes.isRunning {
-        // all iTunes-related commands go here...
-    }
+  let iTunes = iTunes()
+  
+  // Only perform iTunes-related commands if it's already running:
+  if iTunes.isRunning {
+    // all iTunes-related commands go here...
+  }
 
 
 ### Launching applications via `launch()`
 
 When SwiftAutomation launches a non-running application, it normally sends it a `run` command as part of the launching process. If you wish to avoid this, you should start the application by sending it a `launch` command before doing anything else. This is useful when you want to start an application without it going through its normal startup procedure, and is equivalent to the using AppleScript's `launch` command. For example, to launch TextEdit without causing it to display a new, empty document (its usual behaviour):
 
-    textedit = TextEdit()
-    try textedit.launch()
-    // other TextEdit-related code goes here...
+  textedit = TextEdit()
+  try textedit.launch()
+  // other TextEdit-related code goes here...
 
 
 ### Restarting applications
@@ -141,7 +141,7 @@ To change this relaunch behavior, use one of the following `RelaunchMode` values
 
 For example:
 
-    let illustrator = AdobeIllustrator(relaunchMode: .never) 
+  let illustrator = AdobeIllustrator(relaunchMode: .never) 
 
 Note that you can still use Application objects to control applications that have been quit _and_ restarted since the Application object was created. SwiftAutomation will automatically update the Application object's process ID information as needed. [TO DO: check this is correct; also check how it behaves when .never is used]
 

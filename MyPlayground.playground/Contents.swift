@@ -51,7 +51,24 @@ try finder.home.get(resultType: FIN.alias) as URL
 // try itunes.playerState.get() as String // note: this will return four-char-code, which probably isn't what user wanted; to get the symbol's name as String, use `(try itunes.playerState.get() as Symbol).name` instead
 
 
-try textedit.documents.get() as NSArray //<TEDItem>
+//try textedit.documents.get() as NSArray //<TEDItem>
+
+
+//let v = try finder.home.files.name.get() as NSArray//Set<AnyHashable>
+
+//type(of:v)
+
+let r = try finder.home.files["bottle.py", 7].name.get() //as [FINItem]
+try finder.home.files[1..<4].name.get()
+
+
+//type(of:r)
+//r[0]
+
+
+
+
+
 
 
 

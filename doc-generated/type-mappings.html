@@ -82,22 +82,23 @@
 
 <p>SwiftAutomation packs <code>URL</code> instances containing <code>file://</code> URLs as descriptors of <code>typeFileURL</code>, which the majority of applications should accept. Non-file URLs are not supported and will result in a <code>PackError</code> being thrown. Occasionally, an older Carbon application may not accept file URL descriptor, in which case it may be necessary to convert the <code>URL</code> to a different form before passing it to the application command. For example, if an application <em>requires</em> an alias descriptor, then pre-pack the <code>URL</code> as a <code>typeAlias</code> descriptor as follows:</p>
 
-<p>let myFile = URL(fileURLWithPath: "/Users/jsmith/MyFile.txt")</p>
+<pre><code>let myFile = URL(fileURLWithPath: "/Users/jsmith/MyFile.txt")
 
-<p>let myFileDesc = NSAppleEventDescriptor(fileURL: myFile).coerce(toDescriptorType:typeAlias)</p>
+let myFileDesc = NSAppleEventDescriptor(fileURL: myFile).coerce(toDescriptorType:typeAlias)
+</code></pre>
 
 <p>Similarly, some older Carbon applications may occasionally use colon-delimited HFS path strings even though macOS has long since deprecated these in favor of standard POSIX paths. SwiftAutomation includes the following compatibility functions for converting to and from HFS path strings where unavoidable:</p>
 
-<pre><code>  HFSPath(fromFileURL: URL) -&gt; String
-  fileURL(fromHFSPath: String) -&gt; URL
+<pre><code>HFSPath(fromFileURL: URL) -&gt; String
+fileURL(fromHFSPath: String) -&gt; URL
 </code></pre>
 
 <p>For example:</p>
 
-<pre><code>  let myFile = URL(fileURLWithPath: "/Users/jsmith/MyFile.txt")
+<pre><code>let myFile = URL(fileURLWithPath: "/Users/jsmith/MyFile.txt")
 
-  let myHFSPath = HFSPath(fromFileURL: myFile)
-  // "Macintosh HD:Users/jsmith/MyFile.txt"
+let myHFSPath = HFSPath(fromFileURL: myFile)
+// "Macintosh HD:Users/jsmith/MyFile.txt"
 </code></pre>
 
 <p>However, be aware that non-existent paths may not convert correctly, and that HFS paths, unlike POSIX paths, cannot distinguish between two mounted volumes which both have the same name (one of the reasons HFS was deprecated).</p>

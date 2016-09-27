@@ -37,26 +37,26 @@ For convenience, SwiftAutomation makes application commands available as methods
 
 ## Examples
 
-    // tell application "TextEdit" to activate
-    TextEdit().activate()
+  // tell application "TextEdit" to activate
+  TextEdit().activate()
 
-    // tell application "TextEdit" to open fileList
-    TextEdit().open(fileList)
+  // tell application "TextEdit" to open fileList
+  TextEdit().open(fileList)
 
-    // tell application "Finder" to get version
-    Finder().version.get()
+  // tell application "Finder" to get version
+  Finder().version.get()
 
-    // tell application "Finder" to set name of file "foo.txt" of home to "bar.txt"
-    Finder().home.files["foo.txt"].name.set(to: "bar.txt")
+  // tell application "Finder" to set name of file "foo.txt" of home to "bar.txt"
+  Finder().home.files["foo.txt"].name.set(to: "bar.txt")
 
-    // tell application "TextEdit" to count (text of first document) each paragraph
-    TextEdit().documents.first.text.count(each: TED.paragraph)
+  // tell application "TextEdit" to count (text of first document) each paragraph
+  TextEdit().documents.first.text.count(each: TED.paragraph)
 
-    // tell application "TextEdit" to make new document at end of documents
-    TextEdit().documents.end.make(new: TED.document)
+  // tell application "TextEdit" to make new document at end of documents
+  TextEdit().documents.end.make(new: TED.document)
 
-    // tell application "Finder" to get items of home as alias list
-    Finder().home.items.get(returnType: FIN.alias)
+  // tell application "Finder" to get items of home as alias list
+  Finder().home.items.get(returnType: FIN.alias)
 
 
 ## TO DO: return types
@@ -69,15 +69,15 @@ For convenience, SwiftAutomation makes application commands available as methods
 
 When specifying a command's return type, you may also need tell the application the exact descriptor type (`Symbol.alias`, `Symbol.fileURL`, etc). For example, the Finder normally returns file system references as object specifiers:
 
-    let finder = Finder()
+  let finder = Finder()
 
-    finder.home.get()
-    // Finder().startupDisk.folders["Users"].folders["Users"]
+  finder.home.get()
+  // Finder().startupDisk.folders["Users"].folders["Users"]
 
 To get the current user's home folder as a `URL` instead:
 
-    finder.home.get(resultType: FIN.fileURL) as URL
-    // URL(string:"file:///Users/jsmith")
+  finder.home.get(resultType: FIN.fileURL) as URL
+  // URL(string:"file:///Users/jsmith")
 
 
 
@@ -89,31 +89,31 @@ The following special-case behaviours are implemented for convenience:
 
 * Commands that take a specifier as a direct parameter may be written in the following form:
 
-        specifier.command(namedParameter1: someValue, namedParameter2: someValue, ...)
+    specifier.command(namedParameter1: someValue, namedParameter2: someValue, ...)
 
-    The conventional form is also supported should you ever wish (or need) to use it:
+  The conventional form is also supported should you ever wish (or need) to use it:
 
-        application.command(specifier, namedParameter1: someValue, namedParameter2: someValue, ...)
+    application.command(specifier, namedParameter1: someValue, namedParameter2: someValue, ...)
 
 The two forms are equivalent (SwiftAutomation converts the first form to the second behind the scenes) although the first form is preferred for conciseness. [TO DO: note that the first form only works when specifier has a targeted application object as its root; if the specifier is constructed from an untargeted `App` root, the second form must be used]
 
 
 * If a command that already has a direct parameter is called on a specifier, i.e.:
 
-        specifier.command(someValue, ...)
+    specifier.command(someValue, ...)
 
 the specifier upon which it is called will be packed as the Apple event's "subject" attribute (`keySubjectAttr`).
 
 
 * If the `make` command is called on an insertion location specifier (`before`/`after`/`beginning`/`end`), SwiftAutomation will pack that specifier as the Apple event's `at:` parameter if it doesn't already have one; i.e.:
 
-        insertionSpecifier.make(new: className)
+    insertionSpecifier.make(new: className)
 
-   is equivalent to:
+  is equivalent to:
 
-        application.make(new: className, at: insertionSpecifier)
+    application.make(new: className, at: insertionSpecifier)
 
-   If the `make` command is called on an object specifier, SwiftAutomation will pack that specifier as the Apple event's "subject" attribute. Be aware that some applications may not handle this attribute correctly, in which case the specifier should be passed via the `make` command's `at:` parameter. [TO DO: clarify this; also, note again that the convenience form only works when specifier is constructed from a targeted Application object]
+  If the `make` command is called on an object specifier, SwiftAutomation will pack that specifier as the Apple event's "subject" attribute. Be aware that some applications may not handle this attribute correctly, in which case the specifier should be passed via the `make` command's `at:` parameter. [TO DO: clarify this; also, note again that the convenience form only works when specifier is constructed from a targeted Application object]
 
 
 

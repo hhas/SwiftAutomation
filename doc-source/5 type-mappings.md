@@ -77,21 +77,21 @@ The Apple Event Manager defines a number of modern (`typeFileURL`, `typeBookmark
 
 SwiftAutomation packs `URL` instances containing `file://` URLs as descriptors of `typeFileURL`, which the majority of applications should accept. Non-file URLs are not supported and will result in a `PackError` being thrown. Occasionally, an older Carbon application may not accept file URL descriptor, in which case it may be necessary to convert the `URL` to a different form before passing it to the application command. For example, if an application _requires_ an alias descriptor, then pre-pack the `URL` as a `typeAlias` descriptor as follows:
 
-let myFile = URL(fileURLWithPath: "/Users/jsmith/MyFile.txt")
+  let myFile = URL(fileURLWithPath: "/Users/jsmith/MyFile.txt")
 
-let myFileDesc = NSAppleEventDescriptor(fileURL: myFile).coerce(toDescriptorType:typeAlias)
+  let myFileDesc = NSAppleEventDescriptor(fileURL: myFile).coerce(toDescriptorType:typeAlias)
 
 Similarly, some older Carbon applications may occasionally use colon-delimited HFS path strings even though macOS has long since deprecated these in favor of standard POSIX paths. SwiftAutomation includes the following compatibility functions for converting to and from HFS path strings where unavoidable:
 
-    HFSPath(fromFileURL: URL) -> String
-    fileURL(fromHFSPath: String) -> URL
+  HFSPath(fromFileURL: URL) -> String
+  fileURL(fromHFSPath: String) -> URL
 
 For example:
 
-    let myFile = URL(fileURLWithPath: "/Users/jsmith/MyFile.txt")
-    
-    let myHFSPath = HFSPath(fromFileURL: myFile)
-    // "Macintosh HD:Users/jsmith/MyFile.txt"
+  let myFile = URL(fileURLWithPath: "/Users/jsmith/MyFile.txt")
+  
+  let myHFSPath = HFSPath(fromFileURL: myFile)
+  // "Macintosh HD:Users/jsmith/MyFile.txt"
 
 However, be aware that non-existent paths may not convert correctly, and that HFS paths, unlike POSIX paths, cannot distinguish between two mounted volumes which both have the same name (one of the reasons HFS was deprecated).
 

@@ -1,37 +1,37 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
     <head>
-        <title>SwiftAutomation | Introduction</title>
+        <title>SwiftAutomation | Welcome</title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <style type="text/css" media="all"><!--@import url(full.css);--></style>
     </head>
     <body>
         <div id="wrap">
             <div id="main">
-                <h1>Introduction</h1>
-                <div class="navbar"><a href="index.html">index</a> | <a href="a-quick-tutorial.html">next</a></div>
+                <h1>Welcome</h1>
+                <div class="navbar"><a href="index.html">index</a> | <a href="tutorial-introduction.html">next</a></div>
                 <h2>What is SwiftAutomation?</h2>
 
 <p>SwiftAutomation allows you to control "AppleScriptable" macOS applications using Apple's <a href="https://swift.org/">Swift</a> language. SwiftAutomation makes Swift a true alternative to AppleScript for automating your Mac.</p>
 
 <p>For example, to get the value of the first paragraph of the topmost document in TextEdit:</p>
 
-<pre><code>  let result = try TextEdit().documents[1].paragraphs[1].get() as String
+<pre><code>let result = try TextEdit().documents[1].paragraphs[1].get() as String
 </code></pre>
 
 <p>This is equivalent to the AppleScript statement:</p>
 
-<pre><code>  tell application id "com.apple.TextEdit" to get paragraph 1 of document 1
+<pre><code>tell application id "com.apple.TextEdit" to get paragraph 1 of document 1
 </code></pre>
 
 <p>Or to create a new "Hello World!" document in TextEdit:</p>
 
-<pre><code>  // tell application id "com.apple.TextEdit"
-  //    make new document with properties {text:"Hello World!"}
-  // end tell
+<pre><code>// tell application id "com.apple.TextEdit"
+//   make new document with properties {text:"Hello World!"}
+// end tell
 
-  let textedit = TextEdit()
-  try textedit.make(new: TED.document, withProperties: [TED.text: "Hello World!"])
+let textedit = TextEdit()
+try textedit.make(new: TED.document, withProperties: [TED.text: "Hello World!"])
 </code></pre>
 
 <h2>Before you start...</h2>
@@ -52,6 +52,6 @@
 
             </div>
         </div>
-        <div id="footer"><div class="navbar"><a href="index.html">index</a> | <a href="a-quick-tutorial.html">next</a></div></div>
+        <div id="footer"><div class="navbar"><a href="index.html">index</a> | <a href="tutorial-introduction.html">next</a></div></div>
     </body>
 </html>

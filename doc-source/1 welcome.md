@@ -6,21 +6,21 @@ SwiftAutomation allows you to control "AppleScriptable" macOS applications using
 
 For example, to get the value of the first paragraph of the topmost document in TextEdit:
 
-    let result = try TextEdit().documents[1].paragraphs[1].get() as String
+  let result = try TextEdit().documents[1].paragraphs[1].get() as String
 
 This is equivalent to the AppleScript statement:
 
-    tell application id "com.apple.TextEdit" to get paragraph 1 of document 1
+  tell application id "com.apple.TextEdit" to get paragraph 1 of document 1
 
 
 Or to create a new "Hello World!" document in TextEdit:
 
-    // tell application id "com.apple.TextEdit"
-    //    make new document with properties {text:"Hello World!"}
-    // end tell
+  // tell application id "com.apple.TextEdit"
+  //   make new document with properties {text:"Hello World!"}
+  // end tell
 
-    let textedit = TextEdit()
-    try textedit.make(new: TED.document, withProperties: [TED.text: "Hello World!"])
+  let textedit = TextEdit()
+  try textedit.make(new: TED.document, withProperties: [TED.text: "Hello World!"])
 
 
 ## Before you start...

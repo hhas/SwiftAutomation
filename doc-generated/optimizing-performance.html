@@ -30,20 +30,20 @@
 
 <p>While iterating over application objects and manipulating each in turn is a common technique, it's also the slowest by far:</p>
 
-<pre><code>// aeglue Contacts
-let contacts = Contacts()
+<pre><code>  // `aeglue Contacts.app`
+  let contacts = Contacts()
 
-let desiredEmail = "sam.brown@example.com"
+  let desiredEmail = "sam.brown@example.com"
 
-var foundNames: [String] = []
-for person in contacts.people.get() as [CONItem] {
+  var foundNames = [String]()
+  for person in contacts.people.get() as [CONItem] {
     for email in people.emails.get() as [CONItem] {
         if email.value.get() == desiredEmail {
             foundNames += person.name.get()
         }
     }
-}
-print(foundNames)
+  }
+  print(foundNames)
 </code></pre>
 
 <p>The above code sends one Apple event to get a list of references to all people, then one Apple event for each person to get a list of references to their emails, then one Apple event for each of those emails. Thus the time taken increases directly in proportion to the number of people in Contacts. If there's hundreds of people to search, that's hundreds of Apple events to be built, sent and individually resolved, and performance suffers as a result.</p>
@@ -56,13 +56,13 @@ print(foundNames)
 
 <p>In this case, the entire search can be performed using a single complex query sent to Contacts via a single Apple event:</p>
 
-<pre><code>let contacts = Contacts()
+<pre><code>  let contacts = Contacts()
 
-let desiredEmail = "sam.brown@example.com"
+  let desiredEmail = "sam.brown@example.com"
 
-let foundNames = contacts.people[CONIts.emails.value.contains(desiredEmail)].name.get() as [String]
+  let foundNames = contacts.people[CONIts.emails.value.contains(desiredEmail)].name.get() as [String]
 
-print(foundNames)
+  print(foundNames)
 </code></pre>
 
 <p>To explain:</p>
@@ -77,26 +77,26 @@ print(foundNames)
 
 <p>While AEOM queries can be surprisingly powerful, there are still many problems too complex for the application to evaluate entirely by itself. For example, let's say that you want to obtain the name of every person who has an email addresses that uses a particular domain name. Unfortunately, this test is too complex to express as a single AEOM query; however, it can still be solved reasonably efficiently by obtaining all the data from the application up-front and processing it locally. For this we need: 1. the name of every person in the Contacts, and 2. each person's email addresses. Each request can be described in a single query, allowing all of the required data to be retrieved using just two <code>get</code> commands.</p>
 
-<pre><code>let contacts = Contacts()
+<pre><code>  let contacts = Contacts()
 
-let desiredDomain = "@example.com"
+  let desiredDomain = "@example.com"
 
-// get a list of name strings
-let names = contacts.people.name.get() as [String]
+  // get each person's name
+  let names = contacts.people.name.get() as [String]
 
-// get a list of lists of email strings
-let emails = contacts.people.emails.value.get() as [[String]]
+  // get each person's email addresses
+  let emailsByPerson = contacts.people.emails.value.get() as [[String]]
 
-var foundNames = []
-for i in (0 ... names.count) { // TO DO: how does zipping both lists and iterating over that compare?
-    for email in emails[i] {
-        if email.hasSuffix(desiredDomain) {
-            foundNames.append(names[i])
-            break
-        }
-    }
-}
-print(foundNames)
+  var foundNames = [String]()
+  for (name, emails) in zip(names, emailsByPerson) {
+      for email in emails {
+          if email.hasSuffix(desiredDomain) {
+              foundNames.append(name)
+              break
+          }
+      }
+  }
+  print(foundNames)
 </code></pre>
 
 <p>This solution isn't as fast as the pure-query approach, but is still far more efficient than iterating over and manipulating every person and email element one at a time.</p>

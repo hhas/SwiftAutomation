@@ -17,8 +17,8 @@ The following tutorial uses SwiftAutomation, TextEdit and the interactive comman
 
 To begin, launch Terminal.app and type `swift` followed by a newline to launch the `swift` interpreter:
 
-    jsmith$ swift
-    Welcome to Apple Swift version 2.0 (700.0.38.1 700.0.53). Type :help for assistance.
+  jsmith$ swift
+  Welcome to Apple Swift version 2.0 (700.0.38.1 700.0.53). Type :help for assistance.
 
 
 ## Target TextEdit
@@ -29,13 +29,13 @@ To begin, launch Terminal.app and type `swift` followed by a newline to launch t
 
 The first step is to import the Swift glue file for TextEdit:
 
-    import TextEditGlue
+  import TextEditGlue
 
 Each glue file defines the Swift classes needed to control one particular application – in this case TextEdit – using human-readable code. A ready-to-use `TextEditGlue.swift` glue file is included with this tutorial for convenience. (Glues for other applications can be created using SwiftAutomation's `aeglue` tool; see chapter 4 for details.) 
 
 Once the glue is imported, instantiate a new `Application` object as follows:
 
-    let textedit = TextEdit()
+  let textedit = TextEdit()
 
 An application may be identified in various ways, including name (e.g. `"TextEdit"`), path (`"/Applications/TextEdit.app"`), and bundle identifier (`"com.apple.TextEdit"`). This argument can usually be omitted, in which case the new `Application` object will use the bundle identifier of the application from which the glue was created.
 
@@ -44,13 +44,13 @@ An application may be identified in various ways, including name (e.g. `"TextEdi
 
 First, create a new TextEdit document by making a new `document` object. This is done using the `make` command, passing it a single named parameter, `new:`, indicating the type of object to create; in this case `TED.document`:
 
-    try textedit.make(new: TED.document)
+  try textedit.make(new: TED.document)
 
 If the application is not already running, it will be launched automatically the first time you send it a command.
 
 On success, TextEdit's `make` command returns an _object specifier_ that identifies the newly created object, for example:
 
-    TextEdit().documents["Untitled"]
+  TextEdit().documents["Untitled"]
 
 This particular object specifier represents one-to-one relationship between TextEdit's main application object and a document object named "Untitled.txt". (In AppleScript jargon, the document object named "Untitled.txt" is an _element_ of the application object named "TextEdit".)
 
@@ -59,7 +59,7 @@ This particular object specifier represents one-to-one relationship between Text
 
 This specifier can be assigned to a constant or variable for easy reuse. Use the `make` command to create another document, this time assigning its result to a variable named `doc` as shown:
 
-    let doc = textedit.make(new: TED.document) as TEDItem
+  let doc = textedit.make(new: TED.document) as TEDItem
 
 Explicitly declaring the command's return type (in this case, as `TEDItem`) is not mandatory. If omitted, the Swift compiler will infer `doc`'s static type to be `Any`, allowing it to hold whatever type of object the application actually returns. However, the Swift compiler won't let you refer to the object's properties and methods until you cast that variable to a specific type. Applying the (`... as TEDItem`) cast directly to the command has two benefits: not only allows the Swift compiler to infer the `doc` variable's own type (`TEDItem`), it also tells SwiftAutomation that it _must_ convert the Apple event data returned by the application to that specific type or else throw an error if that conversion isn't supported. This enables SwiftAutomation to map data from Apple event's weak, dynamic type system to Swift's strong, static one in a fully type-safe way.
 
@@ -105,13 +105,13 @@ As we've already stored an object specifier for our target document in the `doc`
 
 In this case, the direct parameter is an object specifier identifying the new document's `text` property, `doc.text`, and the `to:` parameter is the string `"Hello World"`:
 
-    textedit.set(doc.text, to: "Hello World")
+  textedit.set(doc.text, to: "Hello World")
 
 The front TextEdit document should now contain the text "Hello World".
 
 Because the above expression is a bit unwieldy to write, SwiftAutomation allows it to be written in a more elegant OO-like format as a special case, where the `set()` command is called upon the document's object specifier:
 
-    doc.text.set(to: "Hello World")
+  doc.text.set(to: "Hello World")
 
 SwiftAutomation converts this second form to the first form internally, so the end result is exactly the same. SwiftAutomation supports several such special cases, and these are described in the chapter on Application Commands. Using these special cases produces more elegant, readable source code, and is recommended.
 
@@ -121,18 +121,18 @@ SwiftAutomation converts this second form to the first form internally, so the e
 
 Depending on what sort of attribute(s) the object specifier identifies, `get()` may return a primitive value (number, string, list, dict, etc.), or it may return another object specifier, or list of object specifiers, e.g.:
 
-    doc.text.get()
-    // "Hello World!"
-    
-    textedit.documents[1].get()
-    // TextEdit().documents["Untitled"]
-    
-    textedit.documents.get()
-    // [TextEdit().documents["Untitled"], 
-        TextEdit().documents["Untitled 2"]]
-        
-    textedit.documents.text.get()
-    // ["Hello World", ""]
+  doc.text.get()
+  // "Hello World!"
+  
+  textedit.documents[1].get()
+  // TextEdit().documents["Untitled"]
+  
+  textedit.documents.get()
+  // [TextEdit().documents["Untitled"], 
+      TextEdit().documents["Untitled 2"]]
+      
+  textedit.documents.text.get()
+  // ["Hello World", ""]
 
 
 ## More on `make()`
@@ -142,8 +142,8 @@ The above exercise uses two commands to create a new TextEdit document containin
 [TO DO: Rephrase and insert in this section: "because `document` objects are elements of the root `application` class, applications such as TextEdit can usually infer the location at which the new `document` object should appear. At other times, you need to supply an `at` parameter that indicates the desired location."]
 
 
-    textedit.make(new: TED.document, withProperties=[TED.text: "Hello World"])
-    // TextEdit().documents[1]
+  textedit.make(new: TED.document, withProperties=[TED.text: "Hello World"])
+  // TextEdit().documents[1]
 
 [TO DO: TextEdit now returns by-name document specifiers; update this paragraph accordingly] Incidentally, you might note that every time the `make()` command is used, it returns an object specifier to document _1_. TextEdit identifies `document` objects according to the stacking order of their windows, with document 1 being frontmost. When the window stacking order changes, whether as a result of a script command or GUI-based interaction, so does the order of their corresponding `document` objects. This means that a previously created object specifier such as `TextEdit().documents[1]` may now identify a different `document` object to before! Some applications prefer to return object specifiers that identify objects by name or unique ID rather than index to reduce or eliminate the potential for confusion, but it's an issue you should be aware of, particularly with long-running scripts where there is greater opportunity for unexpected third-party interactions to throw a spanner in the works.
 
@@ -152,13 +152,13 @@ The above exercise uses two commands to create a new TextEdit document containin
 
 In addition to getting and setting a document's entire text by applying `get()` and `set()` commands to `text` property, it's also possible to manipulate selected sections of a document's text directly. TextEdit's `text` property contains a `text` object, which in turn has `character`, `word` and `paragraph` elements, all of which can be manipulated using a variety of commands - `get()`, `set()`, `make()`, `move`, `delete`, etc. For example, to set the size of the first character of every paragraph of the front document to 24pt:
 
-    textedit.documents[1].text.paragraphs.size.set(to: 24)
+  textedit.documents[1].text.paragraphs.size.set(to: 24)
 
 Or to insert a new paragraph at the end of the document:
 
-    textedit.make(new: TED.paragraph,
-                   at: TEDApp.documents[1].text.paragraphs.end,
-             withData: "Hello Again, World\n")
+  textedit.make(new: TED.paragraph,
+                 at: TEDApp.documents[1].text.paragraphs.end,
+           withData: "Hello Again, World\n")
 
 [TO DO: add note that unlike AS, Swift is sensitive to parameter order, so named params must appear in same order as in glue]
 

@@ -9,7 +9,7 @@ import Foundation
 import AppKit
 
 
-// TO DO: unpack<T>() needs to match NS... types as well; is there an easy way to do this (e.g. given a Cocoa type, look up its Swift equivalent automatically)? or is there a better way to match against T (c.f. `isSubclass(of:)`)
+// TO DO: there are some inbuilt assumptions about `Int` and `UInt` always being 64-bit
 
 
 // TO DO: what happens if caller gives wrong return type for specifiers, e.g. `TextEdit().documents.get() as TEDItems`? (should be `... as [TEDItem]`, as TextEdit always returns a list of single-item specifiers); make sure malformed Specifiers are never returned and error reporting explains the problem (note: this may be an argument in favor of using PREFIXObject and PREFIXElements, except the lack of symmetry in that naming is likely to cause as much confusion as it avoids)
@@ -184,6 +184,7 @@ open class AppData {
         case let obj as NSSet:
             return try (obj as Set).SwiftAutomation_packSelf(self)
         case let obj as NSArray:
+            print("NSARRAY: \(value)")
             return try (obj as Array).SwiftAutomation_packSelf(self)
         case let obj as NSDictionary:
             return try (obj as Dictionary).SwiftAutomation_packSelf(self)
@@ -251,81 +252,109 @@ open class AppData {
             return try typeObj.SwiftAutomation_unpackSelf(desc, appData: self) as! T
         } else if isMissingValue(desc) {
             throw UnpackError(appData: self, descriptor: desc, type: T.self, message: "Can't coerce 'missing value' descriptor to \(T.self).") // Important: AppData must not unpack a 'missing value' constant as anything except `MissingValue` or `nil` (i.e. the types to which it self-unpacks). AppleScript doesn't have this problem as all descriptors unpack to their own preferred type, but unpack<T>() forces a descriptor to unpack as a specific type or fail trying. While its role is to act as a `nil`-style placeholder when no other value is given, its descriptor type is typeType so left to its own devices it would naturally unpack the same as any other typeType descriptor. e.g. One of AEM's vagaries is that it supports typeType to typeUnicodeText coercions, so while permitting cDocument to coerce to "docu" might be acceptable [if not exactly helpful], allowing cMissingValue to coerce to "msng" would defeat its whole purpose.
-        } else if T.self == Bool.self {
+        }
+        switch T.self {
+        case is Bool.Type:
             return desc.booleanValue as! T
-        } else if T.self == Int.self { // TO DO: this assumes Int will _always_ be 64-bit (on macOS); is that safe?
+        case is Int.Type: // TO DO: this assumes Int will _always_ be 64-bit (on macOS); is that safe?
             if desc.descriptorType == typeSInt32 { // shortcut for common case where descriptor is already a standard 32-bit int
                 return Int(desc.int32Value) as! T
             } else if let result = self.unpackAsInt(desc) {
                 return Int(result) as! T
             }
-        } else if T.self == UInt.self {
+        case is UInt.Type:
             if let result = self.unpackAsInt(desc) {
                 return Int(result) as! T
             }
-        } else if T.self == Double.self {
+        case is Double.Type:
             if let doubleDesc = desc.coerce(toDescriptorType: typeIEEE64BitFloatingPoint) {
                 return Double(doubleDesc.doubleValue) as! T
             }
-        } else if T.self == String.self {
+        case is String.Type, is NSString.Type:
             if let result = desc.stringValue {
                 return result as! T
             }
-        } else if T.self is Query.Type { // note: user typically specifies exact class ([PREFIX][Object|Elements]Specifier)
+        case is Query.Type: // note: user typically specifies exact class ([PREFIX][Object|Elements]Specifier)
             if let result = try self.unpackAsAny(desc) as? T { // specifiers can be composed of several AE types, so unpack first then check type
                 return result
             }
-        } else if T.self is Symbol.Type {
+        case is Symbol.Type:
             if symbolDescriptorTypes.contains(desc.descriptorType) {
                 return self.unpackAsSymbol(desc) as! T
             }
-        } else if T.self == Date.self {
+        case is Date.Type, is NSDate.Type:
              if let result = desc.dateValue {
                  return result as! T
              }
-        } else if T.self == URL.self {
+        case is URL.Type, is NSURL.Type: // TO DO: add separate case for NSURL that preserves bookmark info? (problem: unless fileURLValue preserves alias info itself [which it won't], there's a potential race condition between time typeAlias descriptor was coerced down to typeFileURL and the time the NSURL is instantiated and its bookmark set - if the file moves in that time, the new NSURL will have invalid bookmark)
              if let result = desc.fileURLValue { // note: this coerces all file system-related descriptors down to typeFileURL before unpacking them, so typeAlias/typeBookmarkData (which identify a file system object, not location) descriptors won't round-trip and the resulting URL will only describe the file's location at the time the descriptor was unpacked. This loss of descriptor type/representation information might prove a problem for some older Carbon apps that don't like receiving typeFileURL descriptors when the URL is repacked, but it remains to be seen if this warrants a built-in workaround (e.g. adding an option to return an NSURL which, unlike URL, can hold bookmark data too, or even subclassing NSURL to retain the original descriptor for reuse when repacked)
                  return result as! T
             }
-        } else if T.self == Int8.self { // lack of common protocols on Integer types is a pain
+        case is Int8.Type: // lack of common protocols on Integer types is a pain
             if let n = self.unpackAsInt(desc), let result = Int8(exactly: n) {
                 return result as! T
             }
-        } else if T.self == Int16.self {
+        case is Int16.Type:
             if let n = self.unpackAsInt(desc), let result = Int16(exactly: n) {
                 return result as! T
             }
-        } else if T.self == Int32.self {
+        case is Int32.Type:
             if let n = self.unpackAsInt(desc), let result = Int32(exactly: n) {
                 return result as! T
             }
-        } else if T.self == Int64.self {
+        case is Int64.Type:
             if let n = self.unpackAsInt(desc), let result = Int64(exactly: n) {
                 return result as! T
             }
-        } else if T.self == UInt8.self {
+        case is UInt8.Type:
             if let n = self.unpackAsUInt(desc), let result = UInt8(exactly: n) {
                 return result as! T
             }
-        } else if T.self == UInt16.self {
+        case is UInt16.Type:
             if let n = self.unpackAsUInt(desc), let result = UInt16(exactly: n) {
                 return result as! T
             }
-        } else if T.self == UInt32.self {
+        case is UInt32.Type:
             if let n = self.unpackAsUInt(desc), let result = UInt32(exactly: n) {
                 return result as! T
             }
-        } else if T.self == UInt64.self {
+        case is UInt64.Type:
             if let n = self.unpackAsUInt(desc), let result = UInt64(exactly: n) {
                 return result as! T
             }
-        } else if T.self == Float.self {
+        case is Float.Type:
             if let doubleDesc = desc.coerce(toDescriptorType: typeIEEE64BitFloatingPoint),
                     let result = Float(exactly: doubleDesc.doubleValue) {
                 return result as! T
             }
-        } else if T.self == NSAppleEventDescriptor.self {
+        case is AnyHashable.Type:
+            if let result = try self.unpackAsAny(desc) as? AnyHashable {
+                return result as! T
+            }
+        case is NSNumber.Type:
+            switch desc.descriptorType {
+            case typeBoolean, typeTrue, typeFalse:
+                return NSNumber(value: desc.booleanValue) as! T
+            case typeSInt32, typeSInt16:
+                return NSNumber(value: desc.int32Value) as! T
+            case typeIEEE64BitFloatingPoint, typeIEEE32BitFloatingPoint, type128BitFloatingPoint:
+                return NSNumber(value: desc.doubleValue) as! T
+
+                
+            default:
+                ()
+                // TO DO: what to coerce to? [probably need to check ]
+            }
+        case is NSArray.Type:
+            return try self.unpack(desc) as Array<Any> as! T
+        case is NSSet.Type:
+            return try self.unpack(desc) as Set<AnyHashable> as! T
+        case is NSDictionary.Type:
+            return try self.unpack(desc) as Dictionary<Symbol,Any> as! T
+        case is NSAppleEventDescriptor.Type:
             return desc as! T
+        default:
+            ()
         }
         // desc couldn't be coerced to the specified type
         throw UnpackError(appData: self, descriptor: desc, type: T.self, message: "Can't coerce descriptor to \(T.self).")
@@ -404,7 +433,7 @@ open class AppData {
         if let intDesc = desc.coerce(toDescriptorType: typeSInt64) {
             var result: Int64 = 0
             (intDesc.data as NSData).getBytes(&result, length: MemoryLayout<Int64>.size)
-            return Int(result)
+            return Int(result) // caution: this assumes Int will always be 64-bit
         } else {
             return nil
         }
@@ -415,7 +444,7 @@ open class AppData {
         if let intDesc = desc.coerce(toDescriptorType: typeUInt64) {
             var result: UInt64 = 0
             (intDesc.data as NSData).getBytes(&result, length: MemoryLayout<UInt64>.size)
-            return UInt(result)
+            return UInt(result) // caution: this assumes UInt will always be 64-bit
         } else {
             return nil
         }
