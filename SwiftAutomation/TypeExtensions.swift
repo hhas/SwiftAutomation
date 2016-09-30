@@ -2,12 +2,10 @@
 //  TypeExtensions.swift
 //  SwiftAE
 //
+//  Extends Swift's generic Optional and collection types so that they pack and unpack themselves (since Swift lacks the dynamic introspection capabilities for AppData to determine how to pack and unpack them itself)
 //
 
 import Foundation
-
-
-// TO DO: implement `SelfPacking` on Range types which always throw a helpful error message should user accidentally write `elements[x...y]` instead of `elements[x,y]`? Currently passing a Range to `subscript[index:]` results in a general PackError("Can't pack as TYPE") when the specifier is used in a command; a message reminding users to construct by-range specifiers using `elements[FROM,TO]` syntax would help reduce confusion. Alternative, could implement a "NonPackable" protocol as an extension of Swift's standard Range types which `subscript[index:Any]` could check for itself and throw immediately if a range is passed (the only caveat is that since Swift's various Range structs don't share a common 'Range' protocol, it'll need to be added to each one separately).
 
 
 /******************************************************************************/

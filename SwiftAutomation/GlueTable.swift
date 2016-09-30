@@ -87,8 +87,8 @@ public class GlueTable {
                     // escape definitions that semi-overlap default definitions
                     if let desc = self.defaultTypesByName[name] {
                         if desc.typeCodeValue != code {
-                            term.name = self.keywordConverter.escapeName(name)
-                            name = term.name
+                            name = self.keywordConverter.escapeName(name)
+                            term.name = name
                         }
                     }
                     // add item
@@ -106,7 +106,7 @@ public class GlueTable {
                     if let desc = self.defaultTypesByName[name] {
                         if desc.typeCodeValue != code {
                             name = self.keywordConverter.escapeName(name)
-                            name = term.name
+                            term.name = name
                         }
                     }
                 }

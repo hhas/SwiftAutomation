@@ -9,9 +9,7 @@ import Carbon
 
 // TO DO: neither parser has been thoroughly tested to ensure correct results when multiple terminologies are given (e.g. if app also has scriptable plugins)
 
-
-
-// TO DO: does getting sdef via (ascr/gsdf?) Apple event work now?
+// TO DO: the SDEF parser currently ignores `event` elements, on the assumption those are ONLY intended to be implemented as handlers in an OSA script and WON'T ever work as commands (OTOH, the AETE parser will include them because AETEs don't distinguish between command and event definitions, so macOS's SDEF-to-AETE converter will represent event handler definitions as command definitions)
 
 
 
@@ -53,6 +51,9 @@ public class SDEFParser: NSObject, XMLParserDelegate, ApplicationTerminology {
             switch tagName {
             case "class", "record-type", "value-type":
                 let (name, code) = try self.parseKeywordTerm(tagName, attributes: attributes)
+                
+                // TO DO: need to disambiguate if name or code collides with builtins
+                
                 self.types.append(KeywordTerm(name: self.keywordConverter.convertSpecifierName(name), kind: .elementOrType, code: code))
                 if tagName == "class" { // use plural class name as elements name (if not given, append "s" to singular name) // TO DO: check SIG/SDEF spec, as appending 's' doesn't work so well for names already ending in 's' (e.g. 'print settings')
                     let plural = attributes["plural"] ?? ""
@@ -90,7 +91,7 @@ public class SDEFParser: NSObject, XMLParserDelegate, ApplicationTerminology {
                 if previousDef == nil || (previousDef!.eventClass == eventClass && previousDef!.eventID == eventID) {
                     currentCommand = CommandTerm(name: self.keywordConverter.convertSpecifierName(name), eventClass: eventClass, eventID: eventID)
                     commandsDict[name] = currentCommand
-                } else {
+                } else { // ignore duplicate declaration
                     currentCommand = nil
                 }
             case "parameter":
@@ -105,6 +106,13 @@ public class SDEFParser: NSObject, XMLParserDelegate, ApplicationTerminology {
              print(error)
         }
     }
+    
+    public func parser(_ parser: XMLParser, didEndElement tagName: String,
+                                                     namespaceURI: String?,
+                                              qualifiedName qName: String?) {
+        if tagName == "command" { currentCommand = nil }
+    }
+
     
     // used by parser() callback
     func parseKeywordTerm(_ tagName: String, attributes: [String:String]) throws -> (String, OSType) {

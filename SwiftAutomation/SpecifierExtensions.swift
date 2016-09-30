@@ -110,7 +110,7 @@ public extension ObjectSpecifierExtension {
 /******************************************************************************/
 // Multi-element specifier; represents a one-to-many relationship between nodes in the app's AEOM graph
 
-public protocol ElementsSpecifierExtension: ObjectSpecifierExtension {}
+public protocol ElementsSpecifierExtension: ObjectSpecifierExtension {} // TO DO: rename `MultiObjectSpecifierExtension` for consistency with naming elsewhere
 
 extension ElementsSpecifierExtension {
 

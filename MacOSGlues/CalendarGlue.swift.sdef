@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE dictionary SYSTEM "file://localhost/System/Library/DTDs/sdef.dtd">
+
+<dictionary xmlns:xi="http://www.w3.org/2003/XInclude">
+    <suite name="Standard Suite" code="????" description="Common classes and commands for all applications.">
+        <xi:include href="file:///System/Library/ScriptingDefinitions/CocoaStandard.sdef" xpointer="xpointer(/dictionary/suite/node()[not(self::command and @name = 'save')])"></xi:include>
+    </suite>
+    <suite name="iCal" code="wrbt" description="iCal classes and commands">
+        <value-type name="RGBColor" code="cRGB">
+            <cocoa class="NSColor"></cocoa>
+        </value-type>
+        <enumeration name="CALParticipationStatus" code="wre6">
+            <enumerator name="CAL.unknown" code="E6na" description="No anwser yet"></enumerator>
+            <enumerator name="CAL.accepted" code="E6ap" description="Invitation has been accepted"></enumerator>
+            <enumerator name="CAL.declined" code="E6dp" description="Invitation has been declined"></enumerator>
+            <enumerator name="CAL.tentative" code="E6tp" description="Invitation has been tentatively accepted"></enumerator>
+        </enumeration>
+        <enumeration name="CALStatusType" code="wre4">
+            <enumerator name="CAL.cancelled" code="E4ca" description="A cancelled event"></enumerator>
+            <enumerator name="CAL.confirmed" code="E4cn" description="A confirmed event"></enumerator>
+            <enumerator name="CAL.none" code="E4no" description="An event without status"></enumerator>
+            <enumerator name="CAL.tentative" code="E4te" description="A tentative event"></enumerator>
+        </enumeration>
+        <enumeration name="CALPriorities" code="wrp1">
+            <enumerator name="CAL.noPriority" code="tdp0" description="No priority"></enumerator>
+            <enumerator name="CAL.lowPriority" code="tdp9" description="Low priority"></enumerator>
+            <enumerator name="CAL.mediumPriority" code="tdp5" description="Medium priority"></enumerator>
+            <enumerator name="CAL.highPriority" code="tdp1" description="High priority"></enumerator>
+        </enumeration>
+        <enumeration name="CALViewTypeForScripting" code="wre5">
+            <enumerator name="CAL.dayView" code="E5da" description="The iCal day view"></enumerator>
+            <enumerator name="CAL.weekView" code="E5we" description="The iCal week view"></enumerator>
+            <enumerator name="CAL.monthView" code="E5mo" description="The iCal month view"></enumerator>
+        </enumeration>
+        <class-extension extends="application" description="This class represents iCal.">
+            <access-group identifier="com.apple.iCal.read" access="r"></access-group>
+            <access-group identifier="com.apple.iCal.read-write" access="rw"></access-group>
+            <cocoa class="CALApplication"></cocoa>
+            <element type="calendar">
+                <cocoa key="orderedCalendars"></cocoa>
+            </element>
+            <property name="progression" code="wrp2" hidden="yes" type="real" description="Obsolete">
+                <cocoa key="progressionForScripting"></cocoa>
+            </property>
+            <property name="allowCancel" code="wrp3" hidden="yes" type="boolean" description="Obsolete">
+                <cocoa key="allowImportCancelForScripting"></cocoa>
+            </property>
+            <responds-to command="open">
+                <cocoa method="openCommand:"></cocoa>
+            </responds-to>
+            <responds-to command="createCalendar">
+                <cocoa method="newcalendarCommand:"></cocoa>
+            </responds-to>
+            <responds-to command="viewCalendar">
+                <cocoa method="goToDateCommand:"></cocoa>
+            </responds-to>
+            <responds-to command="switchView">
+                <cocoa method="goToViewCommand:"></cocoa>
+            </responds-to>
+            <responds-to command="reloadCalendars">
+                <cocoa method="reloadCalsForScripting:"></cocoa>
+            </responds-to>
+            <responds-to command="save">
+                <cocoa method="saveForScripting:"></cocoa>
+            </responds-to>
+        </class-extension>
+        <class name="calendar" code="wres" description="This class represents a calendar.">
+            <access-group identifier="com.apple.iCal.read" access="r"></access-group>
+            <access-group identifier="com.apple.iCal.read-write" access="rw"></access-group>
+            <cocoa class="CalManagedNode"></cocoa>
+            <element type="todo">
+                <cocoa key="tasksForScripting"></cocoa>
+            </element>
+            <element type="event">
+                <cocoa key="eventsForScripting"></cocoa>
+            </element>
+            <property name="name" code="pnam" type="text" description="This is the calendar title.">
+                <cocoa key="titleForScripting"></cocoa>
+            </property>
+            <property name="title" code="wr02" type="text" hidden="yes" description="This is the calendar title.">
+                <cocoa key="titleForScripting"></cocoa>
+            </property>
+            <property name="color" code="colr" type="RGB color" description="The calendar color.">
+                <cocoa key="colorForScripting"></cocoa>
+            </property>
+            <property name="uid" code="ID  " access="r" type="text" description="An unique calendar key">
+                <synonym code="wr10"></synonym>
+            </property>
+            <property name="writable" code="wr05" access="r" type="boolean" description="This is the calendar title.">
+                <cocoa key="writableForScripting"></cocoa>
+            </property>
+            <property name="description_" code="wr12" type="text" description="This is the calendar description.">
+                <cocoa key="descForScripting"></cocoa>
+            </property>
+        </class>
+        <class name="displayAlarm" code="wal1" description="This class represents a message alarm.">
+            <access-group identifier="com.apple.iCal.read" access="r"></access-group>
+            <access-group identifier="com.apple.iCal.read-write" access="rw"></access-group>
+            <cocoa class="CoreDisplayAlarm"></cocoa>
+            <property name="triggerInterval" code="wald" type="integer" description="The interval in minutes between the event and the alarm: (positive for alarm that trigger after the event date or negative for alarms that trigger before).">
+                <cocoa key="triggerDuration"></cocoa>
+            </property>
+            <property name="triggerDate" code="wale" type="date" description="An absolute alarm date.">
+                <cocoa key="triggerDate"></cocoa>
+            </property>
+        </class>
+        <class name="mailAlarm" code="wal2" description="This class represents a mail alarm.">
+            <access-group identifier="com.apple.iCal.read" access="r"></access-group>
+            <access-group identifier="com.apple.iCal.read-write" access="rw"></access-group>
+            <cocoa class="CoreMailAlarm"></cocoa>
+            <property name="triggerInterval" code="wald" type="integer" description="The interval in minutes between the event and the alarm: (positive for alarm that trigger after the event date or negative for alarms that trigger before).">
+                <cocoa key="triggerDuration"></cocoa>
+            </property>
+            <property name="triggerDate" code="wale" type="date" description="An absolute alarm date.">
+                <cocoa key="triggerDate"></cocoa>
+            </property>
+        </class>
+        <class name="soundAlarm" code="wal4" description="This class represents a sound alarm.">
+            <access-group identifier="com.apple.iCal.read" access="r"></access-group>
+            <access-group identifier="com.apple.iCal.read-write" access="rw"></access-group>
+            <cocoa class="CoreSoundAlarm"></cocoa>
+            <property name="triggerInterval" code="wald" type="integer" description="The interval in minutes between the event and the alarm: (positive for alarm that trigger after the event date or negative for alarms that trigger before).">
+                <cocoa key="triggerDuration"></cocoa>
+            </property>
+            <property name="triggerDate" code="wale" type="date" description="An absolute alarm date.">
+                <cocoa key="triggerDate"></cocoa>
+            </property>
+            <property name="soundName" code="wals" type="text" description="The system sound name to be used for the alarm">
+                <cocoa key="soundName"></cocoa>
+            </property>
+            <property name="soundFile" code="walf" type="text" description="The (POSIX) path to the sound file to be used for the alarm">
+                <cocoa key="soundFile"></cocoa>
+            </property>
+        </class>
+        <class name="openFileAlarm" code="wal3" description="This class represents an 'open file' alarm.">
+            <access-group identifier="com.apple.iCal.read" access="r"></access-group>
+            <access-group identifier="com.apple.iCal.read-write" access="rw"></access-group>
+            <cocoa class="CoreProcAlarm"></cocoa>
+            <property name="triggerInterval" code="wald" type="integer" description="The interval in minutes between the event and the alarm: (positive for alarm that trigger after the event date or negative for alarms that trigger before).">
+                <cocoa key="triggerDuration"></cocoa>
+            </property>
+            <property name="triggerDate" code="wale" type="date" description="An absolute alarm date.">
+                <cocoa key="triggerDate"></cocoa>
+            </property>
+            <property name="filepath" code="walp" type="text" description="The (POSIX) path to be opened by the alarm">
+                <cocoa key="execPath"></cocoa>
+            </property>
+        </class>
+        <class name="attendee" code="wrea" description="This class represents a attendee.">
+            <access-group identifier="com.apple.iCal.read" access="r"></access-group>
+            <access-group identifier="com.apple.iCal.read-write" access="rw"></access-group>
+            <cocoa class="CALAddress"></cocoa>
+            <property name="displayName" code="wra1" access="r" type="text" description="The first and last name of the attendee.">
+                <cocoa key="commonNameForScripting"></cocoa>
+            </property>
+            <property name="email" code="wra2" access="r" type="text" description="e-mail of the attendee.">
+                <cocoa key="mailStringForScripting"></cocoa>
+            </property>
+            <property name="participationStatus" access="r" code="wra3" type="CALParticipationStatus" description="The invitation status for the attendee.">
+                <cocoa key="participationStatusForScripting"></cocoa>
+            </property>
+        </class>
+        <class name="event" code="wrev" description="This class represents an event.">
+            <access-group identifier="com.apple.iCal.read" access="r"></access-group>
+            <access-group identifier="com.apple.iCal.read-write" access="rw"></access-group>
+            <cocoa class="CoreEvent"></cocoa>
+            <element type="attendee">
+                <cocoa key="attendeesForScripting"></cocoa>
+            </element>
+            <element type="displayAlarm">
+                <cocoa key="messageAlarmsForScripting"></cocoa>
+            </element>
+            <element type="mailAlarm">
+                <cocoa key="mailAlarmsForScripting"></cocoa>
+            </element>
+            <element type="openFileAlarm">
+                <cocoa key="procAlarmsForScripting"></cocoa>
+            </element>
+            <element type="soundAlarm">
+                <cocoa key="soundAlarmsForScripting"></cocoa>
+            </element>
+            <property name="description_" code="wr12" type="text" description="The events notes.">
+                <cocoa key="desc"></cocoa>
+            </property>
+            <property name="startDate" code="wr1s" type="date" description="The event start date.">
+                <cocoa key="startNSCalendarDateForScripting"></cocoa>
+            </property>
+            <property name="endDate" code="wr5s" type="date" description="The event end date.">
+                <cocoa key="endNSCalendarDateForScripting"></cocoa>
+            </property>
+            <property name="alldayEvent" code="wrad" type="boolean" description="True if the event is an all-day event">
+                <cocoa key="fullDayEventForScripting"></cocoa>
+            </property>
+            <property name="recurrence" code="wr15" type="text" description="The iCalendar (RFC 2445) string describing the event recurrence, if defined">
+                <cocoa key="recurrenceScripting"></cocoa>
+            </property>
+            <property name="sequence" code="wr13" access="r" type="integer" description="The event version.">
+                <cocoa key="sequenceForScripting"></cocoa>
+            </property>
+            <property name="stampDate" code="wr4s" type="date" description="The event modification date.">
+                <cocoa key="stampNSCalendarDateForScripting"></cocoa>
+            </property>
+            <property name="excludedDates" code="wr2s" description="The exception dates.">
+                <type type="date" list="yes"></type>
+                <cocoa key="exceptionNSCalendarDatesForScripting"></cocoa>
+            </property>
+            <property name="status" code="wre4" type="CALStatusType" description="The event status.">
+                <cocoa key="statusForScripting"></cocoa>
+            </property>
+            <property name="summary" code="wr11" type="text" description="This is the event summary.">
+                <cocoa key="summaryForScripting"></cocoa>
+            </property>
+            <property name="location" code="wr14" type="text" description="This is the event location.">
+                <cocoa key="locationForScripting"></cocoa>
+            </property>
+            <property name="uid" code="ID  " access="r" type="text" description="An unique todo key.">
+                <cocoa key="uidForScripting"></cocoa>
+                <synonym code="wr10"></synonym>
+            </property>
+            <property name="url" code="wr16" access="rw" type="text" description="The URL associated to the event.">
+                <cocoa key="urlForScripting"></cocoa>
+            </property>
+            <responds-to command="show">
+                <cocoa method="showEntityCommand:"></cocoa>
+            </responds-to>
+        </class>
+        <command name="createCalendar" code="wrbtaec2" description="Creates a new calendar (obsolete, will be removed in next release)">
+            <access-group identifier="com.apple.iCal.read-write" access="rw"></access-group>
+            <parameter name="withName:" code="wtnm" optional="yes" type="text" description="the calendar new name">
+                <cocoa key="WithName"></cocoa>
+            </parameter>
+        </command>
+        <command name="reloadCalendars" code="wrbtaec8" description="Tell the application to reload all calendar files contents">
+            <access-group identifier="com.apple.iCal.UI" access="rw"></access-group>
+        </command>
+        <command name="switchView" code="wrbtaeca" description="Show calendar on the given view">
+            <access-group identifier="com.apple.iCal.UI" access="rw"></access-group>
+            <parameter name="to:" code="wre5" type="CALViewTypeForScripting" description="the calendar view to be displayed">
+                <cocoa key="toView"></cocoa>
+            </parameter>
+        </command>
+        <command name="viewCalendar" code="wrbtaec9" description="Show calendar on the given date">
+            <access-group identifier="com.apple.iCal.UI" access="rw"></access-group>
+            <parameter name="at:" code="wtdt" type="date" description="the date to be displayed">
+                <cocoa key="toDate"></cocoa>
+            </parameter>
+        </command>
+        <command name="GetURL" code="GURLGURL" description="Subscribe to a remote calendar through a webcal or http URL">
+            <access-group identifier="com.apple.iCal.read-write" access="rw"></access-group>
+            <cocoa class="CALScriptGetURLCommand"></cocoa>
+            <direct-parameter type="text" description="the iCal URL"></direct-parameter>
+        </command>
+        <command name="show" code="wrbtaec3" description="Show the event or to-do in the calendar window">
+            <access-group identifier="com.apple.iCal.UI" access="rw"></access-group>
+            <direct-parameter type="specifier" description="the item"></direct-parameter>
+        </command>
+        <command name="make" code="corecrel" hidden="yes">
+            <access-group identifier="com.apple.iCal.read-write" access="rw"></access-group>
+            <cocoa class="CalScriptCreateCommand"></cocoa>
+            <parameter name="new:" code="kocl" type="type" description="The class of the new object.">
+                <cocoa key="ObjectClass"></cocoa>
+            </parameter>
+            <parameter name="at:" code="insh" type="location specifier" optional="yes" description="The location at which to insert the object.">
+                <cocoa key="Location"></cocoa>
+            </parameter>
+            <parameter name="withData:" code="data" type="any" optional="yes" description="The initial contents of the object.">
+                <cocoa key="ObjectData"></cocoa>
+            </parameter>
+            <parameter name="withProperties:" code="prdt" type="record" optional="yes" description="The initial values for properties of the object.">
+                <cocoa key="KeyDictionary"></cocoa>
+            </parameter>
+            <result type="specifier" description="The new object."></result>
+        </command>
+        <command name="save" code="coresave" hidden="yes">
+            <access-group identifier="com.apple.iCal.read-write" access="rw"></access-group>
+        </command>
+    </suite>
+</dictionary>

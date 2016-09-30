@@ -11,21 +11,10 @@ import Foundation
 
 
 /******************************************************************************/
-// Untargeted AppData instance used in App, Con, Its roots; also used by Application constructors to create their own targeted AppData instances
+// Create an untargeted AppData instance for use in App, Con, Its roots,
+// and in Application initializers to create targeted AppData instances.
 
-private let gUntargetedAppData = AppData(glueClasses: GlueClasses(insertionSpecifierType: AEInsertion.self,
-                                                                  objectSpecifierType: AEItem.self,
-                                                                  multiObjectSpecifierType: AEItems.self,
-                                                                  rootSpecifierType: AERoot.self,
-                                                                  applicationType: AEApplication.self,
-                                                                  symbolType: AESymbol.self,
-                                                                  formatter: gSpecifierFormatter))
-
-
-/******************************************************************************/
-// Specifier formatter
-
-private let gSpecifierFormatter = SpecifierFormatter(applicationClassName: "AEApplication",
+private let _specifierFormatter = SpecifierFormatter(applicationClassName: "AEApplication",
                                                      classNamePrefix: "AE",
                                                      typeNames: [
                                                                      0x616c6973: "alias", // "alis"
@@ -140,6 +129,16 @@ private let gSpecifierFormatter = SpecifierFormatter(applicationClassName: "AEAp
                                                      elementsNames: [
                                                                      0x636f626a: "items", // "cobj"
                                                      ])
+
+private let _glueClasses = GlueClasses(insertionSpecifierType: AEInsertion.self,
+                                       objectSpecifierType: AEItem.self,
+                                       multiObjectSpecifierType: AEItems.self,
+                                       rootSpecifierType: AERoot.self,
+                                       applicationType: AEApplication.self,
+                                       symbolType: AESymbol.self,
+                                       formatter: _specifierFormatter)
+
+private let _untargetedAppData = AppData(glueClasses: _glueClasses)
 
 
 /******************************************************************************/
@@ -369,7 +368,6 @@ public class AESymbol: Symbol {
 public typealias AE = AESymbol // allows symbols to be written as (e.g.) AE.name instead of AESymbol.name
 
 
-
 /******************************************************************************/
 // Specifier extensions; these add command methods and property/elements getters based on built-in terminology
 
@@ -558,16 +556,14 @@ extension AEObject {
 public class AEInsertion: InsertionSpecifier, AECommand {}
 
 
-// by index/name/id/previous/next
-// first/middle/last/any
+// property/by-index/by-name/by-id/previous/next/first/middle/last/any
 public class AEItem: ObjectSpecifier, AEObject {
     public typealias InsertionSpecifierType = AEInsertion
     public typealias ObjectSpecifierType = AEItem
     public typealias MultipleObjectSpecifierType = AEItems
 }
 
-// by range/test
-// all
+// by-range/by-test/all
 public class AEItems: AEItem, ElementsSpecifierExtension {}
 
 // App/Con/Its
@@ -575,17 +571,17 @@ public class AERoot: RootSpecifier, AEObject, RootSpecifierExtension {
     public typealias InsertionSpecifierType = AEInsertion
     public typealias ObjectSpecifierType = AEItem
     public typealias MultipleObjectSpecifierType = AEItems
-    public override class var untargetedAppData: AppData { return gUntargetedAppData }
+    public override class var untargetedAppData: AppData { return _untargetedAppData }
 }
 
-// application
+// Application
 public class AEApplication: AERoot, ApplicationExtension {}
 
 // App/Con/Its root objects used to construct untargeted specifiers; these can be used to construct specifiers for use in commands, though cannot send commands themselves
 
-public let AEApp = gUntargetedAppData.app as! AERoot
-public let AECon = gUntargetedAppData.con as! AERoot
-public let AEIts = gUntargetedAppData.its as! AERoot
+public let AEApp = _untargetedAppData.app as! AERoot
+public let AECon = _untargetedAppData.con as! AERoot
+public let AEIts = _untargetedAppData.its as! AERoot
 
 
 /******************************************************************************/

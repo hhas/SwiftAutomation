@@ -66,6 +66,8 @@ import AppKit
 
 // TO DO: Mirror support? currently playground displays a list of specifiers as `[{{...}},{{...}},...]`, although they print() fine elsewhere
 
+// TO DO: send methods should trap errors and rethrow as CommandError that describes the failed command
+
 
 /******************************************************************************/
 // abstract base class for _all_ specifier and test clause subclasses

@@ -1,10 +1,8 @@
 # Creating and using static glues
 
+[TO DO: TBC]
+
 ## Generating a glue
-
-[TO DO: update]
-
-
 
 The SwiftAutomation framework bundle includes an `aeglue` tool for generating static glue files containing high-level terminology-based APIs.
 
@@ -20,12 +18,16 @@ Glue files follow a standard <code><var>NAME</var>Glue.swift</code> naming conve
 
   aeglue TextEdit
 
-If an identically named file already exists at the same location, `aeglue` will normally fail with a "path already exists" error. If you wish to force it to overwrite the existing folder without warning, add an `-r` option:
+If an identically named file already exists at the same location, `aeglue` will normally fail with a "path already exists" error. To overwrite the existing file with no warning, add an `-r` option:
 
   aeglue -r TextEdit
 
+To write the file to a different directory, use the `-o` option. For example, to create a new `iTunesGlue.swift` file on your desktop:
 
-## Viewing application documentation
+  aeglue -o ~/Desktop TextEdit
+
+
+## Getting application documentation
 
 In addition to generating the glue file, the `aeglue` tool also creates a <code><var>NAME</var>Glue.swift.sdef</code> file containing the application dictionary (interface documentation), reformatted for use with SwiftAutomation. For example, to view the `TextEditGlue.swift` terminology in Script Editor: 
 
@@ -63,38 +65,86 @@ Each glue also defines:
 
 ## Customizing glues
 
-If the default three-letter prefix is unsuitable for use, use the `-p` option to specify a custom prefix. The following command creates a new `TextEditGlue.swift` file on your desktop, using the class name prefix `TE`:
+If the default three-letter prefix is unsuitable for use, use the `-p` option to specify a custom prefix. The following command creates a new `TextEditGlue.swift` file that uses the class name prefix `TE`:
 
-  aeglue -p TE -o ~/Desktop TextEdit
+  aeglue -p TE TextEdit
 
 For compatibility, `aeglue` normally sends the application an `ascr/gdte` event to retrieve its terminology in AETE format. However, some Carbon-based applications (e.g. Finder) may have buggy `ascr/gdte` event handlers that return Cocoa Scripting's default terminology instead of the application's own. To work around this, add an `-S` option to retrieve the terminology in SDEF format instead:
 
   aeglue -S Finder
 
-(Be aware that macOS's AETE-to-SDEF converter is not 100% reliable; for example, some four-char codes may fail to translate, in which case `aeglue` will warn of their omission. You'll have to correct the glue files manually should you need to use the affected features, or use SwiftAutomation's lower-level `OSType`-based APIs instead.)
+The `-S` option may be quicker when generating glues for CocoaScripting-based apps which already contain SDEF resources. When using the `-S` option to work around buggy `ascr/gdte` event handlers in AETE-based Carbon apps, be aware that macOS's AETE-to-SDEF converter is not 100% reliable. For example, four-char code strings containing non-printing characters fail to appear in the generated SDEF XML, in which case `aeglue` will warn of their omission and you'll have to correct the glue files manually or use SwiftAutomation's lower-level `OSType`-based APIs in order to access the affected objects/commands.
 
-[TO DO: how to add custom enum, struct, typealias definitions]
+
+## Improving type system integration
+
+The `aeglue` tool's `-e`, `-s`, and `-t` options can be used to insert custom Swift enums, structs, and typealiases in the generated glue files for improved integration between Swift's strong, static type system and the Apple Event Manager's weak, dynamic types. Each option may appear any number of times and takes a format string as argument.
+
+
+### Enumerated types
+
+[TO DO: "Swift often uses enumerated types... (aka tagged unions/sum types)"] Enumerated types enable commands whose results can have multiple types to return those values in a type-safe way.
+
+For example, if a command can return a `Symbol` _or_ a `String`, include the following `-e` option in the `aeglue` command:
+
+  -e Symbol+String
+
+The -e option's argument must have the following format:
+
+  [ENUMNAME=][CASE1:]TYPE1+[CASE1:]TYPE2+...
+
+`ENUMNAME` is the name to be given to the enumerated type, e.g. `MyType`. If omitted, a default name is automatically generated.
+
+`TYPEn` is the name of an existing Swift type, e.g. String or a standard SwiftAutomation type: `Symbol`, `Object`, `Insertion`, `Item`, or `Items` (the glue `PREFIX` will be added automatically). `CASEn` is the name of the case to which values of that type are assigned. If the `TYPE` is parameterized, e.g. `Array<String>`, the `CASE` name must also be given, otherwise it can be omitted and a default name will be derived from the `TYPE` name, e.g. `Int` -> `int`.
+
+For example, to define an enum named `FOOSymbolOrIntOrString`
+
+  aeglue -e Symbol+Int+String -p FOO 'Foo.app'
+	
+[TO DO: note that `Symbol` must come before `String`, to avoid type/enum codes being coerced to four-char-code strings (which AEM allows)]
+
+[TO DO: example of use]
+
+
+### Record structs
+
+While SwiftAutomation packs and unpacks Apple event records  as `Dictionary<PREFIXSymbol:Any>` values as standard, it is also possible to map part or all of a specific record structures to a Swift struct, simplifying member access and improving type safety.
+
+[TO DO: finish]
+
+### Type aliases
+
+The `-t` option adds a typealias to the glue file. For example, to define a typealias for `Array<String>` named `PREFIXStrings`:
+
+  -t 'Strings=Array<String>'
+
+The `-t` option's format string has the following structure:
+
+  ALIASNAME=TYPE
+
+The glue's `PREFIX` is added automatically to `ALIASNAME`, and to any reserved type names that appear within `TYPE`.
+
 
 
 ## Using a glue
 
 To include the generated glue file in your project:
 
-1. Right-click on the Classes group in the left-hand Groups &amp; Files pane of the Xcode project window, and select Add &gt; Existing Files... from the contextual menu.
+1. Right-click in the Project Navigator pane of the Xcode project window, and select Add Files to <var>PROJECT</var>... from the contextual menu.
 
 2. Select the generated glue file (e.g. `TextEditGlue.swift`) and click Add.
 
-3. In the following sheet, check the "Copy items into destination group's folder" and "Recursively create groups for any added folders" options, and click Add.
+3. In the following sheet, check the "Copy items into destination group's folder", and click Add.
 
 
-<p class="hilitebox">Note that subsequent code examples in this manual assume a standard glue file has already been generated and imported; e.g. TextEdit-based examples use a TextEdit glue with the prefix <code>TED</code>, Finder-based examples use a Finder glue with the prefix <code>FIN</code>, etc.</p>
+<p class="hilitebox">Subsequent code examples in this manual assume a standard glue file has already been generated and imported; e.g. TextEdit-based examples use a TextEdit glue with the prefix <code>TED</code>, Finder-based examples use a Finder glue with the prefix <code>FIN</code>, etc.</p>
 
 
 ## How keywords are converted
 
 [TO DO: review this once terminology parser is ported]
 
-Because scriptable applications' terminology resources supply class, property, command, etc. names in AppleScript keyword format, `aeglue` must convert these terms to valid Swift identifiers when generating the glue files and accompanying `.sdef` documentation file. For reference, here are the main conversion rules used:
+Because scriptable applications' terminology resources supply class, property, command, etc. names in AppleScript keyword format, `aeglue` must convert these terms to valid Swift identifiers when generating the glue file and accompanying `.sdef` documentation. For reference, here are the main conversion rules used:
 
 * Characters `a-z`, `A-Z`, `0-9`, and underscores (`_`) are preserved.
 
@@ -103,7 +153,7 @@ Because scriptable applications' terminology resources supply class, property, c
 * Any names that match Swift keywords or properties/methods already defined by SwiftAutomation classes have an underscore (`_`) appended to avoid conflict, e.g. `class` ➝ `class_`.
 
 
-Additional (though rarely needed) conversions rules:
+Some rarely encountered corner cases are dealt with by the following conversion rules:
 
 * Ampersands (`&amp;`) are replaced by the word 'And'.
 

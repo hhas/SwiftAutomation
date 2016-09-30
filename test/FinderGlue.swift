@@ -2,30 +2,19 @@
 //  FinderGlue.swift
 //  Finder.app 10.12
 //  SwiftAutomation.framework 0.1.0
-//  `aeglue -S 'Finder.app'`
+//  `aeglue -S -D 'Finder.app'`
 //
 
 
 import Foundation
-//import SwiftAutomation
 
-
-/******************************************************************************/
-// Untargeted AppData instance used in App, Con, Its roots; also used by Application constructors to create their own targeted AppData instances
-
-private let gUntargetedAppData = AppData(glueClasses: GlueClasses(insertionSpecifierType: FINInsertion.self,
-                                                                  objectSpecifierType: FINItem.self,
-                                                                  multiObjectSpecifierType: FINItems.self,
-                                                                  rootSpecifierType: FINRoot.self,
-                                                                  applicationType: Finder.self,
-                                                                  symbolType: FINSymbol.self,
-                                                                  formatter: gSpecifierFormatter))
 
 
 /******************************************************************************/
-// Specifier formatter
+// Create an untargeted AppData instance for use in App, Con, Its roots,
+// and in Application initializers to create targeted AppData instances.
 
-private let gSpecifierFormatter = SpecifierFormatter(applicationClassName: "Finder",
+private let _specifierFormatter = SpecifierFormatter(applicationClassName: "Finder",
                                                      classNamePrefix: "FIN",
                                                      typeNames: [
                                                                      0x69736162: "acceptsHighLevelEvents", // "isab"
@@ -517,6 +506,16 @@ private let gSpecifierFormatter = SpecifierFormatter(applicationClassName: "Find
                                                                      0x63747273: "trashObjects", // "ctrs"
                                                                      0x6377696e: "windows", // "cwin"
                                                      ])
+
+private let _glueClasses = GlueClasses(insertionSpecifierType: FINInsertion.self,
+                                       objectSpecifierType: FINItem.self,
+                                       multiObjectSpecifierType: FINItems.self,
+                                       rootSpecifierType: FINRoot.self,
+                                       applicationType: Finder.self,
+                                       symbolType: FINSymbol.self,
+                                       formatter: _specifierFormatter)
+
+private let _untargetedAppData = AppData(glueClasses: _glueClasses)
 
 
 /******************************************************************************/
@@ -1192,7 +1191,6 @@ public class FINSymbol: Symbol {
 }
 
 public typealias FIN = FINSymbol // allows symbols to be written as (e.g.) FIN.name instead of FINSymbol.name
-
 
 
 /******************************************************************************/
@@ -1966,16 +1964,14 @@ extension FINObject {
 public class FINInsertion: InsertionSpecifier, FINCommand {}
 
 
-// by index/name/id/previous/next
-// first/middle/last/any
+// property/by-index/by-name/by-id/previous/next/first/middle/last/any
 public class FINItem: ObjectSpecifier, FINObject {
     public typealias InsertionSpecifierType = FINInsertion
     public typealias ObjectSpecifierType = FINItem
     public typealias MultipleObjectSpecifierType = FINItems
 }
 
-// by range/test
-// all
+// by-range/by-test/all
 public class FINItems: FINItem, ElementsSpecifierExtension {}
 
 // App/Con/Its
@@ -1983,10 +1979,10 @@ public class FINRoot: RootSpecifier, FINObject, RootSpecifierExtension {
     public typealias InsertionSpecifierType = FINInsertion
     public typealias ObjectSpecifierType = FINItem
     public typealias MultipleObjectSpecifierType = FINItems
-    public override class var untargetedAppData: AppData { return gUntargetedAppData }
+    public override class var untargetedAppData: AppData { return _untargetedAppData }
 }
 
-// application
+// Application
 public class Finder: FINRoot, ApplicationExtension {
     public convenience init(launchOptions: LaunchOptions = DefaultLaunchOptions, relaunchMode: RelaunchMode = DefaultRelaunchMode) {
         self.init(rootObject: AppRootDesc, appData: type(of:self).untargetedAppData.targetedCopy(
@@ -1996,9 +1992,9 @@ public class Finder: FINRoot, ApplicationExtension {
 
 // App/Con/Its root objects used to construct untargeted specifiers; these can be used to construct specifiers for use in commands, though cannot send commands themselves
 
-public let FINApp = gUntargetedAppData.app as! FINRoot
-public let FINCon = gUntargetedAppData.con as! FINRoot
-public let FINIts = gUntargetedAppData.its as! FINRoot
+public let FINApp = _untargetedAppData.app as! FINRoot
+public let FINCon = _untargetedAppData.con as! FINRoot
+public let FINIts = _untargetedAppData.its as! FINRoot
 
 
 /******************************************************************************/

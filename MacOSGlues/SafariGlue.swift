@@ -1,8 +1,8 @@
 //
-//  TextEditGlue.swift
-//  TextEdit.app 1.12
+//  SafariGlue.swift
+//  Safari.app 10.0
 //  SwiftAutomation.framework 0.1.0
-//  `aeglue 'TextEdit.app'`
+//  `aeglue -S 'Safari.app'`
 //
 
 
@@ -14,8 +14,8 @@ import SwiftAutomation
 // Create an untargeted AppData instance for use in App, Con, Its roots,
 // and in Application initializers to create targeted AppData instances.
 
-private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(applicationClassName: "TextEdit",
-                                                     classNamePrefix: "TED",
+private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(applicationClassName: "Safari",
+                                                     classNamePrefix: "SAF",
                                                      typeNames: [
                                                                      0x616c6973: "alias", // "alis"
                                                                      0x2a2a2a2a: "anything", // "****"
@@ -40,6 +40,7 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x636f6c72: "color", // "colr"
                                                                      0x636c7274: "colorTable", // "clrt"
                                                                      0x6c776370: "copies", // "lwcp"
+                                                                     0x63546162: "currentTab", // "cTab"
                                                                      0x74646173: "dashStyle", // "tdas"
                                                                      0x74647461: "data", // "tdta"
                                                                      0x6c647420: "date", // "ldt\0x20"
@@ -134,12 +135,14 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x73696e67: "shortFloat", // "sing"
                                                                      0x73686f72: "shortInteger", // "shor"
                                                                      0x7074737a: "size", // "ptsz"
+                                                                     0x636f6e54: "source", // "conT"
                                                                      0x6c777374: "standard", // "lwst"
                                                                      0x6c776670: "startingPage", // "lwfp"
                                                                      0x54455854: "string", // "TEXT"
                                                                      0x7374796c: "styledClipboardText", // "styl"
                                                                      0x53545854: "styledText", // "STXT"
                                                                      0x73756e20: "Sunday", // "sun\0x20"
+                                                                     0x62546162: "tab", // "bTab"
                                                                      0x74727072: "targetPrinter", // "trpr"
                                                                      0x63747874: "text", // "ctxt"
                                                                      0x74737479: "textStyleInfo", // "tsty"
@@ -150,6 +153,7 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x74797065: "typeClass", // "type"
                                                                      0x75747874: "unicodeText", // "utxt"
                                                                      0x6d61676e: "unsignedInteger", // "magn"
+                                                                     0x7055524c: "URL", // "pURL"
                                                                      0x75743136: "utf16Text", // "ut16"
                                                                      0x75746638: "utf8Text", // "utf8"
                                                                      0x76657273: "version", // "vers"
@@ -170,6 +174,7 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x6c77636c: "collating", // "lwcl"
                                                                      0x636f6c72: "color", // "colr"
                                                                      0x6c776370: "copies", // "lwcp"
+                                                                     0x63546162: "currentTab", // "cTab"
                                                                      0x646f6375: "document", // "docu"
                                                                      0x6c776c70: "endingPage", // "lwlp"
                                                                      0x6c776568: "errorHandling", // "lweh"
@@ -192,10 +197,12 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x6c777174: "requestedPrintTime", // "lwqt"
                                                                      0x7072737a: "resizable", // "prsz"
                                                                      0x7074737a: "size", // "ptsz"
+                                                                     0x636f6e54: "source", // "conT"
                                                                      0x6c776670: "startingPage", // "lwfp"
                                                                      0x74727072: "targetPrinter", // "trpr"
                                                                      0x63747874: "text", // "ctxt"
                                                                      0x70746974: "titled", // "ptit"
+                                                                     0x7055524c: "URL", // "pURL"
                                                                      0x76657273: "version", // "vers"
                                                                      0x70766973: "visible", // "pvis"
                                                                      0x69737a6d: "zoomable", // "iszm"
@@ -203,38 +210,39 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                      ],
                                                      elementsNames: [
                                                                      0x63617070: "applications", // "capp"
-                                                                     0x61747473: "attachment", // "atts"
+                                                                     0x61747473: "attachments", // "atts"
                                                                      0x63617472: "attributeRuns", // "catr"
                                                                      0x63686120: "characters", // "cha\0x20"
                                                                      0x636f6c72: "colors", // "colr"
                                                                      0x646f6375: "documents", // "docu"
                                                                      0x636f626a: "items", // "cobj"
                                                                      0x63706172: "paragraphs", // "cpar"
-                                                                     0x70736574: "printSettings", // "pset"
-                                                                     0x63747874: "text", // "ctxt"
+                                                                     0x70736574: "printSettingss", // "pset"
+                                                                     0x62546162: "tabs", // "bTab"
+                                                                     0x63747874: "texts", // "ctxt"
                                                                      0x6377696e: "windows", // "cwin"
                                                                      0x63776f72: "words", // "cwor"
                                                      ])
 
-private let _glueClasses = SwiftAutomation.GlueClasses(insertionSpecifierType: TEDInsertion.self,
-                                       objectSpecifierType: TEDItem.self,
-                                       multiObjectSpecifierType: TEDItems.self,
-                                       rootSpecifierType: TEDRoot.self,
-                                       applicationType: TextEdit.self,
-                                       symbolType: TEDSymbol.self,
+private let _glueClasses = SwiftAutomation.GlueClasses(insertionSpecifierType: SAFInsertion.self,
+                                       objectSpecifierType: SAFItem.self,
+                                       multiObjectSpecifierType: SAFItems.self,
+                                       rootSpecifierType: SAFRoot.self,
+                                       applicationType: Safari.self,
+                                       symbolType: SAFSymbol.self,
                                        formatter: _specifierFormatter)
 
 private let _untargetedAppData = SwiftAutomation.AppData(glueClasses: _glueClasses)
 
 
 /******************************************************************************/
-// Symbol subclass defines static type/enum/property constants based on TextEdit.app terminology
+// Symbol subclass defines static type/enum/property constants based on Safari.app terminology
 
-public class TEDSymbol: SwiftAutomation.Symbol {
+public class SAFSymbol: SwiftAutomation.Symbol {
 
-    override public var typeAliasName: String {return "TED"}
+    override public var typeAliasName: String {return "SAF"}
 
-    public override class func symbol(code: OSType, type: OSType = typeType, descriptor: NSAppleEventDescriptor? = nil) -> TEDSymbol {
+    public override class func symbol(code: OSType, type: OSType = typeType, descriptor: NSAppleEventDescriptor? = nil) -> SAFSymbol {
         switch (code) {
         case 0x616c6973: return self.alias // "alis"
         case 0x2a2a2a2a: return self.anything // "****"
@@ -259,6 +267,7 @@ public class TEDSymbol: SwiftAutomation.Symbol {
         case 0x636f6c72: return self.color // "colr"
         case 0x636c7274: return self.colorTable // "clrt"
         case 0x6c776370: return self.copies // "lwcp"
+        case 0x63546162: return self.currentTab // "cTab"
         case 0x74646173: return self.dashStyle // "tdas"
         case 0x74647461: return self.data // "tdta"
         case 0x6c647420: return self.date // "ldt\0x20"
@@ -353,12 +362,14 @@ public class TEDSymbol: SwiftAutomation.Symbol {
         case 0x73696e67: return self.shortFloat // "sing"
         case 0x73686f72: return self.shortInteger // "shor"
         case 0x7074737a: return self.size // "ptsz"
+        case 0x636f6e54: return self.source // "conT"
         case 0x6c777374: return self.standard // "lwst"
         case 0x6c776670: return self.startingPage // "lwfp"
         case 0x54455854: return self.string // "TEXT"
         case 0x7374796c: return self.styledClipboardText // "styl"
         case 0x53545854: return self.styledText // "STXT"
         case 0x73756e20: return self.Sunday // "sun\0x20"
+        case 0x62546162: return self.tab // "bTab"
         case 0x74727072: return self.targetPrinter // "trpr"
         case 0x63747874: return self.text // "ctxt"
         case 0x74737479: return self.textStyleInfo // "tsty"
@@ -369,6 +380,7 @@ public class TEDSymbol: SwiftAutomation.Symbol {
         case 0x74797065: return self.typeClass // "type"
         case 0x75747874: return self.unicodeText // "utxt"
         case 0x6d61676e: return self.unsignedInteger // "magn"
+        case 0x7055524c: return self.URL // "pURL"
         case 0x75743136: return self.utf16Text // "ut16"
         case 0x75746638: return self.utf8Text // "utf8"
         case 0x76657273: return self.version // "vers"
@@ -381,171 +393,175 @@ public class TEDSymbol: SwiftAutomation.Symbol {
         case 0x79657320: return self.yes // "yes\0x20"
         case 0x69737a6d: return self.zoomable // "iszm"
         case 0x707a756d: return self.zoomed // "pzum"
-        default: return super.symbol(code: code, type: type, descriptor: descriptor) as! TEDSymbol
+        default: return super.symbol(code: code, type: type, descriptor: descriptor) as! SAFSymbol
         }
     }
 
     // Types/properties
-    public static let alias = TEDSymbol(name: "alias", code: 0x616c6973, type: typeType) // "alis"
-    public static let anything = TEDSymbol(name: "anything", code: 0x2a2a2a2a, type: typeType) // "****"
-    public static let application = TEDSymbol(name: "application", code: 0x63617070, type: typeType) // "capp"
-    public static let applicationBundleId = TEDSymbol(name: "applicationBundleId", code: 0x62756e64, type: typeType) // "bund"
-    public static let applicationSignature = TEDSymbol(name: "applicationSignature", code: 0x7369676e, type: typeType) // "sign"
-    public static let applicationUrl = TEDSymbol(name: "applicationUrl", code: 0x6170726c, type: typeType) // "aprl"
-    public static let April = TEDSymbol(name: "April", code: 0x61707220, type: typeType) // "apr\0x20"
-    public static let attachment = TEDSymbol(name: "attachment", code: 0x61747473, type: typeType) // "atts"
-    public static let attributeRun = TEDSymbol(name: "attributeRun", code: 0x63617472, type: typeType) // "catr"
-    public static let August = TEDSymbol(name: "August", code: 0x61756720, type: typeType) // "aug\0x20"
-    public static let best = TEDSymbol(name: "best", code: 0x62657374, type: typeType) // "best"
-    public static let boolean = TEDSymbol(name: "boolean", code: 0x626f6f6c, type: typeType) // "bool"
-    public static let boundingRectangle = TEDSymbol(name: "boundingRectangle", code: 0x71647274, type: typeType) // "qdrt"
-    public static let bounds = TEDSymbol(name: "bounds", code: 0x70626e64, type: typeType) // "pbnd"
-    public static let character = TEDSymbol(name: "character", code: 0x63686120, type: typeType) // "cha\0x20"
-    public static let class_ = TEDSymbol(name: "class_", code: 0x70636c73, type: typeType) // "pcls"
-    public static let closeable = TEDSymbol(name: "closeable", code: 0x68636c62, type: typeType) // "hclb"
-    public static let collating = TEDSymbol(name: "collating", code: 0x6c77636c, type: typeType) // "lwcl"
-    public static let color = TEDSymbol(name: "color", code: 0x636f6c72, type: typeType) // "colr"
-    public static let colorTable = TEDSymbol(name: "colorTable", code: 0x636c7274, type: typeType) // "clrt"
-    public static let copies = TEDSymbol(name: "copies", code: 0x6c776370, type: typeType) // "lwcp"
-    public static let dashStyle = TEDSymbol(name: "dashStyle", code: 0x74646173, type: typeType) // "tdas"
-    public static let data = TEDSymbol(name: "data", code: 0x74647461, type: typeType) // "tdta"
-    public static let date = TEDSymbol(name: "date", code: 0x6c647420, type: typeType) // "ldt\0x20"
-    public static let December = TEDSymbol(name: "December", code: 0x64656320, type: typeType) // "dec\0x20"
-    public static let decimalStruct = TEDSymbol(name: "decimalStruct", code: 0x6465636d, type: typeType) // "decm"
-    public static let document = TEDSymbol(name: "document", code: 0x646f6375, type: typeType) // "docu"
-    public static let doubleInteger = TEDSymbol(name: "doubleInteger", code: 0x636f6d70, type: typeType) // "comp"
-    public static let encodedString = TEDSymbol(name: "encodedString", code: 0x656e6373, type: typeType) // "encs"
-    public static let endingPage = TEDSymbol(name: "endingPage", code: 0x6c776c70, type: typeType) // "lwlp"
-    public static let enumerator = TEDSymbol(name: "enumerator", code: 0x656e756d, type: typeType) // "enum"
-    public static let EPSPicture = TEDSymbol(name: "EPSPicture", code: 0x45505320, type: typeType) // "EPS\0x20"
-    public static let errorHandling = TEDSymbol(name: "errorHandling", code: 0x6c776568, type: typeType) // "lweh"
-    public static let extendedFloat = TEDSymbol(name: "extendedFloat", code: 0x65787465, type: typeType) // "exte"
-    public static let faxNumber = TEDSymbol(name: "faxNumber", code: 0x6661786e, type: typeType) // "faxn"
-    public static let February = TEDSymbol(name: "February", code: 0x66656220, type: typeType) // "feb\0x20"
-    public static let fileName = TEDSymbol(name: "fileName", code: 0x6174666e, type: typeType) // "atfn"
-    public static let fileRef = TEDSymbol(name: "fileRef", code: 0x66737266, type: typeType) // "fsrf"
-    public static let fileSpecification = TEDSymbol(name: "fileSpecification", code: 0x66737320, type: typeType) // "fss\0x20"
-    public static let fileUrl = TEDSymbol(name: "fileUrl", code: 0x6675726c, type: typeType) // "furl"
-    public static let fixed = TEDSymbol(name: "fixed", code: 0x66697864, type: typeType) // "fixd"
-    public static let fixedPoint = TEDSymbol(name: "fixedPoint", code: 0x66706e74, type: typeType) // "fpnt"
-    public static let fixedRectangle = TEDSymbol(name: "fixedRectangle", code: 0x66726374, type: typeType) // "frct"
-    public static let float = TEDSymbol(name: "float", code: 0x646f7562, type: typeType) // "doub"
-    public static let float128bit = TEDSymbol(name: "float128bit", code: 0x6c64626c, type: typeType) // "ldbl"
-    public static let floating = TEDSymbol(name: "floating", code: 0x6973666c, type: typeType) // "isfl"
-    public static let font = TEDSymbol(name: "font", code: 0x666f6e74, type: typeType) // "font"
-    public static let Friday = TEDSymbol(name: "Friday", code: 0x66726920, type: typeType) // "fri\0x20"
-    public static let frontmost = TEDSymbol(name: "frontmost", code: 0x70697366, type: typeType) // "pisf"
-    public static let GIFPicture = TEDSymbol(name: "GIFPicture", code: 0x47494666, type: typeType) // "GIFf"
-    public static let graphicText = TEDSymbol(name: "graphicText", code: 0x63677478, type: typeType) // "cgtx"
-    public static let id = TEDSymbol(name: "id", code: 0x49442020, type: typeType) // "ID\0x20\0x20"
-    public static let index = TEDSymbol(name: "index", code: 0x70696478, type: typeType) // "pidx"
-    public static let integer = TEDSymbol(name: "integer", code: 0x6c6f6e67, type: typeType) // "long"
-    public static let internationalText = TEDSymbol(name: "internationalText", code: 0x69747874, type: typeType) // "itxt"
-    public static let internationalWritingCode = TEDSymbol(name: "internationalWritingCode", code: 0x696e746c, type: typeType) // "intl"
-    public static let item = TEDSymbol(name: "item", code: 0x636f626a, type: typeType) // "cobj"
-    public static let January = TEDSymbol(name: "January", code: 0x6a616e20, type: typeType) // "jan\0x20"
-    public static let JPEGPicture = TEDSymbol(name: "JPEGPicture", code: 0x4a504547, type: typeType) // "JPEG"
-    public static let July = TEDSymbol(name: "July", code: 0x6a756c20, type: typeType) // "jul\0x20"
-    public static let June = TEDSymbol(name: "June", code: 0x6a756e20, type: typeType) // "jun\0x20"
-    public static let kernelProcessId = TEDSymbol(name: "kernelProcessId", code: 0x6b706964, type: typeType) // "kpid"
-    public static let list = TEDSymbol(name: "list", code: 0x6c697374, type: typeType) // "list"
-    public static let locationReference = TEDSymbol(name: "locationReference", code: 0x696e736c, type: typeType) // "insl"
-    public static let longFixed = TEDSymbol(name: "longFixed", code: 0x6c667864, type: typeType) // "lfxd"
-    public static let longFixedPoint = TEDSymbol(name: "longFixedPoint", code: 0x6c667074, type: typeType) // "lfpt"
-    public static let longFixedRectangle = TEDSymbol(name: "longFixedRectangle", code: 0x6c667263, type: typeType) // "lfrc"
-    public static let longPoint = TEDSymbol(name: "longPoint", code: 0x6c706e74, type: typeType) // "lpnt"
-    public static let longRectangle = TEDSymbol(name: "longRectangle", code: 0x6c726374, type: typeType) // "lrct"
-    public static let machine = TEDSymbol(name: "machine", code: 0x6d616368, type: typeType) // "mach"
-    public static let machineLocation = TEDSymbol(name: "machineLocation", code: 0x6d4c6f63, type: typeType) // "mLoc"
-    public static let machPort = TEDSymbol(name: "machPort", code: 0x706f7274, type: typeType) // "port"
-    public static let March = TEDSymbol(name: "March", code: 0x6d617220, type: typeType) // "mar\0x20"
-    public static let May = TEDSymbol(name: "May", code: 0x6d617920, type: typeType) // "may\0x20"
-    public static let miniaturizable = TEDSymbol(name: "miniaturizable", code: 0x69736d6e, type: typeType) // "ismn"
-    public static let miniaturized = TEDSymbol(name: "miniaturized", code: 0x706d6e64, type: typeType) // "pmnd"
-    public static let modal = TEDSymbol(name: "modal", code: 0x706d6f64, type: typeType) // "pmod"
-    public static let modified = TEDSymbol(name: "modified", code: 0x696d6f64, type: typeType) // "imod"
-    public static let Monday = TEDSymbol(name: "Monday", code: 0x6d6f6e20, type: typeType) // "mon\0x20"
-    public static let name = TEDSymbol(name: "name", code: 0x706e616d, type: typeType) // "pnam"
-    public static let November = TEDSymbol(name: "November", code: 0x6e6f7620, type: typeType) // "nov\0x20"
-    public static let null = TEDSymbol(name: "null", code: 0x6e756c6c, type: typeType) // "null"
-    public static let October = TEDSymbol(name: "October", code: 0x6f637420, type: typeType) // "oct\0x20"
-    public static let pagesAcross = TEDSymbol(name: "pagesAcross", code: 0x6c776c61, type: typeType) // "lwla"
-    public static let pagesDown = TEDSymbol(name: "pagesDown", code: 0x6c776c64, type: typeType) // "lwld"
-    public static let paragraph = TEDSymbol(name: "paragraph", code: 0x63706172, type: typeType) // "cpar"
-    public static let path = TEDSymbol(name: "path", code: 0x70707468, type: typeType) // "ppth"
-    public static let PICTPicture = TEDSymbol(name: "PICTPicture", code: 0x50494354, type: typeType) // "PICT"
-    public static let pixelMapRecord = TEDSymbol(name: "pixelMapRecord", code: 0x74706d6d, type: typeType) // "tpmm"
-    public static let point = TEDSymbol(name: "point", code: 0x51447074, type: typeType) // "QDpt"
-    public static let printSettings = TEDSymbol(name: "printSettings", code: 0x70736574, type: typeType) // "pset"
-    public static let processSerialNumber = TEDSymbol(name: "processSerialNumber", code: 0x70736e20, type: typeType) // "psn\0x20"
-    public static let properties = TEDSymbol(name: "properties", code: 0x70414c4c, type: typeType) // "pALL"
-    public static let property_ = TEDSymbol(name: "property_", code: 0x70726f70, type: typeType) // "prop"
-    public static let record = TEDSymbol(name: "record", code: 0x7265636f, type: typeType) // "reco"
-    public static let reference = TEDSymbol(name: "reference", code: 0x6f626a20, type: typeType) // "obj\0x20"
-    public static let requestedPrintTime = TEDSymbol(name: "requestedPrintTime", code: 0x6c777174, type: typeType) // "lwqt"
-    public static let resizable = TEDSymbol(name: "resizable", code: 0x7072737a, type: typeType) // "prsz"
-    public static let RGB16Color = TEDSymbol(name: "RGB16Color", code: 0x74723136, type: typeType) // "tr16"
-    public static let RGB96Color = TEDSymbol(name: "RGB96Color", code: 0x74723936, type: typeType) // "tr96"
-    public static let RGBColor = TEDSymbol(name: "RGBColor", code: 0x63524742, type: typeType) // "cRGB"
-    public static let rotation = TEDSymbol(name: "rotation", code: 0x74726f74, type: typeType) // "trot"
-    public static let Saturday = TEDSymbol(name: "Saturday", code: 0x73617420, type: typeType) // "sat\0x20"
-    public static let script = TEDSymbol(name: "script", code: 0x73637074, type: typeType) // "scpt"
-    public static let September = TEDSymbol(name: "September", code: 0x73657020, type: typeType) // "sep\0x20"
-    public static let shortFloat = TEDSymbol(name: "shortFloat", code: 0x73696e67, type: typeType) // "sing"
-    public static let shortInteger = TEDSymbol(name: "shortInteger", code: 0x73686f72, type: typeType) // "shor"
-    public static let size = TEDSymbol(name: "size", code: 0x7074737a, type: typeType) // "ptsz"
-    public static let startingPage = TEDSymbol(name: "startingPage", code: 0x6c776670, type: typeType) // "lwfp"
-    public static let string = TEDSymbol(name: "string", code: 0x54455854, type: typeType) // "TEXT"
-    public static let styledClipboardText = TEDSymbol(name: "styledClipboardText", code: 0x7374796c, type: typeType) // "styl"
-    public static let styledText = TEDSymbol(name: "styledText", code: 0x53545854, type: typeType) // "STXT"
-    public static let Sunday = TEDSymbol(name: "Sunday", code: 0x73756e20, type: typeType) // "sun\0x20"
-    public static let targetPrinter = TEDSymbol(name: "targetPrinter", code: 0x74727072, type: typeType) // "trpr"
-    public static let text = TEDSymbol(name: "text", code: 0x63747874, type: typeType) // "ctxt"
-    public static let textStyleInfo = TEDSymbol(name: "textStyleInfo", code: 0x74737479, type: typeType) // "tsty"
-    public static let Thursday = TEDSymbol(name: "Thursday", code: 0x74687520, type: typeType) // "thu\0x20"
-    public static let TIFFPicture = TEDSymbol(name: "TIFFPicture", code: 0x54494646, type: typeType) // "TIFF"
-    public static let titled = TEDSymbol(name: "titled", code: 0x70746974, type: typeType) // "ptit"
-    public static let Tuesday = TEDSymbol(name: "Tuesday", code: 0x74756520, type: typeType) // "tue\0x20"
-    public static let typeClass = TEDSymbol(name: "typeClass", code: 0x74797065, type: typeType) // "type"
-    public static let unicodeText = TEDSymbol(name: "unicodeText", code: 0x75747874, type: typeType) // "utxt"
-    public static let unsignedInteger = TEDSymbol(name: "unsignedInteger", code: 0x6d61676e, type: typeType) // "magn"
-    public static let utf16Text = TEDSymbol(name: "utf16Text", code: 0x75743136, type: typeType) // "ut16"
-    public static let utf8Text = TEDSymbol(name: "utf8Text", code: 0x75746638, type: typeType) // "utf8"
-    public static let version = TEDSymbol(name: "version", code: 0x76657273, type: typeType) // "vers"
-    public static let visible = TEDSymbol(name: "visible", code: 0x70766973, type: typeType) // "pvis"
-    public static let Wednesday = TEDSymbol(name: "Wednesday", code: 0x77656420, type: typeType) // "wed\0x20"
-    public static let window = TEDSymbol(name: "window", code: 0x6377696e, type: typeType) // "cwin"
-    public static let word = TEDSymbol(name: "word", code: 0x63776f72, type: typeType) // "cwor"
-    public static let writingCode = TEDSymbol(name: "writingCode", code: 0x70736374, type: typeType) // "psct"
-    public static let zoomable = TEDSymbol(name: "zoomable", code: 0x69737a6d, type: typeType) // "iszm"
-    public static let zoomed = TEDSymbol(name: "zoomed", code: 0x707a756d, type: typeType) // "pzum"
+    public static let alias = SAFSymbol(name: "alias", code: 0x616c6973, type: typeType) // "alis"
+    public static let anything = SAFSymbol(name: "anything", code: 0x2a2a2a2a, type: typeType) // "****"
+    public static let application = SAFSymbol(name: "application", code: 0x63617070, type: typeType) // "capp"
+    public static let applicationBundleId = SAFSymbol(name: "applicationBundleId", code: 0x62756e64, type: typeType) // "bund"
+    public static let applicationSignature = SAFSymbol(name: "applicationSignature", code: 0x7369676e, type: typeType) // "sign"
+    public static let applicationUrl = SAFSymbol(name: "applicationUrl", code: 0x6170726c, type: typeType) // "aprl"
+    public static let April = SAFSymbol(name: "April", code: 0x61707220, type: typeType) // "apr\0x20"
+    public static let attachment = SAFSymbol(name: "attachment", code: 0x61747473, type: typeType) // "atts"
+    public static let attributeRun = SAFSymbol(name: "attributeRun", code: 0x63617472, type: typeType) // "catr"
+    public static let August = SAFSymbol(name: "August", code: 0x61756720, type: typeType) // "aug\0x20"
+    public static let best = SAFSymbol(name: "best", code: 0x62657374, type: typeType) // "best"
+    public static let boolean = SAFSymbol(name: "boolean", code: 0x626f6f6c, type: typeType) // "bool"
+    public static let boundingRectangle = SAFSymbol(name: "boundingRectangle", code: 0x71647274, type: typeType) // "qdrt"
+    public static let bounds = SAFSymbol(name: "bounds", code: 0x70626e64, type: typeType) // "pbnd"
+    public static let character = SAFSymbol(name: "character", code: 0x63686120, type: typeType) // "cha\0x20"
+    public static let class_ = SAFSymbol(name: "class_", code: 0x70636c73, type: typeType) // "pcls"
+    public static let closeable = SAFSymbol(name: "closeable", code: 0x68636c62, type: typeType) // "hclb"
+    public static let collating = SAFSymbol(name: "collating", code: 0x6c77636c, type: typeType) // "lwcl"
+    public static let color = SAFSymbol(name: "color", code: 0x636f6c72, type: typeType) // "colr"
+    public static let colorTable = SAFSymbol(name: "colorTable", code: 0x636c7274, type: typeType) // "clrt"
+    public static let copies = SAFSymbol(name: "copies", code: 0x6c776370, type: typeType) // "lwcp"
+    public static let currentTab = SAFSymbol(name: "currentTab", code: 0x63546162, type: typeType) // "cTab"
+    public static let dashStyle = SAFSymbol(name: "dashStyle", code: 0x74646173, type: typeType) // "tdas"
+    public static let data = SAFSymbol(name: "data", code: 0x74647461, type: typeType) // "tdta"
+    public static let date = SAFSymbol(name: "date", code: 0x6c647420, type: typeType) // "ldt\0x20"
+    public static let December = SAFSymbol(name: "December", code: 0x64656320, type: typeType) // "dec\0x20"
+    public static let decimalStruct = SAFSymbol(name: "decimalStruct", code: 0x6465636d, type: typeType) // "decm"
+    public static let document = SAFSymbol(name: "document", code: 0x646f6375, type: typeType) // "docu"
+    public static let doubleInteger = SAFSymbol(name: "doubleInteger", code: 0x636f6d70, type: typeType) // "comp"
+    public static let encodedString = SAFSymbol(name: "encodedString", code: 0x656e6373, type: typeType) // "encs"
+    public static let endingPage = SAFSymbol(name: "endingPage", code: 0x6c776c70, type: typeType) // "lwlp"
+    public static let enumerator = SAFSymbol(name: "enumerator", code: 0x656e756d, type: typeType) // "enum"
+    public static let EPSPicture = SAFSymbol(name: "EPSPicture", code: 0x45505320, type: typeType) // "EPS\0x20"
+    public static let errorHandling = SAFSymbol(name: "errorHandling", code: 0x6c776568, type: typeType) // "lweh"
+    public static let extendedFloat = SAFSymbol(name: "extendedFloat", code: 0x65787465, type: typeType) // "exte"
+    public static let faxNumber = SAFSymbol(name: "faxNumber", code: 0x6661786e, type: typeType) // "faxn"
+    public static let February = SAFSymbol(name: "February", code: 0x66656220, type: typeType) // "feb\0x20"
+    public static let fileName = SAFSymbol(name: "fileName", code: 0x6174666e, type: typeType) // "atfn"
+    public static let fileRef = SAFSymbol(name: "fileRef", code: 0x66737266, type: typeType) // "fsrf"
+    public static let fileSpecification = SAFSymbol(name: "fileSpecification", code: 0x66737320, type: typeType) // "fss\0x20"
+    public static let fileUrl = SAFSymbol(name: "fileUrl", code: 0x6675726c, type: typeType) // "furl"
+    public static let fixed = SAFSymbol(name: "fixed", code: 0x66697864, type: typeType) // "fixd"
+    public static let fixedPoint = SAFSymbol(name: "fixedPoint", code: 0x66706e74, type: typeType) // "fpnt"
+    public static let fixedRectangle = SAFSymbol(name: "fixedRectangle", code: 0x66726374, type: typeType) // "frct"
+    public static let float = SAFSymbol(name: "float", code: 0x646f7562, type: typeType) // "doub"
+    public static let float128bit = SAFSymbol(name: "float128bit", code: 0x6c64626c, type: typeType) // "ldbl"
+    public static let floating = SAFSymbol(name: "floating", code: 0x6973666c, type: typeType) // "isfl"
+    public static let font = SAFSymbol(name: "font", code: 0x666f6e74, type: typeType) // "font"
+    public static let Friday = SAFSymbol(name: "Friday", code: 0x66726920, type: typeType) // "fri\0x20"
+    public static let frontmost = SAFSymbol(name: "frontmost", code: 0x70697366, type: typeType) // "pisf"
+    public static let GIFPicture = SAFSymbol(name: "GIFPicture", code: 0x47494666, type: typeType) // "GIFf"
+    public static let graphicText = SAFSymbol(name: "graphicText", code: 0x63677478, type: typeType) // "cgtx"
+    public static let id = SAFSymbol(name: "id", code: 0x49442020, type: typeType) // "ID\0x20\0x20"
+    public static let index = SAFSymbol(name: "index", code: 0x70696478, type: typeType) // "pidx"
+    public static let integer = SAFSymbol(name: "integer", code: 0x6c6f6e67, type: typeType) // "long"
+    public static let internationalText = SAFSymbol(name: "internationalText", code: 0x69747874, type: typeType) // "itxt"
+    public static let internationalWritingCode = SAFSymbol(name: "internationalWritingCode", code: 0x696e746c, type: typeType) // "intl"
+    public static let item = SAFSymbol(name: "item", code: 0x636f626a, type: typeType) // "cobj"
+    public static let January = SAFSymbol(name: "January", code: 0x6a616e20, type: typeType) // "jan\0x20"
+    public static let JPEGPicture = SAFSymbol(name: "JPEGPicture", code: 0x4a504547, type: typeType) // "JPEG"
+    public static let July = SAFSymbol(name: "July", code: 0x6a756c20, type: typeType) // "jul\0x20"
+    public static let June = SAFSymbol(name: "June", code: 0x6a756e20, type: typeType) // "jun\0x20"
+    public static let kernelProcessId = SAFSymbol(name: "kernelProcessId", code: 0x6b706964, type: typeType) // "kpid"
+    public static let list = SAFSymbol(name: "list", code: 0x6c697374, type: typeType) // "list"
+    public static let locationReference = SAFSymbol(name: "locationReference", code: 0x696e736c, type: typeType) // "insl"
+    public static let longFixed = SAFSymbol(name: "longFixed", code: 0x6c667864, type: typeType) // "lfxd"
+    public static let longFixedPoint = SAFSymbol(name: "longFixedPoint", code: 0x6c667074, type: typeType) // "lfpt"
+    public static let longFixedRectangle = SAFSymbol(name: "longFixedRectangle", code: 0x6c667263, type: typeType) // "lfrc"
+    public static let longPoint = SAFSymbol(name: "longPoint", code: 0x6c706e74, type: typeType) // "lpnt"
+    public static let longRectangle = SAFSymbol(name: "longRectangle", code: 0x6c726374, type: typeType) // "lrct"
+    public static let machine = SAFSymbol(name: "machine", code: 0x6d616368, type: typeType) // "mach"
+    public static let machineLocation = SAFSymbol(name: "machineLocation", code: 0x6d4c6f63, type: typeType) // "mLoc"
+    public static let machPort = SAFSymbol(name: "machPort", code: 0x706f7274, type: typeType) // "port"
+    public static let March = SAFSymbol(name: "March", code: 0x6d617220, type: typeType) // "mar\0x20"
+    public static let May = SAFSymbol(name: "May", code: 0x6d617920, type: typeType) // "may\0x20"
+    public static let miniaturizable = SAFSymbol(name: "miniaturizable", code: 0x69736d6e, type: typeType) // "ismn"
+    public static let miniaturized = SAFSymbol(name: "miniaturized", code: 0x706d6e64, type: typeType) // "pmnd"
+    public static let modal = SAFSymbol(name: "modal", code: 0x706d6f64, type: typeType) // "pmod"
+    public static let modified = SAFSymbol(name: "modified", code: 0x696d6f64, type: typeType) // "imod"
+    public static let Monday = SAFSymbol(name: "Monday", code: 0x6d6f6e20, type: typeType) // "mon\0x20"
+    public static let name = SAFSymbol(name: "name", code: 0x706e616d, type: typeType) // "pnam"
+    public static let November = SAFSymbol(name: "November", code: 0x6e6f7620, type: typeType) // "nov\0x20"
+    public static let null = SAFSymbol(name: "null", code: 0x6e756c6c, type: typeType) // "null"
+    public static let October = SAFSymbol(name: "October", code: 0x6f637420, type: typeType) // "oct\0x20"
+    public static let pagesAcross = SAFSymbol(name: "pagesAcross", code: 0x6c776c61, type: typeType) // "lwla"
+    public static let pagesDown = SAFSymbol(name: "pagesDown", code: 0x6c776c64, type: typeType) // "lwld"
+    public static let paragraph = SAFSymbol(name: "paragraph", code: 0x63706172, type: typeType) // "cpar"
+    public static let path = SAFSymbol(name: "path", code: 0x70707468, type: typeType) // "ppth"
+    public static let PICTPicture = SAFSymbol(name: "PICTPicture", code: 0x50494354, type: typeType) // "PICT"
+    public static let pixelMapRecord = SAFSymbol(name: "pixelMapRecord", code: 0x74706d6d, type: typeType) // "tpmm"
+    public static let point = SAFSymbol(name: "point", code: 0x51447074, type: typeType) // "QDpt"
+    public static let printSettings = SAFSymbol(name: "printSettings", code: 0x70736574, type: typeType) // "pset"
+    public static let processSerialNumber = SAFSymbol(name: "processSerialNumber", code: 0x70736e20, type: typeType) // "psn\0x20"
+    public static let properties = SAFSymbol(name: "properties", code: 0x70414c4c, type: typeType) // "pALL"
+    public static let property_ = SAFSymbol(name: "property_", code: 0x70726f70, type: typeType) // "prop"
+    public static let record = SAFSymbol(name: "record", code: 0x7265636f, type: typeType) // "reco"
+    public static let reference = SAFSymbol(name: "reference", code: 0x6f626a20, type: typeType) // "obj\0x20"
+    public static let requestedPrintTime = SAFSymbol(name: "requestedPrintTime", code: 0x6c777174, type: typeType) // "lwqt"
+    public static let resizable = SAFSymbol(name: "resizable", code: 0x7072737a, type: typeType) // "prsz"
+    public static let RGB16Color = SAFSymbol(name: "RGB16Color", code: 0x74723136, type: typeType) // "tr16"
+    public static let RGB96Color = SAFSymbol(name: "RGB96Color", code: 0x74723936, type: typeType) // "tr96"
+    public static let RGBColor = SAFSymbol(name: "RGBColor", code: 0x63524742, type: typeType) // "cRGB"
+    public static let rotation = SAFSymbol(name: "rotation", code: 0x74726f74, type: typeType) // "trot"
+    public static let Saturday = SAFSymbol(name: "Saturday", code: 0x73617420, type: typeType) // "sat\0x20"
+    public static let script = SAFSymbol(name: "script", code: 0x73637074, type: typeType) // "scpt"
+    public static let September = SAFSymbol(name: "September", code: 0x73657020, type: typeType) // "sep\0x20"
+    public static let shortFloat = SAFSymbol(name: "shortFloat", code: 0x73696e67, type: typeType) // "sing"
+    public static let shortInteger = SAFSymbol(name: "shortInteger", code: 0x73686f72, type: typeType) // "shor"
+    public static let size = SAFSymbol(name: "size", code: 0x7074737a, type: typeType) // "ptsz"
+    public static let source = SAFSymbol(name: "source", code: 0x636f6e54, type: typeType) // "conT"
+    public static let startingPage = SAFSymbol(name: "startingPage", code: 0x6c776670, type: typeType) // "lwfp"
+    public static let string = SAFSymbol(name: "string", code: 0x54455854, type: typeType) // "TEXT"
+    public static let styledClipboardText = SAFSymbol(name: "styledClipboardText", code: 0x7374796c, type: typeType) // "styl"
+    public static let styledText = SAFSymbol(name: "styledText", code: 0x53545854, type: typeType) // "STXT"
+    public static let Sunday = SAFSymbol(name: "Sunday", code: 0x73756e20, type: typeType) // "sun\0x20"
+    public static let tab = SAFSymbol(name: "tab", code: 0x62546162, type: typeType) // "bTab"
+    public static let targetPrinter = SAFSymbol(name: "targetPrinter", code: 0x74727072, type: typeType) // "trpr"
+    public static let text = SAFSymbol(name: "text", code: 0x63747874, type: typeType) // "ctxt"
+    public static let textStyleInfo = SAFSymbol(name: "textStyleInfo", code: 0x74737479, type: typeType) // "tsty"
+    public static let Thursday = SAFSymbol(name: "Thursday", code: 0x74687520, type: typeType) // "thu\0x20"
+    public static let TIFFPicture = SAFSymbol(name: "TIFFPicture", code: 0x54494646, type: typeType) // "TIFF"
+    public static let titled = SAFSymbol(name: "titled", code: 0x70746974, type: typeType) // "ptit"
+    public static let Tuesday = SAFSymbol(name: "Tuesday", code: 0x74756520, type: typeType) // "tue\0x20"
+    public static let typeClass = SAFSymbol(name: "typeClass", code: 0x74797065, type: typeType) // "type"
+    public static let unicodeText = SAFSymbol(name: "unicodeText", code: 0x75747874, type: typeType) // "utxt"
+    public static let unsignedInteger = SAFSymbol(name: "unsignedInteger", code: 0x6d61676e, type: typeType) // "magn"
+    public static let URL = SAFSymbol(name: "URL", code: 0x7055524c, type: typeType) // "pURL"
+    public static let utf16Text = SAFSymbol(name: "utf16Text", code: 0x75743136, type: typeType) // "ut16"
+    public static let utf8Text = SAFSymbol(name: "utf8Text", code: 0x75746638, type: typeType) // "utf8"
+    public static let version = SAFSymbol(name: "version", code: 0x76657273, type: typeType) // "vers"
+    public static let visible = SAFSymbol(name: "visible", code: 0x70766973, type: typeType) // "pvis"
+    public static let Wednesday = SAFSymbol(name: "Wednesday", code: 0x77656420, type: typeType) // "wed\0x20"
+    public static let window = SAFSymbol(name: "window", code: 0x6377696e, type: typeType) // "cwin"
+    public static let word = SAFSymbol(name: "word", code: 0x63776f72, type: typeType) // "cwor"
+    public static let writingCode = SAFSymbol(name: "writingCode", code: 0x70736374, type: typeType) // "psct"
+    public static let zoomable = SAFSymbol(name: "zoomable", code: 0x69737a6d, type: typeType) // "iszm"
+    public static let zoomed = SAFSymbol(name: "zoomed", code: 0x707a756d, type: typeType) // "pzum"
 
     // Enumerators
-    public static let ask = TEDSymbol(name: "ask", code: 0x61736b20, type: typeEnumerated) // "ask\0x20"
-    public static let case_ = TEDSymbol(name: "case_", code: 0x63617365, type: typeEnumerated) // "case"
-    public static let detailed = TEDSymbol(name: "detailed", code: 0x6c776474, type: typeEnumerated) // "lwdt"
-    public static let diacriticals = TEDSymbol(name: "diacriticals", code: 0x64696163, type: typeEnumerated) // "diac"
-    public static let expansion = TEDSymbol(name: "expansion", code: 0x65787061, type: typeEnumerated) // "expa"
-    public static let hyphens = TEDSymbol(name: "hyphens", code: 0x68797068, type: typeEnumerated) // "hyph"
-    public static let no = TEDSymbol(name: "no", code: 0x6e6f2020, type: typeEnumerated) // "no\0x20\0x20"
-    public static let numericStrings = TEDSymbol(name: "numericStrings", code: 0x6e756d65, type: typeEnumerated) // "nume"
-    public static let punctuation = TEDSymbol(name: "punctuation", code: 0x70756e63, type: typeEnumerated) // "punc"
-    public static let standard = TEDSymbol(name: "standard", code: 0x6c777374, type: typeEnumerated) // "lwst"
-    public static let whitespace = TEDSymbol(name: "whitespace", code: 0x77686974, type: typeEnumerated) // "whit"
-    public static let yes = TEDSymbol(name: "yes", code: 0x79657320, type: typeEnumerated) // "yes\0x20"
+    public static let ask = SAFSymbol(name: "ask", code: 0x61736b20, type: typeEnumerated) // "ask\0x20"
+    public static let case_ = SAFSymbol(name: "case_", code: 0x63617365, type: typeEnumerated) // "case"
+    public static let detailed = SAFSymbol(name: "detailed", code: 0x6c776474, type: typeEnumerated) // "lwdt"
+    public static let diacriticals = SAFSymbol(name: "diacriticals", code: 0x64696163, type: typeEnumerated) // "diac"
+    public static let expansion = SAFSymbol(name: "expansion", code: 0x65787061, type: typeEnumerated) // "expa"
+    public static let hyphens = SAFSymbol(name: "hyphens", code: 0x68797068, type: typeEnumerated) // "hyph"
+    public static let no = SAFSymbol(name: "no", code: 0x6e6f2020, type: typeEnumerated) // "no\0x20\0x20"
+    public static let numericStrings = SAFSymbol(name: "numericStrings", code: 0x6e756d65, type: typeEnumerated) // "nume"
+    public static let punctuation = SAFSymbol(name: "punctuation", code: 0x70756e63, type: typeEnumerated) // "punc"
+    public static let standard = SAFSymbol(name: "standard", code: 0x6c777374, type: typeEnumerated) // "lwst"
+    public static let whitespace = SAFSymbol(name: "whitespace", code: 0x77686974, type: typeEnumerated) // "whit"
+    public static let yes = SAFSymbol(name: "yes", code: 0x79657320, type: typeEnumerated) // "yes\0x20"
 }
 
-public typealias TED = TEDSymbol // allows symbols to be written as (e.g.) TED.name instead of TEDSymbol.name
+public typealias SAF = SAFSymbol // allows symbols to be written as (e.g.) SAF.name instead of SAFSymbol.name
 
 
 /******************************************************************************/
-// Specifier extensions; these add command methods and property/elements getters based on TextEdit.app terminology
+// Specifier extensions; these add command methods and property/elements getters based on Safari.app terminology
 
-public protocol TEDCommand: SwiftAutomation.SpecifierProtocol {} // provides AE dispatch methods
+public protocol SAFCommand: SwiftAutomation.SpecifierProtocol {} // provides AE dispatch methods
 
 // Command->Any will be bound when return type can't be inferred, else Command->T
 
-extension TEDCommand {
+extension SAFCommand {
     @discardableResult public func activate(_ directParameter: Any = SwiftAutomation.NoParameter,
             resultType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
@@ -559,6 +575,30 @@ extension TEDCommand {
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "activate", eventClass: 0x6d697363, eventID: 0x61637476, // "misc"/"actv"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
+                ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
+                withTimeout: withTimeout, considering: considering)
+    }
+    @discardableResult public func addReadingListItem(_ directParameter: Any = SwiftAutomation.NoParameter,
+            andPreviewText: Any = SwiftAutomation.NoParameter,
+            withTitle: Any = SwiftAutomation.NoParameter,
+            resultType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
+        return try self.appData.sendAppleEvent(name: "addReadingListItem", eventClass: 0x73667269, eventID: 0x61726c69, // "sfri"/"arli"
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
+                    ("andPreviewText", 0x726c6970, andPreviewText), // "rlip"
+                    ("withTitle", 0x726c6974, withTitle), // "rlit"
+                ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
+                withTimeout: withTimeout, considering: considering)
+    }
+    public func addReadingListItem<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            andPreviewText: Any = SwiftAutomation.NoParameter,
+            withTitle: Any = SwiftAutomation.NoParameter,
+            resultType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent(name: "addReadingListItem", eventClass: 0x73667269, eventID: 0x61726c69, // "sfri"/"arli"
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
+                    ("andPreviewText", 0x726c6970, andPreviewText), // "rlip"
+                    ("withTitle", 0x726c6974, withTitle), // "rlit"
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
@@ -622,6 +662,26 @@ extension TEDCommand {
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
+    @discardableResult public func doJavaScript(_ directParameter: Any = SwiftAutomation.NoParameter,
+            in_: Any = SwiftAutomation.NoParameter,
+            resultType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
+        return try self.appData.sendAppleEvent(name: "doJavaScript", eventClass: 0x73667269, eventID: 0x646f6a73, // "sfri"/"dojs"
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
+                    ("in_", 0x64636e6d, in_), // "dcnm"
+                ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
+                withTimeout: withTimeout, considering: considering)
+    }
+    public func doJavaScript<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            in_: Any = SwiftAutomation.NoParameter,
+            resultType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent(name: "doJavaScript", eventClass: 0x73667269, eventID: 0x646f6a73, // "sfri"/"dojs"
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
+                    ("in_", 0x64636e6d, in_), // "dcnm"
+                ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
+                withTimeout: withTimeout, considering: considering)
+    }
     @discardableResult public func duplicate(_ directParameter: Any = SwiftAutomation.NoParameter,
             to: Any = SwiftAutomation.NoParameter,
             withProperties: Any = SwiftAutomation.NoParameter,
@@ -643,6 +703,26 @@ extension TEDCommand {
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                     ("to", 0x696e7368, to), // "insh"
                     ("withProperties", 0x70726474, withProperties), // "prdt"
+                ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
+                withTimeout: withTimeout, considering: considering)
+    }
+    @discardableResult public func emailContents(_ directParameter: Any = SwiftAutomation.NoParameter,
+            of: Any = SwiftAutomation.NoParameter,
+            resultType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
+        return try self.appData.sendAppleEvent(name: "emailContents", eventClass: 0x73667269, eventID: 0x6d6c6374, // "sfri"/"mlct"
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
+                    ("of", 0x64636e6d, of), // "dcnm"
+                ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
+                withTimeout: withTimeout, considering: considering)
+    }
+    public func emailContents<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            of: Any = SwiftAutomation.NoParameter,
+            resultType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent(name: "emailContents", eventClass: 0x73667269, eventID: 0x6d6c6374, // "sfri"/"mlct"
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
+                    ("of", 0x64636e6d, of), // "dcnm"
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
@@ -866,6 +946,30 @@ extension TEDCommand {
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
+    @discardableResult public func searchTheWeb(_ directParameter: Any = SwiftAutomation.NoParameter,
+            for_: Any = SwiftAutomation.NoParameter,
+            in_: Any = SwiftAutomation.NoParameter,
+            resultType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
+        return try self.appData.sendAppleEvent(name: "searchTheWeb", eventClass: 0x73667269, eventID: 0x73726368, // "sfri"/"srch"
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
+                    ("for_", 0x71757279, for_), // "qury"
+                    ("in_", 0x64636e6d, in_), // "dcnm"
+                ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
+                withTimeout: withTimeout, considering: considering)
+    }
+    public func searchTheWeb<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            for_: Any = SwiftAutomation.NoParameter,
+            in_: Any = SwiftAutomation.NoParameter,
+            resultType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent(name: "searchTheWeb", eventClass: 0x73667269, eventID: 0x73726368, // "sfri"/"srch"
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
+                    ("for_", 0x71757279, for_), // "qury"
+                    ("in_", 0x64636e6d, in_), // "dcnm"
+                ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
+                withTimeout: withTimeout, considering: considering)
+    }
     @discardableResult public func set(_ directParameter: Any = SwiftAutomation.NoParameter,
             to: Any = SwiftAutomation.NoParameter,
             resultType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
@@ -886,63 +990,84 @@ extension TEDCommand {
                 ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
+    @discardableResult public func showBookmarks(_ directParameter: Any = SwiftAutomation.NoParameter,
+            resultType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
+        return try self.appData.sendAppleEvent(name: "showBookmarks", eventClass: 0x73667269, eventID: 0x6f70626b, // "sfri"/"opbk"
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
+                ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
+                withTimeout: withTimeout, considering: considering)
+    }
+    public func showBookmarks<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            resultType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent(name: "showBookmarks", eventClass: 0x73667269, eventID: 0x6f70626b, // "sfri"/"opbk"
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
+                ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
+                withTimeout: withTimeout, considering: considering)
+    }
 }
 
 
-public protocol TEDObject: SwiftAutomation.ObjectSpecifierExtension, TEDCommand {} // provides vars and methods for constructing specifiers
+public protocol SAFObject: SwiftAutomation.ObjectSpecifierExtension, SAFCommand {} // provides vars and methods for constructing specifiers
 
-extension TEDObject {
+extension SAFObject {
     
     // Properties
-    public var bounds: TEDItem {return self.property(0x70626e64) as! TEDItem} // "pbnd"
-    public var class_: TEDItem {return self.property(0x70636c73) as! TEDItem} // "pcls"
-    public var closeable: TEDItem {return self.property(0x68636c62) as! TEDItem} // "hclb"
-    public var collating: TEDItem {return self.property(0x6c77636c) as! TEDItem} // "lwcl"
-    public var color: TEDItem {return self.property(0x636f6c72) as! TEDItem} // "colr"
-    public var copies: TEDItem {return self.property(0x6c776370) as! TEDItem} // "lwcp"
-    public var document: TEDItem {return self.property(0x646f6375) as! TEDItem} // "docu"
-    public var endingPage: TEDItem {return self.property(0x6c776c70) as! TEDItem} // "lwlp"
-    public var errorHandling: TEDItem {return self.property(0x6c776568) as! TEDItem} // "lweh"
-    public var faxNumber: TEDItem {return self.property(0x6661786e) as! TEDItem} // "faxn"
-    public var fileName: TEDItem {return self.property(0x6174666e) as! TEDItem} // "atfn"
-    public var floating: TEDItem {return self.property(0x6973666c) as! TEDItem} // "isfl"
-    public var font: TEDItem {return self.property(0x666f6e74) as! TEDItem} // "font"
-    public var frontmost: TEDItem {return self.property(0x70697366) as! TEDItem} // "pisf"
-    public var id: TEDItem {return self.property(0x49442020) as! TEDItem} // "ID\0x20\0x20"
-    public var index: TEDItem {return self.property(0x70696478) as! TEDItem} // "pidx"
-    public var miniaturizable: TEDItem {return self.property(0x69736d6e) as! TEDItem} // "ismn"
-    public var miniaturized: TEDItem {return self.property(0x706d6e64) as! TEDItem} // "pmnd"
-    public var modal: TEDItem {return self.property(0x706d6f64) as! TEDItem} // "pmod"
-    public var modified: TEDItem {return self.property(0x696d6f64) as! TEDItem} // "imod"
-    public var name: TEDItem {return self.property(0x706e616d) as! TEDItem} // "pnam"
-    public var pagesAcross: TEDItem {return self.property(0x6c776c61) as! TEDItem} // "lwla"
-    public var pagesDown: TEDItem {return self.property(0x6c776c64) as! TEDItem} // "lwld"
-    public var path: TEDItem {return self.property(0x70707468) as! TEDItem} // "ppth"
-    public var properties: TEDItem {return self.property(0x70414c4c) as! TEDItem} // "pALL"
-    public var requestedPrintTime: TEDItem {return self.property(0x6c777174) as! TEDItem} // "lwqt"
-    public var resizable: TEDItem {return self.property(0x7072737a) as! TEDItem} // "prsz"
-    public var size: TEDItem {return self.property(0x7074737a) as! TEDItem} // "ptsz"
-    public var startingPage: TEDItem {return self.property(0x6c776670) as! TEDItem} // "lwfp"
-    public var targetPrinter: TEDItem {return self.property(0x74727072) as! TEDItem} // "trpr"
-    public var titled: TEDItem {return self.property(0x70746974) as! TEDItem} // "ptit"
-    public var version: TEDItem {return self.property(0x76657273) as! TEDItem} // "vers"
-    public var visible: TEDItem {return self.property(0x70766973) as! TEDItem} // "pvis"
-    public var zoomable: TEDItem {return self.property(0x69737a6d) as! TEDItem} // "iszm"
-    public var zoomed: TEDItem {return self.property(0x707a756d) as! TEDItem} // "pzum"
+    public var bounds: SAFItem {return self.property(0x70626e64) as! SAFItem} // "pbnd"
+    public var class_: SAFItem {return self.property(0x70636c73) as! SAFItem} // "pcls"
+    public var closeable: SAFItem {return self.property(0x68636c62) as! SAFItem} // "hclb"
+    public var collating: SAFItem {return self.property(0x6c77636c) as! SAFItem} // "lwcl"
+    public var color: SAFItem {return self.property(0x636f6c72) as! SAFItem} // "colr"
+    public var copies: SAFItem {return self.property(0x6c776370) as! SAFItem} // "lwcp"
+    public var currentTab: SAFItem {return self.property(0x63546162) as! SAFItem} // "cTab"
+    public var document: SAFItem {return self.property(0x646f6375) as! SAFItem} // "docu"
+    public var endingPage: SAFItem {return self.property(0x6c776c70) as! SAFItem} // "lwlp"
+    public var errorHandling: SAFItem {return self.property(0x6c776568) as! SAFItem} // "lweh"
+    public var faxNumber: SAFItem {return self.property(0x6661786e) as! SAFItem} // "faxn"
+    public var fileName: SAFItem {return self.property(0x6174666e) as! SAFItem} // "atfn"
+    public var floating: SAFItem {return self.property(0x6973666c) as! SAFItem} // "isfl"
+    public var font: SAFItem {return self.property(0x666f6e74) as! SAFItem} // "font"
+    public var frontmost: SAFItem {return self.property(0x70697366) as! SAFItem} // "pisf"
+    public var id: SAFItem {return self.property(0x49442020) as! SAFItem} // "ID\0x20\0x20"
+    public var index: SAFItem {return self.property(0x70696478) as! SAFItem} // "pidx"
+    public var miniaturizable: SAFItem {return self.property(0x69736d6e) as! SAFItem} // "ismn"
+    public var miniaturized: SAFItem {return self.property(0x706d6e64) as! SAFItem} // "pmnd"
+    public var modal: SAFItem {return self.property(0x706d6f64) as! SAFItem} // "pmod"
+    public var modified: SAFItem {return self.property(0x696d6f64) as! SAFItem} // "imod"
+    public var name: SAFItem {return self.property(0x706e616d) as! SAFItem} // "pnam"
+    public var pagesAcross: SAFItem {return self.property(0x6c776c61) as! SAFItem} // "lwla"
+    public var pagesDown: SAFItem {return self.property(0x6c776c64) as! SAFItem} // "lwld"
+    public var path: SAFItem {return self.property(0x70707468) as! SAFItem} // "ppth"
+    public var properties: SAFItem {return self.property(0x70414c4c) as! SAFItem} // "pALL"
+    public var requestedPrintTime: SAFItem {return self.property(0x6c777174) as! SAFItem} // "lwqt"
+    public var resizable: SAFItem {return self.property(0x7072737a) as! SAFItem} // "prsz"
+    public var size: SAFItem {return self.property(0x7074737a) as! SAFItem} // "ptsz"
+    public var source: SAFItem {return self.property(0x636f6e54) as! SAFItem} // "conT"
+    public var startingPage: SAFItem {return self.property(0x6c776670) as! SAFItem} // "lwfp"
+    public var targetPrinter: SAFItem {return self.property(0x74727072) as! SAFItem} // "trpr"
+    public var titled: SAFItem {return self.property(0x70746974) as! SAFItem} // "ptit"
+    public var URL: SAFItem {return self.property(0x7055524c) as! SAFItem} // "pURL"
+    public var version: SAFItem {return self.property(0x76657273) as! SAFItem} // "vers"
+    public var visible: SAFItem {return self.property(0x70766973) as! SAFItem} // "pvis"
+    public var zoomable: SAFItem {return self.property(0x69737a6d) as! SAFItem} // "iszm"
+    public var zoomed: SAFItem {return self.property(0x707a756d) as! SAFItem} // "pzum"
 
     // Elements
-    public var applications: TEDItems {return self.elements(0x63617070) as! TEDItems} // "capp"
-    public var attachment: TEDItems {return self.elements(0x61747473) as! TEDItems} // "atts"
-    public var attributeRuns: TEDItems {return self.elements(0x63617472) as! TEDItems} // "catr"
-    public var characters: TEDItems {return self.elements(0x63686120) as! TEDItems} // "cha\0x20"
-    public var colors: TEDItems {return self.elements(0x636f6c72) as! TEDItems} // "colr"
-    public var documents: TEDItems {return self.elements(0x646f6375) as! TEDItems} // "docu"
-    public var items: TEDItems {return self.elements(0x636f626a) as! TEDItems} // "cobj"
-    public var paragraphs: TEDItems {return self.elements(0x63706172) as! TEDItems} // "cpar"
-    public var printSettings: TEDItems {return self.elements(0x70736574) as! TEDItems} // "pset"
-    public var text: TEDItems {return self.elements(0x63747874) as! TEDItems} // "ctxt"
-    public var windows: TEDItems {return self.elements(0x6377696e) as! TEDItems} // "cwin"
-    public var words: TEDItems {return self.elements(0x63776f72) as! TEDItems} // "cwor"
+    public var applications: SAFItems {return self.elements(0x63617070) as! SAFItems} // "capp"
+    public var attachments: SAFItems {return self.elements(0x61747473) as! SAFItems} // "atts"
+    public var attributeRuns: SAFItems {return self.elements(0x63617472) as! SAFItems} // "catr"
+    public var characters: SAFItems {return self.elements(0x63686120) as! SAFItems} // "cha\0x20"
+    public var colors: SAFItems {return self.elements(0x636f6c72) as! SAFItems} // "colr"
+    public var documents: SAFItems {return self.elements(0x646f6375) as! SAFItems} // "docu"
+    public var items: SAFItems {return self.elements(0x636f626a) as! SAFItems} // "cobj"
+    public var paragraphs: SAFItems {return self.elements(0x63706172) as! SAFItems} // "cpar"
+    public var printSettingss: SAFItems {return self.elements(0x70736574) as! SAFItems} // "pset"
+    public var tabs: SAFItems {return self.elements(0x62546162) as! SAFItems} // "bTab"
+    public var text: SAFItems {return self.elements(0x63747874) as! SAFItems} // "ctxt"
+    public var texts: SAFItems {return self.elements(0x63747874) as! SAFItems} // "ctxt"
+    public var windows: SAFItems {return self.elements(0x6377696e) as! SAFItems} // "cwin"
+    public var words: SAFItems {return self.elements(0x63776f72) as! SAFItems} // "cwor"
 }
 
 
@@ -950,46 +1075,46 @@ extension TEDObject {
 // Specifier subclasses add app-specific extensions
 
 // beginning/end/before/after
-public class TEDInsertion: SwiftAutomation.InsertionSpecifier, TEDCommand {}
+public class SAFInsertion: SwiftAutomation.InsertionSpecifier, SAFCommand {}
 
 
 // property/by-index/by-name/by-id/previous/next/first/middle/last/any
-public class TEDItem: SwiftAutomation.ObjectSpecifier, TEDObject {
-    public typealias InsertionSpecifierType = TEDInsertion
-    public typealias ObjectSpecifierType = TEDItem
-    public typealias MultipleObjectSpecifierType = TEDItems
+public class SAFItem: SwiftAutomation.ObjectSpecifier, SAFObject {
+    public typealias InsertionSpecifierType = SAFInsertion
+    public typealias ObjectSpecifierType = SAFItem
+    public typealias MultipleObjectSpecifierType = SAFItems
 }
 
 // by-range/by-test/all
-public class TEDItems: TEDItem, SwiftAutomation.ElementsSpecifierExtension {}
+public class SAFItems: SAFItem, SwiftAutomation.ElementsSpecifierExtension {}
 
 // App/Con/Its
-public class TEDRoot: SwiftAutomation.RootSpecifier, TEDObject, SwiftAutomation.RootSpecifierExtension {
-    public typealias InsertionSpecifierType = TEDInsertion
-    public typealias ObjectSpecifierType = TEDItem
-    public typealias MultipleObjectSpecifierType = TEDItems
+public class SAFRoot: SwiftAutomation.RootSpecifier, SAFObject, SwiftAutomation.RootSpecifierExtension {
+    public typealias InsertionSpecifierType = SAFInsertion
+    public typealias ObjectSpecifierType = SAFItem
+    public typealias MultipleObjectSpecifierType = SAFItems
     public override class var untargetedAppData: SwiftAutomation.AppData { return _untargetedAppData }
 }
 
 // Application
-public class TextEdit: TEDRoot, SwiftAutomation.ApplicationExtension {
+public class Safari: SAFRoot, SwiftAutomation.ApplicationExtension {
     public convenience init(launchOptions: SwiftAutomation.LaunchOptions = SwiftAutomation.DefaultLaunchOptions, relaunchMode: SwiftAutomation.RelaunchMode = SwiftAutomation.DefaultRelaunchMode) {
         self.init(rootObject: SwiftAutomation.AppRootDesc, appData: type(of:self).untargetedAppData.targetedCopy(
-                  .bundleIdentifier("com.apple.TextEdit", true), launchOptions: launchOptions, relaunchMode: relaunchMode))
+                  .bundleIdentifier("com.apple.Safari", true), launchOptions: launchOptions, relaunchMode: relaunchMode))
     }
 }
 
 // App/Con/Its root objects used to construct untargeted specifiers; these can be used to construct specifiers for use in commands, though cannot send commands themselves
 
-public let TEDApp = _untargetedAppData.app as! TEDRoot
-public let TEDCon = _untargetedAppData.con as! TEDRoot
-public let TEDIts = _untargetedAppData.its as! TEDRoot
+public let SAFApp = _untargetedAppData.app as! SAFRoot
+public let SAFCon = _untargetedAppData.con as! SAFRoot
+public let SAFIts = _untargetedAppData.its as! SAFRoot
 
 
 /******************************************************************************/
 // Static types
 
-public typealias TEDRecord = [TEDSymbol:Any] // default Swift type for AERecordDescs
+public typealias SAFRecord = [SAFSymbol:Any] // default Swift type for AERecordDescs
 
 
 

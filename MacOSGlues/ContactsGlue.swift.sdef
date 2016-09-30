@@ -1,0 +1,468 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE dictionary SYSTEM "file://localhost/System/Library/DTDs/sdef.dtd">
+
+<dictionary xmlns:xi="http://www.w3.org/2001/XInclude">
+    <suite name="Standard Suite" code="????" description="Common classes and commands for all applications.">
+        <xi:include href="file:///System/Library/ScriptingDefinitions/CocoaStandard.sdef" xpointer="xpointer(/dictionary/suite/node()[not(self::command and @name = 'make')])"></xi:include>
+        <command name="make" code="corecrel" description="Create a new object.">
+            <cocoa class="ABScriptCreateCommand"></cocoa>
+            <parameter name="new:" code="kocl" type="type" description="The class of the new object.">
+                <cocoa key="ObjectClass"></cocoa>
+            </parameter>
+            <parameter name="at:" code="insh" type="location specifier" optional="yes" description="The location at which to insert the object.">
+                <cocoa key="Location"></cocoa>
+            </parameter>
+            <parameter name="withData:" code="data" type="any" optional="yes" description="The initial contents of the object.">
+                <cocoa key="ObjectData"></cocoa>
+            </parameter>
+            <parameter name="withProperties:" code="prdt" type="record" optional="yes" description="The initial values for properties of the object.">
+                <cocoa key="KeyDictionary"></cocoa>
+            </parameter>
+            <result type="specifier" description="The new object."></result>
+        </command>
+    </suite>
+    <suite name="Address Book Script Suite" code="az00" description="commands and classes for Address Book scripting.">
+        <class-extension extends="application">
+            <cocoa class="NSApplication"></cocoa>
+            <property type="person" name="myCard" code="az54" description="Returns my Address Book card.">
+                <cocoa key="meCard"></cocoa>
+            </property>
+            <property type="boolean" name="unsaved" code="azf2" access="r" description="Does Address Book have any unsaved changes?">
+                <cocoa key="hasUnsavedChanges"></cocoa>
+            </property>
+            <property name="selection" code="az48" description="Currently selected entries">
+                <cocoa key="selectedRecords"></cocoa>
+                <type type="person" list="yes"></type>
+            </property>
+            <property name="defaultCountryCode" code="az63" access="r" description="Returns the default country code for addresses.">
+                <cocoa key="defaultCountryCode"></cocoa>
+                <type type="text"></type>
+                <type type="missing value"></type>
+            </property>
+            <element type="group">
+                <cocoa key="groups"></cocoa>
+            </element>
+            <element type="person">
+                <cocoa key="people"></cocoa>
+            </element>
+            <responds-to command="save">
+                <cocoa method="handleSaveScriptCommand:"></cocoa>
+            </responds-to>
+        </class-extension>
+        <value-type name="TIFFPicture" code="TIFF" hidden="yes">
+            <cocoa class="NSData"></cocoa>
+        </value-type>
+        <enumeration name="saveable file format" code="savf">
+            <enumerator name="CON.archive" code="abbu" description="The native Address Book file format">
+                <cocoa string-value="com.apple.AddressBook.archive"></cocoa>
+            </enumerator>
+        </enumeration>
+        <enumeration name="instant message service type" inline="0" code="az84">
+            <enumerator name="CON.AIM" code="az85">
+                <cocoa string-value="AIMInstant"></cocoa>
+            </enumerator>
+            <enumerator name="CON.Facebook" code="az94">
+                <cocoa string-value="FacebookInstant"></cocoa>
+            </enumerator>
+            <enumerator name="CON.GaduGadu" code="az86">
+                <cocoa string-value="GaduGaduInstant"></cocoa>
+            </enumerator>
+            <enumerator name="CON.GoogleTalk" code="az87">
+                <cocoa string-value="GoogleTalkInstant"></cocoa>
+            </enumerator>
+            <enumerator name="CON.ICQ" code="az88">
+                <cocoa string-value="ICQInstant"></cocoa>
+            </enumerator>
+            <enumerator name="CON.Jabber" code="az89">
+                <cocoa string-value="JabberInstant"></cocoa>
+            </enumerator>
+            <enumerator name="CON.MSN" code="az90">
+                <cocoa string-value="MSNInstant"></cocoa>
+            </enumerator>
+            <enumerator name="CON.QQ" code="az91">
+                <cocoa string-value="QQInstant"></cocoa>
+            </enumerator>
+            <enumerator name="CON.Skype" code="az92">
+                <cocoa string-value="SkypeInstant"></cocoa>
+            </enumerator>
+            <enumerator name="CON.Yahoo" code="az93">
+                <cocoa string-value="YahooInstant"></cocoa>
+            </enumerator>
+        </enumeration>
+        <class name="address" plural="addresses" code="az27" description="Address for the given record.">
+            <cocoa class="Address"></cocoa>
+            <property name="city" code="az29" description="City part of the address.">
+                <cocoa key="city"></cocoa>
+                <type type="text"></type>
+                <type type="missing value"></type>
+            </property>
+            <property name="formattedAddress" code="az65" access="r" description="properly formatted string for this address.">
+                <cocoa key="formattedAddress"></cocoa>
+                <type type="text"></type>
+                <type type="missing value"></type>
+            </property>
+            <property name="street" code="az28" description="Street part of the address, multiple lines separated by carriage returns.">
+                <cocoa key="street"></cocoa>
+                <type type="text"></type>
+                <type type="missing value"></type>
+            </property>
+            <property name="id" code="ID  " description="unique identifier for this address.">
+                <cocoa key="uniqueId"></cocoa>
+                <type type="text"></type>
+            </property>
+            <property name="zip" code="az31" description="Zip or postal code of the address.">
+                <cocoa key="zip"></cocoa>
+                <type type="text"></type>
+                <type type="missing value"></type>
+            </property>
+            <property name="country" code="az32" description="Country part of the address.">
+                <cocoa key="country"></cocoa>
+                <type type="text"></type>
+                <type type="missing value"></type>
+            </property>
+            <property name="label" code="az18" description="Label.">
+                <cocoa key="label"></cocoa>
+                <type type="text"></type>
+                <type type="missing value"></type>
+            </property>
+            <property name="countryCode" code="az33" description="Country code part of the address (should be a two character iso country code).">
+                <cocoa key="countryCode"></cocoa>
+                <type type="text"></type>
+                <type type="missing value"></type>
+            </property>
+            <property name="state" code="az30" description="State, Province, or Region part of the address.">
+                <cocoa key="state"></cocoa>
+                <type type="text"></type>
+                <type type="missing value"></type>
+            </property>
+        </class>
+        <class name="AIMHandle" plural="AIMHandles" code="az22" inherits="contact info" description="User name for America Online (AOL) instant messaging." hidden="yes">
+            <cocoa class="AIM"></cocoa>
+        </class>
+        <class name="contactInfo" code="az16" description="Container object in the database, holds a key and a value">
+            <cocoa class="KeyValue"></cocoa>
+            <property name="label" code="az18" description="Label is the label associated with value like &quot;work&quot;, &quot;home&quot;, etc.">
+                <cocoa key="label"></cocoa>
+                <type type="text"></type>
+                <type type="missing value"></type>
+            </property>
+            <property name="value" code="az17" description="Value.">
+                <cocoa key="value"></cocoa>
+                <type type="text"></type>
+                <type type="date"></type>
+                <type type="missing value"></type>
+            </property>
+            <property name="id" code="ID  " access="r" description="unique identifier for this entry, this is persistent, and stays with the record.">
+                <cocoa key="uniqueId"></cocoa>
+                <type type="text"></type>
+            </property>
+        </class>
+        <class name="customDate" plural="customDates" code="az52" inherits="contact info" description="Arbitrary date associated with this person.">
+            <cocoa class="Date"></cocoa>
+        </class>
+        <class name="email" plural="emails" code="az21" inherits="contact info" description="Email address for a person.">
+            <cocoa class="Email"></cocoa>
+        </class>
+        <class name="entry" plural="entries" code="azf6" description="An entry in the address book database">
+            <cocoa class="ABRecord"></cocoa>
+            <property type="date" name="modificationDate" code="az34" access="r" description="when the contact was last modified.">
+                <cocoa key="modificationDate"></cocoa>
+            </property>
+            <property type="date" name="creationDate" code="az35" access="r" description="when the contact was created.">
+                <cocoa key="creationDate"></cocoa>
+            </property>
+            <property name="id" code="ID  " access="r" description="unique and persistent identifier for this record.">
+                <cocoa key="uniqueId"></cocoa>
+                <type type="text"></type>
+            </property>
+            <property type="boolean" name="selected" code="selE" description="Is the entry selected?">
+                <cocoa key="selected"></cocoa>
+            </property>
+        </class>
+        <class name="group" plural="groups" code="azf5" inherits="entry" description="A Group Record in the address book database">
+            <cocoa class="ABGroup"></cocoa>
+            <property name="name" code="pnam" description="The name of this group.">
+                <cocoa key="name"></cocoa>
+                <type type="text"></type>
+            </property>
+            <element type="group" access="r">
+                <cocoa key="groups"></cocoa>
+            </element>
+            <element type="person" access="r">
+                <cocoa key="people"></cocoa>
+            </element>
+        </class>
+        <class name="ICQHandle" plural="ICQHandles" code="az26" inherits="contact info" description="User name for ICQ instant messaging." hidden="yes">
+            <cocoa class="ICQ"></cocoa>
+        </class>
+        <class name="instantMessage" plural="instantMessages" code="az80" inherits="contact info" description="Address for instant messaging.">
+            <cocoa class="InstantMessage"></cocoa>
+            <property name="serviceName" code="az81" description="The service name of this instant message address." access="r">
+                <cocoa key="serviceName"></cocoa>
+                <type type="text"></type>
+                <type type="missing value"></type>
+            </property>
+            <property name="serviceType" code="az82" description="The service type of this instant message address.">
+                <cocoa key="serviceType"></cocoa>
+                <type type="instant message service type"></type>
+                <type type="missing value"></type>
+            </property>
+            <property name="userName" code="az83" description="The user name of this instant message address.">
+                <cocoa key="username"></cocoa>
+                <type type="text"></type>
+                <type type="missing value"></type>
+            </property>
+        </class>
+        <class name="JabberHandle" plural="JabberHandles" code="az23" inherits="contact info" description="User name for Jabber instant messaging." hidden="yes">
+            <cocoa class="Jabber"></cocoa>
+        </class>
+        <class name="MSNHandle" plural="MSNHandles" code="az24" inherits="contact info" description="User name for Microsoft Network (MSN) instant messaging." hidden="yes">
+            <cocoa class="MSN"></cocoa>
+        </class>
+        <class name="person" plural="people" code="azf4" inherits="entry" description="A person in the address book database.">
+            <cocoa class="ABPerson"></cocoa>
+            <property name="nickname" code="az43" description="The Nickname of this person.">
+                <cocoa key="nickname"></cocoa>
+                <type type="text"></type>
+                <type type="missing value"></type>
+            </property>
+            <property name="organization" code="az38" description="Organization that employs this person.">
+                <cocoa key="organization"></cocoa>
+                <type type="text"></type>
+                <type type="missing value"></type>
+            </property>
+            <property name="maidenName" code="az42" description="The Maiden name of this person.">
+                <cocoa key="maidenname"></cocoa>
+                <type type="text"></type>
+                <type type="missing value"></type>
+            </property>
+            <property name="suffix" code="az41" description="The Suffix of this person.">
+                <cocoa key="suffix"></cocoa>
+                <type type="text"></type>
+                <type type="missing value"></type>
+            </property>
+            <property name="vcard" code="az49" access="r" description="Person information in vCard format, this always returns a card in version 3.0 format.">
+                <cocoa key="vCardRep"></cocoa>
+                <type type="text"></type>
+                <type type="missing value"></type>
+            </property>
+            <property name="homePage" code="az13" description="The home page of this person.">
+                <cocoa key="homepage"></cocoa>
+                <type type="text"></type>
+                <type type="missing value"></type>
+            </property>
+            <property name="birthDate" code="az11" description="The birth date of this person.">
+                <cocoa key="birthdate"></cocoa>
+                <type type="date"></type>
+                <type type="missing value"></type>
+            </property>
+            <property name="phoneticLastName" code="az10" description="The phonetic version of the Last name of this person.">
+                <cocoa key="phoneticlastname"></cocoa>
+                <type type="text"></type>
+                <type type="missing value"></type>
+            </property>
+            <property name="title" code="az39" description="The title of this person.">
+                <cocoa key="title"></cocoa>
+                <type type="text"></type>
+                <type type="missing value"></type>
+            </property>
+            <property name="phoneticMiddleName" code="az56" description="The Phonetic version of the Middle name of this person.">
+                <cocoa key="phoneticmiddlename"></cocoa>
+                <type type="text"></type>
+                <type type="missing value"></type>
+            </property>
+            <property name="department" code="az55" description="Department that this person works for.">
+                <cocoa key="department"></cocoa>
+                <type type="text"></type>
+                <type type="missing value"></type>
+            </property>
+            <property name="image" code="az50" description="Image for person.">
+                <cocoa key="image"></cocoa>
+                <type type="TIFF picture"></type>
+                <type type="missing value"></type>
+            </property>
+            <property name="name" code="pnam" access="r" description="First/Last name of the person, uses the name display order preference setting in Address Book.">
+                <cocoa key="name"></cocoa>
+                <type type="text"></type>
+            </property>
+            <property name="note" code="az37" description="Notes for this person.">
+                <cocoa key="note"></cocoa>
+                <type type="text"></type>
+                <type type="missing value"></type>
+            </property>
+            <property type="boolean" name="company" code="az51" description="Is the current record a company or a person.">
+                <cocoa key="company"></cocoa>
+            </property>
+            <property name="middleName" code="az40" description="The Middle name of this person.">
+                <cocoa key="middlename"></cocoa>
+                <type type="text"></type>
+                <type type="missing value"></type>
+            </property>
+            <property name="phoneticFirstName" code="azf9" description="The phonetic version of the First name of this person.">
+                <cocoa key="phoneticfirstname"></cocoa>
+                <type type="text"></type>
+                <type type="missing value"></type>
+            </property>
+            <property name="jobTitle" code="az12" description="The job title of this person.">
+                <cocoa key="jobtitle"></cocoa>
+                <type type="text"></type>
+                <type type="missing value"></type>
+            </property>
+            <property name="lastName" code="azf8" description="The Last name of this person.">
+                <cocoa key="lastname"></cocoa>
+                <type type="text"></type>
+                <type type="missing value"></type>
+            </property>
+            <property name="firstName" code="azf7" description="The First name of this person.">
+                <cocoa key="firstname"></cocoa>
+                <type type="text"></type>
+                <type type="missing value"></type>
+            </property>
+            <element type="MSNHandle" hidden="yes">
+                <cocoa key="msn"></cocoa>
+            </element>
+            <element type="url">
+                <cocoa key="url"></cocoa>
+            </element>
+            <element type="address">
+                <cocoa key="address"></cocoa>
+            </element>
+            <element type="phone">
+                <cocoa key="phone"></cocoa>
+            </element>
+            <element type="JabberHandle" hidden="yes">
+                <cocoa key="jabber"></cocoa>
+            </element>
+            <element type="group" access="r">
+                <cocoa key="parentGroups"></cocoa>
+            </element>
+            <element type="customDate">
+                <cocoa key="date"></cocoa>
+            </element>
+            <element type="AIMHandle" hidden="yes">
+                <cocoa key="aim"></cocoa>
+            </element>
+            <element type="YahooHandle" hidden="yes">
+                <cocoa key="yahoo"></cocoa>
+            </element>
+            <element type="ICQHandle" hidden="yes">
+                <cocoa key="icq"></cocoa>
+            </element>
+            <element type="instantMessage">
+                <cocoa key="instantMessage"></cocoa>
+            </element>
+            <element type="socialProfile">
+                <cocoa key="socialProfile"></cocoa>
+            </element>
+            <element type="relatedName">
+                <cocoa key="related"></cocoa>
+            </element>
+            <element type="email">
+                <cocoa key="email"></cocoa>
+            </element>
+            <responds-to command="add">
+                <cocoa method="handleAddCommand:"></cocoa>
+            </responds-to>
+            <responds-to command="remove">
+                <cocoa method="handleRemoveCommand:"></cocoa>
+            </responds-to>
+        </class>
+        <class name="phone" plural="phones" code="az20" inherits="contact info" description="Phone number for a person.">
+            <cocoa class="Phone"></cocoa>
+        </class>
+        <class name="relatedName" plural="relatedNames" code="az53" inherits="contact info" description="Other names related to this person.">
+            <cocoa class="Related"></cocoa>
+        </class>
+        <class name="socialProfile" plural="socialProfiles" code="sp01" description="Profile for social networks.">
+            <cocoa class="SocialProfile"></cocoa>
+            <property name="id" code="ID  " access="r" description="The persistent unique identifier for this profile.">
+                <cocoa key="uniqueId"></cocoa>
+                <type type="text"></type>
+            </property>
+            <property name="serviceName" code="az81" description="The service name of this social profile.">
+                <cocoa key="service"></cocoa>
+                <type type="text"></type>
+                <type type="missing value"></type>
+            </property>
+            <property name="userName" code="az83" description="The username used with this social profile.">
+                <cocoa key="username"></cocoa>
+                <type type="text"></type>
+                <type type="missing value"></type>
+            </property>
+            <property name="userIdentifier" code="spid" description="A service-specific identifier used with this social profile.">
+                <cocoa key="userIdentifier"></cocoa>
+                <type type="text"></type>
+                <type type="missing value"></type>
+            </property>
+            <property name="url" code="spur" description="The URL of this social profile.">
+                <cocoa key="url"></cocoa>
+                <type type="text"></type>
+                <type type="missing value"></type>
+            </property>
+        </class>
+        <class name="url" plural="urls" code="az70" inherits="contact info" description="URLs for this person.">
+            <cocoa class="URL"></cocoa>
+        </class>
+        <class name="YahooHandle" plural="YahooHandles" code="az25" inherits="contact info" description="User name for Yahoo instant messaging." hidden="yes">
+            <cocoa class="Yahoo"></cocoa>
+        </class>
+        <command name="add" code="az00az44" description="Add a child object.">
+            <cocoa name="Add"></cocoa>
+            <direct-parameter type="entry" description="object to add."></direct-parameter>
+            <parameter type="specifier" name="to:" code="az45" description="where to add this child to.">
+                <cocoa key="target"></cocoa>
+            </parameter>
+            <result type="person"></result>
+        </command>
+        <command name="remove" code="az00az46" description="Remove a child object.">
+            <cocoa name="Remove"></cocoa>
+            <direct-parameter type="entry" description="object to remove."></direct-parameter>
+            <parameter type="specifier" name="from:" code="az47" description="where to remove this child from.">
+                <cocoa key="target"></cocoa>
+            </parameter>
+            <result type="person"></result>
+        </command>
+        <command name="save" code="coresave" description="Save all Address Book changes. Also see the unsaved property for the application class.">
+            <synonym name="save addressbook"></synonym>
+            <synonym code="az00az15"></synonym>
+            <cocoa name="Save"></cocoa>
+            <result type="any"></result>
+        </command>
+    </suite>
+    <suite name="Address Book Rollover Suite" code="az99" description="These event definitions are used for constructing Address Book Rollover plug-ins. They would not normally appear in a typical end user script.">
+        <command name="actionProperty" code="az00az57" description="RollOver - Which property this roll over is associated with (Properties can be one of maiden name, phone, email, url, birth date, custom date, related name, aim, icq, jabber, msn, yahoo, address.)">
+            <cocoa name="ActionProperty"></cocoa>
+            <result type="text"></result>
+        </command>
+        <command name="actionTitle" code="az00az58" description="RollOver - Returns the title that will be placed in the menu for this roll over">
+            <cocoa name="ActionTitle"></cocoa>
+            <parameter type="any" name="with:" code="az62" description="property that that was returned from the &quot;action property&quot; handler.">
+                <cocoa key="value"></cocoa>
+            </parameter>
+            <parameter type="person" name="for_:" code="az61" description="Currently selected person.">
+                <cocoa key="for"></cocoa>
+            </parameter>
+            <result type="text"></result>
+        </command>
+        <command name="performAction" code="az00az60" description="RollOver - Performs the action on the given person and value">
+            <cocoa name="ActionPerform"></cocoa>
+            <parameter type="any" name="with:" code="az62" description="property that that was returned from the &quot;action property&quot; handler.">
+                <cocoa key="value"></cocoa>
+            </parameter>
+            <parameter type="person" name="for_:" code="az61" description="Currently selected person.">
+                <cocoa key="for"></cocoa>
+            </parameter>
+            <result type="boolean"></result>
+        </command>
+        <command name="shouldEnableAction" code="az00az59" description="RollOver - Determines if the rollover action should be enabled for the given person and value">
+            <cocoa name="ActionEnable"></cocoa>
+            <parameter type="any" name="with:" code="az62" description="property that that was returned from the &quot;action property&quot; handler.">
+                <cocoa key="value"></cocoa>
+            </parameter>
+            <parameter type="person" name="for_:" code="az61" description="Currently selected person.">
+                <cocoa key="for"></cocoa>
+            </parameter>
+            <result type="boolean"></result>
+        </command>
+    </suite>
+</dictionary>

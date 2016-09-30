@@ -2,13 +2,11 @@
 
 ## Creating application objects
 
-Before you can communicate with a scriptable application you must create an application object. When targeting local applications, the glue's own default constructor is usually the best choice. For example, to target TextEdit:
+Before you can communicate with a scriptable application you must create an application object. When targeting local applications, the glue's own default constructor, which locates the application by bundle identifier, is usually the best choice. For example, to target TextEdit:
 
   let textedit = TextEdit()
 
-This locates the target application using the same bundle identifier as the application from which the glue was originally generated (in this case "com.apple.TextEdit").
-
-Alternatively, one of the following initializers may be used to target the desired application more precisely (for example, if more than one version is installed or if it's running on another machine):
+This uses the bundle identifier of the application from which the glue was originally generated (in this case "com.apple.TextEdit"). If you have more than one version of the application installed, or wish to control the same application on another machine (via Remote Apple Events), use one of the following initializers to target it precisely:
 
   // application's name or full path (`.app` suffix is optional)
   Application(name: String, ...)
@@ -32,9 +30,13 @@ For example, to target a specific version of Adobe InDesign by its name:
 
   let indesign = AdobeInDesign(name: "Adobe InDesign CS6.app")
 
+Or to control a copy of iTunes running on another machine:
+
+  let itunes = ITunes(url: URL(string: "eppc://media-mac.local/iTunes")!)
+
 Except for `currentApplication()`, the above initializers can also accept the following optional arguments:
 
-* `launchOptions: NSWorkspaceLaunchOptions` – determines behavior when launching a local application; see NSWorkspace documentation for details. If omitted, the `NSWorkspaceLaunchOptions.WithoutActivation` option is used.
+* `launchOptions: NSWorkspaceLaunchOptions` – determines behavior when launching a local application; if omitted, the `NSWorkspaceLaunchOptions.WithoutActivation` option is used. See AppKit's `NSWorkspaceLaunchOptions` documentation for a list of available options.
 
 * `relaunchMode: RelaunchMode` - determines behavior if the target process no longer exists; see Restarting applications section below. If omitted, `RelaunchMode.Limited` is used.
 

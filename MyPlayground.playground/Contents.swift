@@ -4,10 +4,10 @@ import Cocoa
 import SwiftAutomation
 
 
-
 let itunes = ITunes()
 let textedit = TextEdit()
 let finder = Finder()
+
 /*
 let state: ITU = try itunes.playerState.get()
 if state == ITU.playing {
@@ -58,12 +58,10 @@ try finder.home.get(resultType: FIN.alias) as URL
 
 //type(of:v)
 
-let r = try finder.home.files["bottle.py", 7].name.get() //as [FINItem]
-try finder.home.files[1..<4].name.get()
+try finder.home.files[2, 7].get() as [FINItem]
 
+//try finder.home.files[1..<4].name.get()
 
-//type(of:r)
-//r[0]
 
 
 

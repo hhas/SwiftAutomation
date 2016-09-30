@@ -357,7 +357,8 @@ open class AppData {
             ()
         }
         // desc couldn't be coerced to the specified type
-        throw UnpackError(appData: self, descriptor: desc, type: T.self, message: "Can't coerce descriptor to \(T.self).")
+        let symbol = self.glueClasses.symbolType.symbol(code: desc.descriptorType)
+        throw UnpackError(appData: self, descriptor: desc, type: T.self, message: "Can't coerce \(symbol.name == nil ? fourCharCode(symbol.code) : symbol.name!) descriptor to \(T.self).")
     }
     
     

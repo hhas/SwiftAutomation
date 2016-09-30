@@ -4,18 +4,9 @@
 //
 //  Generate application-specific glue files for SwiftAutomation.
 //
-//  Note: the undocumented `-D` option is used to [re]generate the SwiftAutomation framework's AEApplicationGlue.swift file.
 //
 
 //  TO DO: would it be simpler just to generate default glue if no apps specified? (if so, -e, -n, -p, etc options should be allowed, so users can create their own default glues which they can then hack on as they like, and undocumented -D option can be discarded)
-
-// TO DO: add an -x option for excluding the `import SwiftAutomation` line from glue? (Currently, CLI apps have to bake everything directly into the executable as Swift can't yet import third-party frameworks outside of an .app bundle.)
-
-// TO DO: what about adding an option for building glues as importable modules? (this can always be added later, once general packaging and distribution issues are all worked out)
-
-// TO DO: change -S option to -A (i.e. use SDEF by default)? (Caution: while using SDEF by default would seem the obvious choice, it is actually less reliable since macOS's AETE-to-SDEF converter can introduce various subtle, hard-to-debug defects during the conversion process; whereas AETEs will always produce valid glues unless the app's 'ascr'/'gdte' handler fails, in which case the glue file will be mostly unusable and the need to switch to SDEF obvious to the user. [Of course, since these failures tend to occur in Carbon apps, there is no guarantee the SDEF-generated glue won't include some of the aforementioned subtle defects, but that's between the user, Apple, and the application vendor to sort out.])
-
-// TO DO: add -t (-a?) option for typealiases, -s option for record structs
 
 
 import Foundation
@@ -32,17 +23,20 @@ let helpText = [
     "",
     "\0x1B[1mUSAGE\0x1B[m", // TO DO: only use ANSI control chars if connected to tty
     "",
-    "    aeglue [-n CLASSNAME] [-p PREFIX] [-rS]",
-    "           [-est FORMAT ...] [-o OUTDIR] APPNAME ...",
+    "    aeglue [-n CLASSNAME] [-p PREFIX] [-DdrS]",
+    "           [-est FORMAT ...] [-o OUTDIR] [APPNAME ...]",
     "    aeglue [-hv]",
     "",
     "APPNAME - Name or path to application. If -n and -p options are",
     "              omitted, multiple applications may be specified.",
+    "              If APPNAME is omitted, a default glue is generated.",
     "",
     "On completion, the generated files' paths are written to STDOUT.",
     "",
     "\0x1B[1mOPTIONS\0x1B[1",
     "",
+    "    -D             Do not import the SwiftAutomation framework.",
+    "    -d             Do not generate an SDEF documentation file.",
     "    -e FORMAT      An enumerated type definition; see Type Support.",
     "    -h             Show this help and exit.",
     "    -o OUTDIR      Path to directory in which the glue files will",
@@ -69,6 +63,10 @@ let helpText = [
     "    aeglue -p TE TextEdit ~/Desktop",
     "",
     "\0x1B[1mTYPE SUPPORT\0x1B[m",
+    
+    // TO DO: finish
+    // TO DO: the full details would probably be better covered in the documentation's 'Creating glues' chapter, with only the format string structures shown here
+    
     "",
     "The -e, -s, and -t options can be used to add custom Swift enums,",
     "structs, and typealiases into the generated glue files, providing",
@@ -88,9 +86,9 @@ let helpText = [
     "",
     "The -e option's argument must have the following format:",
     "",
-    "    [TYPENAME=][CASE1:]TYPE1+[CASE1:]TYPE2+...",
+    "    [ENUMNAME=][CASE1:]TYPE1+[CASE1:]TYPE2+...",
     "",
-    "TYPENAME is the name to be given to the enumerated type, e.g.",
+    "ENUMNAME is the name to be given to the enumerated type, e.g.",
     "MyType. If omitted, a default name is automatically generated.",
     "",
     "TYPEn is the name of an existing Swift type, e.g. String or a",
@@ -107,8 +105,29 @@ let helpText = [
     "    aeglue -e Symbol+Int+String -p MA 'My App'",
     // TO DO: note that `Symbol` must come before `String`, to avoid type/enum codes being coerced to four-char-code strings (which AEM allows)
     
+    "\0x1B[4mRecord structs\0x1B[m",
     // TO DO: document struct and typealias format strings too
+    "",
+    "While SwiftAutomation packs and unpacks Apple event records",
+    "Dictionary<PREFIXSymbol:Any> values as standard, it is also",
+    "possible to map part or all of a specific record structures to",
+    "a Swift struct, simplifying property access and improving type ",
+    "safety.",
+    "",
     
+    "\0x1B[4mType aliases\0x1B[m",
+    "",
+    "The -t option adds a typealias to the glue file. For example,",
+    "to define a typealias for Array<String> named PREFIXStrings:",
+    "",
+    "    -t 'Strings=Array<String>'",
+    "",
+    "The -t option's format string has the following structure:",
+    "",
+    "    ALIASNAME=TYPE",
+    "",
+    "The glue's PREFIX is added automatically to ALIASNAME, and to",
+    "any reserved type names that appear within TYPE.",
     "",
     ""].joined(separator: "\n")
 
@@ -143,10 +162,10 @@ public var errStream = StderrStream()
 
 // parsed options
 
-var frameworkImport = "import SwiftAutomation"
+var importFramework = true
+var generateDocumentation = true
 var applicationClassName: String?
 var classNamePrefix: String?
-var writeDefaultGlue = false
 var canOverwrite = false
 var useSDEF = false
 var applicationURLs: [URL?] = []
@@ -171,9 +190,10 @@ if optArgs.count == 0 {
 while let opt = optArgs.popLast() {
     switch(opt) {
     case "-D":
-        writeDefaultGlue = true
-        frameworkImport = ""
+        importFramework = false
         foundOpts.append(opt)
+    case "-d":
+        generateDocumentation = false
     case "-e":
         let enumeratedTypeFormat = optArgs.popLast()
         validateOption(opt: opt, arg: enumeratedTypeFormat)
@@ -250,11 +270,11 @@ while let arg = applicationPaths.popLast() { // get application name[s] (require
     }
     applicationURLs.append(applicationURL)
 }
-if writeDefaultGlue {
+if applicationURLs.count == 0 { // write default glue
     applicationURLs.append(nil)
-} else if applicationURLs.count == 0 {
-        print("No application specified.", to: &errStream)
-        exit(1)
+} else if (classNamePrefix != nil || applicationClassName != nil) && applicationURLs.count > 1 {
+    print("Only one application may be given when -n/-p options are used: \(applicationURLs)", to: &errStream)
+    exit(1)
 }
 
 // render glue file and documentation for each app
@@ -264,13 +284,14 @@ for applicationURL in applicationURLs {
                             applicationClassName: applicationClassName, useSDEF: useSDEF)
     let typeSupportSpec = TypeSupportSpec(enumeratedTypeFormats: enumeratedTypeFormats,
                                           recordStructFormats: recordStructFormats, typeAliasFormats: typeAliasFormats)
-    let shellCommand = "aeglue " + (foundOpts +
-            (applicationURL == nil ? [] : [quoteForShell(applicationURL!.lastPathComponent)])).joined(separator: " ")
     let glueFileName = "\(glueSpec.applicationClassName)Glue.swift"
+    var shellCommand = ["aeglue"] + foundOpts
+    if applicationURL != nil { shellCommand.append(quoteForShell(applicationURL!.lastPathComponent)) }
+    let extraTags = ["GLUE_NAME": glueFileName, "AEGLUE_COMMAND": shellCommand.joined(separator: " ")]
     // generate SwiftAutomation glue file
     do {
-        let extraTags = ["AEGLUE_COMMAND": shellCommand, "GLUE_NAME": glueFileName, "IMPORT_SWIFTAE": frameworkImport]
-        let code = try renderStaticGlueTemplate(glueSpec: glueSpec, typeSupportSpec: typeSupportSpec, extraTags: extraTags)
+        let code = try renderStaticGlueTemplate(glueSpec: glueSpec, typeSupportSpec: typeSupportSpec,
+                                                importFramework: importFramework, extraTags: extraTags)
         guard let data = code.data(using: String.Encoding.utf8) else { throw TerminologyError("Invalid UTF8 data.") }
         let outGlueURL = outDir!.appendingPathComponent(glueFileName)
         try writeData(data as NSData, toURL: outGlueURL, overwriting: canOverwrite)
@@ -280,7 +301,7 @@ for applicationURL in applicationURLs {
         exit(Int32(error._code))
     }
     // generate cheap-n-dirty user documentation
-    if let appURL = applicationURL {
+    if let appURL = applicationURL, generateDocumentation {
         do {
             let sdef = try translateScriptingDefinition(try GetScriptingDefinition(appURL), glueSpec: glueSpec)
             let outSDEFURL = outDir!.appendingPathComponent("\(glueFileName).sdef")

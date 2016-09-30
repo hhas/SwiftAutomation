@@ -2,30 +2,19 @@
 //  ITunesGlue.swift
 //  iTunes.app 12.5.1
 //  SwiftAutomation.framework 0.1.0
-//  `aeglue 'iTunes.app'`
+//  `aeglue -D 'iTunes.app'`
 //
 
 
 import Foundation
-//import SwiftAutomation
 
-
-/******************************************************************************/
-// Untargeted AppData instance used in App, Con, Its roots; also used by Application constructors to create their own targeted AppData instances
-
-private let gUntargetedAppData = AppData(glueClasses: GlueClasses(insertionSpecifierType: ITUInsertion.self,
-                                                                  objectSpecifierType: ITUItem.self,
-                                                                  multiObjectSpecifierType: ITUItems.self,
-                                                                  rootSpecifierType: ITURoot.self,
-                                                                  applicationType: ITunes.self,
-                                                                  symbolType: ITUSymbol.self,
-                                                                  formatter: gSpecifierFormatter))
 
 
 /******************************************************************************/
-// Specifier formatter
+// Create an untargeted AppData instance for use in App, Con, Its roots,
+// and in Application initializers to create targeted AppData instances.
 
-private let gSpecifierFormatter = SpecifierFormatter(applicationClassName: "ITunes",
+private let _specifierFormatter = SpecifierFormatter(applicationClassName: "ITunes",
                                                      classNamePrefix: "ITU",
                                                      typeNames: [
                                                                      0x70416374: "active", // "pAct"
@@ -575,6 +564,16 @@ private let gSpecifierFormatter = SpecifierFormatter(applicationClassName: "ITun
                                                                      0x63566973: "visuals", // "cVis"
                                                                      0x6377696e: "windows", // "cwin"
                                                      ])
+
+private let _glueClasses = GlueClasses(insertionSpecifierType: ITUInsertion.self,
+                                       objectSpecifierType: ITUItem.self,
+                                       multiObjectSpecifierType: ITUItems.self,
+                                       rootSpecifierType: ITURoot.self,
+                                       applicationType: ITunes.self,
+                                       symbolType: ITUSymbol.self,
+                                       formatter: _specifierFormatter)
+
+private let _untargetedAppData = AppData(glueClasses: _glueClasses)
 
 
 /******************************************************************************/
@@ -1302,7 +1301,6 @@ public class ITUSymbol: Symbol {
 }
 
 public typealias ITU = ITUSymbol // allows symbols to be written as (e.g.) ITU.name instead of ITUSymbol.name
-
 
 
 /******************************************************************************/
@@ -2204,16 +2202,14 @@ extension ITUObject {
 public class ITUInsertion: InsertionSpecifier, ITUCommand {}
 
 
-// by index/name/id/previous/next
-// first/middle/last/any
+// property/by-index/by-name/by-id/previous/next/first/middle/last/any
 public class ITUItem: ObjectSpecifier, ITUObject {
     public typealias InsertionSpecifierType = ITUInsertion
     public typealias ObjectSpecifierType = ITUItem
     public typealias MultipleObjectSpecifierType = ITUItems
 }
 
-// by range/test
-// all
+// by-range/by-test/all
 public class ITUItems: ITUItem, ElementsSpecifierExtension {}
 
 // App/Con/Its
@@ -2221,10 +2217,10 @@ public class ITURoot: RootSpecifier, ITUObject, RootSpecifierExtension {
     public typealias InsertionSpecifierType = ITUInsertion
     public typealias ObjectSpecifierType = ITUItem
     public typealias MultipleObjectSpecifierType = ITUItems
-    public override class var untargetedAppData: AppData { return gUntargetedAppData }
+    public override class var untargetedAppData: AppData { return _untargetedAppData }
 }
 
-// application
+// Application
 public class ITunes: ITURoot, ApplicationExtension {
     public convenience init(launchOptions: LaunchOptions = DefaultLaunchOptions, relaunchMode: RelaunchMode = DefaultRelaunchMode) {
         self.init(rootObject: AppRootDesc, appData: type(of:self).untargetedAppData.targetedCopy(
@@ -2234,9 +2230,9 @@ public class ITunes: ITURoot, ApplicationExtension {
 
 // App/Con/Its root objects used to construct untargeted specifiers; these can be used to construct specifiers for use in commands, though cannot send commands themselves
 
-public let ITUApp = gUntargetedAppData.app as! ITURoot
-public let ITUCon = gUntargetedAppData.con as! ITURoot
-public let ITUIts = gUntargetedAppData.its as! ITURoot
+public let ITUApp = _untargetedAppData.app as! ITURoot
+public let ITUCon = _untargetedAppData.con as! ITURoot
+public let ITUIts = _untargetedAppData.its as! ITURoot
 
 
 /******************************************************************************/

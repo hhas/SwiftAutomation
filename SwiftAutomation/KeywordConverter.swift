@@ -32,7 +32,7 @@ let kSwiftKeywords: Set<String> = [
     
     // other
     
-    "missingValue", // unlike other typeType descriptors, the `missing value` constant (`cMissingValue`) is represented by the `MissingValueType.missing` instance, not a Symbol instance, so that Swift's type system can reliably separate it out when unpacking command results; we reserve its Symbol-based name here just to stop it appearing anywhere and confusing users (reserving it here doesn't prevent it being used, should an application's own dictionary define it for some weird reason; it just ensures that it'll include an underscore suffix if it is)
+    "missingValue", // unlike other typeType descriptors, the `missing value` constant (`cMissingValue`) is represented by the `MissingValue` constant (`MissingValueType.missingValue` enum), not a Symbol instance, so that Swift's type system can reliably separate it out when unpacking command results; we reserve its Symbol-based name here purely to stop it appearing on Symbol and confusing users (reserving it here doesn't prevent it being used, should an application's own dictionary define it for some weird reason; it just ensures that it'll include an underscore suffix if it is)
 ]
 
 
@@ -89,7 +89,7 @@ public let gReservedParameterNames: Set<String> = [
 ]
 
 
-public let kReservedPrefixes: Set<String> = ["NS", "AE", "SwiftAutomation_"] // TO DO: decide
+public let kReservedPrefixes: Set<String> = ["NS", "AE", "SwiftAutomation"] // TO DO: decide
 
 
 public let kWordSeparators = CharacterSet(charactersIn: " -/") // some AETEs may include hyphens and other non-C-identifier/non-space characters in their keyword names, which are problematic in AppleScript (which [e.g.] compiles `trash-object` to `trash - object`) and a PITA in traditionally C-like languages, so we just bite the bullet and treat them all as if they were just simple spaces between words

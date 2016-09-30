@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE dictionary SYSTEM "file://localhost/System/Library/DTDs/sdef.dtd">
+
+<dictionary xmlns:xi="http://www.w3.org/2003/XInclude">
+    <xi:include href="file:///System/Library/ScriptingDefinitions/CocoaStandard.sdef" xpointer="xpointer(/dictionary/suite)"></xi:include>
+    <suite name="Internet Suite" code="gurl" description="Common URL related functionality">
+        <command name="openURL" code="GURLGURL" description="Open a URL.">
+            <cocoa class="NSScriptCommand"></cocoa>
+            <direct-parameter type="text" description="the URL"></direct-parameter>
+        </command>
+        <class-extension extends="application">
+            <responds-to command="openURL">
+                <cocoa method="handleOpenURLScriptCommand:"></cocoa>
+            </responds-to>
+        </class-extension>
+    </suite>
+    <suite name="QuickTime Player Suite" code="qtpx" description="Classes and Commands for working with QuickTime Player">
+        <command name="play" code="MVWRplay" description="Play the movie.">
+            <cocoa class="NSScriptCommand"></cocoa>
+            <direct-parameter type="document" description="the movie to play"></direct-parameter>
+        </command>
+        <command name="start" code="MVWRstar" description="Start the movie recording.">
+            <cocoa class="NSScriptCommand"></cocoa>
+            <direct-parameter type="document" description="the recording to start"></direct-parameter>
+        </command>
+        <command name="pause" code="MVWRpaus" description="Pause the recording.">
+            <cocoa class="NSScriptCommand"></cocoa>
+            <direct-parameter type="document" description="the recording to pause"></direct-parameter>
+        </command>
+        <command name="resume" code="MVWRresu" description="Resume the recording.">
+            <cocoa class="NSScriptCommand"></cocoa>
+            <direct-parameter type="document" description="the recording to resume"></direct-parameter>
+        </command>
+        <command name="stop" code="MVWRstop" description="Stop the movie or recording.">
+            <cocoa class="NSScriptCommand"></cocoa>
+            <direct-parameter type="document" description="the movie or recording to stop"></direct-parameter>
+        </command>
+        <command name="stepBackward" code="MVWRstba" description="Step the movie backward the specified number of steps (default is 1).">
+            <cocoa class="NSScriptCommand"></cocoa>
+            <direct-parameter type="document" description="the movie to step"></direct-parameter>
+            <parameter type="integer" name="by:" code="stpc" optional="yes" description="number of steps">
+                <cocoa key="steps"></cocoa>
+            </parameter>
+        </command>
+        <command name="stepForward" code="MVWRstfo" description="Step the movie forward the specified number of steps (default is 1).">
+            <cocoa class="NSScriptCommand"></cocoa>
+            <direct-parameter type="document" description="the movie to step"></direct-parameter>
+            <parameter type="integer" name="by:" code="stpc" optional="yes" description="number of steps">
+                <cocoa key="steps"></cocoa>
+            </parameter>
+        </command>
+        <command name="trim" code="MVWRtrim" description="Trim the movie.">
+            <cocoa class="NSScriptCommand"></cocoa>
+            <direct-parameter type="document" description="the movie to trim"></direct-parameter>
+            <parameter type="real" name="from:" code="trfm" description="start time in seconds">
+                <cocoa key="startTime"></cocoa>
+            </parameter>
+            <parameter type="real" name="to:" code="trto" description="end time in seconds">
+                <cocoa key="endTime"></cocoa>
+            </parameter>
+        </command>
+        <command name="present" code="MVWRpres" description="Present the document full screen.">
+            <cocoa class="NSScriptCommand"></cocoa>
+            <direct-parameter type="document" description="the document to present"></direct-parameter>
+        </command>
+        <command name="newMovieRecording" code="MVWRnavr" description="Create a new movie recording document.">
+            <cocoa class="NSScriptCommand"></cocoa>
+            <result description="The new movie recording document.">
+                <type type="document"></type>
+            </result>
+        </command>
+        <command name="newAudioRecording" code="MVWRnwar" description="Create a new audio recording document.">
+            <cocoa class="NSScriptCommand"></cocoa>
+            <result description="The new audio recording document.">
+                <type type="document"></type>
+            </result>
+        </command>
+        <command name="newScreenRecording" code="MVWRnscr" description="Create a new screen recording document.">
+            <cocoa class="NSScriptCommand"></cocoa>
+            <result description="The new screen recording document.">
+                <type type="document"></type>
+            </result>
+        </command>
+        <command name="export" code="MVWRexpo" description="Export a movie to another file">
+            <cocoa class="NSScriptCommand"></cocoa>
+            <direct-parameter type="document" description="the movie to export"></direct-parameter>
+            <parameter name="in_:" code="kfil" type="file" description="the destination file">
+                <cocoa key="Destination"></cocoa>
+            </parameter>
+            <parameter name="usingSettingsPreset:" code="expp" type="text" optional="no" description="the name of the export settings preset to use">
+                <cocoa key="UsingSettingsPreset"></cocoa>
+            </parameter>
+        </command>
+        <command hidden="yes" name="showRemoteHud" code="MVWRrmot" description="Show the document's Remote HUD">
+            <cocoa class="NSScriptCommand"></cocoa>
+            <direct-parameter type="document"></direct-parameter>
+        </command>
+        <class name="videoRecordingDevice" code="vdev" description="A video recording device" plural="videoRecordingDevices">
+            <cocoa class="AVCaptureDevice"></cocoa>
+            <property name="name" code="pnam" type="text" access="r" description="The name of the device."></property>
+            <property name="id" code="ID  " type="text" access="r" description="The unique identifier of the device.">
+                <cocoa key="uniqueID"></cocoa>
+            </property>
+        </class>
+        <class name="audioRecordingDevice" code="adev" description="An audio recording device" plural="audioRecordingDevices">
+            <cocoa class="AVCaptureDevice"></cocoa>
+            <property name="name" code="pnam" type="text" access="r" description="The name of the device."></property>
+            <property name="id" code="ID  " type="text" access="r" description="The unique identifier of the device.">
+                <cocoa key="uniqueID"></cocoa>
+            </property>
+        </class>
+        <class name="audioCompressionPreset" code="acpr" description="An audio recording compression preset" plural="audioCompressionPresets">
+            <cocoa class="MGCaptureCompressionPreset"></cocoa>
+            <property name="name" code="pnam" type="text" access="r" description="The name of the preset."></property>
+            <property name="id" code="ID  " type="text" access="r" description="The unique identifier of the preset.">
+                <cocoa key="uniqueID"></cocoa>
+            </property>
+        </class>
+        <class name="movieCompressionPreset" code="mcpr" description="A movie recording compression preset" plural="movieCompressionPresets">
+            <cocoa class="MGCaptureCompressionPreset"></cocoa>
+            <property name="name" code="pnam" type="text" access="r" description="The name of the preset."></property>
+            <property name="id" code="ID  " type="text" access="r" description="The unique identifier of the preset.">
+                <cocoa key="uniqueID"></cocoa>
+            </property>
+        </class>
+        <class name="screenCompressionPreset" code="scpr" description="A screen recording compression preset" plural="screenCompressionPresets">
+            <cocoa class="MGCaptureCompressionPreset"></cocoa>
+            <property name="name" code="pnam" type="text" access="r" description="The name of the preset."></property>
+            <property name="id" code="ID  " type="text" access="r" description="The unique identifier of the preset.">
+                <cocoa key="uniqueID"></cocoa>
+            </property>
+        </class>
+        <class-extension extends="application">
+            <responds-to command="newMovieRecording">
+                <cocoa method="handleNewMovieRecording:"></cocoa>
+            </responds-to>
+            <responds-to command="newAudioRecording">
+                <cocoa method="handleNewAudioRecording:"></cocoa>
+            </responds-to>
+            <responds-to command="newScreenRecording">
+                <cocoa method="handleNewScreenRecording:"></cocoa>
+            </responds-to>
+            <element type="videoRecordingDevice" access="r">
+                <cocoa method="videoRecordingDevices"></cocoa>
+                <accessor style="name"></accessor>
+                <accessor style="id"></accessor>
+            </element>
+            <element type="audioRecordingDevice" access="r">
+                <cocoa method="audioRecordingDevices"></cocoa>
+                <accessor style="name"></accessor>
+                <accessor style="id"></accessor>
+            </element>
+            <element type="audioCompressionPreset" access="r">
+                <cocoa method="audioCompressionPresets"></cocoa>
+                <accessor style="name"></accessor>
+                <accessor style="id"></accessor>
+            </element>
+            <element type="movieCompressionPreset" access="r">
+                <cocoa method="movieCompressionPresets"></cocoa>
+                <accessor style="name"></accessor>
+                <accessor style="id"></accessor>
+            </element>
+            <element type="screenCompressionPreset" access="r">
+                <cocoa method="screenCompressionPresets"></cocoa>
+                <accessor style="name"></accessor>
+                <accessor style="id"></accessor>
+            </element>
+        </class-extension>
+        <class-extension extends="document">
+            <responds-to command="play">
+                <cocoa method="handlePlayCommand:"></cocoa>
+            </responds-to>
+            <responds-to command="start">
+                <cocoa method="handleStartCommand:"></cocoa>
+            </responds-to>
+            <responds-to command="pause">
+                <cocoa method="handlePauseCommand:"></cocoa>
+            </responds-to>
+            <responds-to command="resume">
+                <cocoa method="handleResumeCommand:"></cocoa>
+            </responds-to>
+            <responds-to command="stop">
+                <cocoa method="handleStopCommand:"></cocoa>
+            </responds-to>
+            <responds-to command="stepBackward">
+                <cocoa method="handleStepBackwardCommand:"></cocoa>
+            </responds-to>
+            <responds-to command="stepForward">
+                <cocoa method="handleStepForwardCommand:"></cocoa>
+            </responds-to>
+            <responds-to command="trim">
+                <cocoa method="handleTrimCommand:"></cocoa>
+            </responds-to>
+            <responds-to command="present">
+                <cocoa method="handlePresentCommand:"></cocoa>
+            </responds-to>
+            <responds-to command="export">
+                <cocoa method="handleExportCommand:"></cocoa>
+            </responds-to>
+            <property name="audioVolume" code="volu" type="real" access="rw" description="The volume of the movie from 0 to 1, where 1 is 100%.">
+                <cocoa key="volume"></cocoa>
+            </property>
+            <property name="currentTime" code="time" type="real" access="rw" description="The current time of the movie in seconds.">
+                <cocoa key="currentTimeInSeconds"></cocoa>
+            </property>
+            <property name="dataRate" code="ddra" type="integer" access="r" description="The data rate of the movie in bytes per second.">
+                <cocoa key="dataRate"></cocoa>
+            </property>
+            <property name="dataSize" code="dsiz" type="integer" access="r" description="The data size of the movie in bytes.">
+                <cocoa key="dataSize"></cocoa>
+            </property>
+            <property name="duration" code="durn" type="real" access="r" description="The duration of the movie in seconds.">
+                <cocoa key="durationInSeconds"></cocoa>
+            </property>
+            <property name="looping" code="loop" type="boolean" access="rw" description="Is the movie playing in a loop?">
+                <cocoa key="loops"></cocoa>
+            </property>
+            <property name="muted" code="mute" type="boolean" access="rw" description="Is the movie muted?">
+                <cocoa key="muted"></cocoa>
+            </property>
+            <property name="naturalDimensions" code="ndim" type="point" access="r" description="The natural dimensions of the movie.">
+                <cocoa key="naturalDimensions"></cocoa>
+            </property>
+            <property name="playing" code="play" type="boolean" access="r" description="Is the movie playing?">
+                <cocoa key="playing"></cocoa>
+            </property>
+            <property name="rate" code="rate" type="real" access="rw" description="The current rate of the movie.">
+                <cocoa key="rate"></cocoa>
+            </property>
+            <property name="presenting" code="pres" type="boolean" access="rw" description="Is the movie presented in full screen?">
+                <cocoa key="presenting"></cocoa>
+            </property>
+            <property name="currentMicrophone" code="cura" type="audio recording device" access="rw" description="The currently previewing audio device.">
+                <cocoa key="currentAudioRecordingDevice"></cocoa>
+            </property>
+            <property name="currentCamera" code="curv" type="video recording device" access="rw" description="The currently previewing video device.">
+                <cocoa key="currentVideoRecordingDevice"></cocoa>
+            </property>
+            <property name="currentAudioCompression" code="apst" type="audio compression preset" access="rw" description="The current audio compression preset.">
+                <cocoa key="currentAudioCompression"></cocoa>
+            </property>
+            <property name="currentMovieCompression" code="mpst" type="movie compression preset" access="rw" description="The current movie compression preset.">
+                <cocoa key="currentMovieCompression"></cocoa>
+            </property>
+            <property name="currentScreenCompression" code="spst" type="screen compression preset" access="rw" description="The current screen compression preset.">
+                <cocoa key="currentScreenCompression"></cocoa>
+            </property>
+        </class-extension>
+    </suite>
+</dictionary>

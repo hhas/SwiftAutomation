@@ -8,6 +8,14 @@
 
 // TO DO: this code is pretty messy; tidy up later (e.g. divide ad-hoc parsing code into lexer + LL(1) parser)
 
+// TO DO: glue file needs to include `import SwiftAutomation` AND fully qualify all references to its types, classes, and constants by default; also implement an 'omitImport' option that omits them for all-in-one static builds
+
+// TO DO: skip any non-significant spaces in format string (currently spaces aren't allowed in format string)
+
+// TO DO: format strings should allow module and nested type names, e.g. 'Foo.Bar'
+
+// TO DO: rename `PREFIXObject` to `PREFIXSpecifier` (the one catch with this is that there's already a `Specifier` class in SwiftAutomation, which means it'll always have a PREFIX added regardless of which was actually intended; OTOH, user can always just use `Query` if they need a one-size-fits-all type - the only thing `Specifier` adds is the low-level `sendAppleEvent()` methods; everything else is added by InsertionSpecifier and ObjectSpecifier subclasses.)
+
 
 import Foundation
 
@@ -26,7 +34,7 @@ public typealias TypeAliasDefinition = (name: String, type: String)
 
 
 // the following names are reserved by glue generator
-let ReservedGlueTypeNames: Set<String> = ["symbol", "object", "insertion", "item", "items", "root", "record"] // enum/typealias/struct format string parsers will automatically prefix these names with classNamePrefix
+let ReservedGlueTypeNames: Set<String> = ["symbol", "object", "insertion", "item", "items", "root", "record"] // enum/typealias/struct format string parsers will automatically prefix these names with classNamePrefix // TO DO: not sure if 'record' should be included
 
 func isReservedGlueTypeName(_ string: String) -> Bool {
     return ReservedGlueTypeNames.contains(string.lowercased())
@@ -131,7 +139,7 @@ func parseProperty(_ chars: inout String.CharacterView, classNamePrefix: String)
 }
 
 
-// typealias format string parser
+// typealias format string parser "ALIASNAME=TYPE"
 
 public func parseTypeAliasDefinition(_ string: String, classNamePrefix: String) throws -> TypeAliasDefinition {
     // TO DO: don't bother splitting; just define a skipChar() function that consumes one char and errors if it's not the char expected
@@ -147,7 +155,7 @@ public func parseTypeAliasDefinition(_ string: String, classNamePrefix: String) 
 }
 
 
-// enum type format string parser "[TYPENAME=]TYPE1+TYPE2+..."
+// enum type format string parser "[ENUMNAME=][CASENAME1:]TYPE1+[CASENAME2:]TYPE2+..."
 
 func parseEnumeratedTypeDefinition(_ string: String, classNamePrefix: String) throws -> EnumeratedTypeDefinition {
     // an enumerated (aka sum/union) type definition is written as a simple format string: "[TYPENAME=]TYPE1+TYPE2+..."
@@ -172,7 +180,7 @@ func parseEnumeratedTypeDefinition(_ string: String, classNamePrefix: String) th
                 throw SyntaxError("Can't generate case name from parameterized type name: \(typeName)")
             }
         }
-        if typeName == "MissingValue" { // for convenience, the format string may also include `MissingValue`, in which case a `.missing(_)` case is also included in the enum; this avoids the need for an extra level of MayBeMissing<> boxing; TO DO: finalize naming
+        if typeName == "MissingValue" { // for convenience, the format string may also include `MissingValue`, in which case a `.missing(_)` case is also included in the enum; this avoids the need for an extra level of MayBeMissing<> boxing
             cases.insert((name: "missing", type: "MissingValueType"), at: 0) // (ignore any property name caller might have given)
         } else {
             if caseName == "missing" { throw SyntaxError("Invalid case name: \(typeName)") }
@@ -190,7 +198,7 @@ func parseEnumeratedTypeDefinition(_ string: String, classNamePrefix: String) th
     if cases.count < 2 { throw SyntaxError("Not a valid enumerated type definition: '\(string)'") }
     if !chars.isEmpty { throw SyntaxError("Expected end of text but found \(String(chars)).") }
     if enumName.isEmpty {
-        enumName = enumNameParts.joined(separator: "Or") // TO DO: remove CNP
+        enumName = enumNameParts.joined(separator: "Or")
         if kSwiftKeywords.contains(enumName) { enumName += "_" }
     } else {
         try validateCIdentifier(enumName)
@@ -219,7 +227,7 @@ func parseRecordStructDefinition(_ string: String, classNamePrefix: String,
     }
     try advanceOne(&chars, character: kBindChar, after: "struct name")
     var nc: Character?
-    repeat { // TO DO: skip any non-significant spaces in format string (currently spaces aren't allowed in format string)
+    repeat {
         let (propertyName, typeName) = try parseProperty(&chars, classNamePrefix: classNamePrefix)
         guard let propertyCode = typesByName[propertyName]?.typeCodeValue else {
             throw SyntaxError("Unknown property name: \(propertyName)")
@@ -235,7 +243,6 @@ func parseRecordStructDefinition(_ string: String, classNamePrefix: String,
 /******************************************************************************/
 // Type support glue specification
 
-// TO DO: refactor parse methods for better code reuse
 
 public class TypeSupportSpec { // converts custom format strings into enum/struct/typealias type descriptions for use in glue renderer; TO DO: define protocol, allowing type descriptions to be constructed in other ways (e.g. by optimistic parsing of AETE/SDEF's schlonky type data)
     
@@ -347,7 +354,7 @@ public class GlueSpec {
 
 
 public class StaticGlueTemplate {
-    // Note: this is not a general-purpose templating engine. In particular, «+NAME»...«-NAME» blocks have leaky scope,
+    // Caution: this is not a general-purpose template engine. In particular, «+NAME»...«-NAME» blocks have leaky scope,
     // so replacing «FOO» tags in the top-level scope will replace all «FOO» tags within «+NAME»...«-NAME» blocks too.
     // This makes it easy to (e.g.) replace all «PREFIX» tags throughout the template, but also means nested tags must
     // use different names when unrelated to each other (e.g. «COMMAND_NAME» vs (parameter) «NAME») so that replacing
@@ -478,12 +485,14 @@ public class StaticGlueTemplate {
 /******************************************************************************/
 // glue renderer
 
-public func renderStaticGlueTemplate(glueSpec: GlueSpec, typeSupportSpec: TypeSupportSpec? = nil,
+public func renderStaticGlueTemplate(glueSpec: GlueSpec, typeSupportSpec: TypeSupportSpec? = nil, importFramework: Bool = true,
                                      extraTags: [String:String] = [:], templateString: String = SwiftAEGlueTemplate) throws -> String {
     // note: SwiftAEGlueTemplate requires additional values for extraTags: ["AEGLUE_COMMAND": shellCommand,"GLUE_NAME": glueFileName]
     let glueTable = try glueSpec.buildGlueTable()
     let template = StaticGlueTemplate(string: templateString)
     template.insertString("PREFIX", glueSpec.classNamePrefix)
+    template.insertString("IMPORT_SWIFTAE", importFramework ? "import SwiftAutomation" : "")
+    template.insertString("SWIFTAE", importFramework ? "SwiftAutomation." : "")
     template.insertString("APPLICATION_CLASS_NAME", glueSpec.applicationClassName)
     template.insertString("FRAMEWORK_NAME", glueSpec.frameworkName)
     template.insertString("FRAMEWORK_VERSION", glueSpec.frameworkVersion)
@@ -541,7 +550,7 @@ public func translateScriptingDefinition(_ data: Data, glueSpec: GlueSpec) throw
                 for parameter in command.elements(forName: "parameter") {
                     if let attribute = parameter.attribute(forName: "name") {
                         if let value = attribute.stringValue {
-                            attribute.stringValue = glueSpec.keywordConverter.convertParameterName(value)+":" // TO DO: formatting of param names should ideally be parameterized for reusability; maybe add `formatCommandName`, `formatParamName`, `formatEnum`, etc. methods to keywordConverter, and call those instead of `convert...`?
+                            attribute.stringValue = glueSpec.keywordConverter.convertParameterName(value)+":"
                         }
                     }
                 }
@@ -559,7 +568,7 @@ public func translateScriptingDefinition(_ data: Data, glueSpec: GlueSpec) throw
         }
         let symbolPrefix = "\(glueSpec.classNamePrefix)."
         for enumeration in suite.elements(forName: "enumeration") {
-            for enumerator in enumeration.elements(forName: "enumerator") { convertNode(enumerator, symbolPrefix: symbolPrefix) } // TO DO: as above, enum formatting should ideally be parameterized
+            for enumerator in enumeration.elements(forName: "enumerator") { convertNode(enumerator, symbolPrefix: symbolPrefix) }
         }
         for valueType in suite.elements(forName: "value-type") { convertNode(valueType) }
     }

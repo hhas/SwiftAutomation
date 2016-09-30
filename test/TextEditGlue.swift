@@ -2,30 +2,19 @@
 //  TextEditGlue.swift
 //  TextEdit.app 1.12
 //  SwiftAutomation.framework 0.1.0
-//  `aeglue -s 'Document:document=name:String+modified:Bool+path:Optional<String>+text:String' -p TED 'TextEdit.app'`
+//  `aeglue -s 'Document:document=name:String+modified:Bool+path:Optional<String>+text:String' -D 'TextEdit.app'`
 //
 
 
 import Foundation
-import SwiftAutomation
 
-
-/******************************************************************************/
-// Untargeted AppData instance used in App, Con, Its roots; also used by Application constructors to create their own targeted AppData instances
-
-private let gUntargetedAppData = AppData(glueClasses: GlueClasses(insertionSpecifierType: TEDInsertion.self,
-                                                                  objectSpecifierType: TEDItem.self,
-                                                                  multiObjectSpecifierType: TEDItems.self,
-                                                                  rootSpecifierType: TEDRoot.self,
-                                                                  applicationType: TextEdit.self,
-                                                                  symbolType: TEDSymbol.self,
-                                                                  formatter: gSpecifierFormatter))
 
 
 /******************************************************************************/
-// Specifier formatter
+// Create an untargeted AppData instance for use in App, Con, Its roots,
+// and in Application initializers to create targeted AppData instances.
 
-private let gSpecifierFormatter = SpecifierFormatter(applicationClassName: "TextEdit",
+private let _specifierFormatter = SpecifierFormatter(applicationClassName: "TextEdit",
                                                      classNamePrefix: "TED",
                                                      typeNames: [
                                                                      0x616c6973: "alias", // "alis"
@@ -226,6 +215,16 @@ private let gSpecifierFormatter = SpecifierFormatter(applicationClassName: "Text
                                                                      0x6377696e: "windows", // "cwin"
                                                                      0x63776f72: "words", // "cwor"
                                                      ])
+
+private let _glueClasses = GlueClasses(insertionSpecifierType: TEDInsertion.self,
+                                       objectSpecifierType: TEDItem.self,
+                                       multiObjectSpecifierType: TEDItems.self,
+                                       rootSpecifierType: TEDRoot.self,
+                                       applicationType: TextEdit.self,
+                                       symbolType: TEDSymbol.self,
+                                       formatter: _specifierFormatter)
+
+private let _untargetedAppData = AppData(glueClasses: _glueClasses)
 
 
 /******************************************************************************/
@@ -537,7 +536,6 @@ public class TEDSymbol: Symbol {
 }
 
 public typealias TED = TEDSymbol // allows symbols to be written as (e.g.) TED.name instead of TEDSymbol.name
-
 
 
 /******************************************************************************/
@@ -955,16 +953,14 @@ extension TEDObject {
 public class TEDInsertion: InsertionSpecifier, TEDCommand {}
 
 
-// by index/name/id/previous/next
-// first/middle/last/any
+// property/by-index/by-name/by-id/previous/next/first/middle/last/any
 public class TEDItem: ObjectSpecifier, TEDObject {
     public typealias InsertionSpecifierType = TEDInsertion
     public typealias ObjectSpecifierType = TEDItem
     public typealias MultipleObjectSpecifierType = TEDItems
 }
 
-// by range/test
-// all
+// by-range/by-test/all
 public class TEDItems: TEDItem, ElementsSpecifierExtension {}
 
 // App/Con/Its
@@ -972,10 +968,10 @@ public class TEDRoot: RootSpecifier, TEDObject, RootSpecifierExtension {
     public typealias InsertionSpecifierType = TEDInsertion
     public typealias ObjectSpecifierType = TEDItem
     public typealias MultipleObjectSpecifierType = TEDItems
-    public override class var untargetedAppData: AppData { return gUntargetedAppData }
+    public override class var untargetedAppData: AppData { return _untargetedAppData }
 }
 
-// application
+// Application
 public class TextEdit: TEDRoot, ApplicationExtension {
     public convenience init(launchOptions: LaunchOptions = DefaultLaunchOptions, relaunchMode: RelaunchMode = DefaultRelaunchMode) {
         self.init(rootObject: AppRootDesc, appData: type(of:self).untargetedAppData.targetedCopy(
@@ -985,9 +981,9 @@ public class TextEdit: TEDRoot, ApplicationExtension {
 
 // App/Con/Its root objects used to construct untargeted specifiers; these can be used to construct specifiers for use in commands, though cannot send commands themselves
 
-public let TEDApp = gUntargetedAppData.app as! TEDRoot
-public let TEDCon = gUntargetedAppData.con as! TEDRoot
-public let TEDIts = gUntargetedAppData.its as! TEDRoot
+public let TEDApp = _untargetedAppData.app as! TEDRoot
+public let TEDCon = _untargetedAppData.con as! TEDRoot
+public let TEDIts = _untargetedAppData.its as! TEDRoot
 
 
 /******************************************************************************/

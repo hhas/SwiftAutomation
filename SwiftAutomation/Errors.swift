@@ -12,6 +12,9 @@ import Foundation
 
 // Note that OSStatus codes are inherent to Apple event IPC and completely arbitrary (since apps are free to define their own codes as well as use the standard Carbon/AE error codes), so cannot be mapped to enums themselves. Client code that needs to know _why_ an error occurred will need to check the CommandError's error number against known error codes to determine the cause. (TO DO: Not sure if there's any way to do this within a do...catch block's own limited pattern matching capabilities, so clients will probably need to catch the error first then pass its code to a switch block to dispatch accordingly.)
 
+// TO DO: could do with utility function that produces readable error string given an NSError (code + localizedDescription) or Error (description)
+
+
 
 let gDescriptionForError: [Int:String] = [ // error descriptions from ASLG/MacErrors.h
         // OS errors

@@ -45,14 +45,14 @@ For example, iTunes.app implements two user interfaces, one graphical and one Ap
 
 ![Application with Graphical and Apple event interfaces](application_architecture.gif)
 
-A scriptable application also contains a built-in definition of its scripting interface in the form of an `aete` or `sdef` resource. This resource can be obtained programmatically and used:
+A scriptable application also contains a built-in definition of its scripting interface in the form of an AETE or SDEF resource. This resource can be obtained programmatically and used:
 
 * to support automatic translation of human-readable terminology to four-letter codes in high-level bridges such as AppleScript and SwiftAutomation
 
 * to generate basic human-readable documentation by applications such as AppleScript Editor.
 
 
-(Note that the `aete` and `sdef` formats do not provide an exhaustive description of the application's scripting interface, and additional documentation is usually required - if not always provided - to form a complete understanding of that interface and how to use it effectively.)
+(Be aware that the AETE and SDEF formats do not provide an exhaustive description of the application's scripting interface, and additional documentation is usually required - if not always provided - to form a complete understanding of that interface and how to use it effectively.)
 
 
 ## What is the Apple Event Object Model?
