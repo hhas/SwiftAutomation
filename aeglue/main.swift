@@ -6,8 +6,6 @@
 //
 //
 
-//  TO DO: would it be simpler just to generate default glue if no apps specified? (if so, -e, -n, -p, etc options should be allowed, so users can create their own default glues which they can then hack on as they like, and undocumented -D option can be discarded)
-
 
 import Foundation
 //import SwiftAutomation // TO DO: the `aeglue` target currently bakes everything into CLI executable; if/when Swift finally supports dynamic framework linking, use import instead

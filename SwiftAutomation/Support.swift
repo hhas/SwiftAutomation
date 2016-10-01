@@ -7,6 +7,20 @@ import Foundation
 import AppKit
 
 
+// TO DO: while NSWorkspace.launchApplication(at:options:configuration:) is a well-designed and reliable API for launching applications given a file URL to their .app bundles, it's pretty much useless in a sandboxed app as the sandbox severely restricts access to file system information, so won't allow other apps' file URLs to be obtained. e.g. See <http://mjtsai.com/blog/2016/09/30/sandboxed-launch-services/>
+//
+//  AFAICT, the only reliable option within a sandboxed app is to launch the app by bundle ID, not URL, using NSWorkspace's:
+//
+//    launchApplication(withBundleIdentifier:options:additionalEventParamDescriptor:launchIdentifier:)->Bool
+//
+// Unlike launchApplication(at:URL…), however, launchApplication(withBundleIdentifier:…) doesn't return an NSRunningApplication instance for the process that it's just launched, only a Bool to indicate success or failure. However, we can't construct a typeKernelProcessID AEAddressDesc for sending Apple events to that app unless we can get the new process's NSRunningApplication.processIdentifier. A possible workaround would be to call NSRunningApplication.runningApplications(withBundleIdentifier:) afterwards and fish around in there in the hopes of finding a single process with the same bundle ID, but that may be fragile: e.g. what if it returns zero matches, or finds two or more matches?
+//
+// In addition, launchApplication(withBundleID:…) doesn't provide any useful error information when it fails, nor does it allow a first event to be passed, only a `with properties` parameter that gets packed into whatever first event it decides to make itself, so in every respect other than sandbox compatibility it really is a lousy PITA.
+//
+//
+// TO DO: file a Radar for a better launchApplication(withBundleID:…) method that addresses all the above issues; though we're still going to need a sandbox-compatible solution for launching by bundle ID that works in 10.11+, so probably a case of design the new launchApplication(withBundleID:…) method we'd like to see in 10.13+, then hack up the current implementation to fall back to the existing launchApplication(withBundleID:…) method when it finds itself in a sandbox where the TargetApplication.bundleIdentifier(String) case is unable to get the app's file URL.
+
+
 /******************************************************************************/
 // convert between 4-character strings and OSTypes (use these instead of calling UTGetOSTypeFromString/UTCopyStringFromOSType directly)
 
@@ -218,7 +232,7 @@ public enum TargetApplication {
                                                    configuration: [NSWorkspaceLaunchConfigurationAppleEvent: LaunchEvent])
     }
     
-    // launch this application (equivalent to AppleScript's `launch` command)
+    // launch this application (equivalent to AppleScript's `launch` command; an obscure corner case that AS users need to fall back onto when sending an event to a Script Editor applet that isn't saved as 'stay open', so only handles the first event it receives then quits when done) // TO DO: is it worth keeping this for 'quirk-for-quirk' compatibility's sake, or just ditch it and tell users to use `NSWorkspace.launchApplication(at:options:configuration:)` with an `NSWorkspaceLaunchConfigurationAppleEvent` if they really need to pass a non-standard first event?
 
     public func launch() throws { // called by ApplicationExtension.launch()
         // note: in principle an app _could_ implement an AE handler for this event that returns a value, but it probably isn't a good idea to do so (the event is called 'ascr'/'noop' for a reason), so even if a running process does return something (instead of throwing the expected errAEEventNotHandled) we just ignore it for sanity's sake (the flipside being that if the app _isn't_ already running then NSWorkspace.launchApplication() will launch it and pass the 'noop' descriptor as the first Apple event to handle, but doesn't return a result for that event, so to return a result at any other time would be inconsistent)

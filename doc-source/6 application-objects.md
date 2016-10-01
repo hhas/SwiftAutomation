@@ -1,5 +1,9 @@
 # Application objects
 
+[TO DO: The name/path/bundleID/fileURL options all currently rely on NSWorkspace's launchApplication(at:URL,...), so can't be used in a sandboxed app. In theory, the bundleID option (both explicit and default) would use launchApplication(withBundleIdentifier:,...), which avoids running into sandbox restrictions, but that method's a piece of crap so got pulled out before the sandboxing problem was known about. Once a workable solution for the latter is found, the bundleID option should work everywhere, though the by-name/path/fileURL options will need to be documented as only available for use within non-sandboxed apps]
+
+[TO DO: add a brief section on using SwiftAutomation within a sandboxed app, to ensure users are aware they'll need entitlements in order to talk to other apps. (Might also want to note that there's a potential security hole any time a non-sandboxed app can be send a run script/do script/do shell script/etc command that enables execution of arbitrary code; not sure how thoroughly plugged these are, and there's nothing to stop apps defining AE handlers that may deliberately/accidentally allow execution of arbitrary code/commands outside a sandbox. NSUserAppleScriptTask explicitly allows it, of course, though that's on the assumption that the scripts it runs will always and only be supplied by the user, i.e. scripts they've written themselves and/or scripts from a - hopefully! - trusted source that they've intentionally installed for their own use.)]
+
 ## Creating application objects
 
 Before you can communicate with a scriptable application you must create an application object. When targeting local applications, the glue's own default constructor, which locates the application by bundle identifier, is usually the best choice. For example, to target TextEdit:
