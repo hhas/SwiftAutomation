@@ -949,7 +949,7 @@ public class QTPRoot: SwiftAutomation.RootSpecifier, QTPObject, SwiftAutomation.
 }
 
 // Application
-public class QuickTimePlayer: QTPRoot, SwiftAutomation.ApplicationExtension {
+public class QuickTimePlayer: QTPRoot, SwiftAutomation.Application {
     public convenience init(launchOptions: SwiftAutomation.LaunchOptions = SwiftAutomation.DefaultLaunchOptions, relaunchMode: SwiftAutomation.RelaunchMode = SwiftAutomation.DefaultRelaunchMode) {
         self.init(rootObject: SwiftAutomation.AppRootDesc, appData: type(of:self).untargetedAppData.targetedCopy(
                   .bundleIdentifier("com.apple.QuickTimePlayerX", true), launchOptions: launchOptions, relaunchMode: relaunchMode))

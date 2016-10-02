@@ -942,7 +942,7 @@ public class CALRoot: SwiftAutomation.RootSpecifier, CALObject, SwiftAutomation.
 }
 
 // Application
-public class Calendar: CALRoot, SwiftAutomation.ApplicationExtension {
+public class Calendar: CALRoot, SwiftAutomation.Application {
     public convenience init(launchOptions: SwiftAutomation.LaunchOptions = SwiftAutomation.DefaultLaunchOptions, relaunchMode: SwiftAutomation.RelaunchMode = SwiftAutomation.DefaultRelaunchMode) {
         self.init(rootObject: SwiftAutomation.AppRootDesc, appData: type(of:self).untargetedAppData.targetedCopy(
                   .bundleIdentifier("com.apple.iCal", true), launchOptions: launchOptions, relaunchMode: relaunchMode))

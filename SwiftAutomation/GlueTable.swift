@@ -83,7 +83,7 @@ public class GlueTable {
                 let term = keywords[i]
                 var name = term.name
                 let code = term.code
-                if !(name == "missing value" && code == SwiftAutomation_cMissingValue) { // (`missing value` is special case)
+                if !(name == "missing value" && code == _cMissingValue) { // (`missing value` is special case)
                     // escape definitions that semi-overlap default definitions
                     if let desc = self.defaultTypesByName[name] {
                         if desc.typeCodeValue != code {
@@ -101,7 +101,7 @@ public class GlueTable {
                 let term = keywords[len - 1 - i]
                 var name = term.name
                 var code = term.code // actually constant, but NSAppleEventDescriptor constructor below insists on var
-                if !(name == "missing value" && code == SwiftAutomation_cMissingValue) { // (`missing value` is special case)
+                if !(name == "missing value" && code == _cMissingValue) { // (`missing value` is special case)
                     // escape definitions that semi-overlap default definitions
                     if let desc = self.defaultTypesByName[name] {
                         if desc.typeCodeValue != code {

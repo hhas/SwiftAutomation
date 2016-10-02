@@ -9,10 +9,6 @@
 import Foundation
 
 
-// kAEInheritedProperties isn't defined in OpenScripting.h for some reason
-let SwiftAutomation_kAEInheritedProperties = try! fourCharCode("c@#^")
-
-
 /**********************************************************************/
 
 
@@ -42,7 +38,7 @@ public class AETEParser: ApplicationTerminology {
     
     public func parse(_ descriptor: NSAppleEventDescriptor) throws { // accepts AETE/AEUT or AEList of AETE/AEUTs
         switch descriptor.descriptorType {
-        case SwiftAutomation_typeAETE, SwiftAutomation_typeAEUT:
+        case _typeAETE, _typeAEUT:
             self.aeteData = descriptor.data as NSData
             self.cursor = 6 // skip version, language, script integers
             let n = self.short()
@@ -69,7 +65,7 @@ public class AETEParser: ApplicationTerminology {
             } catch {
                 throw TerminologyError("An error occurred while parsing AETE. \(error)")
             }
-        case typeAEList:
+        case _typeAEList:
             for i in 1..<(descriptor.numberOfItems+1) {
                 try self.parse(descriptor.atIndex(i)!)
             }
@@ -202,7 +198,7 @@ public class AETEParser: ApplicationTerminology {
             self.skipString()   // description
             self.alignCursor()
             let flags = self.short()
-            if propertyCode != SwiftAutomation_kAEInheritedProperties { // it's a normal property definition, not a superclass  definition
+            if propertyCode != _kAEInheritedProperties { // it's a normal property definition, not a superclass  definition
                 let propertyDef = KeywordTerm(name: propertyName, kind: .property, code: propertyCode)
                 if (flags % 2 != 0) { // class name is plural
                     isPlural = true
@@ -296,7 +292,7 @@ public class AETEParser: ApplicationTerminology {
 extension AEApplication { // TO DO: extend AppData first, with convenience methods on AEApplication?
 
     public func getAETE() throws -> NSAppleEventDescriptor {
-        return try self.sendAppleEvent(SwiftAutomation_kASAppleScriptSuite, SwiftAutomation_kGetAETE, [keyDirectObject:0]) as NSAppleEventDescriptor
+        return try self.sendAppleEvent(_kASAppleScriptSuite, _kGetAETE, [keyDirectObject:0]) as NSAppleEventDescriptor
     }
 }
 

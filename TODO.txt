@@ -3,10 +3,10 @@ TO DO:
 
 - For convenience, generated glues include a convenience initializer containing the bundleID for the target application, allowing user to write [e.g.] `TextEdit()` as shorthand for `TextEdit(bundleIndentifier: "com.apple.TextEdit")`. However, in Swift3/Xcode8, if the glue's application class uses the following convenience initializer, it crashes with EXC_BAD_ACCESS, presumably due to a Swift bug:
 
-        public class TextEdit: TEDRoot, ApplicationExtension {
+        public class TextEdit: TEDRoot, Application {
 
             public convenience init(launchOptions: LaunchOptions = DefaultLaunchOptions, relaunchMode: RelaunchMode = DefaultRelaunchMode) {
-                // call the by-bundleID convenience initializer defined in ApplicationExtension
+                // call the by-bundleID convenience initializer defined in Application
                 self.init(bundleIdentifier: "com.apple.TextEdit", launchOptions: launchOptions, relaunchMode: relaunchMode) // CRASHES
             }
         }

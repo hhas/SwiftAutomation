@@ -2221,7 +2221,7 @@ public class ITURoot: RootSpecifier, ITUObject, RootSpecifierExtension {
 }
 
 // Application
-public class ITunes: ITURoot, ApplicationExtension {
+public class ITunes: ITURoot, Application {
     public convenience init(launchOptions: LaunchOptions = DefaultLaunchOptions, relaunchMode: RelaunchMode = DefaultRelaunchMode) {
         self.init(rootObject: AppRootDesc, appData: type(of:self).untargetedAppData.targetedCopy(
                   .bundleIdentifier("com.apple.iTunes", true), launchOptions: launchOptions, relaunchMode: relaunchMode))

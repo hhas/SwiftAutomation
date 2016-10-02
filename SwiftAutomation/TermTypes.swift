@@ -38,7 +38,7 @@ public enum TermType {
 }
 
 
-// TO DO: use structs?
+// TO DO: use structs? // worth trying on InDesign to see what performance difference it makes
 
 public class Term {
 

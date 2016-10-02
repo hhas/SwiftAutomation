@@ -211,7 +211,7 @@ public class CommandError: SwiftAutomationError { // note: this should probably 
             errorNumber = error._code
         } else if let reply = replyEvent {
             print("! DEBUG: App reply event: \(reply)")
-            if let appError = reply.forKeyword(SwiftAutomation_keyErrorNumber) {
+            if let appError = reply.forKeyword(_keyErrorNumber) {
                 errorNumber = Int(appError.int32Value)
                 // TO DO: [lazily] unpack any other available error info
             }

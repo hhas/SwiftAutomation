@@ -1194,7 +1194,7 @@ public class XCORoot: SwiftAutomation.RootSpecifier, XCOObject, SwiftAutomation.
 }
 
 // Application
-public class Xcode: XCORoot, SwiftAutomation.ApplicationExtension {
+public class Xcode: XCORoot, SwiftAutomation.Application {
     public convenience init(launchOptions: SwiftAutomation.LaunchOptions = SwiftAutomation.DefaultLaunchOptions, relaunchMode: SwiftAutomation.RelaunchMode = SwiftAutomation.DefaultRelaunchMode) {
         self.init(rootObject: SwiftAutomation.AppRootDesc, appData: type(of:self).untargetedAppData.targetedCopy(
                   .bundleIdentifier("com.apple.dt.Xcode", true), launchOptions: launchOptions, relaunchMode: relaunchMode))

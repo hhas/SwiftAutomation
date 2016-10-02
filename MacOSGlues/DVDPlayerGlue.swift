@@ -1327,7 +1327,7 @@ public class DVDRoot: SwiftAutomation.RootSpecifier, DVDObject, SwiftAutomation.
 }
 
 // Application
-public class DVDPlayer: DVDRoot, SwiftAutomation.ApplicationExtension {
+public class DVDPlayer: DVDRoot, SwiftAutomation.Application {
     public convenience init(launchOptions: SwiftAutomation.LaunchOptions = SwiftAutomation.DefaultLaunchOptions, relaunchMode: SwiftAutomation.RelaunchMode = SwiftAutomation.DefaultRelaunchMode) {
         self.init(rootObject: SwiftAutomation.AppRootDesc, appData: type(of:self).untargetedAppData.targetedCopy(
                   .bundleIdentifier("com.apple.DVDPlayer", true), launchOptions: launchOptions, relaunchMode: relaunchMode))

@@ -21,6 +21,7 @@ import AppKit
 // TO DO: file a Radar for a better launchApplication(withBundleID:…) method that addresses all the above issues; though we're still going to need a sandbox-compatible solution for launching by bundle ID that works in 10.11+, so probably a case of design the new launchApplication(withBundleID:…) method we'd like to see in 10.13+, then hack up the current implementation to fall back to the existing launchApplication(withBundleID:…) method when it finds itself in a sandbox where the TargetApplication.bundleIdentifier(String) case is unable to get the app's file URL.
 
 
+
 /******************************************************************************/
 // convert between 4-character strings and OSTypes (use these instead of calling UTGetOSTypeFromString/UTCopyStringFromOSType directly)
 
@@ -56,7 +57,7 @@ extension NSAppleEventDescriptor { // TO DO: how safe/advisable is extending sys
     
     convenience init(uint32 data: UInt32) {
         var data = data
-        self.init(descriptorType: SwiftAutomation_typeUInt32, bytes: &data, length: MemoryLayout<UInt32>.size)!
+        self.init(descriptorType: _typeUInt32, bytes: &data, length: MemoryLayout<UInt32>.size)!
     }
 }
 
@@ -124,9 +125,9 @@ private let ProcessNotFoundErrorNumbers: Set<Int> = [procNotFound, connectionInv
 
 private let LaunchEventSucceededErrorNumbers: Set<Int> = [Int(noErr), errAEEventNotHandled]
 
-private let LaunchEvent = NSAppleEventDescriptor(eventClass: SwiftAutomation_kASAppleScriptSuite, eventID: SwiftAutomation_kASLaunchEvent,
-                                                 targetDescriptor: NSAppleEventDescriptor.null(), returnID: AEReturnID(kAutoGenerateReturnID),
-                                                 transactionID: AETransactionID(kAnyTransactionID))
+private let LaunchEvent = NSAppleEventDescriptor(eventClass: _kASAppleScriptSuite, eventID: _kASLaunchEvent,
+                                                 targetDescriptor: NSAppleEventDescriptor.null(), returnID: _kAutoGenerateReturnID,
+                                                 transactionID: _kAnyTransactionID)
 
 // Application initializers pass application-identifying information to AppData initializer as enum according to which initializer was called
 
@@ -162,9 +163,9 @@ public enum TargetApplication {
     
     private func sendLaunchEvent(processDescriptor: NSAppleEventDescriptor) -> Int {
         do {
-            let event = NSAppleEventDescriptor(eventClass: SwiftAutomation_kASAppleScriptSuite, eventID: SwiftAutomation_kASLaunchEvent,
-                                               targetDescriptor: processDescriptor, returnID: AEReturnID(kAutoGenerateReturnID),
-                                               transactionID: AETransactionID(kAnyTransactionID))
+            let event = NSAppleEventDescriptor(eventClass: _kASAppleScriptSuite, eventID: _kASLaunchEvent,
+                                               targetDescriptor: processDescriptor, returnID: _kAutoGenerateReturnID,
+                                               transactionID: _kAnyTransactionID)
             let reply = try event.sendEvent(options: .waitForReply, timeout: 30)
             return Int(reply.paramDescriptor(forKeyword: keyErrorNumber)?.int32Value ?? 0) // application error (errAEEventNotHandled is normal)
         } catch {
@@ -234,7 +235,7 @@ public enum TargetApplication {
     
     // launch this application (equivalent to AppleScript's `launch` command; an obscure corner case that AS users need to fall back onto when sending an event to a Script Editor applet that isn't saved as 'stay open', so only handles the first event it receives then quits when done) // TO DO: is it worth keeping this for 'quirk-for-quirk' compatibility's sake, or just ditch it and tell users to use `NSWorkspace.launchApplication(at:options:configuration:)` with an `NSWorkspaceLaunchConfigurationAppleEvent` if they really need to pass a non-standard first event?
 
-    public func launch() throws { // called by ApplicationExtension.launch()
+    public func launch() throws { // called by Application.launch()
         // note: in principle an app _could_ implement an AE handler for this event that returns a value, but it probably isn't a good idea to do so (the event is called 'ascr'/'noop' for a reason), so even if a running process does return something (instead of throwing the expected errAEEventNotHandled) we just ignore it for sanity's sake (the flipside being that if the app _isn't_ already running then NSWorkspace.launchApplication() will launch it and pass the 'noop' descriptor as the first Apple event to handle, but doesn't return a result for that event, so to return a result at any other time would be inconsistent)
         if self.isRunning {
             let errorNumber = self.sendLaunchEvent(processDescriptor: try self.descriptor()!)

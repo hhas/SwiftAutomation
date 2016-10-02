@@ -60,6 +60,7 @@ try finder.home.get(resultType: FIN.alias) as URL
 
 try finder.home.files[2, 7].get() as [FINItem]
 
+
 //try finder.home.files[1..<4].name.get()
 
 

@@ -30,7 +30,7 @@ protocol SelfUnpacking {
 
 // note: this design is not yet finalized (ideally we'd just map cMissingValue to nil, but returning nil for commands whose return type is `Any` is a PITA as all of Swift's normal unboxing techniques break, and the only way to unbox is to cast from Any to Optional<T> first, which in turn requires that T is known in advance, in which case what's the point of returning Any in the first place?)
 
-let missingValueDesc = NSAppleEventDescriptor(typeCode: SwiftAutomation_cMissingValue)
+let missingValueDesc = NSAppleEventDescriptor(typeCode: _cMissingValue)
 
 
 // unlike Swift's `nil` (which is actually an infinite number of values since Optional<T>.none is generic), there is only ever one `MissingValue`, which means it should behave sanely when cast to and from `Any`
@@ -111,7 +111,7 @@ public enum MayBeMissing<T>: SelfPacking, SelfUnpacking { // TO DO: rename 'Miss
 
 
 func isMissingValue(_ desc: NSAppleEventDescriptor) -> Bool { // check if the given AEDesc is the `missing value` constant
-    return desc.descriptorType == typeType && desc.typeCodeValue == SwiftAutomation_cMissingValue
+    return desc.descriptorType == _typeType && desc.typeCodeValue == _cMissingValue
 }
 
 // allow optionals to be used in place of MayBeMissing… arguably, MayBeMissing won't be needed if this works
@@ -154,7 +154,7 @@ extension Set: SelfPacking, SelfUnpacking { // note: AEM doesn't define a standa
     static func SwiftAutomation_unpackSelf(_ desc: NSAppleEventDescriptor, appData: AppData) throws -> Set<Element> {
         var result = Set<Element>()
         switch desc.descriptorType {
-        case typeAEList:
+        case _typeAEList:
             for i in 1..<(desc.numberOfItems+1) { // bug workaround for zero-length range: 1...0 throws error, but 1..<1 doesn't
                 do {
                     result.insert(try appData.unpack(desc.atIndex(i)!) as Element)
@@ -182,7 +182,7 @@ extension Array: SelfPacking, SelfUnpacking {
     
     static func SwiftAutomation_unpackSelf(_ desc: NSAppleEventDescriptor, appData: AppData) throws -> [Element] {
         switch desc.descriptorType {
-        case typeAEList:
+        case _typeAEList:
             var result = [Element]()
             for i in 1..<(desc.numberOfItems+1) { // bug workaround for zero-length range: 1...0 throws error, but 1..<1 doesn't
                 do {
@@ -193,12 +193,12 @@ extension Array: SelfPacking, SelfUnpacking {
                 }
             }
             return result
-        case typeQDPoint, typeQDRectangle, typeRGBColor: // short[2], short[4], unsigned short[3] (used by older Carbon apps; Cocoa apps use lists)
+        case _typeQDPoint, _typeQDRectangle, _typeRGBColor: // short[2], short[4], unsigned short[3] (used by older Carbon apps; Cocoa apps use lists)
             // note: coercing these types to typeAEList and unpacking those would be simpler, but while AEM provides coercion handlers for coercing e.g. typeAEList to typeQDPoint, it doesn't provide handlers for the reverse (coercing a typeQDPoint desc to typeAEList merely produces a single-item AEList containing the original typeQDPoint, not a 2-item AEList of typeSInt16)
             if Element.self == Int.self { // common case
                 var result = [Element]()
                 let data = desc.data
-                for i in 0..<([typeQDPoint:2, typeQDRectangle:4, typeRGBColor:3][desc.descriptorType]!) {
+                for i in 0..<([_typeQDPoint:2, _typeQDRectangle:4, _typeRGBColor:3][desc.descriptorType]!) {
                     var n: Int16 = 0
                     (data as NSData).getBytes(&n, range: NSRange(location: i*MemoryLayout<Int16>.size, length: MemoryLayout<Int16>.size))
                     result.append(Int(n) as! Element) // note: can't use Element(n) here as Swift doesn't define integer constructors in IntegerType protocol (but does for FloatingPointType)
@@ -222,7 +222,7 @@ extension Dictionary: SelfPacking, SelfUnpacking {
     public func SwiftAutomation_packSelf(_ appData: AppData) throws -> NSAppleEventDescriptor {
         var desc = NSAppleEventDescriptor.record()
         var isCustomRecordType: Bool = false
-        if let key = AESymbol(code: SwiftAutomation_pClass) as? Key, let recordClass = self[key] as? Symbol { // TO DO: confirm this works
+        if let key = AESymbol(code: _pClass) as? Key, let recordClass = self[key] as? Symbol { // TO DO: confirm this works
             if !recordClass.nameOnly {
                 desc = desc.coerce(toDescriptorType: recordClass.code)!
                 isCustomRecordType = true
@@ -239,7 +239,7 @@ extension Dictionary: SelfPacking, SelfUnpacking {
                 }
                 userProperties?.insert(try appData.pack(keySymbol), at: 0)
                 userProperties?.insert(try appData.pack(value), at: 0)
-            } else if !(keySymbol.code == SwiftAutomation_pClass && isCustomRecordType) {
+            } else if !(keySymbol.code == _pClass && isCustomRecordType) {
                 desc.setDescriptor(try appData.pack(value), forKeyword: keySymbol.code)
             }
         }
@@ -251,18 +251,18 @@ extension Dictionary: SelfPacking, SelfUnpacking {
             throw UnpackError(appData: appData, descriptor: desc, type: self, message: "Not a record.")
         }
         var result = [Key:Value]()
-        if desc.descriptorType != typeAERecord {
-            if let key = appData.glueClasses.symbolType.symbol(code: SwiftAutomation_pClass) as? Key,
+        if desc.descriptorType != _typeAERecord {
+            if let key = appData.glueClasses.symbolType.symbol(code: _pClass) as? Key,
                 let value = appData.glueClasses.symbolType.symbol(code: desc.descriptorType) as? Value {
                 result[key] = value
             }
         }
         for i in 1..<(desc.numberOfItems+1) {
             let property = desc.keywordForDescriptor(at: i)
-            if property == SwiftAutomation_keyASUserRecordFields {
+            if property == _keyASUserRecordFields {
                 // unpack record properties whose keys are identifiers (represented as AEList of form: [key1,value1,key2,value2,...])
                 let userProperties = desc.atIndex(i)!
-                if userProperties.descriptorType == typeAEList && userProperties.numberOfItems % 2 == 0 {
+                if userProperties.descriptorType == _typeAEList && userProperties.numberOfItems % 2 == 0 {
                     for j in stride(from:1, to: userProperties.numberOfItems, by: 2) {
                         let keyDesc = userProperties.atIndex(j)!
                         guard let keyString = keyDesc.stringValue else {

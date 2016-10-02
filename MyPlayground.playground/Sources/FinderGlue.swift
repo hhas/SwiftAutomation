@@ -1983,7 +1983,7 @@ public class FINRoot: SwiftAutomation.RootSpecifier, FINObject, SwiftAutomation.
 }
 
 // Application
-public class Finder: FINRoot, SwiftAutomation.ApplicationExtension {
+public class Finder: FINRoot, SwiftAutomation.Application {
     public convenience init(launchOptions: SwiftAutomation.LaunchOptions = SwiftAutomation.DefaultLaunchOptions, relaunchMode: SwiftAutomation.RelaunchMode = SwiftAutomation.DefaultRelaunchMode) {
         self.init(rootObject: SwiftAutomation.AppRootDesc, appData: type(of:self).untargetedAppData.targetedCopy(
                   .bundleIdentifier("com.apple.finder", true), launchOptions: launchOptions, relaunchMode: relaunchMode))

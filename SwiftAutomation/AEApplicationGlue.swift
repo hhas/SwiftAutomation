@@ -575,7 +575,7 @@ public class AERoot: RootSpecifier, AEObject, RootSpecifierExtension {
 }
 
 // Application
-public class AEApplication: AERoot, ApplicationExtension {}
+public class AEApplication: AERoot, Application {}
 
 // App/Con/Its root objects used to construct untargeted specifiers; these can be used to construct specifiers for use in commands, though cannot send commands themselves
 

@@ -43,7 +43,6 @@ public let gReservedSpecifierMethods: Set<String> = [ // TO DO: review; some nam
     // custom property/element specifiers
     // Query
     "appData",
-    "cachedDesc",
     "parentQuery",
     "rootSpecifier",
     // Specifier
@@ -51,7 +50,7 @@ public let gReservedSpecifierMethods: Set<String> = [ // TO DO: review; some nam
     "userProperty",
     "elements",
     "sendAppleEvent",
-    // ApplicationExtension
+    // Application
     "currentApplication",
     "customRoot",
     "isRunning",

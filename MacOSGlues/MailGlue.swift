@@ -1943,7 +1943,7 @@ public class MAIRoot: SwiftAutomation.RootSpecifier, MAIObject, SwiftAutomation.
 }
 
 // Application
-public class Mail: MAIRoot, SwiftAutomation.ApplicationExtension {
+public class Mail: MAIRoot, SwiftAutomation.Application {
     public convenience init(launchOptions: SwiftAutomation.LaunchOptions = SwiftAutomation.DefaultLaunchOptions, relaunchMode: SwiftAutomation.RelaunchMode = SwiftAutomation.DefaultRelaunchMode) {
         self.init(rootObject: SwiftAutomation.AppRootDesc, appData: type(of:self).untargetedAppData.targetedCopy(
                   .bundleIdentifier("com.apple.mail", true), launchOptions: launchOptions, relaunchMode: relaunchMode))

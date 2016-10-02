@@ -972,7 +972,7 @@ public class TEDRoot: SwiftAutomation.RootSpecifier, TEDObject, SwiftAutomation.
 }
 
 // Application
-public class TextEdit: TEDRoot, SwiftAutomation.ApplicationExtension {
+public class TextEdit: TEDRoot, SwiftAutomation.Application {
     public convenience init(launchOptions: SwiftAutomation.LaunchOptions = SwiftAutomation.DefaultLaunchOptions, relaunchMode: SwiftAutomation.RelaunchMode = SwiftAutomation.DefaultRelaunchMode) {
         self.init(rootObject: SwiftAutomation.AppRootDesc, appData: type(of:self).untargetedAppData.targetedCopy(
                   .bundleIdentifier("com.apple.TextEdit", true), launchOptions: launchOptions, relaunchMode: relaunchMode))

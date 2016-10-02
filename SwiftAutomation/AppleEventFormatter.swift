@@ -32,7 +32,7 @@ public func formatAppleEvent(descriptor event: NSAppleEventDescriptor, useTermin
     //  Caution: if sending events to self, caller MUST use TerminologyType.SDEF or call
     //  formatAppleEvent on a background thread, otherwise formatAppleEvent will deadlock
     //  the main loop when it tries to fetch host app's AETE via ascr/gdte event.
-    if event.descriptorType != typeAppleEvent { // sanity check
+    if event.descriptorType != _typeAppleEvent { // sanity check
         return "Can't format Apple event: wrong type: \(formatFourCharCodeString(event.descriptorType))."
     }
     let appData: DynamicAppData
@@ -41,13 +41,13 @@ public func formatAppleEvent(descriptor event: NSAppleEventDescriptor, useTermin
     } catch {
         return "Can't format Apple event: can't get terminology: \(error)"
     }
-    if event.attributeDescriptor(forKeyword: keyEventClassAttr)!.typeCodeValue == kCoreEventClass
-            && event.attributeDescriptor(forKeyword: keyEventIDAttr)!.typeCodeValue == kAEAnswer { // it's a reply event, so format error/return value only
-        let errn = event.paramDescriptor(forKeyword: keyErrorNumber)?.int32Value ?? 0
+    if event.attributeDescriptor(forKeyword: _keyEventClassAttr)!.typeCodeValue == _kCoreEventClass
+            && event.attributeDescriptor(forKeyword: _keyEventIDAttr)!.typeCodeValue == _kAEAnswer { // it's a reply event, so format error/return value only
+        let errn = event.paramDescriptor(forKeyword: _keyErrorNumber)?.int32Value ?? 0
         if errn != 0 { // format error message
-            let errs = event.paramDescriptor(forKeyword: keyErrorString)?.stringValue
+            let errs = event.paramDescriptor(forKeyword: _keyErrorString)?.stringValue
             return SwiftAutomationError(code: Int(errn), message: errs).description // TO DO: use CommandError? (need to check it's happy with only replyEvent arg)
-        } else if let reply = event.paramDescriptor(forKeyword: keyDirectObject) { // format return value
+        } else if let reply = event.paramDescriptor(forKeyword: _keyDirectObject) { // format return value
             return appData.formatter.format((try? appData.unpackAsAny(reply)) ?? reply)
         } else {
             return "<noreply>" // TO DO: what to return?
@@ -66,7 +66,7 @@ private let cacheMaxLength = 10
 private var cachedTerms = [(NSAppleEventDescriptor, TerminologyType, DynamicAppData)]()
 
 private func appDataForAppleEvent(_ event: NSAppleEventDescriptor, useTerminology: TerminologyType) throws -> DynamicAppData {
-    let addressDesc = event.attributeDescriptor(forKeyword: keyAddressAttr)!
+    let addressDesc = event.attributeDescriptor(forKeyword: _keyAddressAttr)!
     for (desc, terminologyType, appData) in cachedTerms {
         if desc.descriptorType == addressDesc.descriptorType && desc.data == addressDesc.data && terminologyType == useTerminology {
             return appData
@@ -92,10 +92,10 @@ public class DynamicAppData: AppData { // TO DO: can this be used as-is/with mod
     // TO DO: ought to be an init, but AppData.init() is already required, which makes overriding problematic
     public class func dynamicAppDataForAddress(_ addressDesc: NSAppleEventDescriptor, useTerminology: TerminologyType) throws -> Self {
         var addressDesc = addressDesc
-        if addressDesc.descriptorType == typeProcessSerialNumber { // AppleScript is old school
-            addressDesc = addressDesc.coerce(toDescriptorType: typeKernelProcessID)!
+        if addressDesc.descriptorType == _typeProcessSerialNumber { // AppleScript is old school
+            addressDesc = addressDesc.coerce(toDescriptorType: _typeKernelProcessID)!
         }
-        guard addressDesc.descriptorType == typeKernelProcessID else { // local processes are generally targeted by PID
+        guard addressDesc.descriptorType == _typeKernelProcessID else { // local processes are generally targeted by PID
             throw TerminologyError("Unsupported address type: \(formatFourCharCodeString(addressDesc.descriptorType))")
         }
         var pid: pid_t = 0
@@ -142,7 +142,7 @@ public class DynamicAppData: AppData { // TO DO: can this be used as-is/with mod
     
     override func recordKey(forCode code: OSType) -> Symbol {
         return self.glueClasses.symbolType.init(name: self.glueTable.typesByCode[code],
-                                                code: code, type: typeProperty, descriptor: nil)
+                                                code: code, type: _typeProperty, descriptor: nil)
     }
 }
 
@@ -178,22 +178,22 @@ public struct AppleEventDescription { // TO DO: split AE unpacking from CommandT
     
     public init(event: NSAppleEventDescriptor, appData: DynamicAppData) {
         // unpack event attributes
-        let eventClass = event.attributeDescriptor(forKeyword: keyEventClassAttr)!.typeCodeValue
-        let eventID = event.attributeDescriptor(forKeyword: keyEventIDAttr)!.typeCodeValue
+        let eventClass = event.attributeDescriptor(forKeyword: _keyEventClassAttr)!.typeCodeValue
+        let eventID = event.attributeDescriptor(forKeyword: _keyEventIDAttr)!.typeCodeValue
         self.eventClass = eventClass
         self.eventID = eventID
         var commandInfo = appData.glueTable.commandsByCode[CommandTermKey(eventClass, eventID)]
         // unpack subject attribute and/or direct parameter, if given
-        if let desc = event.attributeDescriptor(forKeyword: SwiftAutomation_keySubjectAttr) {
-            if desc.descriptorType != typeNull { // typeNull = root application object
+        if let desc = event.attributeDescriptor(forKeyword: _keySubjectAttr) {
+            if desc.descriptorType != _typeNull { // typeNull = root application object
                 self.subject = (try? appData.unpackAsAny(desc)) ?? desc
             }
         }
-        if let desc = event.paramDescriptor(forKeyword: keyDirectObject) {
+        if let desc = event.paramDescriptor(forKeyword: _keyDirectObject) {
             self.directParameter = (try? appData.unpackAsAny(desc)) ?? desc
         }
         // unpack `as` parameter, if given // TO DO: this needs to appear as resultType: arg
-        if let desc = event.paramDescriptor(forKeyword: keyAERequestedType) {
+        if let desc = event.paramDescriptor(forKeyword: _keyAERequestedType) {
             self.requestedType = (try? appData.unpackAsAny(desc)) ?? desc
         }
         // unpack keyword parameters
@@ -205,7 +205,7 @@ public struct AppleEventDescription { // TO DO: split AE unpacking from CommandT
                 }
             }
             if event.numberOfItems > self.keywordParameters!.count + (parameterExists(self.directParameter) ? 1 : 0)
-                    + ((self.requestedType != nil && commandInfo!.parametersByCode[keyAERequestedType] == nil) ? 1 : 0) { // TO DO: update (see above)
+                    + ((self.requestedType != nil && commandInfo!.parametersByCode[_keyAERequestedType] == nil) ? 1 : 0) { // TO DO: update (see above)
                 self.keywordParameters = nil
                 commandInfo = nil
             }
@@ -213,7 +213,7 @@ public struct AppleEventDescription { // TO DO: split AE unpacking from CommandT
         if commandInfo == nil {
             for i in 1..<(event.numberOfItems+1) {
                 let desc = event.atIndex(i)!
-                //if ![keyDirectObject, keyAERequestedType].contains(desc.descriptorType) {
+                //if ![_keyDirectObject, _keyAERequestedType].contains(desc.descriptorType) {
                 self.rawParameters[event.keywordForDescriptor(at: i)] = (try? appData.unpackAsAny(desc)) ?? desc
                 //}
             }
@@ -221,11 +221,11 @@ public struct AppleEventDescription { // TO DO: split AE unpacking from CommandT
             self.name = commandInfo!.name
         }
         // command's attributes
-        if let desc = event.attributeDescriptor(forKeyword: keyReplyRequestedAttr) { // TO DO: attr is unreliable
+        if let desc = event.attributeDescriptor(forKeyword: _keyReplyRequestedAttr) { // TO DO: attr is unreliable
             // keyReplyRequestedAttr appears to be boolean value encoded as Int32 (1=wait or queue reply; 0=no reply)
             if desc.int32Value == 0 { self.waitReply = false }
         }
-        if let timeout = event.attributeDescriptor(forKeyword: keyTimeoutAttr) { // TO DO: attr is unreliable
+        if let timeout = event.attributeDescriptor(forKeyword: _keyTimeoutAttr) { // TO DO: attr is unreliable
             let timeoutInTicks = timeout.int32Value
             if timeoutInTicks == -2 { // NoTimeout // TO DO: ditto
                 self.withTimeout = -2
@@ -233,7 +233,7 @@ public struct AppleEventDescription { // TO DO: split AE unpacking from CommandT
                 self.withTimeout = Double(timeoutInTicks) / 60.0
             }
         }
-        if let considersAndIgnoresDesc = event.attributeDescriptor(forKeyword: SwiftAutomation_enumConsidsAndIgnores) {
+        if let considersAndIgnoresDesc = event.attributeDescriptor(forKeyword: _enumConsidsAndIgnores) {
             var considersAndIgnores: UInt32 = 0
             (considersAndIgnoresDesc.data as NSData).getBytes(&considersAndIgnores, length: MemoryLayout<UInt32>.size)
             if considersAndIgnores != gDefaultConsidersIgnoresMask {
@@ -257,7 +257,7 @@ public struct AppleEventDescription { // TO DO: split AE unpacking from CommandT
 // TO DO: problem with extending SpecifierFormatter is it can't be subclassed to modify its formatting behavior, e.g.:
 
 override func formatRootSpecifier(_ specifier: RootSpecifier) -> String {
-    if (specifier.rootObject as? NSAppleEventDescriptor)?.descriptorType == typeNull {
+    if (specifier.rootObject as? NSAppleEventDescriptor)?.descriptorType == _typeNull {
         return APPLICATION-CLASS-NAME
     } else {
         return super.formatRootSpecifier(specifier)
@@ -278,7 +278,7 @@ extension SpecifierFormatter {
             if eventDescription.subject != nil && parameterExists(eventDescription.directParameter) {
                 parentSpecifier = self.format(eventDescription.subject!)
                 args.append(self.format(eventDescription.directParameter))
-            //} else if eventClass == kAECoreSuite && eventID == kAECreateElement { // TO DO: format make command as special case (for convenience, AEBCommand allows user to call `make` directly on a specifier, in which case the specifier is used as its `at` parameter if not already given)
+            //} else if eventClass == _kAECoreSuite && eventID == _kAECreateElement { // TO DO: format make command as special case (for convenience, AEBCommand allows user to call `make` directly on a specifier, in which case the specifier is used as its `at` parameter if not already given)
             } else if eventDescription.subject == nil && parameterExists(eventDescription.directParameter) {
                 parentSpecifier = self.format(eventDescription.directParameter)
             } else if eventDescription.subject != nil && !parameterExists(eventDescription.directParameter) {

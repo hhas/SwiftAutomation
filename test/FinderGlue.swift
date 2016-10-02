@@ -1983,7 +1983,7 @@ public class FINRoot: RootSpecifier, FINObject, RootSpecifierExtension {
 }
 
 // Application
-public class Finder: FINRoot, ApplicationExtension {
+public class Finder: FINRoot, Application {
     public convenience init(launchOptions: LaunchOptions = DefaultLaunchOptions, relaunchMode: RelaunchMode = DefaultRelaunchMode) {
         self.init(rootObject: AppRootDesc, appData: type(of:self).untargetedAppData.targetedCopy(
                   .bundleIdentifier("com.apple.finder", true), launchOptions: launchOptions, relaunchMode: relaunchMode))
