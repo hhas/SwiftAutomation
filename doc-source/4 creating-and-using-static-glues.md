@@ -106,6 +106,22 @@ For example, to define an enum named `FOOSymbolOrIntOrString`
 [TO DO: example of use]
 
 
+[TO DO: might be worth defining the following enums in AEApplicationGlue (partly for illustrative purposes, partly for testing, partly in case users ever run into an older Carbon app - or even a current Cocoa one - that happens to return values of these types:
+
+let _cAliasOrString: OSType = 0x73662020
+
+let _cNumberDateTimeOrString: OSType = 0x6E647320
+let _cNumberOrDateTime: OSType = 0x6E642020
+let _cNumberOrString: OSType = 0x6E732020
+
+let _cListOrRecord: OSType = 0x6C722020
+let _cListOrString: OSType = 0x6C732020
+let _cListRecordOrString: OSType = 0x6C727320
+
+]
+
+
+
 ### Record structs
 
 While SwiftAutomation packs and unpacks Apple event records  as `Dictionary<PREFIXSymbol:Any>` values as standard, it is also possible to map part or all of a specific record structures to a Swift struct, simplifying member access and improving type safety.

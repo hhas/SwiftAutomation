@@ -62,19 +62,19 @@ public func formatAppleEvent(descriptor event: NSAppleEventDescriptor, useTermin
 /******************************************************************************/
 // cache previously parsed terminology for efficiency
 
-private let cacheMaxLength = 10
-private var cachedTerms = [(NSAppleEventDescriptor, TerminologyType, DynamicAppData)]()
+private let _cacheMaxLength = 10
+private var _cachedTerms = [(NSAppleEventDescriptor, TerminologyType, DynamicAppData)]()
 
 private func appDataForAppleEvent(_ event: NSAppleEventDescriptor, useTerminology: TerminologyType) throws -> DynamicAppData {
     let addressDesc = event.attributeDescriptor(forKeyword: _keyAddressAttr)!
-    for (desc, terminologyType, appData) in cachedTerms {
+    for (desc, terminologyType, appData) in _cachedTerms {
         if desc.descriptorType == addressDesc.descriptorType && desc.data == addressDesc.data && terminologyType == useTerminology {
             return appData
         }
     }
     let appData = try DynamicAppData.dynamicAppDataForAddress(addressDesc, useTerminology: useTerminology) // TO DO: are there any cases where keyAddressArrr won't return correct desc? (also, double-check what reply event uses)
-    if cachedTerms.count > cacheMaxLength { cachedTerms.removeFirst() } // TO DO: ideally this should trim least used, not longest cached
-    cachedTerms.append((addressDesc, useTerminology, appData))
+    if _cachedTerms.count > _cacheMaxLength { _cachedTerms.removeFirst() } // TO DO: ideally this should trim least used, not longest cached
+    _cachedTerms.append((addressDesc, useTerminology, appData))
     return appData
 }
 
@@ -151,11 +151,11 @@ public class DynamicAppData: AppData { // TO DO: can this be used as-is/with mod
 // unpack AppleEvent descriptor's contents into struct, to be consumed by SpecifierFormatter.formatAppleEvent()
 
 
-private let gDefaultTimeout: TimeInterval = 120 // TO DO: -sendEvent method's default/no timeout options are currently busted <rdar://21477694>; see also AppData.sendAppleEvent()
+private let _defaultTimeout: TimeInterval = 120 // TO DO: -sendEvent method's default/no timeout options are currently busted <rdar://21477694>; see also AppData.sendAppleEvent()
 
-private let gDefaultConsidering: ConsideringOptions = [.case]
+private let _defaultConsidering: ConsideringOptions = [.case]
 
-private let gDefaultConsidersIgnoresMask: UInt32 = 0x00010000 // AppleScript ignores case by default
+private let _defaultConsidersIgnoresMask: UInt32 = 0x00010000 // AppleScript ignores case by default
 
 
 // parsed Apple event
@@ -173,7 +173,7 @@ public struct AppleEventDescription { // TO DO: split AE unpacking from CommandT
     
     public private(set) var requestedType: Any? = nil
     public private(set) var waitReply: Bool = true // really wantsReply (which could be either wait/queue reply) // TO DO: currently unused by formatAppleEvent() as it's problematic; delete?
-    public private(set) var withTimeout: TimeInterval = gDefaultTimeout // TO DO: sort constant // TO DO: currently unused by formatAppleEvent() as it's problematic; delete?
+    public private(set) var withTimeout: TimeInterval = _defaultTimeout // TO DO: sort constant // TO DO: currently unused by formatAppleEvent() as it's problematic; delete?
     public private(set) var considering: ConsideringOptions = [.case]
     
     public init(event: NSAppleEventDescriptor, appData: DynamicAppData) {
@@ -236,7 +236,7 @@ public struct AppleEventDescription { // TO DO: split AE unpacking from CommandT
         if let considersAndIgnoresDesc = event.attributeDescriptor(forKeyword: _enumConsidsAndIgnores) {
             var considersAndIgnores: UInt32 = 0
             (considersAndIgnoresDesc.data as NSData).getBytes(&considersAndIgnores, length: MemoryLayout<UInt32>.size)
-            if considersAndIgnores != gDefaultConsidersIgnoresMask {
+            if considersAndIgnores != _defaultConsidersIgnoresMask {
                 for (option, _, considersFlag, ignoresFlag) in considerationsTable {
                     if option == .case {
                         if considersAndIgnores & ignoresFlag > 0 { self.considering.remove(option) }
@@ -305,11 +305,11 @@ extension SpecifierFormatter {
             args.append("waitReply: false")
         }
         //sendOptions: NSAppleEventSendOptions? = nil
-        if eventDescription.withTimeout != gDefaultTimeout {
+        if eventDescription.withTimeout != _defaultTimeout {
             args.append("withTimeout: \(eventDescription.withTimeout)") // TO DO: if -2, use NoTimeout constant (except 10.11 hasn't defined one yet, and is still buggy in any case)
         }
         */
-        if eventDescription.considering != gDefaultConsidering {
+        if eventDescription.considering != _defaultConsidering {
             args.append("considering: \(eventDescription.considering)")
         }
         return parentSpecifier + "(" + args.joined(separator: ", ") + ")"

@@ -25,7 +25,7 @@ public class SDEFParser: NSObject, XMLParserDelegate, ApplicationTerminology {
     private var currentCommand: CommandTerm?
     private let keywordConverter: KeywordConverterProtocol
     
-    public init(keywordConverter: KeywordConverterProtocol = gSwiftAEKeywordConverter) {
+    public init(keywordConverter: KeywordConverterProtocol = defaultSwiftKeywordConverter) {
         self.keywordConverter = keywordConverter
         super.init()
     }

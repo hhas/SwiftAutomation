@@ -65,7 +65,7 @@ public class GlueTable {
     
     private let keywordConverter: KeywordConverterProtocol
     
-    public init(keywordConverter: KeywordConverterProtocol = gSwiftAEKeywordConverter) {
+    public init(keywordConverter: KeywordConverterProtocol = defaultSwiftKeywordConverter) {
         self.keywordConverter = keywordConverter
         self.add(terminology: keywordConverter.defaultTerminology)
         // retain copies of default type and command terms; these will be used to disambiguate

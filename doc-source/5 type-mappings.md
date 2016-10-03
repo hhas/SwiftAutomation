@@ -126,7 +126,7 @@ SwiftAutomation packs `URL` instances containing `file://` URLs as descriptors o
 
   let myFile = URL(fileURLWithPath: "/Users/jsmith/MyFile.txt")
 
-  let myFileDesc = NSAppleEventDescriptor(fileURL: myFile).coerce(toDescriptorType: typeAlias)
+  let myFileDesc = NSAppleEventDescriptor(fileURL: myFile).coerce(toDescriptorType: typeAlias) [TO DO: not sure this works on recent OS versions]
 
 Similarly, some older Carbon applications may occasionally use colon-delimited HFS path strings even though macOS has long since deprecated these in favor of standard POSIX paths. SwiftAutomation includes the following compatibility functions for converting to and from HFS path strings where unavoidable:
 

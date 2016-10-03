@@ -2,19 +2,27 @@
 //  SpecifierExtensions.swift
 //  SwiftAutomation
 //
-//  Protocol extension-based workaround for generic class bug where SourceKit and swiftc crash when using subclass 
-//  types as types parameters.
+//  Extensions that add the standard selector vars/methods to each glue's custom Specifier classes.
+//  These allow specifiers to be built up via chained calls, e.g.:
 //
-//  Instead of defining ObjectSpecifier, etc. as generic classes that declare all specifier constructors, specifier
-//  constructors are defined as protocol extensions that must be mixed in to glue-defined subclasses. This allows
-//  glues to specify return types as typealiases instead of generic class parameters. 
-
-//  Main disadvantage is that the standard Specifier classes are no longer self-contained, so code is more complex 
-//  and cannot be used standalone but only as part of a glue (a default AEApplicationGlue is included for convenience).
+//     paragraphs 1 thru -2 of text of document "README" of it
+//
+//     AEApp.elements(cDocument)["README"].property(cText).elements(cParagraph)[1,-2]
 //
 
 
-// TO DO: also define `any` var which would replace the parent ObjSpec [if it's gPropertyForm] with formAbsolutePosition and gAll? (as with `named()`, it would provide parity with AS and cover all eventualities; see also special handling of 'text' keyword in GlueTable.add())
+// TO DO: also define `var all: Self.MultipleObjectSpecifierType {...}` which would convert a property specifier [_formPropertyDesc] to an all-elements specifier [_formAbsolutePositionDesc + _kAEAllDesc]? As with `named()`, it would provide parity with AS and cover all eventualities; see also special handling of 'text' keyword in GlueTable.add(), e.g. if `app.document` returns property specifier but an all-elements specifier is needed, `app.document.all` would force it to the latter.
+//
+//      Note that this sort of confusion shouldn't normally occur, because even when a term (e.g. document) is used as both a class [elements] name and a property name, the class's definition should provide both singular and plural versions, so that the glue uses the singular for the property name (`textedit.windows.document`) and the plural for the elements name (`textedit.documents`).
+//
+//      Occasionally, however, a singular class name doesn't have a plural (e.g. `text`, `sheep`) so if it's also used as a property name then things get very murky as to whether `ref.sheep` is referring to a `sheep` property or to all `sheep` elements. IIRC, AppleScript defaults to property unless it _knows_ it's an element (e.g. `sheep 1 thru -2`, `every sheep`); with [IIRC2] `text` being an extra-special case as it's already defined as a class name by AppleScript itself and that overrides any application definition so always packs as an element name.
+//
+//      Some apps - e.g. Illustrator, InDesign - are a bit quirky in not always defining plural class names, e.g. `ref.paragraph[1]` instead of `ref.paragraphs[1]`, or in using the plural as the property name (e.g. `indesign.pasteboardPreferences`) and singular as the class name (`pasteboardPreference`), so there's always some fear of being caught out if the AppleScript API isn't replicated down to the letter (in this case, `NAME.all` = `every NAME`).
+//
+//      The flipside is to argue that until a concrete need for an `all` selector is demonstrated, it's better to err on the side of simplicity rather than paranoia (since explaining to users how object specifiers work is tough enough already). In which case the same argument should apply to the `named(Any)` selector already defined below, and it should be removed until/unless a concrete need to include it is shown.
+//
+//      (The third option, of course, is to include both `named` and `all` selectors, but leave them undocumented [at least outside of troubleshooting section] same as AppData's compatibility flags. That way we're covered if some crusty old app does decide to be awkward, but we're not going to confuse users by telling them about obscure 'fallback' features that few, if any, of them will ever need to know/use/care about.)
+//
 
 
 import Foundation
@@ -24,9 +32,10 @@ import Foundation
 // Property/single-element specifier; identifies an attribute/describes a one-to-one relationship between nodes in the app's AEOM graph
 
 public protocol ObjectSpecifierExtension: ObjectSpecifierProtocol {
-    associatedtype InsertionSpecifierType: InsertionSpecifier
-    associatedtype ObjectSpecifierType: ObjectSpecifier
-    associatedtype MultipleObjectSpecifierType: ObjectSpecifier
+    // each glue defines its concrete specifier classes here; used as the return types for the selector methods below
+    associatedtype InsertionSpecifierType: InsertionSpecifier   // e.g. TEDInsertion, FINInsertion
+    associatedtype ObjectSpecifierType: ObjectSpecifier         // e.g. TEDItem, FINItem
+    associatedtype MultipleObjectSpecifierType: ObjectSpecifier // e.g. TEDItems, FINItems
 }
 
 public extension ObjectSpecifierExtension {
@@ -232,7 +241,7 @@ extension Application {
     }
     
     
-    public static func currentApplication() -> Self {
+    public static func currentApplication() -> Self { // TO DO: rename `current` for consistency with current Swift naming conventions
         let appData = Self.untargetedAppData.targetedCopy(.current, launchOptions: DefaultLaunchOptions, relaunchMode: DefaultRelaunchMode)
         return self.init(rootObject: AppRootDesc, appData: appData)
     }

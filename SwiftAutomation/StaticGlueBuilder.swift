@@ -94,14 +94,14 @@ func parseIdentifier(_ chars: inout String.CharacterView) throws -> String {
     // reads a C-identifier, checking it isn't a Swift keyword
     var foundChars = String.CharacterView()
     let c = chars.popFirst()
-    if c == nil || !kLegalFirstChars.contains(c!) { throw SyntaxError(found: c, butExpected: "an identifier") }
+    if c == nil || !legalFirstChars.contains(c!) { throw SyntaxError(found: c, butExpected: "an identifier") }
     foundChars.append(c!)
     while let c = chars.first {
-        if !kLegalOtherChars.contains(c) { break }
+        if !legalOtherChars.contains(c) { break }
         foundChars.append(chars.popFirst()!)
     }
     let name = String(foundChars)
-    if kSwiftKeywords.contains(name) {
+    if reservedSwiftKeywords.contains(name) {
         throw SyntaxError("Expected an identifier but found reserved keyword '\(name)' instead.")
     }
     return name
@@ -185,7 +185,7 @@ func parseEnumeratedTypeDefinition(_ string: String, classNamePrefix: String) th
         } else {
             if caseName == "missing" { throw SyntaxError("Invalid case name: \(typeName)") }
             if typeName == caseName { caseName = "_\(caseName)" } // caution: type names _should_ start with uppercase char and case name with lower, but check to be sure and disambiguate if necessary
-            if kSwiftKeywords.contains(caseName) { caseName += "_" }
+            if reservedSwiftKeywords.contains(caseName) { caseName += "_" }
             cases.append((name: caseName, type: (isReservedGlueTypeName(typeName) ? (classNamePrefix + typeName) : typeName)))
             if enumName.isEmpty {
                 var name = typeName
@@ -199,7 +199,7 @@ func parseEnumeratedTypeDefinition(_ string: String, classNamePrefix: String) th
     if !chars.isEmpty { throw SyntaxError("Expected end of text but found \(String(chars)).") }
     if enumName.isEmpty {
         enumName = enumNameParts.joined(separator: "Or")
-        if kSwiftKeywords.contains(enumName) { enumName += "_" }
+        if reservedSwiftKeywords.contains(enumName) { enumName += "_" }
     } else {
         try validateCIdentifier(enumName)
     }
@@ -309,7 +309,7 @@ public class GlueSpec {
     public let typeSupportSpec: TypeSupportSpec?
     
     // create GlueSpec for specified application (applicationURL is typically a file:// URL, or nil to create default glue)
-    public init(applicationURL: URL?, keywordConverter: KeywordConverterProtocol = gSwiftAEKeywordConverter,
+    public init(applicationURL: URL?, keywordConverter: KeywordConverterProtocol = defaultSwiftKeywordConverter,
                 classNamePrefix: String? = nil, applicationClassName: String? = nil, useSDEF: Bool = false,
                 typeSupportSpec: TypeSupportSpec? = nil) {
         self.applicationURL = applicationURL

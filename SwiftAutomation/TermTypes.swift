@@ -27,8 +27,6 @@ public protocol ApplicationTerminology {
 }
 
 
-
-
 public enum TermType {
     case elementOrType
     case enumerator
@@ -38,11 +36,9 @@ public enum TermType {
 }
 
 
-// TO DO: use structs? // worth trying on InDesign to see what performance difference it makes
-
 public class Term {
 
-    public var name: String // editable as clients may need to escape names to disambiguate conflicting terms // TO DO: safer solution?
+    public var name: String // editable as clients may need to escape names to disambiguate conflicting terms
     public let kind: TermType
 
     init(name: String, kind: TermType) {
@@ -63,12 +59,11 @@ public class KeywordTerm: Term, Hashable, CustomStringConvertible { // type/enum
     public var hashValue: Int { return Int(self.code) }
     
     public var description: String { return "<\(self.kind):\(self.name)=\(fourCharCode(self.code))>" }
+    
+    public static func ==(lhs: KeywordTerm, rhs: KeywordTerm) -> Bool {
+        return lhs.kind == rhs.kind && lhs.code == rhs.code && lhs.name == rhs.name
+    }
 }
-
-public func ==(lhs: KeywordTerm, rhs: KeywordTerm) -> Bool {
-    return lhs.kind == rhs.kind && lhs.code == rhs.code && lhs.name == rhs.name
-}
-
 
 
 public class CommandTerm: Term, Hashable, CustomStringConvertible {
@@ -102,11 +97,13 @@ public class CommandTerm: Term, Hashable, CustomStringConvertible {
         self.parametersByCode[code] = paramDef
         self.orderedParameters.append(paramDef)
     }
+    
+    public static func ==(lhs: CommandTerm, rhs: CommandTerm) -> Bool {
+        return lhs.eventClass == rhs.eventClass && lhs.eventID == rhs.eventID
+            && lhs.name == rhs.name && lhs.parametersByCode == rhs.parametersByCode
+    }
 }
 
-public func ==(lhs: CommandTerm, rhs: CommandTerm) -> Bool {
-    return lhs.eventClass == rhs.eventClass && lhs.eventID == rhs.eventID
-        && lhs.name == rhs.name && lhs.parametersByCode == rhs.parametersByCode
-}
+
 
 

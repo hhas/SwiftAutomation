@@ -32,7 +32,7 @@ public class AETEParser: ApplicationTerminology {
     private var cursor: Int = 0 // was unsigned long
     
     
-    public init(keywordConverter: KeywordConverterProtocol = gSwiftAEKeywordConverter) {
+    public init(keywordConverter: KeywordConverterProtocol = defaultSwiftKeywordConverter) {
         self.keywordConverter = keywordConverter
     }
     

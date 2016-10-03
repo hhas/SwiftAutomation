@@ -15,9 +15,6 @@ import AppKit
 // TO DO: what happens if caller gives wrong return type for specifiers, e.g. `TextEdit().documents.get() as TEDItems`? (should be `... as [TEDItem]`, as TextEdit always returns a list of single-item specifiers); make sure malformed Specifiers are never returned and error reporting explains the problem (note: this may be an argument in favor of using PREFIXObject and PREFIXElements, except the lack of symmetry in that naming is likely to cause as much confusion as it avoids)
 
 
-let _kAutoGenerateReturnID: AEReturnID = -1 // Int16 /* AECreateAppleEvent will generate a session-unique ID */
-let _kAnyTransactionID: AETransactionID = 0 // Int32 /* no transaction is in use */
-
 
 public typealias KeywordParameter = (name: String?, code: OSType, value: Any)
 

@@ -11,10 +11,8 @@
 import Foundation
 
 
-let noOSType: OSType = 0 // valid OSTypes should always be non-zero, so just use 0 instead of nil to indicate omitted OSType and avoid the extra Optional<OSType> boxing/unboxing
 
-
-open class Symbol: Hashable, Equatable, CustomStringConvertible, CustomDebugStringConvertible, SelfPacking {
+open class Symbol: Hashable, Equatable, CustomStringConvertible, CustomDebugStringConvertible, CustomReflectable, SelfPacking {
     
     private var _descriptor: NSAppleEventDescriptor?
     public let name: String?, code: OSType, type: OSType
@@ -67,6 +65,12 @@ open class Symbol: Hashable, Equatable, CustomStringConvertible, CustomDebugStri
     
     public var debugDescription: String { return self.description }
     
+    public var customMirror: Mirror {
+        let children: [Mirror.Child] = [(label: "description", value: self.description), (label: "name", value: self.name),
+                                        (label: "code", value: fourCharCode(self.code)), (label: "type", value: fourCharCode(self.type))]
+        return Mirror(self, children: children, displayStyle: Mirror.DisplayStyle.`class`, ancestorRepresentation: .suppressed)
+    }
+    
     public var hashValue: Int {return self.nameOnly ? self.name!.hashValue : Int(self.code)}
     
     public var descriptor: NSAppleEventDescriptor { // used by SwiftAutomation_packSelf and previous()/next() selectors  
@@ -82,20 +86,20 @@ open class Symbol: Hashable, Equatable, CustomStringConvertible, CustomDebugStri
     
     // returns true if Symbol contains name but not code (i.e. it represents a string-based record property key)
     public var nameOnly: Bool { return self.type == noOSType && self.name != nil }
-        
+    
     public func SwiftAutomation_packSelf(_ appData: AppData) throws -> NSAppleEventDescriptor {
         return self.descriptor
+    }
+    
+    public static func ==(lhs: Symbol, rhs: Symbol) -> Bool {
+        // note: operands are not required to be the same subclass as this compares for AE equality only, e.g.:
+        //
+        //    TED.document == AESymbol(code: "docu") -> true
+        //
+        return lhs.nameOnly && rhs.nameOnly ? lhs.name == rhs.name : lhs.code == rhs.code // TO DO: also compare AE types?
     }
 }
 
 
-
-public func ==(lhs: Symbol, rhs: Symbol) -> Bool {
-    // note: operands are not required to be the same subclass as this compares for AE equality only, e.g.:
-    //
-    //    TED.document == AESymbol(code: "docu") -> true
-    //
-    return lhs.nameOnly && rhs.nameOnly ? lhs.name == rhs.name : lhs.code == rhs.code // TO DO: also compare AE types?
-}
 
 

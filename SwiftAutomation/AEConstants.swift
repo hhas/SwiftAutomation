@@ -7,16 +7,22 @@
 import Carbon
 
 
-
 /******************************************************************************/
 // extra constant definitions
+
+// Swift mismaps the following AEDataModel.h constants to Int instead of Int16 and Int32, so redefine correctly here
+let _kAutoGenerateReturnID: AEReturnID = -1 // Int16 /* AECreateAppleEvent will generate a session-unique ID */
+let _kAnyTransactionID: AETransactionID = 0 // Int32 /* no transaction is in use */
+
+// valid OSTypes should always be non-zero, so use 0 rather than nil to indicate omitted OSType, avoiding need for Optional<> boxing/unboxing
+let noOSType: OSType = 0 
 
 // kAEInheritedProperties isn't defined in OpenScripting.h for some reason
 let _kAEInheritedProperties: OSType = 0x6340235e // 'c@#^'
 
 // AEM doesn't define codes for '!=' or 'in' operators in test clauses, so define pseudo-codes to represent these
-let _kAENotEquals: OSType       = 0x00000001 // will pack as kAEEquals + kAENOT
-let _kAEIsIn: OSType            = 0x00000002 // will pack as kAEContains with operands reversed
+let _kAENotEquals: OSType       = 0x00000001 // packs as kAEEquals + kAENOT
+let _kAEIsIn: OSType            = 0x00000002 // packs as kAEContains with operands reversed
 
 
 /******************************************************************************/
@@ -67,7 +73,11 @@ let _kAENOTDesc                 = NSAppleEventDescriptor(enumCode: _kAENOT)
 
 
 /******************************************************************************/
-//  Workaround: currently redefines all standard four-char codes as Carbon AE headers declare them in untyped enums (typical C sloppiness) so Swift wrongly converts them to Int, not OSType (UInt32), making them unusable. Note: 10.12 fixes the types on some but not all AE enums, so retaining this kludge for now with names explicitly prefixed for obviousness; these should be used where the OS-provided enums are still incorrectly typed (e.g. form* and some key* enums). Once Apple figures out how to write its headers correctly, the following definitions can be eliminated and prefixes removed again.
+// kludge: redefine Carbon AE constants here as Swift wrongly maps some/all (depending on version) to Int instead of OSType (UInt32)
+
+// TO DO: the below list is lifted from 10.6(?) headers.
+
+// Note: 10.12 fixes the types on some but not all AE constants, so retaining this kludge for now with names explicitly prefixed for obviousness; these should be used where the OS-provided enums are still incorrectly typed (e.g. form* and some key* enums). Once Apple figures out how to write its headers correctly, the following definitions can be eliminated and prefixes removed again.
 
 
 let _KAEISHandleCGI: OSType = 0x73646F63

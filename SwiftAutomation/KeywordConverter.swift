@@ -7,7 +7,7 @@
 
 import Foundation
 
-// TO DO: finalize API, implementation
+// TO DO: finalize API
 
 /******************************************************************************/
 // Identifiers (legal characters, reserved names, etc)
@@ -18,13 +18,13 @@ let NUMERIC   = Set<Character>("0123456789".characters)
 let OTHER     = Set<Character>("_".characters)
 
 
-let kLegalFirstChars = UPPERCHAR.union(LOWERCHAR).union(OTHER)
-let kLegalOtherChars = UPPERCHAR.union(LOWERCHAR).union(OTHER).union(NUMERIC)
+let legalFirstChars = UPPERCHAR.union(LOWERCHAR).union(OTHER)
+let legalOtherChars = UPPERCHAR.union(LOWERCHAR).union(OTHER).union(NUMERIC)
 
 
 // TO DO: updated for Swift3, but could be missing some valid keywords - CHECK!!!
 
-let kSwiftKeywords: Set<String> = [
+let reservedSwiftKeywords: Set<String> = [
     // reserved Swift keywords // TO DO: ideally Swift would provide an API for getting an up-to-date list of all known keywords; for now, we use a hardcoded list of keyword names that needs updated manually each time the language changes and hope we didn't miss any out
     "as", "associatedtype", "autoreleasepool", "break", "case", "catch", "class", "continue", "convenience", "default", "defer", "deinit", "do", "dynamic", "else", "enum", "extension", "fallthrough", "false", "fileprivate", "final", "for", "func", "guard", "if", "import", "in", "infix", "init", "internal", "lazy", "let", "let", "metatype", "mutating", "nil", "nonmutating", "optional", "override", "postfix", "prefix", "private", "protocol", "public", "repeat", "required", "rethrows", "return", "self", "Self", "static", "struct", "subscript", "super", "switch", "throw", "throws", "true", "try", "typealias", "unowned", "var", "var", "weak", "where", "while",
 
@@ -39,12 +39,16 @@ let kSwiftKeywords: Set<String> = [
 
 // Swift glue methods
 
-public let gReservedSpecifierMethods: Set<String> = [ // TO DO: review; some names have changed, others still need to be added
+public let reservedSpecifierMethods: Set<String> = [ // TO DO: review; some names have changed, others still need to be added
     // custom property/element specifiers
     // Query
     "appData",
     "parentQuery",
     "rootSpecifier",
+    "unpackParentSpecifiers",
+    "description",
+    "debugDescription",
+    "customMirror",
     // Specifier
     "property",
     "userProperty",
@@ -73,12 +77,12 @@ public let gReservedSpecifierMethods: Set<String> = [ // TO DO: review; some nam
     "endsWith",
     "contains",
     "isIn",
-    // miscellaneous
-    "description",
+    // Symbol
+    "symbol",
 ]
 
 
-public let gReservedParameterNames: Set<String> = [
+public let reservedParameterNames: Set<String> = [
     // standard parameter+attribute names used in SwiftGlueTemplate
     "directParameter",
     "waitReply",
@@ -88,10 +92,10 @@ public let gReservedParameterNames: Set<String> = [
 ]
 
 
-public let kReservedPrefixes: Set<String> = ["NS", "AE", "SwiftAutomation"] // TO DO: decide
+public let reservedPrefixes: Set<String> = ["NS", "AE", "SwiftAutomation"] // TO DO: decide
 
 
-public let kWordSeparators = CharacterSet(charactersIn: " -/") // some AETEs may include hyphens and other non-C-identifier/non-space characters in their keyword names, which are problematic in AppleScript (which [e.g.] compiles `trash-object` to `trash - object`) and a PITA in traditionally C-like languages, so we just bite the bullet and treat them all as if they were just simple spaces between words
+public let reservedWordSeparators = CharacterSet(charactersIn: " -/") // some AETEs may include hyphens and other non-C-identifier/non-space characters in their keyword names, which are problematic in AppleScript (which [e.g.] compiles `trash-object` to `trash - object`) and a PITA in traditionally C-like languages, so we just bite the bullet and treat them all as if they were just simple spaces between words
 
 
 /******************************************************************************/
@@ -100,16 +104,16 @@ public let kWordSeparators = CharacterSet(charactersIn: " -/") // some AETEs may
 func isCIdentifier(_ string: String) -> Bool { // returns true if string is a valid C identifier (caution: the client is responsible for checking identifier string won't conflict with known Swift keywords)
     var chars = string.characters
     guard let c = chars.popFirst() else { return false }
-    if !kLegalFirstChars.contains(c) { return false }
-    for c in chars { if !kLegalOtherChars.contains(c) { return false } }
+    if !legalFirstChars.contains(c) { return false }
+    for c in chars { if !legalOtherChars.contains(c) { return false } }
     return true
 }
 
 
 func validateCIdentifier(_ string: String) throws { // throws if not a legal [C-style] identifier in Swift (i.e. contains invalid characters or conflicts with an existing Swift keyword)
     // TO DO: this should really check for valid Swift identifiers, though since all supported stdlib and glue types use C-style names this'll do for now
-    if !isCIdentifier(string) || kSwiftKeywords.contains(string) {
-        throw SwiftAutomationError(code: 1, message: "Not a valid type name: '\(string)'")
+    if !isCIdentifier(string) || reservedSwiftKeywords.contains(string) {
+        throw SwiftAutomationError(code: 1, message: "Not a valid identifier: '\(string)'")
     }
 }
 
@@ -132,13 +136,13 @@ public protocol KeywordConverterProtocol {
 
 public class KeywordConverter {
     
-    private var cache = [String:String]() // cache previously translated keywords for efficiency; TO DO: max size?
+    private var _cache = [String:String]() // cache previously translated keywords for efficiency; TO DO: max size?
 
     public init() {}
     
     func convertName(_ s: String, reservedWords: Set<String>) -> String { // Convert string to identifier
         var s = s
-        var result: String! = self.cache[s]
+        var result: String! = self._cache[s]
         if result == nil {
             s = s.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
             if s == "" { return "_" } // sanity check
@@ -147,8 +151,8 @@ public class KeywordConverter {
             for i in (0..<tmp.length).reversed() {
                 let c = tmp.character(at: i)
                 // note that while application dictionaries were originally intended to be multi-language, dialect support was quietly abandoned circa MacOS8 so all dictionaries nowadays use English-language words only. SDEFs in CocoaScripting-based apps restrict each word to C-identifier-safe characters. Occasionally, however, an old-school Carbon app may contain an AETE resource that includes other characters that aren't valid for C-style identifiers; as this is very rare, we mostly just convert these to underscore-delimited hex values
-                if !kLegalOtherChars.contains(Character(UnicodeScalar(c)!)) {
-                    if kWordSeparators.contains(UnicodeScalar(c)!) { // remove word separator character and capitalize next word
+                if !legalOtherChars.contains(Character(UnicodeScalar(c)!)) {
+                    if reservedWordSeparators.contains(UnicodeScalar(c)!) { // remove word separator character and capitalize next word
                         tmp.replaceCharacters(in: NSMakeRange(i,2), with: tmp.substring(with: NSMakeRange(i+1,1)).uppercased())
                     } else if c == 38 { // replace "&" with "And"
                         tmp.replaceCharacters(in: NSMakeRange(i,1), with: "And")
@@ -158,14 +162,14 @@ public class KeywordConverter {
                 }
             }
             // sanity check: if first character is digit (which it shouldn't ever be), prefix with underscore
-            if !kLegalFirstChars.contains(Character(UnicodeScalar(tmp.character(at: 0))!)) {
+            if !legalFirstChars.contains(Character(UnicodeScalar(tmp.character(at: 0))!)) {
                 tmp.insert("_", at: 0)
             }
             result = tmp.copy() as! String // TO DO: check
             if reservedWords.contains(result) || result.hasPrefix("_") || result == "" {
                 result = self.escapeName(result)
             }
-            self.cache[s] = result
+            self._cache[s] = result
         }
         return result!
     }
@@ -237,29 +241,29 @@ public class SwiftKeywordConverter: KeywordConverter, KeywordConverterProtocol {
         return type(of: self)._defaultTerminology!
     }
     
-    private let reservedSpecifierWords = kSwiftKeywords.union(gReservedSpecifierMethods)
-    private let reservedParameterWords = kSwiftKeywords.union(gReservedParameterNames)
-    private let reservedPrefixes = kSwiftKeywords.union(kReservedPrefixes)
+    private let _reservedSpecifierWords = reservedSwiftKeywords.union(reservedSpecifierMethods)
+    private let _reservedParameterWords = reservedSwiftKeywords.union(reservedParameterNames)
+    private let _reservedPrefixes = reservedSwiftKeywords.union(reservedPrefixes)
     
     public func convertSpecifierName(_ s: String) -> String {
-        return self.convertName(s, reservedWords: self.reservedSpecifierWords)
+        return self.convertName(s, reservedWords: self._reservedSpecifierWords)
     }
     
     public func convertParameterName(_ s: String) -> String {
-        return self.convertName(s, reservedWords: self.reservedParameterWords)
+        return self.convertName(s, reservedWords: self._reservedParameterWords)
     }
         
     public func identifierForAppName(_ appName: String) -> String {
-        return self.identifierForAppName(appName, reservedWords: kSwiftKeywords)
+        return self.identifierForAppName(appName, reservedWords: reservedSwiftKeywords)
     }
     
     public func prefixForAppName(_ appName: String) -> String {
-        return self.prefixForAppName(appName, reservedWords: self.reservedPrefixes)
+        return self.prefixForAppName(appName, reservedWords: self._reservedPrefixes)
     }
 
 }
 
 
-public let gSwiftAEKeywordConverter = SwiftKeywordConverter()
+public let defaultSwiftKeywordConverter = SwiftKeywordConverter()
 
 

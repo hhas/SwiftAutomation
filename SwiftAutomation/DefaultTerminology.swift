@@ -44,7 +44,9 @@ public class DefaultTerminology: ApplicationTerminology {
     private typealias Commands = [(String, OSType, OSType, [(String, OSType)])]
 
     // note: AppleScript-style keyword names are automatically converted to the required format using the given keyword converter
-
+    
+    // TO DO: review list against current AppleScript AEUT
+    
     private let _types: Keywords = [("anything", _typeWildCard),
                                     ("boolean", _typeBoolean),
                                     ("short integer", _typeShortInteger),
@@ -55,7 +57,7 @@ public class DefaultTerminology: ApplicationTerminology {
                                     ("long fixed", _typeLongFixed),
                                     ("decimal struct", _typeDecimalStruct),
                                     ("short float", _typeShortFloat),
-                                    ("float", _typeLongFloat),
+                                    ("float", _typeLongFloat), // TO DO: rename `real` for consistency with AS terms
                                     ("extended float", _typeExtended),
                                     ("float 128bit", _type128BitFloatingPoint),
                                     ("string", _typeText),
