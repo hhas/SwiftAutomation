@@ -49,17 +49,19 @@ public class DefaultTerminology: ApplicationTerminology {
     
     private let _types: Keywords = [("anything", _typeWildCard),
                                     ("boolean", _typeBoolean),
-                                    ("short integer", _typeShortInteger),
+                                    ("short integer", _typeSInt16),
                                     ("integer", _typeSInt32),
-                                    ("unsigned integer", _typeUInt32),
                                     ("double integer", _typeSInt64),
+                                    ("unsigned short integer", _typeUInt16), // no AS keyword
+                                    ("unsigned integer", _typeUInt32),
+                                    ("unsigned double integer", _typeUInt64), // no AS keyword
                                     ("fixed", _typeFixed),
                                     ("long fixed", _typeLongFixed),
-                                    ("decimal struct", _typeDecimalStruct),
-                                    ("short float", _typeShortFloat),
-                                    ("float", _typeLongFloat), // TO DO: rename `real` for consistency with AS terms
-                                    ("extended float", _typeExtended),
-                                    ("float 128bit", _type128BitFloatingPoint),
+                                    ("decimal struct", _typeDecimalStruct), // no AS keyword
+                                    ("small real", _typeIEEE32BitFloatingPoint),
+                                    ("real", _typeIEEE64BitFloatingPoint),
+                                    ("extended real", _typeExtended),
+                                    ("large real", _type128BitFloatingPoint), // no AS keyword
                                     ("string", _typeText),
                                     ("styled text", _typeStyledText),
                                     ("text style info", _typeTextStyles),
@@ -68,21 +70,22 @@ public class DefaultTerminology: ApplicationTerminology {
                                     ("writing code", _pScriptTag),
                                     ("international writing code", _typeIntlWritingCode),
                                     ("international text", _typeIntlText),
-                                    ("unicode text", _typeUnicodeText),
-                                    ("utf8 text", _typeUTF8Text),
-                                    ("utf16 text", _typeUTF16ExternalRepresentation),
+                                    ("Unicode text", _typeUnicodeText),
+                                    ("UTF8 text", _typeUTF8Text), // no AS keyword
+                                    ("UTF16 text", _typeUTF16ExternalRepresentation), // no AS keyword
                                     ("version", _typeVersion),
                                     ("date", _typeLongDateTime),
-                                    ("list", _typeUserRecordFields),
+                                    ("list", _typeAEList),
                                     ("record", _typeAERecord),
                                     ("data", _typeData),
                                     ("script", _typeScript),
                                     ("location reference", _typeInsertionLoc),
                                     ("reference", _typeObjectSpecifier),
                                     ("alias", _typeAlias),
-                                    ("file ref", _typeFSRef),
+                                    ("file ref", _typeFSRef), // no AS keyword
                                     ("file specification", _typeFSS),
-                                    ("file url", _typeFileURL),
+                                    ("bookmark data", _typeBookmarkData), // no AS keyword
+                                    ("file URL", _typeFileURL), // no AS keyword
                                     ("point", _typeQDPoint),
                                     ("bounding rectangle", _typeQDRectangle),
                                     ("fixed point", _typeFixedPoint),
@@ -104,15 +107,15 @@ public class DefaultTerminology: ApplicationTerminology {
                                     ("pixel map record", _typePixMapMinus),
                                     ("best", _typeBest),
                                     ("type class", _typeType),
-                                    ("enumerator", _typeEnumeration),
+                                    ("constant", _typeEnumeration),
                                     ("property", _typeProperty),
-                                    ("mach port", _typeMachPort),
-                                    ("kernel process id", _typeKernelProcessID),
-                                    ("application bundle id", _typeApplicationBundleID),
-                                    ("process serial number", _typeProcessSerialNumber),
-                                    ("application signature", _typeApplSignature),
-                                    ("application url", _typeApplicationURL),
-                                    // ("missing value", _cMissingValue), // represented as MissingValueType, not Symbol
+                                    ("mach port", _typeMachPort), // no AS keyword
+                                    ("kernel process ID", _typeKernelProcessID), // no AS keyword
+                                    ("application bundle ID", _typeApplicationBundleID), // no AS keyword
+                                    ("process serial number", _typeProcessSerialNumber), // no AS keyword
+                                    ("application signature", _typeApplSignature), // no AS keyword
+                                    ("application URL", _typeApplicationURL), // no AS keyword
+                                    // ("missing value", _cMissingValue), // represented as MissingValue constant, not Symbol instance
                                     ("null", _typeNull),
                                     ("machine location", _typeMachineLoc),
                                     ("machine", _cMachine),

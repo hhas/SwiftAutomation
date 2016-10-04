@@ -392,8 +392,8 @@
 				4F0E392C1BA76D8400FF2A96 /* application_architecture2.gif */,
 				4F0E392D1BA76D8400FF2A96 /* client_app_to_itunes_event.gif */,
 				4F0E392E1BA76D8400FF2A96 /* finder_to_textedit_event.gif */,
-				4F0E392F1BA76D8400FF2A96 /* full.css */,
 				4F0E39301BA76D8400FF2A96 /* relationships_example.gif */,
+				4F0E392F1BA76D8400FF2A96 /* full.css */,
 			);
 			name = "doc-source";
 			sourceTree = "<group>";

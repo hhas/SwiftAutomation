@@ -73,7 +73,7 @@ import AppKit
 // abstract base class for _all_ specifier and test clause subclasses
 
 
-open class Query: CustomStringConvertible, CustomDebugStringConvertible, CustomReflectable, SelfPacking { // TO DO: Equatable? (TBH, comparing and hashing Query objects would be of limited use; not sure it's worth the effort as, ultimately, only the target app can know if two queries identify the same object or not)
+open class Query: CustomStringConvertible, CustomDebugStringConvertible, /*CustomReflectable,*/ SelfPacking { // TO DO: Equatable? (TBH, comparing and hashing Query objects would be of limited use; not sure it's worth the effort as, ultimately, only the target app can know if two queries identify the same object or not)
     
     public let appData: AppData
     internal private(set) var _cachedDescriptor: NSAppleEventDescriptor?
@@ -118,13 +118,14 @@ open class Query: CustomStringConvertible, CustomDebugStringConvertible, CustomR
     
     // Ignored for Application object, and doesn't get called for Item object as the following error occurs first:
     // 2016-10-01 13:03:05.760074 repl_swift[11993:780266] Could not cast value of type 'SwiftAutomation.ObjectSpecifier' (0x101cdbd10) to 'MacOSGlues.FINItem' (0x103afef40).
-
+    /*
     public var customMirror: Mirror {
         // TO DO: ideally subclasses would override to mirror the AERecords that make up the specifier, plus the target application (if any), but seeing as the /usr/bin/swift REPL falls on its arse before it even gets this property there's little point implementing it right now; furthermore, right-hand pane in playgrounds sometimes displays value's description (e.g. for TEDItem) and other times its mirror representation (e.g. for [TEDItem]), which makes it bloody useless too (i.e. REPL and playground users should ALWAYS see the description, unless they explicitly request the debugDescription or mirror representation themselves, e.g. for pathological curiosity or debugging purposes)
-        print("\(self) \(type(of: self))")
+        //print("\(self) \(type(of: self))")
         let children: [Mirror.Child] = [(label: "description", value: self.description), (label: "descriptor", value: self._cachedDescriptor)]
         return Mirror(self, children: children, displayStyle: Mirror.DisplayStyle.`class`, ancestorRepresentation: .suppressed)
     }
+ */
 }
 
 

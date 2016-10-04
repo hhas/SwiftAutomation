@@ -377,14 +377,11 @@ public class StaticGlueTemplate {
     private func iterate<T>(block name: String, newContents: [T], emptyContent: String = "",
                             separator: String = "", renderer: (StaticGlueTemplate, T) -> ()) {
         let tagLength = ("«+\(name)»" as NSString).length
-        while true {
+        while true { // match each «+NAME»...«-NAME» block and render its contents
             let range = self._template.range(of: "(?s)«\\+\(name)».*?«-\(name)»",
                                              options: .regularExpression, range: NSMakeRange(0, self._template.length))
-            if range.length == 0 {
-                return
-            }
+            if range.length == 0 { return } // no more matches
             let subString = self._template.substring(with: NSMakeRange(range.location+tagLength,range.length-tagLength*2))
-            self._template.deleteCharacters(in: range)
             var result = [String]()
             if newContents.count > 0 {
                 for newContent in newContents {
@@ -393,7 +390,7 @@ public class StaticGlueTemplate {
             }else {
                 result = [emptyContent] // e.g. empty dictionary literals require ':'
             }
-            self._template.insert(result.joined(separator: separator), at: range.location)
+            self._template.replaceCharacters(in: range, with: result.joined(separator: separator))
         }
     }
     

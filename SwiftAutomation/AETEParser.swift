@@ -4,7 +4,6 @@
 //
 //
 
-// TO DO: this is dog-slow on InDesign (4-5sec), probably due to extra NSData layer (pure Python AETE parser does it in 0.25sec)
 
 import Foundation
 
@@ -28,7 +27,7 @@ public class AETEParser: ApplicationTerminology {
     private var foundClassCodes           = Set<OSType>()
     private var foundElementCodes         = Set<OSType>()
     
-    private var aeteData: NSData! // was char*
+    private var aeteData = NSData() // was char*
     private var cursor: Int = 0 // was unsigned long
     
     
@@ -82,23 +81,23 @@ public class AETEParser: ApplicationTerminology {
     
     // internal callbacks
     
-    // read data methods // TO DO: AEB implementation was simple and lightweight (C pointer arithmetic) - how does this compare? how would ManagedBuffer compare?
+    // read data methods
     
-    func short() -> UInt16 { // unsigned short (2 bytes)
+    @inline(__always) func short() -> UInt16 { // unsigned short (2 bytes)
         var value: UInt16 = 0
         self.aeteData.getBytes(&value, range: NSMakeRange(self.cursor,MemoryLayout<UInt16>.size))
         self.cursor += MemoryLayout<UInt16>.size
         return value
     }
     
-    func code() -> OSType { // (4 bytes)
+    @inline(__always) func code() -> OSType { // (4 bytes)
         var value: OSType = 0
         self.aeteData.getBytes(&value, range: NSMakeRange(self.cursor,MemoryLayout<OSType>.size))
         self.cursor += MemoryLayout<OSType>.size
         return value
     }
     
-    func string() -> String {
+    @inline(__always) func string() -> String {
         var length: UInt8 = 0 // Pascal string = 1-byte length (unsigned char) followed by 0-255 MacRoman chars
         self.aeteData.getBytes(&length, range: NSMakeRange(self.cursor,MemoryLayout<UInt8>.size))
         self.cursor += MemoryLayout<UInt8>.size
@@ -110,18 +109,18 @@ public class AETEParser: ApplicationTerminology {
     
     // skip unneeded aete data
     
-    func skipShort() {
+    @inline(__always) func skipShort() {
         self.cursor += MemoryLayout<UInt16>.size
     }
-    func skipCode() {
+    @inline(__always) func skipCode() {
         self.cursor += MemoryLayout<OSType>.size
     }
-    func skipString() {
+    @inline(__always) func skipString() {
         var len: UInt8 = 0
         self.aeteData.getBytes(&len, range: NSMakeRange(self.cursor,MemoryLayout<UInt8>.size))
         self.cursor += MemoryLayout<UInt8>.size + Int(len)
     }
-    func alignCursor() { // realign aete data cursor on even byte after reading strings
+    @inline(__always) func alignCursor() { // realign aete data cursor on even byte after reading strings
         if self.cursor % 2 != 0 {
             self.cursor += 1
         }
@@ -129,7 +128,7 @@ public class AETEParser: ApplicationTerminology {
     
     // perform a bounds check on aete data cursor to protect against malformed aete data
     
-    func checkCursor() throws {
+    @inline(__always) func checkCursor() throws {
         if cursor > self.aeteData.length {
             throw TerminologyError("The AETE ended prematurely: (self.aeteData.length) bytes expected, (self.cursor) bytes read.")
         }

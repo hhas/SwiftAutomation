@@ -61,13 +61,12 @@ try finder.home.get(resultType: FIN.alias) as URL
 
 
 // CustomReflectable FAIL: Could not cast value of type 'SwiftAutomation.ObjectSpecifier' (0x10d705c88) to 'MyPlayground_Sources.FINItem' (0x10d5433c8).
-try finder.home.files[2, 7].get() //as [FINItem]
+//try finder.home.files[2, 7].get() //as [FINItem]
+
+// TED.document // CustomReflectable is buggy and crashes
 
 
-
-//try finder.home.files[1..<4].name.get()
-
-
+//try finder.home.files[1..<4].name.get() // note: this form is not supported
 
 
 

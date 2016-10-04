@@ -174,15 +174,14 @@ open class AppData {
           return NSAppleEventDescriptor(date: obj)
         case let obj as URL:
             if obj.isFileURL {
-             // TO DO: what about packing as typeAlias if it's a bookmark URL? PROBLEM: Unlike Cocoa's NSURL, Swift's URL struct doesn't implement isFileReferenceURL(), so either need to coerce to NSURL in order to determine whether to pack as typeAlias or typeFileURL, or else cross fingers and hope that always packing as typeFileURL won't cause various crusty/flaky/elderly (Carbon) apps to puke because they're expecting typeAlias and don't have the wits to coerce the given descriptor to that type before trying to unpack it. Ideally we'd cache the original AEDesc within the unpacked Swift value (c.f. Specifier), but we can't do that without subclassing, and URL is a struct so we'd have to subclass NSURL (see AppleEventBridge's AEMURL.m for existing implementation of this), but what happens when that gets coerced to a Swift URL? (Seamless Cocoa-Swift integration my arse...).
+             // TO DO: what about packing as typeAlias if it's a bookmark URL? PROBLEM: Unlike Cocoa's NSURL, Swift's URL struct doesn't implement isFileReferenceURL(), so either need to coerce to NSURL in order to determine whether to pack as typeAlias or typeFileURL, or else cross fingers and hope that always packing as typeFileURL won't cause various crusty/flaky/elderly (Carbon) apps to puke because they're expecting typeAlias and don't have the wits to coerce the given descriptor to that type before trying to unpack it. Ideally we'd cache the original AEDesc within the unpacked Swift value (c.f. Specifier), but we can't do that without subclassing, and URL is a struct so we'd have to subclass NSURL (see AppleEventBridge's AEMURL.m for existing implementation of this), but what happens when that gets coerced to a Swift URL? (Seamless Cocoa-Swift integration my arse...). // note: fileReferenceURL support is broken in Swift3: https://bugs.swift.org/browse/SR-2728
                 return NSAppleEventDescriptor(fileURL: obj)
             }
             
-        // TO DO: will following cases still be needed? (depends on how transparent Swift's ObjC bridging is; if the SelfPacking protocol test matches Swift collections but not their Cocoa equivalents then yes)
+        // Cocoa collection classes don't support SelfPacking (though don't require it either since they're not generics); for now, just cast to Swift type on assumption that these are less common cases and Swift's ObjC bridge won't add significant cost, though they could be packed directly here if preferred
         case let obj as NSSet:
             return try (obj as Set).SwiftAutomation_packSelf(self)
         case let obj as NSArray:
-            print("NSARRAY: \(value)")
             return try (obj as Array).SwiftAutomation_packSelf(self)
         case let obj as NSDictionary:
             return try (obj as Dictionary).SwiftAutomation_packSelf(self)

@@ -12,14 +12,17 @@ import Foundation
 /******************************************************************************/
 // Identifiers (legal characters, reserved names, etc)
 
-let UPPERCHAR = Set<Character>("ABCDEFGHIJKLMNOPQRSTUVWXYZ".characters)
-let LOWERCHAR = Set<Character>("abcdefghijklmnopqrstuvwxyz".characters)
-let NUMERIC   = Set<Character>("0123456789".characters)
-let OTHER     = Set<Character>("_".characters)
+let UPPERCHAR  = Set<Character>("ABCDEFGHIJKLMNOPQRSTUVWXYZ".characters)
+let LOWERCHAR  = Set<Character>("abcdefghijklmnopqrstuvwxyz".characters)
+let NUMERIC    = Set<Character>("0123456789".characters)
+let OTHER      = Set<Character>("_".characters)
+let WHITESPACE = Set<Character>(" \t\n\r".characters)
+
 
 
 let legalFirstChars = UPPERCHAR.union(LOWERCHAR).union(OTHER)
 let legalOtherChars = UPPERCHAR.union(LOWERCHAR).union(OTHER).union(NUMERIC)
+let reservedWordSeparators = WHITESPACE.union("-/".characters) // some AETEs may include hyphens and other non-C-identifier/non-space characters in their keyword names, which are problematic in AppleScript (which [e.g.] compiles `trash-object` to `trash - object`) and a PITA in traditionally C-like languages, so we just bite the bullet and treat them all as if they were just simple spaces between words
 
 
 // TO DO: updated for Swift3, but could be missing some valid keywords - CHECK!!!
@@ -77,7 +80,7 @@ public let reservedSpecifierMethods: Set<String> = [ // TO DO: review; some name
     "endsWith",
     "contains",
     "isIn",
-    // Symbol
+    // Symbol (class methods only)
     "symbol",
 ]
 
@@ -93,9 +96,6 @@ public let reservedParameterNames: Set<String> = [
 
 
 public let reservedPrefixes: Set<String> = ["NS", "AE", "SwiftAutomation"] // TO DO: decide
-
-
-public let reservedWordSeparators = CharacterSet(charactersIn: " -/") // some AETEs may include hyphens and other non-C-identifier/non-space characters in their keyword names, which are problematic in AppleScript (which [e.g.] compiles `trash-object` to `trash - object`) and a PITA in traditionally C-like languages, so we just bite the bullet and treat them all as if they were just simple spaces between words
 
 
 /******************************************************************************/
@@ -140,38 +140,41 @@ public class KeywordConverter {
 
     public init() {}
     
-    func convertName(_ s: String, reservedWords: Set<String>) -> String { // Convert string to identifier
-        var s = s
-        var result: String! = self._cache[s]
-        if result == nil {
-            s = s.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
-            if s == "" { return "_" } // sanity check
-            let tmp = NSMutableString(string: s)
+    func convertName(_ string: String, reservedWords: Set<String>) -> String { // Convert string to identifier
+        if let result = self._cache[string] {
+            return result
+        } else {
             // convert keyword to camelcase, e.g. "audio CD playlist" -> "audioCDPlaylist"
-            for i in (0..<tmp.length).reversed() {
-                let c = tmp.character(at: i)
-                // note that while application dictionaries were originally intended to be multi-language, dialect support was quietly abandoned circa MacOS8 so all dictionaries nowadays use English-language words only. SDEFs in CocoaScripting-based apps restrict each word to C-identifier-safe characters. Occasionally, however, an old-school Carbon app may contain an AETE resource that includes other characters that aren't valid for C-style identifiers; as this is very rare, we mostly just convert these to underscore-delimited hex values
-                if !legalOtherChars.contains(Character(UnicodeScalar(c)!)) {
-                    if reservedWordSeparators.contains(UnicodeScalar(c)!) { // remove word separator character and capitalize next word
-                        tmp.replaceCharacters(in: NSMakeRange(i,2), with: tmp.substring(with: NSMakeRange(i+1,1)).uppercased())
-                    } else if c == 38 { // replace "&" with "And"
-                        tmp.replaceCharacters(in: NSMakeRange(i,1), with: "And")
-                    } else { // replace non-C-identifier character with "_U0000_"-style hex code
-                        tmp.replaceCharacters(in: NSMakeRange(i,1), with: String(format: "_U%04X_", c))
-                    }
+            // Note that while application dictionaries were originally intended to be multi-language, dialect support was quietly abandoned circa MacOS8 so all dictionaries nowadays use English-language words only. SDEFs in CocoaScripting-based apps restrict each word to C-identifier-safe characters. Occasionally, however, an old-school Carbon app may contain an AETE resource that includes other characters that aren't valid for C-style identifiers; as this is very rare, we mostly just convert these to underscore-delimited hex values.
+            var result = ""
+            var i = string.startIndex
+            var willCapitalize = false
+            var charSet = legalFirstChars
+            while i != string.endIndex {
+                while reservedWordSeparators.contains(string[i]) { // skip whitespace, hyphen, slash
+                    i = string.index(after: i)
                 }
+                while i != string.endIndex {
+                    let c = string[i]
+                    if charSet.contains(c) {
+                        result += (willCapitalize ? String(c).uppercased() : String(c))
+                    } else if c == "&" {
+                        result += "And"
+                    } else if reservedWordSeparators.contains(c) {
+                        break
+                    } else {
+                        result += String(format: "_U%04X_", String(c).utf16.first!)
+                    }
+                    i = string.index(after: i)
+                    charSet = legalOtherChars
+                    willCapitalize = false
+                }
+                willCapitalize = true
             }
-            // sanity check: if first character is digit (which it shouldn't ever be), prefix with underscore
-            if !legalFirstChars.contains(Character(UnicodeScalar(tmp.character(at: 0))!)) {
-                tmp.insert("_", at: 0)
-            }
-            result = tmp.copy() as! String // TO DO: check
-            if reservedWords.contains(result) || result.hasPrefix("_") || result == "" {
-                result = self.escapeName(result)
-            }
-            self._cache[s] = result
+            if reservedWords.contains(result) || result.hasPrefix("_") || result == "" { result = self.escapeName(result) }
+            self._cache[string] = String(result)
+            return result
         }
-        return result!
     }
     
     func identifierForAppName(_ appName: String, reservedWords: Set<String>) -> String {

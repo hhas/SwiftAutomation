@@ -24,10 +24,10 @@ Apple event descriptor types are mapped to and from Swift/Foundation/SwiftAutoma
     <td><code>integer</code></td><td><code>Int</code></td></tr>
 
 <tr><td><code>real</code></td><td><code>typeIEEE64BitFloatingPoint</code></td>
-    <td><code>float</code></td><td><code>Double</code></td></tr>
+    <td><code>real</code></td><td><code>Double</code></td></tr>
 
 <tr><td><code>text</code> [1]</td><td><code>typeUnicodeText</code></td>
-    <td><code>unicodeText</code></td><td><code>String</code></td></tr>
+    <td><code>UnicodeText</code></td><td><code>String</code></td></tr>
 
 <tr><td><code>list</code></td><td><code>typeAEList</code></td>
     <td><code>list</code></td><td><code>Array</code></td></tr>
