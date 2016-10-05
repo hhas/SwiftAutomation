@@ -159,7 +159,7 @@ extension Set: SelfPacking, SelfUnpacking { // note: AEM doesn't define a standa
                 do {
                     result.insert(try appData.unpack(desc.atIndex(i)!) as Element)
                 } catch {
-                    throw UnpackError(appData: appData, descriptor: desc, type: self, message: "Can't unpack item \(i) of list descriptor.")
+                    throw UnpackError(appData: appData, descriptor: desc, type: self, message: "Can't unpack item \(i) as \(Element.self).")
                 }
             }
         default:
@@ -188,8 +188,7 @@ extension Array: SelfPacking, SelfUnpacking {
                 do {
                     result.append(try appData.unpack(desc.atIndex(i)!) as Element)
                 } catch {
-                    throw UnpackError(appData: appData, descriptor: desc, type: self,
-                                      message: "Can't unpack item \(i) of list descriptor.")
+                    throw UnpackError(appData: appData, descriptor: desc, type: self, message: "Can't unpack item \(i) as \(Element.self).")
                 }
             }
             return result

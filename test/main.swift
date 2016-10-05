@@ -122,12 +122,14 @@ do {
     
 //    try te.documents.close(saving: TED.no) // close every document saving no
     
+    //struct X {}; try teDoc.text.set(to: X())
+    
     //
     try teDoc.close(saving: TED.no)
     
     
     print("\nTEST: get files 1 thru 3 of home")
-    let r = try Finder().home.files[1, 300].get() as [FINItem]
+    let r = try Finder().home.files[1, 3].get() as [Int]//[FINItem]
     print("=> \(r)")
     
     

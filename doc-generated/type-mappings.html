@@ -14,37 +14,81 @@
 
 <p>[TO DO: finish updating this chapter]</p>
 
-<p>Standard Apple event descriptor types are mapped to and from Foundation/SwiftAutomation classes as follows:</p>
+<p>[TO DO: need to explain derivation of symbol names (they're a mismash of AppleScript names and ); also, might want to consider changing <code>float</code> to <code>real</code>]</p>
+
+<p>Apple event descriptor types are mapped to and from Swift/Foundation/SwiftAutomation structs and classes as follows:</p>
 
 <table width="100%" summary="AE-Foundation type mappings">
 <thead>
-<tr><th>AppleScript type</th><th>Descriptor type</th><th>`Symbol` name</th><th>Cocoa class</th></tr>
+
+<tr><th>AppleScript type</th><th>Descriptor type</th>
+    <th><code>Symbol</code> name</th><th>Cocoa class</th></tr>
+
 </thead>
 <tbody>
-<tr><td>(no data)</td><td><code>typeNull</code></td><td><code>null</code></td><td><code><var>PREFIX</var>App</code></td></tr>
-<tr><td><code>boolean</code></td><td><code>typeBoolean</code></td><td><code>boolean</code></td><td><code>Bool</code></tr>
-<tr><td><code>integer</code></td><td><code>typeSInt32</code></td><td><code>integer</code></td><td><code>Int</code></td></tr>
-<tr><td><code>real</code></td><td><code>typeIEEE64BitFloatingPoint</code></td><td><code>float</code></td><td><code>Double</code></td></tr>
-<tr><td><code>text</code> [1]</td><td><code>typeUnicodeText</code></td><td><code>unicodeText</code></td><td><code>String</code></td></tr>
-<tr><td><code>list</code></td><td><code>typeAEList</code></td><td><code>list</code></td><td><code>Array</code></td></tr>
-<tr><td><code>record</code></td><td><code>typeAERecord</code></td><td><code>record</code></td><td><code>Dictionary</code></td></tr>
-<tr><td><code>date</code></td><td><code>typeLongDateTime</code></td><td><code>date</code></td><td><code>Date</code></td></tr>
-<tr><td><code>«class bmrk»</code></td><td><code>typeBookmarkData</code></td><td><code>bookmarkData</code></td><td><code>URL</code> [2]</td></tr>
-<tr><td><code>alias</code></td><td><code>typeAlias</code></td><td><code>alias</code></td><td><code>URL</code> [2]</td></tr>
-<tr><td><code>«class furl»</code></td><td><code>typeFileURL</code></td><td><code>fileURL</code></td><td><code>URL</code> [2]</td></tr>
-<tr><td><code>reference</code></td><td><code>typeObjectSpecifier</code></td><td><code>reference</code></td><td><code><var>PREFIX</var>Item</code>/<var>PREFIX</var>Items</code> [3]</td></tr>
-<tr><td><code>location reference</code></td><td><code>typeInsertionLoc</code></td><td><code>locationReference</code></td><td><code><var>PREFIX</var>Insertion</code></code> [3]</td></tr>
-<tr><td><code>class</code></td><td><code>typeType</code></td><td><code>typeClass</code></td><td><code><var>PREFIX</var>Symbol</code> [3]</td></tr>
-<tr><td><code>constant</code></td><td><code>typeEnumerated</code></td><td><code>enumerator</code></td><td><var>PREFIX</var>Symbol</code> [3]</td></tr>
-<tr><td><code>property</code></td><td><code>typeProperty</code></td><td><code>property</code></td><td><var>PREFIX</var>Symbol</code> [3]</td></tr>
+
+<tr><td><code>boolean</code></td><td><code>typeBoolean</code></td>
+    <td><code>boolean</code></td><td><code>Bool</code></tr>
+
+<tr><td><code>integer</code></td><td><code>typeSInt32</code></td>
+    <td><code>integer</code></td><td><code>Int</code></td></tr>
+
+<tr><td><code>real</code></td><td><code>typeIEEE64BitFloatingPoint</code></td>
+    <td><code>real</code></td><td><code>Double</code></td></tr>
+
+<tr><td><code>text</code> [1]</td><td><code>typeUnicodeText</code></td>
+    <td><code>UnicodeText</code></td><td><code>String</code></td></tr>
+
+<tr><td><code>list</code></td><td><code>typeAEList</code></td>
+    <td><code>list</code></td><td><code>Array</code></td></tr>
+
+<tr><td><code>record</code></td><td><code>typeAERecord</code></td>
+    <td><code>record</code></td><td><code>Dictionary</code></td></tr>
+
+<tr><td><code>date</code></td><td><code>typeLongDateTime</code></td>
+    <td><code>date</code></td><td><code>Date</code></td></tr>
+
+<tr><td><code>«class bmrk»</code></td><td><code>typeBookmarkData</code></td>
+    <td><code>bookmarkData</code></td><td><code>URL</code> [2]</td></tr>
+
+<tr><td><code>alias</code></td><td><code>typeAlias</code></td>
+    <td><code>alias</code></td><td><code>URL</code> [2]</td></tr>
+
+<tr><td><code>«class furl»</code></td><td><code>typeFileURL</code></td>
+    <td><code>fileURL</code></td><td><code>URL</code> [2]</td></tr>
+
+<tr><td>N/A [3]</td><td><code>typeNull</code></td>
+    <td><code>null</code></td><td><code><var>PREFIX</var>App</code></td></tr>
+
+<tr><td><code>reference</code></td><td><code>typeObjectSpecifier</code></td>
+    <td><code>reference</code></td><td><code><var>PREFIX</var>Item</code>/<var>PREFIX</var>Items</code> [4]</td></tr>
+
+<tr><td><code>location reference</code></td><td><code>typeInsertionLoc</code></td>
+    <td><code>locationReference</code></td><td><code><var>PREFIX</var>Insertion</code></code> [4]</td></tr>
+
+<tr><td><code>class</code></td><td><code>typeType</code></td>
+    <td><code>typeClass</code></td><td><code><var>PREFIX</var>Symbol</code> [5]</td></tr>
+
+<tr><td><code>constant</code></td><td><code>typeEnumerated</code></td>
+    <td><code>enumerator</code></td><td><var>PREFIX</var>Symbol</code> [5]</td></tr>
+
+<tr><td><code>property</code></td><td><code>typeProperty</code></td>
+    <td><code>property</code></td><td><var>PREFIX</var>Symbol</code> [5]</td></tr>
+
 </tbody>
 </table>
 
-<p>[1] While AppleScript now treats <code>string</code>, <code>text</code>, and <code>Unicode text</code> keywords as synonyms for <code>typeUnicodeText</code>, the Apple Event Manager still  considers them to be different types (<code>typeChar</code>, <code>cText</code>, <code>typeUnicodeText</code>). When specifying a command's <code>as</code> parameter, always use <code>AE.unicodeText</code>, which is the standard (UTF16) representation used for Unicode text.</p>
+<p>[TO DO: should the above table include <code>application</code> for completeness?]</p>
+
+<p>[1] While AppleScript treats <code>string</code>, <code>text</code>, and <code>Unicode text</code> keywords as synonyms for <code>typeUnicodeText</code>, the Apple Event Manager still  considers them to be different types (<code>typeChar</code>, <code>cText</code>, <code>typeUnicodeText</code>). When specifying a command's <code>resultType:</code> always use <code><var>PREFIX</var>Symbol.unicodeText</code> (or just <code>AE.unicodeText</code>) as this is the standard UTF-16 representation that all current macOS apps should support.</p>
 
 <p>[2] Bookmark, Alias, FSRef, and FileURL descriptors are all currently mapped to Swift <code>URL</code> structs. [TO DO: bookmark/alias types identify file system <em>objects</em> [e.g. by inode], whereas FSRef/FileURL identify file system locations; however, only NSURL can distinguish the two so for now any Bookmark/Alias information will be lost on conversion to Swift <code>URL</code> instances, while <code>URL</code> will always pack as typeFileURL. This may change in future depending on how many compatibility issues with older Carbon apps this lack of roundtripping throws up.]</p>
 
-<p>[3] Glue files define their own application-specific <code>Object</code> and <code>Symbol</code> subclasses [and others...].</p>
+<p>[3] While the <code>typeNull</code> descriptor is used to represent the root application object in an object specifier, this root object is not visible within AppleScript which prefers to display the object specifier's target (e.g. <code>application "NAME"</code>, <code>«script»</code>) instead. AppleScript does define a <code>null</code> keyword, but this is never used.</p>
+
+<p>[4] Each application glue file defines its own <code>Item</code>, <code>Items</code>, and <code>Insertion</code> subclasses for that particular application, prefixing them with a three-letter code by default; for example, the TextEdit glue defines <code>TEDItem</code>, <code>TEDItems</code>, and <code>TEDInsertion</code> classes. The <code>Item</code> and <code>Items</code> classes are equivalent to AppleScript's <code>reference</code> data type, except that they distinguish between object specifiers that identify a single property/element and object specifiers that identify multiple elements, whereas AppleScript does not.</p>
+
+<p>[5] Each application glue file defines its own <code>Symbol</code> subclass for that particular application, prefixing it with a three-letter code by default. For example, the TextEdit glue defines a <code>TEDSymbol</code> class, with a shorthand <code>TED</code> typealias for convenience.</p>
 
 <h2>Mapping notes</h2>
 
@@ -60,9 +104,11 @@
 
 <h3>Numbers</h3>
 
-<p>While the Apple Event Manager defines a range of numerical descriptor types with different bit-widths and formats, most applications normally use <code>typeSInt32</code> (<code>int</code>) and <code>typeIEEE64BitFloatingPoint</code> (<code>double</code>) only.</p>
+<p>SwiftAutomation supports Swift's standard integer and floating-point types: <code>Int</code> and <code>UInt</code>, including their 8/16/32/64-bit sized variants (<code>Int8</code>, etc), <code>Float</code>, and <code>Double</code>, with <code>Int</code> and <code>Double</code> as the preferred formats. </p>
 
-<p>When packing a signed integer, SwiftAutomation will pack it either as a 32-bit signed integer (most preferred), 64-bit signed integer, or 64-bit float (least preferred), depending on the value's size. When packing a 32-bit unsigned integer, SwiftAutomation will pack it as a 32-bit signed integer if possible.</p>
+<p>The Apple Event Manager defines a similar range of descriptor types with different widths and formats, though most applications use <code>typeSInt32</code> (32-bit signed integer) and <code>typeIEEE64BitFloatingPoint</code> (<code>Double</code>) as standard.</p>
+
+<p>Well-designed applications should accept any numeric descriptor type (coercing it when necessary), though to maximize compatibility across all application SwiftAutomation always packs Swift integers as <code>typeSInt32</code> if possible; only switching to <code>typeSInt64</code>/<code>typeUInt32</code>/<code>typeUInt64</code> (or <code>typeIEEE64BitFloatingPoint</code> if the <code>isInt64Compatible</code> option is false) for values that cannot fit into <code>typeSInt32</code>.</p>
 
 <p>If an <code>NSNumber</code> instance is supplied as a command parameter, SwiftAutomation will pack it as <code>typeBoolean</code> <em>if</em> it can determine it represents a Boolean value, otherwise it will pack it as an integer or floating-point number according to its <code>objCType</code> property. (The <code>NSNumber</code> class cluster privately represents Boolean values as bridged <code>CFBoolean</code> (<code>__NSCFBoolean</code>) instances; however, its public <code>objCType</code> API does not distinguish between these and <code>char</code> values so SwiftAutomation cannot guarantee it will detect the correct type. If in doubt, cast the <code>NSNumber</code> to <code>Bool</code>/<code>Int</code>/<code>Double</code> first to ensure it packs as a specific type.)</p>
 
@@ -84,7 +130,7 @@
 
 <pre><code>let myFile = URL(fileURLWithPath: "/Users/jsmith/MyFile.txt")
 
-let myFileDesc = NSAppleEventDescriptor(fileURL: myFile).coerce(toDescriptorType:typeAlias)
+let myFileDesc = NSAppleEventDescriptor(fileURL: myFile).coerce(toDescriptorType: typeAlias) [TO DO: not sure this works on recent OS versions]
 </code></pre>
 
 <p>Similarly, some older Carbon applications may occasionally use colon-delimited HFS path strings even though macOS has long since deprecated these in favor of standard POSIX paths. SwiftAutomation includes the following compatibility functions for converting to and from HFS path strings where unavoidable:</p>
@@ -98,7 +144,7 @@ fileURL(fromHFSPath: String) -&gt; URL
 <pre><code>let myFile = URL(fileURLWithPath: "/Users/jsmith/MyFile.txt")
 
 let myHFSPath = HFSPath(fromFileURL: myFile)
-// "Macintosh HD:Users/jsmith/MyFile.txt"
+// "Macintosh HD:Users:jsmith:MyFile.txt"
 </code></pre>
 
 <p>However, be aware that non-existent paths may not convert correctly, and that HFS paths, unlike POSIX paths, cannot distinguish between two mounted volumes which both have the same name (one of the reasons HFS was deprecated).</p>
@@ -142,7 +188,7 @@ TED.ask
 
 <p>Descriptors of <code>typeType</code>, <code>typeEnumerated</code>, and <code>typeProperty</code> are unpacked as <code>Symbol</code> subclass instances, using raw four-char codes instead of names when the corresponding terminology is not available, e.g.:</p>
 
-<pre><code>TEDSymbol(code:"abcd")
+<pre><code>TEDSymbol(code: "FooB", type: "type")
 </code></pre>
 
 <h3>Other types</h3>

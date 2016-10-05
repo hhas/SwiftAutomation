@@ -649,7 +649,7 @@ open class AppData {
                 do {
                     event.setDescriptor(try self.pack(value), forKeyword: code) // TO DO: catch pack errors and rethrow with the name of the failed parameter included
                 } catch {
-                    throw CommandSubError(code: error._code, message: "Can't pack '\(paramName)' parameter.", cause: error)
+                    throw CommandSubError(code: error._code, message: "Invalid '\(paramName ?? fourCharCode(code))' parameter.", cause: error)
                 }
             }
             // pack event's direct parameter and/or subject attribute

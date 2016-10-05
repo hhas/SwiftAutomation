@@ -10,16 +10,18 @@
             <div id="main">
                 <h1>Application objects</h1>
                 <div class="navbar"><a href="type-mappings.html">back</a> | <a href="index.html">index</a> | <a href="object-specifiers.html">next</a></div>
-                <h2>Creating application objects</h2>
+                <p>[TO DO: The name/path/bundleID/fileURL options all currently rely on NSWorkspace's launchApplication(at:URL,...), so can't be used in a sandboxed app. In theory, the bundleID option (both explicit and default) would use launchApplication(withBundleIdentifier:,...), which avoids running into sandbox restrictions, but that method's a piece of crap so got pulled out before the sandboxing problem was known about. Once a workable solution for the latter is found, the bundleID option should work everywhere, though the by-name/path/fileURL options will need to be documented as only available for use within non-sandboxed apps]</p>
 
-<p>Before you can communicate with a scriptable application you must create an application object. When targeting local applications, the glue's own default constructor is usually the best choice. For example, to target TextEdit:</p>
+<p>[TO DO: add a brief section on using SwiftAutomation within a sandboxed app, to ensure users are aware they'll need entitlements in order to talk to other apps. (Might also want to note that there's a potential security hole any time a non-sandboxed app can be send a run script/do script/do shell script/etc command that enables execution of arbitrary code; not sure how thoroughly plugged these are, and there's nothing to stop apps defining AE handlers that may deliberately/accidentally allow execution of arbitrary code/commands outside a sandbox. NSUserAppleScriptTask explicitly allows it, of course, though that's on the assumption that the scripts it runs will always and only be supplied by the user, i.e. scripts they've written themselves and/or scripts from a - hopefully! - trusted source that they've intentionally installed for their own use.)]</p>
+
+<h2>Creating application objects</h2>
+
+<p>Before you can communicate with a scriptable application you must create an application object. When targeting local applications, the glue's own default constructor, which locates the application by bundle identifier, is usually the best choice. For example, to target TextEdit:</p>
 
 <pre><code>let textedit = TextEdit()
 </code></pre>
 
-<p>This locates the target application using the same bundle identifier as the application from which the glue was originally generated (in this case "com.apple.TextEdit").</p>
-
-<p>Alternatively, one of the following initializers may be used to target the desired application more precisely (for example, if more than one version is installed or if it's running on another machine):</p>
+<p>This uses the bundle identifier of the application from which the glue was originally generated (in this case "com.apple.TextEdit"). If you have more than one version of the application installed, or wish to control the same application on another machine (via Remote Apple Events), use one of the following initializers to target it precisely:</p>
 
 <pre><code>// application's name or full path (`.app` suffix is optional)
 Application(name: String, ...)
@@ -45,10 +47,15 @@ Application.currentApplication()
 <pre><code>let indesign = AdobeInDesign(name: "Adobe InDesign CS6.app")
 </code></pre>
 
+<p>Or to control a copy of iTunes running on another machine:</p>
+
+<pre><code>let itunes = ITunes(url: URL(string: "eppc://media-mac.local/iTunes")!)
+</code></pre>
+
 <p>Except for <code>currentApplication()</code>, the above initializers can also accept the following optional arguments:</p>
 
 <ul>
-<li><p><code>launchOptions: NSWorkspaceLaunchOptions</code> – determines behavior when launching a local application; see NSWorkspace documentation for details. If omitted, the <code>NSWorkspaceLaunchOptions.WithoutActivation</code> option is used.</p></li>
+<li><p><code>launchOptions: NSWorkspaceLaunchOptions</code> – determines behavior when launching a local application; if omitted, the <code>NSWorkspaceLaunchOptions.WithoutActivation</code> option is used. See AppKit's <code>NSWorkspaceLaunchOptions</code> documentation for a list of available options.</p></li>
 <li><p><code>relaunchMode: RelaunchMode</code> - determines behavior if the target process no longer exists; see Restarting applications section below. If omitted, <code>RelaunchMode.Limited</code> is used.</p></li>
 </ul>
 

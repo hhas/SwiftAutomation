@@ -31,7 +31,7 @@ All application commands have the same basic structure: a single, optional direc
 * `considering:` -- Some applications may allow the client to specify text attributes that should be considered when performing string comparisons, e.g. when resolving by-test references. When specifying the attributes to consider, the set should contain zero or more of the following symbols: `AE.case`, `AE.diacriticals`, `AE.numericStrings`, `AE.hyphens`, `AE.punctuation`, `AE.whitespace` [TO DO: and/or use the glue's own prefix code, e.g. `TED.case`]. If omitted, `[AE.case]` is used as the default. Note that most applications currently ignore this setting and always use the default behaviour, which is to ignore case but consider everything else.
 
 
-For convenience, SwiftAutomation makes application commands available as methods on every object specifier. (Note: due to the limitations of aete-based terminology, the user must determine for themselves which commands can operate on a particular reference. Some applications document this information separately.) 
+For convenience, SwiftAutomation makes application commands available as methods on every object specifier. Due to the technical limitations of application dictionaries, the user must determine for themselves which commands can operate on a particular reference. Some applications document this information separately.
 
 
 
@@ -119,22 +119,20 @@ the specifier upon which it is called will be packed as the Apple event's "subje
 
 ## Command errors
 
-[TO DO: Error class implementation is not yet finalized; update this section when done]
+If a command fails due to an error raised by the target application or Apple Event Manager, or if a given parameter or attribute was not of a [supported type](type-mappings.html), a `CommandError` containing the following properties is thrown:
 
-If a command fails due to an error raised by the target application or Apple Event Manager, or if a given parameter or attribute was not of a [supported type](type-mappings.html), a `CommandError` is thrown.
+* Apple Event Manager/Application error information:
 
-* Standard Apple event/OSA error information:
+  * `code`: `Int` – the error code, e.g. -1728 = "Can't get reference." Usually a standard `OSStatus` code.
+  * `message`: `String?` – the error message (`String`) provided by the application, if any; or a general error description if it's a known error code
+  * `expectedType`: `Symbol?` – if the application encountered a coercion error (-1700), the type of value that it required, e.g. `AE.record`
+  * `offendingObject`: `Any?` – the parameter that caused the the application to report an error, where relevant
 
-  * `errorNumber` – the error code (`Int`); this is the same as `SwiftAutomationError.code`
-  * `errorMessage` – the error message (`String`) provided by the application, if any, otherwise a default description if the error number is a standard AE error code
-  * `errorBriefMessage` – short version of the above; not normally used by applications, but included here for completeness
-  * `errorExpectedType` – if a coercion error (-1700) occurred, a `Symbol` describing the type of value that was required
-  * `errorOffendingObject` – the parameter (`Any`) that caused the error, where relevant
+* SwiftAutomation error information: 
 
-* Additional error information: 
-
-  * `errorFailedCommandDescription` – the source code `String` representation of the failed command
-  * `errorFailedAppleEvent` – the underlying `NSAppleEventDescriptor` instance that was constructed by the Swift glue
+  * `cause`: `Error?` – the underlying error that caused the command to fail (e.g. `UnpackError` if the command's result couldn't be unpacked as the specified Swift type)
+  * `commandDescription`: `String` – the source code representation of the failed command
+  * `description`: `String` – a detailed human-readable description of the error and the reason it occurred
 
 
 ## Note to AppleScript users

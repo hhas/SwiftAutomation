@@ -2,18 +2,14 @@
 //  AppleEventFormatter.swift
 //  SwiftAutomation
 //
-//  Format an AppleEvent descriptor as Swift source code. Enables user tools
-//  to translate application commands from AppleScript to Swift syntax simply
-//  by installing a custom SendProc into an AS component instance to intercept
-//  outgoing AEs, pass them to formatAppleEvent(), and print the result.
+//  Format an AppleEvent descriptor as Swift source code. Enables user tools to translate application commands from AppleScript to Swift syntax simply by installing a custom SendProc into an AS component instance to intercept outgoing AEs, pass them to formatAppleEvent(), and print the result.
 //
 //
 
 // TO DO: Application object should appear as `APPLICATION()`, not `APPLICATION(name:"/PATH/TO/APP")`, for display in AppleScriptToSwift translator app -- probably simplest to have a boolean arg to formatAppleEvent that dictates this (since the full version is still useful for debugging work)... might be worth making this an `app/application/fullApplication` enum to cover PREFIXApp case as well
 
-// TO DO: Symbols aren't displaying correctly within arrays/dictionaries/specifiers (currently appear as `Symbol.NAME` instead of `PREFIX.NAME`), e.g. `TextEdit(name: "/Applications/TextEdit.app").make(new: TED.document, withProperties: [Symbol.text: "foo"])`; `tell app "textedit" to document (text)` -> `TextEdit(name: "/Applications/TextEdit.app").documents[Symbol.text].get()`
+// TO DO: Symbols aren't displaying correctly within arrays/dictionaries/specifiers (currently appear as `Symbol.NAME` instead of `PREFIX.NAME`), e.g. `TextEdit(name: "/Applications/TextEdit.app").make(new: TED.document, withProperties: [Symbol.text: "foo"])`; `tell app "textedit" to document (text)` -> `TextEdit(name: "/Applications/TextEdit.app").documents[Symbol.text].get()` -- note that a custom Symbol subclass won't work as `description` can't be parameterized with prefix name to use; one option might be a Symbol subclass whose init takes the prefix as param when it's unpacked (that probably will work); that said, why isn't Formatter.formatSymbol() doing the job in the first place? (check it has correct prefix) -- it's formatValue() -- when formatting collections, it calls itself and then renders self-formatting objects as-is
 
-//  TO DO: ensure specifier, symbol, and value formatting is fully decoupled from Swift-specific representation to allow reuse over other languages (although that's something that can/should be sorted out once there are other languages than Swift to support)
 
 
 import Foundation
@@ -29,15 +25,13 @@ public enum TerminologyType {
 
 public func formatAppleEvent(descriptor event: NSAppleEventDescriptor, useTerminology: TerminologyType = .sdef) -> String { // TO DO: return command/reply/error enum, giving caller more choice on how to display
     //  Format an outgoing or reply AppleEvent (if the latter, only the return value/error description is displayed).
-    //  Caution: if sending events to self, caller MUST use TerminologyType.SDEF or call
-    //  formatAppleEvent on a background thread, otherwise formatAppleEvent will deadlock
-    //  the main loop when it tries to fetch host app's AETE via ascr/gdte event.
+    //  Caution: if sending events to self, caller MUST use TerminologyType.SDEF or call formatAppleEvent on a background thread, otherwise formatAppleEvent will deadlock the main loop when it tries to fetch host app's AETE via ascr/gdte event.
     if event.descriptorType != _typeAppleEvent { // sanity check
         return "Can't format Apple event: wrong type: \(formatFourCharCodeString(event.descriptorType))."
     }
     let appData: DynamicAppData
     do {
-        appData = try appDataForAppleEvent(event, useTerminology: useTerminology)
+        appData = try dynamicAppData(forAppleEvent: event, useTerminology: useTerminology)
     } catch {
         return "Can't format Apple event: can't get terminology: \(error)"
     }
@@ -50,7 +44,7 @@ public func formatAppleEvent(descriptor event: NSAppleEventDescriptor, useTermin
         } else if let reply = event.paramDescriptor(forKeyword: _keyDirectObject) { // format return value
             return appData.formatter.format((try? appData.unpackAsAny(reply)) ?? reply)
         } else {
-            return "<noreply>" // TO DO: what to return?
+            return MissingValue.description
         }
     } else { // fully format outgoing event
         return appData.formatter.formatCommand(CommandDescription(event: event, appData: appData), applicationObject: appData.application)
@@ -59,22 +53,41 @@ public func formatAppleEvent(descriptor event: NSAppleEventDescriptor, useTermin
 
 
 /******************************************************************************/
-// cache previously parsed terminology for efficiency
+// get a DynamicAppData instance for formatting the given AppleEvent
 
+// cache previously parsed terminology for efficiency
 private let _cacheMaxLength = 10
 private var _cachedTerms = [(NSAppleEventDescriptor, TerminologyType, DynamicAppData)]()
 
-private func appDataForAppleEvent(_ event: NSAppleEventDescriptor, useTerminology: TerminologyType) throws -> DynamicAppData {
+
+private func dynamicAppData(forAppleEvent event: NSAppleEventDescriptor, useTerminology: TerminologyType) throws -> DynamicAppData {
     let addressDesc = event.attributeDescriptor(forKeyword: _keyAddressAttr)!
     for (desc, terminologyType, appData) in _cachedTerms {
         if desc.descriptorType == addressDesc.descriptorType && desc.data == addressDesc.data && terminologyType == useTerminology {
             return appData
         }
     }
-    let appData = try DynamicAppData.dynamicAppDataForAddress(addressDesc, useTerminology: useTerminology) // TO DO: are there any cases where keyAddressArrr won't return correct desc? (also, double-check what reply event uses)
+    let appData = try DynamicAppData(applicationURL: applicationURL(forAddressDescriptor: addressDesc), useTerminology: useTerminology) // TO DO: are there any cases where keyAddressArrr won't return correct desc? (also, double-check what reply event uses)
     if _cachedTerms.count > _cacheMaxLength { _cachedTerms.removeFirst() } // TO DO: ideally this should trim least used, not longest cached
     _cachedTerms.append((addressDesc, useTerminology, appData))
     return appData
+}
+
+// given the AEAddressDesc for a local process, return the fileURL to its .app bundle
+func applicationURL(forAddressDescriptor addressDesc: NSAppleEventDescriptor) throws -> URL {
+    var addressDesc = addressDesc
+    if addressDesc.descriptorType == _typeProcessSerialNumber { // AppleScript is old school
+        addressDesc = addressDesc.coerce(toDescriptorType: _typeKernelProcessID)!
+    }
+    guard addressDesc.descriptorType == _typeKernelProcessID else { // local processes are generally targeted by PID
+        throw TerminologyError("Unsupported address type: \(formatFourCharCodeString(addressDesc.descriptorType))")
+    }
+    var pid: pid_t = 0
+    (addressDesc.data as NSData).getBytes(&pid, length: MemoryLayout<pid_t>.size)
+    guard let applicationURL = NSRunningApplication(processIdentifier: pid)?.bundleURL else {
+        throw TerminologyError("Can't get path to application bundle (PID: \(pid)).")
+    }
+    return applicationURL
 }
 
 
@@ -82,26 +95,27 @@ private func appDataForAppleEvent(_ event: NSAppleEventDescriptor, useTerminolog
 // extend standard AppData to include terminology translation
 
 
+
 public class DynamicAppData: AppData { // TO DO: can this be used as-is/with modifications as base class for dynamic bridges? if so, move to its own file as it's not specific to formatting; if not, rename it
     
     public internal(set) var glueSpec: GlueSpec! // provides glue metadata; TO DO: initializing these is messy, due to AppData.init() being required; any cleaner solution?
     public internal(set) var glueTable: GlueTable! // provides keyword<->FCC translations
     
-    // given AppleEvent's address descriptor, create AppData instance with formatting info
-    // TO DO: ought to be an init, but AppData.init() is already required, which makes overriding problematic
-    public class func dynamicAppDataForAddress(_ addressDesc: NSAppleEventDescriptor, useTerminology: TerminologyType) throws -> Self {
-        var addressDesc = addressDesc
-        if addressDesc.descriptorType == _typeProcessSerialNumber { // AppleScript is old school
-            addressDesc = addressDesc.coerce(toDescriptorType: _typeKernelProcessID)!
-        }
-        guard addressDesc.descriptorType == _typeKernelProcessID else { // local processes are generally targeted by PID
-            throw TerminologyError("Unsupported address type: \(formatFourCharCodeString(addressDesc.descriptorType))")
-        }
-        var pid: pid_t = 0
-        (addressDesc.data as NSData).getBytes(&pid, length: MemoryLayout<pid_t>.size)
-        guard let applicationURL = NSRunningApplication(processIdentifier: pid)?.bundleURL else {
-            throw TerminologyError("Can't get path to application bundle (PID: \(pid)).")
-        }
+    
+    public required init(target: TargetApplication, launchOptions: LaunchOptions, relaunchMode: RelaunchMode, glueClasses: GlueClasses) {
+        super.init(target: target, launchOptions: launchOptions, relaunchMode: relaunchMode, glueClasses: glueClasses)
+    }
+
+    
+    public required init(target: TargetApplication, launchOptions: LaunchOptions, relaunchMode: RelaunchMode,
+                         glueClasses: GlueClasses, glueSpec: GlueSpec, glueTable: GlueTable) {
+        self.glueSpec = glueSpec
+        self.glueTable = glueTable
+        super.init(target: target, launchOptions: launchOptions, relaunchMode: relaunchMode, glueClasses: glueClasses)
+    }
+    
+    // given local application's fileURL, create AppData instance with formatting info // TO DO: this uses app path (to ensure it targets the right process if multiple app versions with same bundle ID are installed) instead of bundle ID, so won't work in sandboxed apps (that said, without AE permissions there probably isn't much it can do inside a sandbox anyway)
+    public convenience init(applicationURL: URL, useTerminology: TerminologyType) throws {
         let glueSpec = GlueSpec(applicationURL: applicationURL, useSDEF: useTerminology == .sdef)
         var specifierFormatter: SpecifierFormatter
         var glueTable: GlueTable
@@ -119,19 +133,13 @@ public class DynamicAppData: AppData { // TO DO: can this be used as-is/with mod
         let glueClasses = GlueClasses(insertionSpecifierType: AEInsertion.self, objectSpecifierType: AEItem.self,
                                       multiObjectSpecifierType: AEItems.self, rootSpecifierType: AERoot.self,
                                       applicationType: AERoot.self, symbolType: Symbol.self, formatter: specifierFormatter) // TO DO: what applicationType?
-        let appData = self.init(target: TargetApplication.url(applicationURL), launchOptions: DefaultLaunchOptions,
-                                relaunchMode: DefaultRelaunchMode, glueClasses: glueClasses) // TO DO: because this uses app path (to ensure it targets the right process if multiple app versions with same bundle ID are installed) instead of bundle ID, SpecifierFormatter will display as "APPLICATION(name:...)" instead of "APPLICATION()", which is best for debugging AEs (since it provides the most information) but not ideal for AppleScriptToSwift translations (which are usually best using idiomatic representation and leaving user to customize the Application constructor syntax according to their own needs)
-        appData.glueSpec = glueSpec // TO DO: why initialize DynamicppData and then assign glueSpec and glueTable to it, instead of overriding init and passing glueSpec and glueTable as args? (see above TODO on why this constructor is a class method - it can't be right)
-        appData.glueTable = glueTable
-        return appData
+        self.init(target: TargetApplication.url(applicationURL), launchOptions: DefaultLaunchOptions,
+                  relaunchMode: DefaultRelaunchMode, glueClasses: glueClasses, glueSpec: glueSpec, glueTable: glueTable)
     }
     
     public override func targetedCopy(_ target: TargetApplication, launchOptions: LaunchOptions, relaunchMode: RelaunchMode) -> Self {
-        let appData = type(of: self).init(target: target, launchOptions: launchOptions,
-                                          relaunchMode: relaunchMode, glueClasses: self.glueClasses)
-        appData.glueSpec = self.glueSpec
-        appData.glueTable = self.glueTable
-        return appData      
+        return type(of: self).init(target: target, launchOptions: launchOptions, relaunchMode: relaunchMode,
+                                   glueClasses: self.glueClasses, glueSpec: glueSpec, glueTable: glueTable)
     }
     
     override func unpackAsSymbol(_ desc: NSAppleEventDescriptor) -> Symbol {
@@ -140,8 +148,7 @@ public class DynamicAppData: AppData { // TO DO: can this be used as-is/with mod
     }
     
     override func recordKey(forCode code: OSType) -> Symbol {
-        return self.glueClasses.symbolType.init(name: self.glueTable.typesByCode[code],
-                                                code: code, type: _typeProperty, descriptor: nil)
+        return self.glueClasses.symbolType.init(name: self.glueTable.typesByCode[code], code: code, type: _typeProperty)
     }
 }
 
@@ -168,7 +175,7 @@ public struct CommandDescription {
     public private(set) var considering: ConsideringOptions = [.case]
     
     
-    // called by sendAppleEvent with a failed command's details // TO DO: take sendAppleEvent's params exactly as-is and rejig them itself
+    // called by sendAppleEvent with a failed command's details
     public init(name: String?, eventClass: OSType, eventID: OSType, parentSpecifier: Any?, directParameter: Any, keywordParameters: [KeywordParameter],
                 requestedType: Symbol?, waitReply: Bool, withTimeout: TimeInterval?, considering: ConsideringOptions?) {
         if let commandName = name {
