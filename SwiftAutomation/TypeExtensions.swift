@@ -1,6 +1,6 @@
 //
 //  TypeExtensions.swift
-//  SwiftAE
+//  SwiftAutomation
 //
 //  Extends Swift's generic Optional and collection types so that they pack and unpack themselves (since Swift lacks the dynamic introspection capabilities for AppData to determine how to pack and unpack them itself)
 //

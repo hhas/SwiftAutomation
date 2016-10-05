@@ -58,7 +58,7 @@ public class GlueTable {
         return self._specifiersByName!
     }
     
-    // copies of SwiftAE's built-in terms, used to disambiguate any conflicting app-defined names
+    // copies of SwiftAutomation's built-in terms, used to disambiguate any conflicting app-defined names
     private var defaultTypesByName: [String:NSAppleEventDescriptor] = [:]
     // TO DO: what about built-in property [and elements] names?
     private var defaultCommandsByName: [String:CommandTerm] = [:]

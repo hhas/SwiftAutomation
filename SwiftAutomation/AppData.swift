@@ -15,8 +15,16 @@ import AppKit
 // TO DO: what happens if caller gives wrong return type for specifiers, e.g. `TextEdit().documents.get() as TEDItems`? (should be `... as [TEDItem]`, as TextEdit always returns a list of single-item specifiers); make sure malformed Specifiers are never returned and error reporting explains the problem (note: this may be an argument in favor of using PREFIXObject and PREFIXElements, except the lack of symmetry in that naming is likely to cause as much confusion as it avoids)
 
 
+let defaultTimeout: TimeInterval = 120 // TO DO: -sendEvent method's default/no timeout options are currently busted <rdar://21477694>
+
+let defaultConsidering: ConsideringOptions = [.case]
+
+let defaultConsidersIgnoresMask: UInt32 = 0x00010000 // AppleScript ignores case by default
+
+
 
 public typealias KeywordParameter = (name: String?, code: OSType, value: Any)
+
 
 
 public struct GlueClasses {
@@ -611,6 +619,7 @@ open class AppData {
         }
     }
     
+    
     public func sendAppleEvent<T>(name: String?, eventClass: OSType, eventID: OSType,
                                   parentSpecifier: Specifier, // the Specifier on which the command method was called; see special-case packing logic below
                                   directParameter: Any = NoParameter, // the first (unnamed) parameter to the command method; see special-case packing logic below
@@ -622,103 +631,116 @@ open class AppData {
                                   considering: ConsideringOptions? = nil) throws -> T { // coerce and unpack result as this type or return raw reply event if T is NSDescriptor; default is Any
         // note: human-readable command and parameter names are only used (if known) in error messages
         // TO DO: all errors occurring within this method should be caught and rethrown as CommandError, allowing error message to include a description of the failed command as well as the error that occurred (simplest to capture all raw input and error info in CommandError, and only process/format if details are requested, e.g. when generating error description string)
-        // Create a new AppleEvent descriptor (throws ConnectionError if target app isn't found)
-        let event = NSAppleEventDescriptor(eventClass: eventClass, eventID: eventID, targetDescriptor: try self.targetDescriptor(),
-                                           returnID: _kAutoGenerateReturnID, transactionID: _kAnyTransactionID)
-        // pack its keyword parameters
-        for (_, code, value) in keywordParameters {
-            if parameterExists(value) {
-                event.setDescriptor(try self.pack(value), forKeyword: code) // TO DO: catch pack errors and rethrow with the name of the failed parameter included
-            }
-        }
-        // pack event's direct parameter and/or subject attribute
-        let hasDirectParameter = parameterExists(directParameter)
-        if hasDirectParameter { // if the command includes a direct parameter, pack that normally as its direct param
-            event.setParam(try self.pack(directParameter), forKeyword: _keyDirectObject)
-        }
-        // if command method was called on root Application (null) object, the event's subject is also null...
-        var subjectDesc = AppRootDesc
-        // ... but if the command was called on a Specifier, decide if that specifier should be packed as event's subject
-        // or, as a special case, used as event's keyDirectObject/keyAEInsertHere parameter for user's convenience
-        if !(parentSpecifier is RootSpecifier) { // technically Application, but there isn't an explicit class for that
-            if eventClass == _kAECoreSuite && eventID == _kAECreateElement { // for user's convenience, `make` command is treated as a special case
-                // if `make` command is called on a specifier, use that specifier as event's `at` parameter if not already given
-                if event.paramDescriptor(forKeyword: _keyAEInsertHere) != nil { // an `at` parameter was already given, so pack parent specifier as event's subject attribute
-                    subjectDesc = try self.pack(parentSpecifier)
-                } else { // else pack parent specifier as event's `at` parameter and use null as event's subject attribute
-                    event.setParam(try self.pack(parentSpecifier), forKeyword: _keyAEInsertHere)
-                }
-            } else { // for all other commands, check if a direct parameter was already given
-                if hasDirectParameter { // pack the parent specifier as the event's subject attribute
-                    subjectDesc = try self.pack(parentSpecifier)
-                } else { // else pack parent specifier as event's direct parameter and use null as event's subject attribute
-                    event.setParam(try self.pack(parentSpecifier), forKeyword: _keyDirectObject)
-                }
-            }
-        }
-        event.setAttribute(subjectDesc, forKeyword: _keySubjectAttr)
-        // pack requested type (`as`) parameter, if specified; note: most apps ignore this, but a few may recognize it (usually in `get` commands)  even if they don't define it in their dictionary (another AppleScript-introduced quirk); e.g. `Finder().home.get(resultType:FIN.alias) as URL` tells Finder to return a typeAlias descriptor instead of typeObjectSpecifier, which can then be unpacked as URL
-        if let type = requestedType {
-            event.setDescriptor(NSAppleEventDescriptor(typeCode: type.code), forKeyword: _keyAERequestedType)
-        }
-        // event attributes
-        // (note: most apps ignore considering/ignoring attributes, and always ignore case and consider everything else)
-        let (considerations, consideringIgnoring) = considering == nil ? self.defaultConsiderations : packConsideringAndIgnoringFlags(considering!)
-        event.setAttribute(considerations, forKeyword: _enumConsiderations)
-        event.setAttribute(consideringIgnoring, forKeyword: _enumConsidsAndIgnores)
-        // send the event
-        let sendMode = sendOptions ?? self.defaultSendMode.union(waitReply ? .waitForReply : .noReply) // TO DO: finalize
-        let timeout = withTimeout ?? 120 // TO DO: -sendEvent method's default/no timeout options are currently busted (rdar://21477694)
-        var replyEvent: NSAppleEventDescriptor
+        
+        
+        // TO DO: currently errors thrown as CommandError should be thrown as something else, which can then be caught and rethrown as CommandError proper with complete description
+        
+        
+        
+        var sentEvent: NSAppleEventDescriptor?, repliedEvent: NSAppleEventDescriptor?
+        
+        
         do {
-            replyEvent = try self.send(event: event, sendMode: sendMode, timeout: timeout) // throws NSError on AEM error
-        } catch { // handle errors raised by Apple Event Manager (e.g. timeout, process not found)
-            if RelaunchableErrorCodes.contains((error as NSError).code) && self.target.isRelaunchable && (self.relaunchMode == .always
-                    || (self.relaunchMode == .limited && LimitedRelaunchEvents.contains(where: {$0.0 == eventClass && $0.1 == eventID}))) {
-                // event failed as target process has quit since previous event; recreate AppleEvent with new address and resend
-                self._targetDescriptor = nil
-                let event = NSAppleEventDescriptor(eventClass: eventClass, eventID: eventID, targetDescriptor: try self.targetDescriptor(),
-                                                   returnID: _kAutoGenerateReturnID, transactionID: _kAnyTransactionID)
-                for i in 1..<(event.numberOfItems+1) {
-                    event.setParam(event.atIndex(i)!, forKeyword: event.keywordForDescriptor(at: i))
-                }
-                for key in [_keySubjectAttr, _enumConsiderations, _enumConsidsAndIgnores] {
-                    event.setAttribute(event.attributeDescriptor(forKeyword: key)!, forKeyword: key)
-                }
+            // Create a new AppleEvent descriptor (throws ConnectionError if target app isn't found)
+            let event = NSAppleEventDescriptor(eventClass: eventClass, eventID: eventID, targetDescriptor: try self.targetDescriptor(),
+                                               returnID: _kAutoGenerateReturnID, transactionID: _kAnyTransactionID)
+            // pack its keyword parameters
+            for (paramName, code, value) in keywordParameters where parameterExists(value) {
                 do {
+                    event.setDescriptor(try self.pack(value), forKeyword: code) // TO DO: catch pack errors and rethrow with the name of the failed parameter included
+                } catch {
+                    throw CommandSubError(code: error._code, message: "Can't pack '\(paramName)' parameter.", cause: error)
+                }
+            }
+            // pack event's direct parameter and/or subject attribute
+            let hasDirectParameter = parameterExists(directParameter)
+            if hasDirectParameter { // if the command includes a direct parameter, pack that normally as its direct param
+                event.setParam(try self.pack(directParameter), forKeyword: _keyDirectObject)
+            }
+            // if command method was called on root Application (null) object, the event's subject is also null...
+            var subjectDesc = AppRootDesc
+            // ... but if the command was called on a Specifier, decide if that specifier should be packed as event's subject
+            // or, as a special case, used as event's keyDirectObject/keyAEInsertHere parameter for user's convenience
+            if !(parentSpecifier is RootSpecifier) { // technically Application, but there isn't an explicit class for that
+                if eventClass == _kAECoreSuite && eventID == _kAECreateElement { // for user's convenience, `make` command is treated as a special case
+                    // if `make` command is called on a specifier, use that specifier as event's `at` parameter if not already given
+                    if event.paramDescriptor(forKeyword: _keyAEInsertHere) != nil { // an `at` parameter was already given, so pack parent specifier as event's subject attribute
+                        subjectDesc = try self.pack(parentSpecifier)
+                    } else { // else pack parent specifier as event's `at` parameter and use null as event's subject attribute
+                        event.setParam(try self.pack(parentSpecifier), forKeyword: _keyAEInsertHere)
+                    }
+                } else { // for all other commands, check if a direct parameter was already given
+                    if hasDirectParameter { // pack the parent specifier as the event's subject attribute
+                        subjectDesc = try self.pack(parentSpecifier)
+                    } else { // else pack parent specifier as event's direct parameter and use null as event's subject attribute
+                        event.setParam(try self.pack(parentSpecifier), forKeyword: _keyDirectObject)
+                    }
+                }
+            }
+            event.setAttribute(subjectDesc, forKeyword: _keySubjectAttr)
+            // pack requested type (`as`) parameter, if specified; note: most apps ignore this, but a few may recognize it (usually in `get` commands)  even if they don't define it in their dictionary (another AppleScript-introduced quirk); e.g. `Finder().home.get(resultType:FIN.alias) as URL` tells Finder to return a typeAlias descriptor instead of typeObjectSpecifier, which can then be unpacked as URL
+            if let type = requestedType {
+                event.setDescriptor(NSAppleEventDescriptor(typeCode: type.code), forKeyword: _keyAERequestedType)
+            }
+            // event attributes
+            // (note: most apps ignore considering/ignoring attributes, and always ignore case and consider everything else)
+            let (considerations, consideringIgnoring) = considering == nil ? self.defaultConsiderations : packConsideringAndIgnoringFlags(considering!)
+            event.setAttribute(considerations, forKeyword: _enumConsiderations)
+            event.setAttribute(consideringIgnoring, forKeyword: _enumConsidsAndIgnores)
+            // send the event
+            let sendMode = sendOptions ?? self.defaultSendMode.union(waitReply ? .waitForReply : .noReply) // TO DO: finalize
+            let timeout = withTimeout ?? defaultTimeout
+            var replyEvent: NSAppleEventDescriptor
+            sentEvent = event
+            do {
+                replyEvent = try self.send(event: event, sendMode: sendMode, timeout: timeout) // throws NSError on AEM error
+            } catch { // handle errors raised by Apple Event Manager (e.g. timeout, process not found)
+                if RelaunchableErrorCodes.contains((error as NSError).code) && self.target.isRelaunchable && (self.relaunchMode == .always
+                        || (self.relaunchMode == .limited && LimitedRelaunchEvents.contains(where: {$0.0 == eventClass && $0.1 == eventID}))) {
+                    // event failed as target process has quit since previous event; recreate AppleEvent with new address and resend
+                    self._targetDescriptor = nil
+                    let event = NSAppleEventDescriptor(eventClass: eventClass, eventID: eventID, targetDescriptor: try self.targetDescriptor(),
+                                                       returnID: _kAutoGenerateReturnID, transactionID: _kAnyTransactionID)
+                    for i in 1..<(event.numberOfItems+1) {
+                        event.setParam(event.atIndex(i)!, forKeyword: event.keywordForDescriptor(at: i))
+                    }
+                    for key in [_keySubjectAttr, _enumConsiderations, _enumConsidsAndIgnores] {
+                        event.setAttribute(event.attributeDescriptor(forKeyword: key)!, forKeyword: key)
+                    }
                     replyEvent = try self.send(event: event, sendMode: sendMode, timeout: timeout)
-                } catch {
-                    throw CommandError(appData: self, event: event, parentError: error)
+                } else {
+                    throw error
                 }
-            } else {
-                throw CommandError(appData: self, event: event, parentError: error)
             }
-        }
-        if sendMode.contains(.waitForReply) {
-            if T.self == ReplyEventDescriptor.self { // return the entire reply event as-is
-                return ReplyEventDescriptor(descriptor: replyEvent) as! T
-            } else if replyEvent.paramDescriptor(forKeyword: _keyErrorNumber)?.int32Value ?? 0 != 0 { // check if an application error occurred
-                throw CommandError(appData: self, event: event, replyEvent: replyEvent)
-            } else if let resultDesc = replyEvent.paramDescriptor(forKeyword: _keyDirectObject) {
-                do {
-                    return try self.unpack(resultDesc) as T // TO DO: if this fails, rethrow as CommandError
-                } catch {
-                    throw CommandError(appData: self, event: event, replyEvent: replyEvent, parentError: error)
+            repliedEvent = replyEvent
+            if sendMode.contains(.waitForReply) {
+                if T.self == ReplyEventDescriptor.self { // return the entire reply event as-is
+                    return ReplyEventDescriptor(descriptor: replyEvent) as! T
+                } else if replyEvent.paramDescriptor(forKeyword: _keyErrorNumber)?.int32Value ?? 0 != 0 { // check if an application error occurred
+                    throw CommandSubError(code: Int(replyEvent.paramDescriptor(forKeyword: _keyErrorNumber)!.int32Value))
+                } else if let resultDesc = replyEvent.paramDescriptor(forKeyword: _keyDirectObject) {
+                    return try self.unpack(resultDesc) as T
+                } // no return value or error, so fall through
+            } else if sendMode.contains(.queueReply) { // get the return ID that will be used by the reply event so that client code's main loop can identify that reply event in its own event queue later on
+                guard let returnIDDesc = event.attributeDescriptor(forKeyword: _keyReturnIDAttr) else { // sanity check
+                    throw CommandSubError(code: defaultErrorCode, message: "Can't get keyReturnIDAttr.")
                 }
-            } // no return value or error, so fall through
-        } else if sendMode.contains(.queueReply) { // get the return ID that will be used by the reply event so that client code's main loop can identify that reply event in its own event queue later on
-            guard let returnIDDesc = event.attributeDescriptor(forKeyword: _keyReturnIDAttr) else { // sanity check
-                throw CommandError(appData: self, event: event, message: "Can't get keyReturnIDAttr.")
+                return try self.unpack(returnIDDesc)
             }
-            return try self.unpack(returnIDDesc)
+            // note that some Apple event handlers intentionally return a void result (e.g. `set`, `quit`), and now and again a crusty old Carbon app will forget to supply a return value where one is expected; however, rather than add `COMMAND()->void` methods to glue files (which would only cover the first case), it's simplest just to return an 'empty' value which covers both use cases
+            if let result = MissingValue as? T { // this will succeed when T is Any (which it always will be when the caller ignores the command's result)
+                return result
+            } else if let t = T.self as? SelfUnpacking.Type { // cover the crusty Carbon app case in a type-safe way (e.g. if the command usually returns a list, the caller will naturally expect it _always_ to return one so T will be Array<>, in which case return an empty array; OTOH, if the command usually returns a string, the user will _have_ to specify MayBeMissing<String>/Optional<String> or else they'll get an UnpackError)
+                do { return try t.SwiftAutomation_noValue() as! T } catch {} // fallthrough if T can't provide an 'empty' representation of itself
+            }
+            throw CommandSubError(code: defaultErrorCode, message: "Caller requested \(T.self) result but application didn't return anything.")
+        } catch {
+            let commandDescription = CommandDescription(name: name, eventClass: eventClass, eventID: eventID, parentSpecifier: parentSpecifier,
+                                                        directParameter: directParameter, keywordParameters: keywordParameters,
+                                                        requestedType: requestedType, waitReply: waitReply,
+                                                        withTimeout: withTimeout, considering: considering)
+            throw CommandError(commandInfo: commandDescription, appData: self, event: sentEvent, reply: repliedEvent, cause: error)
         }
-        // note that some Apple event handlers intentionally return a void result (e.g. `set`, `quit`), and now and again a crusty old Carbon app will forget to supply a return value where one is expected; however, rather than add `COMMAND()->void` methods to glue files (which would only cover the first case), it's simplest just to return an 'empty' value which covers both use cases
-        if let result = MissingValue as? T { // this will succeed when T is Any (which it always will be when the caller ignores the command's result)
-            return result
-        } else if let t = T.self as? SelfUnpacking.Type { // cover the crusty Carbon app case in a type-safe way (e.g. if the command usually returns a list, the caller will naturally expect it _always_ to return one so T will be Array<>, in which case return an empty array; OTOH, if the command usually returns a string, the user will _have_ to specify MayBeMissing<String>/Optional<String> or else they'll get an UnpackError)
-            do { return try t.SwiftAutomation_noValue() as! T } catch {} // fallthrough if T can't provide an 'empty' representation of itself
-        }
-        throw CommandError(appData: self, event: event, message: "No result.")
     }
     
     

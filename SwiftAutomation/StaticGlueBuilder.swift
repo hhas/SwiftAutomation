@@ -365,7 +365,7 @@ public class StaticGlueTemplate {
     public var string: String { return self._template.copy() as! String }
     
     
-    public init(string: String = SwiftAEGlueTemplate) {
+    public init(string: String = SwiftGlueTemplate) {
         self._template = NSMutableString(string: string)
     }
     
@@ -483,8 +483,8 @@ public class StaticGlueTemplate {
 // glue renderer
 
 public func renderStaticGlueTemplate(glueSpec: GlueSpec, typeSupportSpec: TypeSupportSpec? = nil, importFramework: Bool = true,
-                                     extraTags: [String:String] = [:], templateString: String = SwiftAEGlueTemplate) throws -> String {
-    // note: SwiftAEGlueTemplate requires additional values for extraTags: ["AEGLUE_COMMAND": shellCommand,"GLUE_NAME": glueFileName]
+                                     extraTags: [String:String] = [:], templateString: String = SwiftGlueTemplate) throws -> String {
+    // note: SwiftGlueTemplate requires additional values for extraTags: ["AEGLUE_COMMAND": shellCommand,"GLUE_NAME": glueFileName]
     let glueTable = try glueSpec.buildGlueTable()
     let template = StaticGlueTemplate(string: templateString)
     template.insertString("PREFIX", glueSpec.classNamePrefix)

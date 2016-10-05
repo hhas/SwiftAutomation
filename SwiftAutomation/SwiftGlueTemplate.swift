@@ -1,11 +1,11 @@
 //
-//  SwiftAEGlueTemplate.swift
+//  SwiftGlueTemplate.swift
 //  SwiftAutomation
 //
 //
 
 
-let SwiftAEGlueTemplate = [
+let SwiftGlueTemplate = [
 "//",
 "//  «GLUE_NAME»",
 "//  «APPLICATION_NAME» «APPLICATION_VERSION»",

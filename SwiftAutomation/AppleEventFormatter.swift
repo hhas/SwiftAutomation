@@ -27,7 +27,7 @@ public enum TerminologyType {
 }
 
 
-public func formatAppleEvent(descriptor event: NSAppleEventDescriptor, useTerminology: TerminologyType = .sdef) -> String {
+public func formatAppleEvent(descriptor event: NSAppleEventDescriptor, useTerminology: TerminologyType = .sdef) -> String { // TO DO: return command/reply/error enum, giving caller more choice on how to display
     //  Format an outgoing or reply AppleEvent (if the latter, only the return value/error description is displayed).
     //  Caution: if sending events to self, caller MUST use TerminologyType.SDEF or call
     //  formatAppleEvent on a background thread, otherwise formatAppleEvent will deadlock
@@ -53,8 +53,7 @@ public func formatAppleEvent(descriptor event: NSAppleEventDescriptor, useTermin
             return "<noreply>" // TO DO: what to return?
         }
     } else { // fully format outgoing event
-        let eventDescription = AppleEventDescription(event: event, appData: appData)
-        return appData.formatter.formatAppleEvent(eventDescription, applicationObject: appData.application)
+        return appData.formatter.formatCommand(CommandDescription(event: event, appData: appData), applicationObject: appData.application)
     }
 }
 
@@ -148,79 +147,85 @@ public class DynamicAppData: AppData { // TO DO: can this be used as-is/with mod
 
 
 /******************************************************************************/
-// unpack AppleEvent descriptor's contents into struct, to be consumed by SpecifierFormatter.formatAppleEvent()
+// unpack AppleEvent descriptor's contents into struct, to be consumed by SpecifierFormatter.formatCommand()
 
 
-private let _defaultTimeout: TimeInterval = 120 // TO DO: -sendEvent method's default/no timeout options are currently busted <rdar://21477694>; see also AppData.sendAppleEvent()
-
-private let _defaultConsidering: ConsideringOptions = [.case]
-
-private let _defaultConsidersIgnoresMask: UInt32 = 0x00010000 // AppleScript ignores case by default
-
-
-// parsed Apple event
-
-public struct AppleEventDescription { // TO DO: split AE unpacking from CommandTerm processing; put the latter in a function that takes glueTable as arg; that'll allow init to take any AppData instance, which gives more flexibility
+public struct CommandDescription {
     
-    public let eventClass: OSType
-    public let eventID: OSType
-    public private(set) var name: String? = nil // nil if terminology unavailable (use eventClass+eventID instead)
+    // note: even when terminology data is available, there's still no guarantee that a command won't have to use raw codes instead (typically due to dodgy terminology; while AS allows mixing of keyword and raw chevron syntax in the same command, it's such a rare defect it's best to stick solely to one or the other)
+    public enum Signature {
+        case named(name: String, directParameter: Any, keywordParameters: [(String, Any)], requestedType: Symbol?)
+        case codes(eventClass: OSType, eventID: OSType, parameters: [OSType:Any])
+    }
     
-    public private(set) var subject: Any? = nil
-    public private(set) var directParameter: Any = NoParameter
-    public private(set) var keywordParameters: [(String, Any)]? = nil // [(name,value),...], or nil if terminology unavailable (use rawParameters instead)
-    public private(set) var rawParameters: [OSType:Any] = [:] // TO DO: should this omit direct and `as` params? (A. no, e.g. `make` cmd may have different reqs., so formatter should decide what to include)
+    // name and parameters
+    public let signature: Signature // either keywords or four-char codes
     
-    public private(set) var requestedType: Any? = nil
+    // attributes
+    public private(set) var subject: Any? = nil // TO DO: subject or parentSpecifier? (and what, if any, difference does it make?)
     public private(set) var waitReply: Bool = true // really wantsReply (which could be either wait/queue reply) // TO DO: currently unused by formatAppleEvent() as it's problematic; delete?
-    public private(set) var withTimeout: TimeInterval = _defaultTimeout // TO DO: sort constant // TO DO: currently unused by formatAppleEvent() as it's problematic; delete?
+    public private(set) var withTimeout: TimeInterval = defaultTimeout // TO DO: sort constant // TO DO: currently unused by formatAppleEvent() as it's problematic; delete?
     public private(set) var considering: ConsideringOptions = [.case]
     
-    public init(event: NSAppleEventDescriptor, appData: DynamicAppData) {
-        // unpack event attributes
+    
+    // called by sendAppleEvent with a failed command's details // TO DO: take sendAppleEvent's params exactly as-is and rejig them itself
+    public init(name: String?, eventClass: OSType, eventID: OSType, parentSpecifier: Any?, directParameter: Any, keywordParameters: [KeywordParameter],
+                requestedType: Symbol?, waitReply: Bool, withTimeout: TimeInterval?, considering: ConsideringOptions?) {
+        if let commandName = name {
+            self.signature = .named(name: commandName, directParameter: directParameter,
+                                    keywordParameters: keywordParameters.map { ($0!, $2) }, requestedType: requestedType)
+        } else {
+            var parameters = [OSType:Any]()
+            if parameterExists(directParameter) { parameters[_keyDirectObject] = directParameter }
+            for (_, code, value) in keywordParameters where parameterExists(value) { parameters[code] = value }
+            if let symbol = requestedType { parameters[_keyAERequestedType] = symbol }
+            self.signature = .codes(eventClass: eventClass, eventID: eventID, parameters: parameters)
+        }
+        self.waitReply = waitReply
+        self.subject = parentSpecifier
+        if withTimeout != nil { self.withTimeout = withTimeout! }
+        if considering != nil { self.considering = considering! }
+    }
+    
+    
+    // called by [e.g.] AppleScriptToSwift.app with an intercepted AppleEvent descriptor
+    public init(event: NSAppleEventDescriptor, appData: DynamicAppData) { // TO DO: would be more flexible to take AppData + GlueTable as separate params
+        // unpack the event's parameters
+        var rawParameters = [OSType:Any]()
+        for i in 1...event.numberOfItems {
+            let desc = event.atIndex(i)!
+            rawParameters[event.keywordForDescriptor(at:i)] = (try? appData.unpackAsAny(desc)) ?? desc
+        }
+        //
         let eventClass = event.attributeDescriptor(forKeyword: _keyEventClassAttr)!.typeCodeValue
         let eventID = event.attributeDescriptor(forKeyword: _keyEventIDAttr)!.typeCodeValue
-        self.eventClass = eventClass
-        self.eventID = eventID
-        var commandInfo = appData.glueTable.commandsByCode[CommandTermKey(eventClass, eventID)]
-        // unpack subject attribute and/or direct parameter, if given
+        if let commandInfo = appData.glueTable.commandsByCode[CommandTermKey(eventClass, eventID)] {
+            var keywordParameters = [(String, Any)]()
+            for paramInfo in commandInfo.orderedParameters { // this ignores parameters that don't have a keyword name; it should also ignore ("as",keyAERequestedType) parameter (this is probably best done by ensuring that command parsers always omit it)
+                if let value = rawParameters[paramInfo.code] {
+                    keywordParameters.append((paramInfo.name, value))
+                }
+            }
+            let directParameter = rawParameters[_keyDirectObject] ?? NoParameter
+            let requestedType = rawParameters[_keyAERequestedType] as? Symbol
+            // make sure all keyword parameters have been matched to parameter names
+            if rawParameters.count == keywordParameters.count + (parameterExists(directParameter) ? 1 : 0)
+                + ((requestedType != nil && commandInfo.parametersByCode[_keyAERequestedType] == nil) ? 1 : 0) { // TO DO: check this logic re. _keyAERequestedType
+                self.signature = .named(name: commandInfo.name, directParameter: directParameter,
+                                      keywordParameters: keywordParameters, requestedType: requestedType)
+            } else {
+                self.signature = .codes(eventClass: eventClass, eventID: eventID, parameters: rawParameters)
+            }
+        } else {
+            self.signature = .codes(eventClass: eventClass, eventID: eventID, parameters: rawParameters)
+        }
+        // unpack subject attribute, if given
         if let desc = event.attributeDescriptor(forKeyword: _keySubjectAttr) {
             if desc.descriptorType != _typeNull { // typeNull = root application object
                 self.subject = (try? appData.unpackAsAny(desc)) ?? desc
             }
         }
-        if let desc = event.paramDescriptor(forKeyword: _keyDirectObject) {
-            self.directParameter = (try? appData.unpackAsAny(desc)) ?? desc
-        }
-        // unpack `as` parameter, if given // TO DO: this needs to appear as resultType: arg
-        if let desc = event.paramDescriptor(forKeyword: _keyAERequestedType) {
-            self.requestedType = (try? appData.unpackAsAny(desc)) ?? desc
-        }
-        // unpack keyword parameters
-        if commandInfo != nil {
-            self.keywordParameters = []
-            for paramInfo in commandInfo!.orderedParameters { // this ignores parameters that don't have a keyword name; it should also ignore ("as",keyAERequestedType) parameter (this is probably best done by ensuring that command parsers always omit it)
-                if let desc = event.paramDescriptor(forKeyword: paramInfo.code) {
-                    self.keywordParameters!.append((paramInfo.name, ((try? appData.unpackAsAny(desc)) ?? desc)))
-                }
-            }
-            if event.numberOfItems > self.keywordParameters!.count + (parameterExists(self.directParameter) ? 1 : 0)
-                    + ((self.requestedType != nil && commandInfo!.parametersByCode[_keyAERequestedType] == nil) ? 1 : 0) { // TO DO: update (see above)
-                self.keywordParameters = nil
-                commandInfo = nil
-            }
-        }
-        if commandInfo == nil {
-            for i in 1..<(event.numberOfItems+1) {
-                let desc = event.atIndex(i)!
-                //if ![_keyDirectObject, _keyAERequestedType].contains(desc.descriptorType) {
-                self.rawParameters[event.keywordForDescriptor(at: i)] = (try? appData.unpackAsAny(desc)) ?? desc
-                //}
-            }
-        } else {
-            self.name = commandInfo!.name
-        }
-        // command's attributes
+        // unpack reply requested and timeout attributes (note: these attributes are unreliable since their values are passed via AESendMessage() rather than packed directly into the AppleEvent)
         if let desc = event.attributeDescriptor(forKeyword: _keyReplyRequestedAttr) { // TO DO: attr is unreliable
             // keyReplyRequestedAttr appears to be boolean value encoded as Int32 (1=wait or queue reply; 0=no reply)
             if desc.int32Value == 0 { self.waitReply = false }
@@ -233,10 +238,11 @@ public struct AppleEventDescription { // TO DO: split AE unpacking from CommandT
                 self.withTimeout = Double(timeoutInTicks) / 60.0
             }
         }
+        // considering/ignoring attributes
         if let considersAndIgnoresDesc = event.attributeDescriptor(forKeyword: _enumConsidsAndIgnores) {
             var considersAndIgnores: UInt32 = 0
             (considersAndIgnoresDesc.data as NSData).getBytes(&considersAndIgnores, length: MemoryLayout<UInt32>.size)
-            if considersAndIgnores != _defaultConsidersIgnoresMask {
+            if considersAndIgnores != defaultConsidersIgnoresMask {
                 for (option, _, considersFlag, ignoresFlag) in considerationsTable {
                     if option == .case {
                         if considersAndIgnores & ignoresFlag > 0 { self.considering.remove(option) }
@@ -246,73 +252,6 @@ public struct AppleEventDescription { // TO DO: split AE unpacking from CommandT
                 }
             }
         }
-    }
-}
-
-
-/******************************************************************************/
-// extend the standard SpecifierFormatter class so it can also format AppleEvent descriptors
-
-/*
-// TO DO: problem with extending SpecifierFormatter is it can't be subclassed to modify its formatting behavior, e.g.:
-
-override func formatRootSpecifier(_ specifier: RootSpecifier) -> String {
-    if (specifier.rootObject as? NSAppleEventDescriptor)?.descriptorType == _typeNull {
-        return APPLICATION-CLASS-NAME
-    } else {
-        return super.formatRootSpecifier(specifier)
-    }
-}
- 
- -- however, this particular issue will go away if formatter has instance var/param for specifying how absolute specifiers should be represented (APPLICATION(...), APPLICATION(), or PREFIXApp)
- */
-
-extension SpecifierFormatter {
-    
-    // note: only reason this code isn't folded into top-level formatAppleEvent() function above is to allow subclasses of SpecifierFormatter to override in order to generate representations for other languages
-    
-    public func formatAppleEvent(_ eventDescription: AppleEventDescription, applicationObject: RootSpecifier) -> String {
-        var parentSpecifier = String(describing: applicationObject)
-        var args: [String] = []
-        if let commandName = eventDescription.name {
-            if eventDescription.subject != nil && parameterExists(eventDescription.directParameter) {
-                parentSpecifier = self.format(eventDescription.subject!)
-                args.append(self.format(eventDescription.directParameter))
-            //} else if eventClass == _kAECoreSuite && eventID == _kAECreateElement { // TO DO: format make command as special case (for convenience, AEBCommand allows user to call `make` directly on a specifier, in which case the specifier is used as its `at` parameter if not already given)
-            } else if eventDescription.subject == nil && parameterExists(eventDescription.directParameter) {
-                parentSpecifier = self.format(eventDescription.directParameter)
-            } else if eventDescription.subject != nil && !parameterExists(eventDescription.directParameter) {
-                parentSpecifier = self.format(eventDescription.subject!)
-            }
-            parentSpecifier += ".\(commandName)"
-            for (key, value) in eventDescription.keywordParameters ?? [] {
-                args.append("\(key): \(self.format(value))")
-            }
-        } else { // use raw codes
-            if eventDescription.subject != nil {
-                parentSpecifier = self.format(eventDescription.subject!)
-            }
-            parentSpecifier += ".sendAppleEvent"
-            args.append("\(formatFourCharCodeString(eventDescription.eventClass)), \(formatFourCharCodeString(eventDescription.eventID))")
-            if eventDescription.rawParameters.count > 0 {
-                let params = eventDescription.rawParameters.map({ "\(formatFourCharCodeString($0)): \(self.format($1)))" }).joined(separator: ", ")
-                args.append("[\(params)]")
-            }
-        }
-        // TO DO: AE's representation of AESendMessage args (waitReply and withTimeout) is unreliable; may be best to ignore these entirely
-        /*
-        if !eventDescription.waitReply {
-            args.append("waitReply: false")
-        }
-        //sendOptions: NSAppleEventSendOptions? = nil
-        if eventDescription.withTimeout != _defaultTimeout {
-            args.append("withTimeout: \(eventDescription.withTimeout)") // TO DO: if -2, use NoTimeout constant (except 10.11 hasn't defined one yet, and is still buggy in any case)
-        }
-        */
-        if eventDescription.considering != _defaultConsidering {
-            args.append("considering: \(eventDescription.considering)")
-        }
-        return parentSpecifier + "(" + args.joined(separator: ", ") + ")"
     }
 }
 

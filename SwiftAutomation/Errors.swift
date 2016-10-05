@@ -107,40 +107,54 @@ let gDescriptionForError: [Int:String] = [ // error descriptions from ASLG/MacEr
         -10025: "Illegal combination of properties settings."
 ]
 
+let defaultErrorCode = 1
+let packErrorCode = errAECoercionFail
+let unpackErrorCode = errAECoercionFail
+
 
 // errors
 
-public class SwiftAutomationError: Error, CustomStringConvertible { // TO DO: support error chaining
+public class SwiftAutomationError: Error, CustomStringConvertible { // TO DO: support error chaining // TO DO: rename `AutomationError?`
     public let _domain = "SwiftAutomation"
     public let _code: Int // TO DO: use custom codes for error types, or standard OSStatus codes? // TO DO: should probably have a default code (e.g. 1) for non-OSStatus errors, and otherwise use OSStatus when known
-    public let message: String?
+    private let _message: String?
+    public let cause: Error?
     
-    init(code: Int, message: String? = nil) {
+    init(code: Int, message: String? = nil, cause: Error? = nil) {
         self._code = code
-        self.message = message
+        self._message = message
+        self.cause = cause
     }
+    
+    public var message: String? { return self._message }
     
     public var description: String {
         let msg = self.message ?? gDescriptionForError[self._code]
-        return msg == nil ? "Error \(self._code)." : "Error \(self._code): \(msg!)"
+        var string = msg == nil ? "." : ": \(msg!)"
+        if let cause = self.cause { string += "\n\(cause)" }
+        return "Error \(self._code)\(string)"
     }
 }
 
 public class NotImplementedError: SwiftAutomationError {
     convenience init(message: String? = nil) {
-        self.init(code: 1, message: "Not Implemented Error" + (message == nil ? "." : ": \(message!)"))
+        self.init(code: defaultErrorCode, message: "Not Implemented Error" + (message == nil ? "." : ": \(message!)"))
     }
 }
 
 
 public class ConnectionError: SwiftAutomationError {
-    init(target: TargetApplication, message: String = "Can't connect to application.") { // TO DO: target should be TargetApplication
-        super.init(code: 1, message: message)
+    
+    public let target: TargetApplication
+    
+    init(target: TargetApplication, message: String = "Can't connect to application.") {
+        self.target = target
+        super.init(code: defaultErrorCode, message: message)
     }
+    
+    // TO DO: description?
 }
 
-
-// TO DO: these error classes should also support exception chaining (e.g. when unpacking a list/dictionary and an item/property fails to unpack, that error should be embedded within a more general error message that describes the entire value):
 
 public class PackError: SwiftAutomationError { // TO DO: include AppData? (c.f. UnpackError)
     
@@ -148,7 +162,7 @@ public class PackError: SwiftAutomationError { // TO DO: include AppData? (c.f. 
     
     init(object: Any, message: String? = nil) {
         self.object = object
-        super.init(code: -1700, message: message) // TO DO: what error code?
+        super.init(code: packErrorCode, message: message) // TO DO: what error code?
     }
     
     public override var description: String {
@@ -167,7 +181,7 @@ public class UnpackError: SwiftAutomationError {
         self.appData = appData
         self.descriptor = descriptor
         self.type = type
-        super.init(code: -1700, message: message) // TO DO: what error code?
+        super.init(code: unpackErrorCode, message: message) // TO DO: what error code?
     }
     
     public override var description: String { // TO DO: how best to phrase error message?
@@ -182,92 +196,78 @@ public class UnpackError: SwiftAutomationError {
     }
 }
 
-public class CommandError: SwiftAutomationError { // note: this should probably wrap all errors occuring in a command, including pack/unpack (which aren't application errors, but will be easier for user to debug with the additional context)
+public class CommandSubError: SwiftAutomationError {}
+
+
+public class CommandError: SwiftAutomationError { // note: this should wrap all errors occuring in a command, including pack/unpack (which aren't application errors, but will be easier for user to debug with the additional context)
     
+    let commandInfo: CommandDescription // TO DO: this should always be given
     let appData: AppData
-    let event: NSAppleEventDescriptor?
-    let replyEvent: NSAppleEventDescriptor?
-    let commandInfo: Any? // TO DO
-    let parentError: Error?
+    let event: NSAppleEventDescriptor? // non-nil if event was built and send
+    let reply: NSAppleEventDescriptor? // non-nil if reply event was received
     
-    init(appData: AppData,
-            event: NSAppleEventDescriptor? = nil,
-            replyEvent: NSAppleEventDescriptor? = nil,
-            commandInfo: Any? = nil,
-            parentError: Error? = nil, // TO DO: rename ('cause:'?)
-            message: String? = nil)
-    {
-        var message = message ?? "Command failed."
+    // TO DO:
+    
+    init(commandInfo: CommandDescription, appData: AppData,
+         event: NSAppleEventDescriptor? = nil, reply: NSAppleEventDescriptor? = nil, cause: Error? = nil) {
         self.appData = appData
         self.event = event
-        self.replyEvent = replyEvent
+        self.reply = reply
         self.commandInfo = commandInfo
-        self.parentError = parentError
-        if parentError != nil { message += " \(parentError)"}
-        
-        var errorNumber = 0
-        if let error = parentError {
-            print("! DEBUG: SwiftAutomation/AppleEventManager error: \(error)")
+        var errorNumber = 1
+        if let error = cause {
+//            print("! DEBUG: SwiftAutomation/AppleEventManager error: \(error)")
             errorNumber = error._code
-        } else if let reply = replyEvent {
-            print("! DEBUG: App reply event: \(reply)")
-            if let appError = reply.forKeyword(_keyErrorNumber) {
+        } else if let replyEvent = reply {
+//            print("! DEBUG: App reply event: \(reply)")
+            if let appError = replyEvent.forKeyword(_keyErrorNumber) {
                 errorNumber = Int(appError.int32Value)
                 // TO DO: [lazily] unpack any other available error info
             }
         }
-        // if errorNumber == 0, report as 'general error'? (use default error code)
-        
-        
-        super.init(code: errorNumber, message: message) // TO DO: implement
+        if errorNumber == 0 { errorNumber = defaultErrorCode } // should never be 0; TO DO: assert?
+        super.init(code: errorNumber, cause: cause)
     }
-
-
-    /* TO DO: update and incorporate this error message construction code (taken from AppleEventBridge)
-
-    let aemError = error as NSError // an AEBCommand-supplied NSError containing (none/some/all?) standard AE error keys in its userInfo dict; these should be replaced by public constants (note that the 'expectedType' value is a typeType descriptor supplied by the application where appropriate, and not to be confused with the Swift Type supplied by the caller via the returnType: argument nor the typeType descriptor supplied via the requestedType: arg)
     
+    public override var message: String? {
+        return (self.reply?.forKeyword(_keyErrorString)?.stringValue
+                ?? self.reply?.forKeyword(_kOSAErrorBriefMessage)?.stringValue
+                ?? gDescriptionForError[self._code])
+    }
     
-    var args = [String]()
-    for param in parameters {
-        if param.value as? AnyObject !== NoParameter {
-            args.append((param.name != nil ? "\(param.name): " : "") + "\(SwiftAEFormatObject(param.value))")
+    public var expectedType: Symbol? {
+        if let desc = self.reply?.forKeyword(_kOSAErrorExpectedType) {
+            return try? self.appData.unpack(desc) as Symbol
+        } else {
+            return nil
         }
     }
-    for (name, value) in [("returnType", returnType), ("waitReply", waitReply as Bool?),
-        ("withTimeout", withTimeout), ("considering", considering), ("ignoring", ignoring)] {
-            if value != nil {
-                args.append("\(name): \(SwiftAEFormatObject(value))")
-            }
-    }
-    let failedCommandDescription = "\(self).\(name)(" + ", ".join(args) + ")"
-    var errorDescription = "Application command failed:\n\n\(failedCommandDescription)"
-    var info: [NSObject: Any] = [AEBErrorNumber:aemError.code, AEBErrorFailedCommandDescription: failedCommandDescription]
-    let errorMessage = aemError.userInfo[kAEMErrorStringKey] ?? AEMDescriptionForError(Int32(aemError.code))
-    if errorMessage != nil {
-        info[AEBErrorMessage] = errorMessage!
-        errorDescription += "\n\nError \(aemError.code): \(errorMessage!)"
-    } else {
-        errorDescription += "\n\nError \(aemError.code)."
-    }
-    info[NSLocalizedDescriptionKey] = errorDescription
-    if let briefMessage = aemError.userInfo[kAEMErrorBriefMessageKey] {
-        info[AEBErrorBriefMessage] = briefMessage
-    }
-    if let expectedType = aemError.userInfo[kAEMErrorExpectedTypeKey] {
-        info[AEBErrorExpectedType] = expectedType // TO DO: also include in message? // TO DO: check if unpacked as AEM or AEB object
-    }
-    if let offendingObject = aemError.userInfo[kAEMErrorOffendingObjectKey] {
-        info[AEBErrorOffendingObject] = offendingObject // TO DO: also include in message? // TO DO: check if unpacked as AEM or AEB object
-    }
-    if let failedAEMEvent = aemError.userInfo[kAEMErrorFailedEvent] {
-        info[AEBErrorFailedAEMEvent] = failedAEMEvent
-    }
-    throw SwiftAECommandError(domain: kAEMErrorDomain, code: aemError.code, userInfo: info)
-    }
-
-    */
-
     
+    public var offendingObject: Any? {
+        if let desc = self.reply?.forKeyword(_kOSAErrorOffendingObject) {
+            return try? self.appData.unpack(desc) as Any
+        } else {
+            return nil
+        }
+    }
+    
+    public override var description: String {
+        var string = "CommandError \(self._code): \(self.message ?? "")\n\n\t"
+        string += self.appData.formatter.formatCommand(self.commandInfo, applicationObject: self.appData.application)
+        // TO DO: expectedType and/or offendingObject, if given
+        return string
+    }
+    
+    /*
+    let _kOSAErrorApp: OSType = 0x65726170
+    let _kOSAErrorArgs: OSType = 0x65727261
+    let _kOSAErrorBriefMessage: OSType = 0x65727262
+    let _kOSAErrorExpectedType: OSType = 0x65727274
+    let _kOSAErrorMessage: OSType = 0x65727273
+    let _kOSAErrorNumber: OSType = 0x6572726E
+    let _kOSAErrorOffendingObject: OSType = 0x65726F62
+    let _kOSAErrorPartialResult: OSType = 0x70746C72
+    let _kOSAErrorRange: OSType = 0x65726E67
+    */
 }
 

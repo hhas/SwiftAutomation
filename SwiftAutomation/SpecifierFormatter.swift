@@ -253,6 +253,50 @@ public class SpecifierFormatter {
             return "\(value)" // SwiftAutomation objects (specifiers, symbols) are self-formatting; any other value will use its own default description (which may or may not be the same as its literal representation, but that's Swift's problem, not ours)
         }
     }
+    
+    public func formatCommand(_ description: CommandDescription, applicationObject: RootSpecifier? = nil) -> String {
+        var parentSpecifier = applicationObject != nil ? String(describing: applicationObject!) : "\(self.applicationClassName)()"
+        var args: [String] = []
+        switch description.signature {
+        case .named(let name, let directParameter, let keywordParameters, let requestedType):
+            if description.subject != nil && parameterExists(directParameter) {
+                parentSpecifier = self.format(description.subject!)
+                args.append(self.format(directParameter))
+                //} else if eventClass == _kAECoreSuite && eventID == _kAECreateElement { // TO DO: format make command as special case (for convenience, sendAppleEvent should allow user to call `make` directly on a specifier, in which case the specifier is used as its `at` parameter if not already given)
+            } else if description.subject == nil && parameterExists(directParameter) {
+                parentSpecifier = self.format(directParameter)
+            } else if description.subject != nil && !parameterExists(directParameter) {
+                parentSpecifier = self.format(description.subject!)
+            }
+            parentSpecifier += ".\(name)"
+            for (key, value) in keywordParameters { args.append("\(key): \(self.format(value))") }
+            if let symbol = requestedType { args.append("resultType: \(symbol)") }
+        case .codes(let eventClass, let eventID, let parameters):
+            if let subject = description.subject {
+                parentSpecifier = self.format(subject)
+            }
+            parentSpecifier += ".sendAppleEvent"
+            args.append("\(formatFourCharCodeString(eventClass)), \(formatFourCharCodeString(eventID))")
+            if parameters.count > 0 {
+                let params = parameters.map({ "\(formatFourCharCodeString($0)): \(self.format($1)))" }).joined(separator: ", ")
+                args.append("[\(params)]")
+            }
+        }
+        // TO DO: AE's representation of AESendMessage args (waitReply and withTimeout) is unreliable; may be best to ignore these entirely
+        /*
+         if !eventDescription.waitReply {
+         args.append("waitReply: false")
+         }
+         //sendOptions: NSAppleEventSendOptions? = nil
+         if eventDescription.withTimeout != defaultTimeout {
+         args.append("withTimeout: \(eventDescription.withTimeout)") // TO DO: if -2, use NoTimeout constant (except 10.11 hasn't defined one yet, and is still buggy in any case)
+         }
+         */
+        if description.considering != defaultConsidering {
+            args.append("considering: \(description.considering)")
+        }
+        return parentSpecifier + "(" + args.joined(separator: ", ") + ")"
+    }
 }
 
 
