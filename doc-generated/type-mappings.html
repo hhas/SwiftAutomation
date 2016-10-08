@@ -16,69 +16,78 @@
 
 <p>[TO DO: need to explain derivation of symbol names (they're a mismash of AppleScript names and ); also, might want to consider changing <code>float</code> to <code>real</code>]</p>
 
-<p>Apple event descriptor types are mapped to and from Swift/Foundation/SwiftAutomation structs and classes as follows:</p>
+<p>The <code>NSAppleEventDescriptor</code> Foundation class provides a low-level wrapper around the Carbon Apple Event Manager APIs for building and sending Apple events, and for encapsulating the parameter and result data to be included in those events. <code>NSAppleEventDescriptor</code> defines a <code>descriptorType</code> property containing an <code>OSType</code> (a.k.a. "four-char code") that describes the type of value it holds (e.g. <code>'utxt'</code> = <code>typeUnicodeText</code> = UTF16-encoded text), and a <code>data</code> property containing the value's data serialized as an <code>NSData</code> instance.</p>
+
+<p>Apple event data types include:</p>
+
+<ul>
+<li><p>common scalar types such as booleans, integers, doubles, strings, dates and file URLs</p></li>
+<li><p>ordered lists</p></li>
+<li><p>records (struct-like key-value lists where each key is an <code>OSType</code>)</p></li>
+<li><p>object specifiers, used to construct <em>first-class queries</em> (also known as <em>references</em> in AppleScript), that identify objects within an application.</p></li>
+</ul>
+
+<p><code>NSAppleEventDescriptor</code> includes methods for converting common Apple event data types to and from their Foundation equivalents (e.g. <code>typeUnicodeText</code> ⟷ <code>NSString</code>). SwiftAutomation extends and improves on these basic mappings as follows:</p>
 
 <table width="100%" summary="AE-Foundation type mappings">
 <thead>
 
 <tr><th>AppleScript type</th><th>Descriptor type</th>
-    <th><code>Symbol</code> name</th><th>Cocoa class</th></tr>
+    <th>Symbol name</th><th>Swift</th></tr>
 
 </thead>
 <tbody>
 
 <tr><td><code>boolean</code></td><td><code>typeBoolean</code></td>
-    <td><code>boolean</code></td><td><code>Bool</code></tr>
+    <td><code>AE.boolean</code></td><td><code>Bool</code></tr>
 
 <tr><td><code>integer</code></td><td><code>typeSInt32</code></td>
-    <td><code>integer</code></td><td><code>Int</code></td></tr>
+    <td><code>AE.integer</code></td><td><code>Int</code></td></tr>
 
 <tr><td><code>real</code></td><td><code>typeIEEE64BitFloatingPoint</code></td>
-    <td><code>real</code></td><td><code>Double</code></td></tr>
+    <td><code>AE.real</code></td><td><code>Double</code></td></tr>
 
 <tr><td><code>text</code> [1]</td><td><code>typeUnicodeText</code></td>
-    <td><code>UnicodeText</code></td><td><code>String</code></td></tr>
+    <td><code>AE.UnicodeText</code></td><td><code>String</code></td></tr>
 
 <tr><td><code>list</code></td><td><code>typeAEList</code></td>
-    <td><code>list</code></td><td><code>Array</code></td></tr>
+    <td><code>AE.list</code></td><td><code>Array</code></td></tr>
 
 <tr><td><code>record</code></td><td><code>typeAERecord</code></td>
-    <td><code>record</code></td><td><code>Dictionary</code></td></tr>
+    <td><code>AE.record</code></td><td><code>Dictionary</code></td></tr>
 
 <tr><td><code>date</code></td><td><code>typeLongDateTime</code></td>
-    <td><code>date</code></td><td><code>Date</code></td></tr>
+    <td><code>AE.date</code></td><td><code>Date</code></td></tr>
 
 <tr><td><code>«class bmrk»</code></td><td><code>typeBookmarkData</code></td>
-    <td><code>bookmarkData</code></td><td><code>URL</code> [2]</td></tr>
+    <td><code>AE.bookmarkData</code></td><td><code>URL</code> [2]</td></tr>
 
 <tr><td><code>alias</code></td><td><code>typeAlias</code></td>
-    <td><code>alias</code></td><td><code>URL</code> [2]</td></tr>
+    <td><code>AE.alias</code></td><td><code>URL</code> [2]</td></tr>
 
 <tr><td><code>«class furl»</code></td><td><code>typeFileURL</code></td>
-    <td><code>fileURL</code></td><td><code>URL</code> [2]</td></tr>
+    <td><code>AE.fileURL</code></td><td><code>URL</code> [2]</td></tr>
 
 <tr><td>N/A [3]</td><td><code>typeNull</code></td>
-    <td><code>null</code></td><td><code><var>PREFIX</var>App</code></td></tr>
+    <td><code>AE.null</code></td><td><code><var>PREFIX</var>App</code></td></tr>
 
 <tr><td><code>reference</code></td><td><code>typeObjectSpecifier</code></td>
-    <td><code>reference</code></td><td><code><var>PREFIX</var>Item</code>/<var>PREFIX</var>Items</code> [4]</td></tr>
+    <td><code>AE.reference</code></td><td><code><var>PREFIX</var>Item</code>/<var>PREFIX</var>Items</code> [4]</td></tr>
 
 <tr><td><code>location reference</code></td><td><code>typeInsertionLoc</code></td>
-    <td><code>locationReference</code></td><td><code><var>PREFIX</var>Insertion</code></code> [4]</td></tr>
+    <td><code>AE.locationReference</code></td><td><code><var>PREFIX</var>Insertion</code></code> [4]</td></tr>
 
 <tr><td><code>class</code></td><td><code>typeType</code></td>
-    <td><code>typeClass</code></td><td><code><var>PREFIX</var>Symbol</code> [5]</td></tr>
+    <td><code>AE.typeClass</code></td><td><code><var>PREFIX</var>Symbol</code> [5]</td></tr>
 
 <tr><td><code>constant</code></td><td><code>typeEnumerated</code></td>
-    <td><code>enumerator</code></td><td><var>PREFIX</var>Symbol</code> [5]</td></tr>
+    <td><code>AE.constant</code></td><td><var>PREFIX</var>Symbol</code> [5]</td></tr>
 
 <tr><td><code>property</code></td><td><code>typeProperty</code></td>
-    <td><code>property</code></td><td><var>PREFIX</var>Symbol</code> [5]</td></tr>
+    <td><code>AE.property</code></td><td><var>PREFIX</var>Symbol</code> [5]</td></tr>
 
 </tbody>
 </table>
-
-<p>[TO DO: should the above table include <code>application</code> for completeness?]</p>
 
 <p>[1] While AppleScript treats <code>string</code>, <code>text</code>, and <code>Unicode text</code> keywords as synonyms for <code>typeUnicodeText</code>, the Apple Event Manager still  considers them to be different types (<code>typeChar</code>, <code>cText</code>, <code>typeUnicodeText</code>). When specifying a command's <code>resultType:</code> always use <code><var>PREFIX</var>Symbol.unicodeText</code> (or just <code>AE.unicodeText</code>) as this is the standard UTF-16 representation that all current macOS apps should support.</p>
 
@@ -94,7 +103,26 @@
 
 <p>While AE-Swift type conversions generally work quite seamlessly, it is sometimes useful to know some of the details involved, particularly when troubleshooting code that deals with older or buggy applications. The following sections provide additional information.</p>
 
-<p>[TO DO: type mapping implementations are yet to be finalized; update the following sections when done]</p>
+<h3>Missing Value</h3>
+
+<p>The 'missing value' symbol serves a similar purpose to Swift's <code>nil</code>, acting as a placeholder where a value is expected but none is available. On the Apple event side, it is represented as a descriptor of <code>typeType</code> with the code value <code>cMissing</code> (<code>'msng'</code>). SwiftAutomation provides a choice of mappings when unpacking a 'missing value' descriptor as a Swift value:</p>
+
+<ul>
+<li><p><code>SwiftAutomation.MissingValue</code> is used when a command's return type is <code>Any</code>. Unlike generic <code>nil</code> values, <code>MissingValue</code> is a unique value of concrete type <code>MissingValueType</code> so can be compared for equality without having to cast to a specific type first. For example:</p>
+
+<pre><code>let path = try TextEdit().documents[1].path() // returns Any
+if path != MissingValue { ... }
+</code></pre></li>
+<li><p><code>Optional&lt;T&gt;.none</code> is used when a command's return type is declared as <code>Optional&lt;T&gt;</code>. For example:</p>
+
+<pre><code>let path = try TextEdit().documents[1].path() as String?
+if let realPath = path { ... }
+</code></pre></li>
+</ul>
+
+<p>Both values are packed as 'missing value' descriptors when used as a command parameter.</p>
+
+<p>[TO DO: what about documenting <code>MayBeMissing&lt;T&gt;</code> and/or the <code>.missing(MissingValueType)</code> case in custom enums created via aeglue's <code>-e</code> option? there's an argument for removing those features to simplify the API, in which case <code>MissingValue</code> will <em>only</em> be returned when return type is <code>Any</code>]</p>
 
 <h3>Boolean</h3>
 

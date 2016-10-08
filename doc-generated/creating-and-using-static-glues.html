@@ -10,16 +10,13 @@
             <div id="main">
                 <h1>Creating and using static glues</h1>
                 <div class="navbar"><a href="understanding-apple-events.html">back</a> | <a href="index.html">index</a> | <a href="type-mappings.html">next</a></div>
-                <p>[TO DO: TBC]</p>
+                <p>The SwiftAutomation framework bundle includes an <code>aeglue</code> tool for generating static glue files. Glues enable you to control "AppleScriptable" applications using human-readable property and method names derived from their built-in terminology resources.</p>
 
 <h2>Generating a glue</h2>
 
-<p>The SwiftAutomation framework bundle includes an <code>aeglue</code> tool for generating static glue files containing high-level terminology-based APIs.</p>
+<p>To add <code>aeglue</code> to your Bash shell's search path, add the following line to your <code>~/.bash_profile</code>, replacing <code>/path/to/</code> with the directory where the SwiftAutomation framework is located:</p>
 
-<p>To put <code>aeglue</code> on your Bash shell's search path, add the following line to your <code>~/.bash_profile</code> (modify the path to <code>SwiftAutomation.framework</code> as needed):</p>
-
-<pre><code>export $PATH="$PATH:/Library/Frameworks/SwiftAutomation.framework/Resources/bin"
-</code></pre>
+<pre><code>export $PATH="$PATH:<var>/path/to/</var>SwiftAutomation.framework/Resources/bin"</code></pre>
 
 <p>To view the <code>aeglue</code> tool's full documentation:</p>
 
@@ -74,7 +71,7 @@
 <li><p>a <code><var>PREFIX</var></code> typealias as a convenient shorthand for <code><var>PREFIX</var>Symbol</code>.</p></li>
 </ul>
 
-<p>[TO DO: note that custom enum, struct, and/or typealias definitions may also be included]</p>
+<p>Glue files may also include custom <code>typealias</code>, <code>enum</code>, and <code>struct</code> definitions that improve integration between Swift and Apple event type systems. <a href="advanced-type-support.html">Chapter 10</a> explains how to add and use these features.</p>
 
 <h2>Customizing glues</h2>
 
@@ -90,71 +87,6 @@
 
 <p>The <code>-S</code> option may be quicker when generating glues for CocoaScripting-based apps which already contain SDEF resources. When using the <code>-S</code> option to work around buggy <code>ascr/gdte</code> event handlers in AETE-based Carbon apps, be aware that macOS's AETE-to-SDEF converter is not 100% reliable. For example, four-char code strings containing non-printing characters fail to appear in the generated SDEF XML, in which case <code>aeglue</code> will warn of their omission and you'll have to correct the glue files manually or use SwiftAutomation's lower-level <code>OSType</code>-based APIs in order to access the affected objects/commands.</p>
 
-<h2>Improving type system integration</h2>
-
-<p>The <code>aeglue</code> tool's <code>-e</code>, <code>-s</code>, and <code>-t</code> options can be used to insert custom Swift enums, structs, and typealiases in the generated glue files for improved integration between Swift's strong, static type system and the Apple Event Manager's weak, dynamic types. Each option may appear any number of times and takes a format string as argument.</p>
-
-<h3>Enumerated types</h3>
-
-<p>[TO DO: "Swift often uses enumerated types... (aka tagged unions/sum types)"] Enumerated types enable commands whose results can have multiple types to return those values in a type-safe way.</p>
-
-<p>For example, if a command can return a <code>Symbol</code> <em>or</em> a <code>String</code>, include the following <code>-e</code> option in the <code>aeglue</code> command:</p>
-
-<pre><code>-e Symbol+String
-</code></pre>
-
-<p>The -e option's argument must have the following format:</p>
-
-<pre><code>[ENUMNAME=][CASE1:]TYPE1+[CASE1:]TYPE2+...
-</code></pre>
-
-<p><code>ENUMNAME</code> is the name to be given to the enumerated type, e.g. <code>MyType</code>. If omitted, a default name is automatically generated.</p>
-
-<p><code>TYPEn</code> is the name of an existing Swift type, e.g. String or a standard SwiftAutomation type: <code>Symbol</code>, <code>Object</code>, <code>Insertion</code>, <code>Item</code>, or <code>Items</code> (the glue <code>PREFIX</code> will be added automatically). <code>CASEn</code> is the name of the case to which values of that type are assigned. If the <code>TYPE</code> is parameterized, e.g. <code>Array&lt;String&gt;</code>, the <code>CASE</code> name must also be given, otherwise it can be omitted and a default name will be derived from the <code>TYPE</code> name, e.g. <code>Int</code> -> <code>int</code>.</p>
-
-<p>For example, to define an enum named <code>FOOSymbolOrIntOrString</code></p>
-
-<pre><code>aeglue -e Symbol+Int+String -p FOO 'Foo.app'
-</code></pre>
-
-<p>[TO DO: note that <code>Symbol</code> must come before <code>String</code>, to avoid type/enum codes being coerced to four-char-code strings (which AEM allows)]</p>
-
-<p>[TO DO: example of use]</p>
-
-<p>[TO DO: might be worth defining the following enums in AEApplicationGlue (partly for illustrative purposes, partly for testing, partly in case users ever run into an older Carbon app - or even a current Cocoa one - that happens to return values of these types:</p>
-
-<p>let _cAliasOrString: OSType = 0x73662020</p>
-
-<p>let _cNumberDateTimeOrString: OSType = 0x6E647320
-let _cNumberOrDateTime: OSType = 0x6E642020
-let _cNumberOrString: OSType = 0x6E732020</p>
-
-<p>let _cListOrRecord: OSType = 0x6C722020
-let _cListOrString: OSType = 0x6C732020
-let _cListRecordOrString: OSType = 0x6C727320</p>
-
-<p>]</p>
-
-<h3>Record structs</h3>
-
-<p>While SwiftAutomation packs and unpacks Apple event records  as <code>Dictionary&lt;PREFIXSymbol:Any&gt;</code> values as standard, it is also possible to map part or all of a specific record structures to a Swift struct, simplifying member access and improving type safety.</p>
-
-<p>[TO DO: finish]</p>
-
-<h3>Type aliases</h3>
-
-<p>The <code>-t</code> option adds a typealias to the glue file. For example, to define a typealias for <code>Array&lt;String&gt;</code> named <code>PREFIXStrings</code>:</p>
-
-<pre><code>-t 'Strings=Array&lt;String&gt;'
-</code></pre>
-
-<p>The <code>-t</code> option's format string has the following structure:</p>
-
-<pre><code>ALIASNAME=TYPE
-</code></pre>
-
-<p>The glue's <code>PREFIX</code> is added automatically to <code>ALIASNAME</code>, and to any reserved type names that appear within <code>TYPE</code>.</p>
-
 <h2>Using a glue</h2>
 
 <p>To include the generated glue file in your project:</p>
@@ -169,8 +101,6 @@ let _cListRecordOrString: OSType = 0x6C727320</p>
 
 <h2>How keywords are converted</h2>
 
-<p>[TO DO: review this once terminology parser is ported]</p>
-
 <p>Because scriptable applications' terminology resources supply class, property, command, etc. names in AppleScript keyword format, <code>aeglue</code> must convert these terms to valid Swift identifiers when generating the glue file and accompanying <code>.sdef</code> documentation. For reference, here are the main conversion rules used:</p>
 
 <ul>
@@ -182,7 +112,7 @@ let _cListRecordOrString: OSType = 0x6C727320</p>
 <p>Some rarely encountered corner cases are dealt with by the following conversion rules:</p>
 
 <ul>
-<li><p>Ampersands (<code>&amp;amp;</code>) are replaced by the word 'And'.</p></li>
+<li><p>Ampersands (<code>&amp;</code>) are replaced by the word 'And'.</p></li>
 <li><p>Any other characters are converted to <code>_0x00_</code>-style hexadecimal representations.</p></li>
 <li><p>Names that begin with an underscore (<code>_</code>) have an underscore appended too.</p></li>
 <li><p>SwiftAutomation provides default terminology for standard type classes such as <code>integer</code> and <code>unicodeText</code>, and standard commands such as <code>open</code> and <code>quit</code>. If an application-defined name matches a built-in name but has a <em>different Apple event code</em>, SwiftAutomation will append an underscore to the application-defined name to avoid conflict.</p></li>

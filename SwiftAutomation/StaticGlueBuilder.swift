@@ -182,6 +182,7 @@ func parseEnumeratedTypeDefinition(_ string: String, classNamePrefix: String) th
         }
         if typeName == "MissingValue" { // for convenience, the format string may also include `MissingValue`, in which case a `.missing(_)` case is also included in the enum; this avoids the need for an extra level of MayBeMissing<> boxing
             cases.insert((name: "missing", type: "MissingValueType"), at: 0) // (ignore any property name caller might have given)
+            enumNameParts.append(typeName)
         } else {
             if caseName == "missing" { throw SyntaxError("Invalid case name: \(typeName)") }
             if typeName == caseName { caseName = "_\(caseName)" } // caution: type names _should_ start with uppercase char and case name with lower, but check to be sure and disambiguate if necessary
@@ -442,6 +443,8 @@ public class StaticGlueTemplate {
                     $0.insertString("CASE_TYPE", $1.type)
                 }
             }
+            subtemplate.insertString("ENUM_NO_VALUE",
+                 (definition.cases[0].name == "missing" ? "return .missing(MissingValue)" : "throw SwiftAutomationError(code: -1708)"))
         }
     }
     

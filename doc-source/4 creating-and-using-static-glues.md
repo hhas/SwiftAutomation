@@ -1,14 +1,13 @@
 # Creating and using static glues
 
-[TO DO: TBC]
+The SwiftAutomation framework bundle includes an `aeglue` tool for generating static glue files. Glues enable you to control "AppleScriptable" applications using human-readable property and method names derived from their built-in terminology resources.
+
 
 ## Generating a glue
 
-The SwiftAutomation framework bundle includes an `aeglue` tool for generating static glue files containing high-level terminology-based APIs.
+To add `aeglue` to your Bash shell's search path, add the following line to your `~/.bash_profile`, replacing `/path/to/` with the directory where the SwiftAutomation framework is located:
 
-To put `aeglue` on your Bash shell's search path, add the following line to your `~/.bash_profile` (modify the path to `SwiftAutomation.framework` as needed):
-
-  export $PATH="$PATH:/Library/Frameworks/SwiftAutomation.framework/Resources/bin"
+<pre><code>export $PATH="$PATH:<var>/path/to/</var>SwiftAutomation.framework/Resources/bin"</code></pre>
 
 To view the `aeglue` tool's full documentation:
 
@@ -60,7 +59,7 @@ Each glue also defines:
 
 * a <code><var>PREFIX</var></code> typealias as a convenient shorthand for <code><var>PREFIX</var>Symbol</code>.
 
-[TO DO: note that custom enum, struct, and/or typealias definitions may also be included]
+Glue files may also include custom `typealias`, `enum`, and `struct` definitions that improve integration between Swift and Apple event type systems. [Chapter 10](advanced-type-support.html) explains how to add and use these features.
 
 
 ## Customizing glues
@@ -74,72 +73,6 @@ For compatibility, `aeglue` normally sends the application an `ascr/gdte` event 
   aeglue -S Finder
 
 The `-S` option may be quicker when generating glues for CocoaScripting-based apps which already contain SDEF resources. When using the `-S` option to work around buggy `ascr/gdte` event handlers in AETE-based Carbon apps, be aware that macOS's AETE-to-SDEF converter is not 100% reliable. For example, four-char code strings containing non-printing characters fail to appear in the generated SDEF XML, in which case `aeglue` will warn of their omission and you'll have to correct the glue files manually or use SwiftAutomation's lower-level `OSType`-based APIs in order to access the affected objects/commands.
-
-
-## Improving type system integration
-
-The `aeglue` tool's `-e`, `-s`, and `-t` options can be used to insert custom Swift enums, structs, and typealiases in the generated glue files for improved integration between Swift's strong, static type system and the Apple Event Manager's weak, dynamic types. Each option may appear any number of times and takes a format string as argument.
-
-
-### Enumerated types
-
-[TO DO: "Swift often uses enumerated types... (aka tagged unions/sum types)"] Enumerated types enable commands whose results can have multiple types to return those values in a type-safe way.
-
-For example, if a command can return a `Symbol` _or_ a `String`, include the following `-e` option in the `aeglue` command:
-
-  -e Symbol+String
-
-The -e option's argument must have the following format:
-
-  [ENUMNAME=][CASE1:]TYPE1+[CASE1:]TYPE2+...
-
-`ENUMNAME` is the name to be given to the enumerated type, e.g. `MyType`. If omitted, a default name is automatically generated.
-
-`TYPEn` is the name of an existing Swift type, e.g. String or a standard SwiftAutomation type: `Symbol`, `Object`, `Insertion`, `Item`, or `Items` (the glue `PREFIX` will be added automatically). `CASEn` is the name of the case to which values of that type are assigned. If the `TYPE` is parameterized, e.g. `Array<String>`, the `CASE` name must also be given, otherwise it can be omitted and a default name will be derived from the `TYPE` name, e.g. `Int` -> `int`.
-
-For example, to define an enum named `FOOSymbolOrIntOrString`
-
-  aeglue -e Symbol+Int+String -p FOO 'Foo.app'
-	
-[TO DO: note that `Symbol` must come before `String`, to avoid type/enum codes being coerced to four-char-code strings (which AEM allows)]
-
-[TO DO: example of use]
-
-
-[TO DO: might be worth defining the following enums in AEApplicationGlue (partly for illustrative purposes, partly for testing, partly in case users ever run into an older Carbon app - or even a current Cocoa one - that happens to return values of these types:
-
-let _cAliasOrString: OSType = 0x73662020
-
-let _cNumberDateTimeOrString: OSType = 0x6E647320
-let _cNumberOrDateTime: OSType = 0x6E642020
-let _cNumberOrString: OSType = 0x6E732020
-
-let _cListOrRecord: OSType = 0x6C722020
-let _cListOrString: OSType = 0x6C732020
-let _cListRecordOrString: OSType = 0x6C727320
-
-]
-
-
-
-### Record structs
-
-While SwiftAutomation packs and unpacks Apple event records  as `Dictionary<PREFIXSymbol:Any>` values as standard, it is also possible to map part or all of a specific record structures to a Swift struct, simplifying member access and improving type safety.
-
-[TO DO: finish]
-
-### Type aliases
-
-The `-t` option adds a typealias to the glue file. For example, to define a typealias for `Array<String>` named `PREFIXStrings`:
-
-  -t 'Strings=Array<String>'
-
-The `-t` option's format string has the following structure:
-
-  ALIASNAME=TYPE
-
-The glue's `PREFIX` is added automatically to `ALIASNAME`, and to any reserved type names that appear within `TYPE`.
-
 
 
 ## Using a glue
@@ -158,8 +91,6 @@ To include the generated glue file in your project:
 
 ## How keywords are converted
 
-[TO DO: review this once terminology parser is ported]
-
 Because scriptable applications' terminology resources supply class, property, command, etc. names in AppleScript keyword format, `aeglue` must convert these terms to valid Swift identifiers when generating the glue file and accompanying `.sdef` documentation. For reference, here are the main conversion rules used:
 
 * Characters `a-z`, `A-Z`, `0-9`, and underscores (`_`) are preserved.
@@ -171,7 +102,7 @@ Because scriptable applications' terminology resources supply class, property, c
 
 Some rarely encountered corner cases are dealt with by the following conversion rules:
 
-* Ampersands (`&amp;`) are replaced by the word 'And'.
+* Ampersands (`&`) are replaced by the word 'And'.
 
 * Any other characters are converted to `_0x00_`-style hexadecimal representations.
 

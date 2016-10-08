@@ -24,31 +24,40 @@
 
 <p class="hilitebox">Caution: It is recommended that you do not have any other documents open in TextEdit during this tutorial, as accidental alterations to existing documents are easy to make and may not be undoable.</p>
 
-<p>To begin, launch Terminal.app and type <code>swift</code> followed by a newline to launch the <code>swift</code> interpreter:</p>
+<p>To begin, build the SwiftAE project's MacOSGlues target then launch the <code>swift</code> interpreter in Terminal, replacing <code><var>/path/to/products</var></code> with the path to the directory containing the newly built <code>SwiftAutomation.framework</code> and <code>MacOSGlues.framework</code> bundles:</p>
 
-<pre><code>jsmith$ swift
-Welcome to Apple Swift version 2.0 (700.0.38.1 700.0.53). Type :help for assistance.
-</code></pre>
+<pre><code><strong>jsmith$ swift -F <var>/path/to/products</var></strong>
+<span style="color:gray;">Welcome to Apple Swift version 2.0 (700.0.38.1 700.0.53). Type :help for assistance.
+  1&gt;</span></code></pre>
 
 <h2>Target TextEdit</h2>
 
-<p>[TO DO: first step is to generate the glue; second step is to import it]</p>
-
-<p>[TO DO: need to figure out how and where to package and place glues for this to work; given that Swift currently sucks for building/importing third-party frameworks, this might be tricky.]</p>
-
 <p>The first step is to import the Swift glue file for TextEdit:</p>
 
-<pre><code>import TextEditGlue
+<pre><code>import SwiftAutomation; import MacOSGlues
 </code></pre>
 
-<p>Each glue file defines the Swift classes needed to control one particular application – in this case TextEdit – using human-readable code. A ready-to-use <code>TextEditGlue.swift</code> glue file is included with this tutorial for convenience. (Glues for other applications can be created using SwiftAutomation's <code>aeglue</code> tool; see chapter 4 for details.) </p>
+<p>The <code>MacOSGlues.framework</code> contains ready-to-use glues for many of the "AppleScriptable" applications found in macOS, including Finder, iTunes, and TextEdit. Each glue file defines the Swift classes needed to control one particular application – in this case TextEdit – using human-readable code.</p>
 
-<p>Once the glue is imported, instantiate a new <code>Application</code> object as follows:</p>
+<p>(Glues for other applications can be created using SwiftAutomation's <code>aeglue</code> tool; see chapter 4 for details.) </p>
+
+<p>Next, create a new <code>Application</code> object for controlling TextEdit:</p>
 
 <pre><code>let textedit = TextEdit()
 </code></pre>
 
-<p>An application may be identified in various ways, including name (e.g. <code>"TextEdit"</code>), path (<code>"/Applications/TextEdit.app"</code>), and bundle identifier (<code>"com.apple.TextEdit"</code>). This argument can usually be omitted, in which case the new <code>Application</code> object will use the bundle identifier of the application from which the glue was created.</p>
+<p>By default, the new <code>Application</code> object will use the bundle identifier of the application from which the glue was created; in this case <code>"com.apple.TextEdit"</code>. Other ways in which applications can be identified include by name (e.g. <code>"TextEdit"</code>), full path (<code>"/Applications/TextEdit.app"</code>), and even remote URL (<code>eppc://my-other-mac.local/TextEdit</code>), but for most tasks the default behavior is sufficient.</p>
+
+<p>To test, send TextEdit a standard <code>activate</code> command:</p>
+
+<pre><code>try textedit.activate()
+</code></pre>
+
+<p>This should make TextEdit the currently active (frontmost) application, automatically launching it if it isn't already running. All application commands throw on failure, so don't forget to type Swift's <code>try</code> keyword before the command or <code>swift</code> will refuse to compile it.</p>
+
+<p>[TO DO: open TextEdit's SDEF documentation in Script Editor and summarize its contents and organization]</p>
+
+<p>[TO DO: note that get/set aren't usually documented]</p>
 
 <h2>Create a new document</h2>
 
@@ -70,12 +79,19 @@ Welcome to Apple Swift version 2.0 (700.0.38.1 700.0.53). Type :help for assista
 
 <p>This specifier can be assigned to a constant or variable for easy reuse. Use the <code>make</code> command to create another document, this time assigning its result to a variable named <code>doc</code> as shown:</p>
 
-<pre><code>let doc = textedit.make(new: TED.document) as TEDItem
+<pre><code>let doc = try textedit.make(new: TED.document) as TEDItem
 </code></pre>
 
-<p>Explicitly declaring the command's return type (in this case, as <code>TEDItem</code>) is not mandatory. If omitted, the Swift compiler will infer <code>doc</code>'s static type to be <code>Any</code>, allowing it to hold whatever type of object the application actually returns. However, the Swift compiler won't let you refer to the object's properties and methods until you cast that variable to a specific type. Applying the (<code>... as TEDItem</code>) cast directly to the command has two benefits: not only allows the Swift compiler to infer the <code>doc</code> variable's own type (<code>TEDItem</code>), it also tells SwiftAutomation that it <em>must</em> convert the Apple event data returned by the application to that specific type or else throw an error if that conversion isn't supported. This enables SwiftAutomation to map data from Apple event's weak, dynamic type system to Swift's strong, static one in a fully type-safe way.</p>
+<p>Declaring the command's return type (<code>TEDItem</code>) is not essential, but greatly improves both usability and reliability. Without it, the Swift compiler will infer the <code>doc</code> variable's type to be <code>Any</code>, allowing it to hold any value that the application might return. However, you won't be able to use the returned value's properties and methods until you cast that variable to a more specific type. Applying the cast directly to the command's result not only allows the Swift compiler to infer the <code>doc</code> variable's exact type, it also instructs SwiftAutomation to convert whatever result the application returns to that exact type or else throw an error if that conversion isn't supported. This provides robust yet flexible type-safe bridging between Apple event's weak, dynamic type system and Swift's strong, static one.</p>
 
 <p>[TO DO: don't say what TEDItem actually means...when should that be clarified?]</p>
+
+<p>The above <code>make</code> command simply creates a new, blank document in TextEdit and returns a reference to it (<code>TextEdit().documents["Untitled"]</code>). To create a new document with custom content, use the <code>make</code> command's optional <code>withProperties:</code> parameter to specify the initial values for one or more of the document object's properties:</p>
+
+<pre><code>let doc = try textedit.make(new: TED.document, withProperties: [TED.text:"Hello World!"]) as TEDItem
+</code></pre>
+
+<p>Here we tell TextEdit to create a new document object containing the text "Hello World!". [TO DO: SDEF would help here]</p>
 
 <p>[TO DO: this will work better if the above <code>make</code> command is expanded to include <code>withProperties: [TED.text:"Hello World!"]</code>]. The next task will be to <code>get()</code> that document's text, which makes the point that object specifiers are only used to construct <em>queries</em>; to actually get a value from the application you <em>have</em> to use a command, e.g. <code>get()</code>. (Kinda like the difference between putting together a file path, e.g. "/Users/jsmith/" + "TODO.txt", that describes the location of some data, and passing that path to a <code>read()</code> command to actually obtain the data from that location.) Once getting is covered, the <code>set()</code> example can show how to change that content to something else. In addition, the <code>get()</code> example can explain the shorthand form that allows the command's direct parameter to be used as its subject for conciseness, i.e. <code>textedit.get(doc.text)</code> -> `doc.text.get()]</p>
 
@@ -83,21 +99,25 @@ Welcome to Apple Swift version 2.0 (700.0.38.1 700.0.53). Type :help for assista
 
 <p>Retrieving the document's text is done using the <code>get()</code> command:</p>
 
-<p>doc.text.get()
-// "Hello World"</p>
+<pre><code>try doc.text.get()
+// "Hello World"
+</code></pre>
 
-<p>This may seem counter-intuitive if you're used to dealing with AppleScript or Swift, where evaluating a literal reference returns the <em>value</em> identified by that reference. However, SwiftAutomation only uses object-oriented references to construct object specifiers, not to resolve them. Always remember that an object specifier is really a first-class query object, so while the syntax may look similar to that of an object-oriented reference, its behavior is very different. For example, when evaluating the literal reference:</p>
+<p>[TO DO: rephrase/replace] This may seem counter-intuitive, where evaluating a literal reference returns the <em>value</em> identified by that reference. However, SwiftAutomation only uses object-oriented references to construct object specifiers, not to resolve them. Always remember that an object specifier is really a first-class query object, so while the syntax may look similar to that of an object-oriented reference, its behavior is very different. For example, when evaluating the literal reference:</p>
 
-<p>textedit.documents[1].text</p>
+<pre><code>textedit.documents[1].text
+</code></pre>
 
 <p>the result is an object specifier, <code>TextEdit().documents[1].text</code>, not the value being specified (<code>"Hello World"</code>). To get the value being specified, you have to pass the object specifier as the direct argument to TextEdit's <code>get()</code> command:</p>
 
-<p>textedit.get(doc.text)
-// "Hello World!"</p>
+<pre><code>try textedit.get(doc.text)
+// "Hello World!"
+</code></pre>
 
 <p>As before, SwiftAutomation provides alternative convenience forms that allow the above command to be written more neatly as this:</p>
 
-<p>doc.text.get()</p>
+<pre><code>doc.text.get()
+</code></pre>
 
 <h2>Set the document's content</h2>
 
@@ -109,14 +129,14 @@ Welcome to Apple Swift version 2.0 (700.0.38.1 700.0.53). Type :help for assista
 
 <p>In this case, the direct parameter is an object specifier identifying the new document's <code>text</code> property, <code>doc.text</code>, and the <code>to:</code> parameter is the string <code>"Hello World"</code>:</p>
 
-<pre><code>textedit.set(doc.text, to: "Hello World")
+<pre><code>try textedit.set(doc.text, to: "Hello World")
 </code></pre>
 
 <p>The front TextEdit document should now contain the text "Hello World".</p>
 
 <p>Because the above expression is a bit unwieldy to write, SwiftAutomation allows it to be written in a more elegant OO-like format as a special case, where the <code>set()</code> command is called upon the document's object specifier:</p>
 
-<pre><code>doc.text.set(to: "Hello World")
+<pre><code>try doc.text.set(to: "Hello World")
 </code></pre>
 
 <p>SwiftAutomation converts this second form to the first form internally, so the end result is exactly the same. SwiftAutomation supports several such special cases, and these are described in the chapter on Application Commands. Using these special cases produces more elegant, readable source code, and is recommended.</p>
@@ -125,17 +145,17 @@ Welcome to Apple Swift version 2.0 (700.0.38.1 700.0.53). Type :help for assista
 
 <p>Depending on what sort of attribute(s) the object specifier identifies, <code>get()</code> may return a primitive value (number, string, list, dict, etc.), or it may return another object specifier, or list of object specifiers, e.g.:</p>
 
-<pre><code>doc.text.get()
+<pre><code>try doc.text.get()
 // "Hello World!"
 
-textedit.documents[1].get()
+try textedit.documents[1].get()
 // TextEdit().documents["Untitled"]
 
-textedit.documents.get()
+try textedit.documents.get()
 // [TextEdit().documents["Untitled"], 
     TextEdit().documents["Untitled 2"]]
 
-textedit.documents.text.get()
+try textedit.documents.text.get()
 // ["Hello World", ""]
 </code></pre>
 
@@ -145,7 +165,7 @@ textedit.documents.text.get()
 
 <p>[TO DO: Rephrase and insert in this section: "because <code>document</code> objects are elements of the root <code>application</code> class, applications such as TextEdit can usually infer the location at which the new <code>document</code> object should appear. At other times, you need to supply an <code>at</code> parameter that indicates the desired location."]</p>
 
-<pre><code>textedit.make(new: TED.document, withProperties=[TED.text: "Hello World"])
+<pre><code>try textedit.make(new: TED.document, withProperties=[TED.text: "Hello World"])
 // TextEdit().documents[1]
 </code></pre>
 
@@ -155,14 +175,14 @@ textedit.documents.text.get()
 
 <p>In addition to getting and setting a document's entire text by applying <code>get()</code> and <code>set()</code> commands to <code>text</code> property, it's also possible to manipulate selected sections of a document's text directly. TextEdit's <code>text</code> property contains a <code>text</code> object, which in turn has <code>character</code>, <code>word</code> and <code>paragraph</code> elements, all of which can be manipulated using a variety of commands - <code>get()</code>, <code>set()</code>, <code>make()</code>, <code>move</code>, <code>delete</code>, etc. For example, to set the size of the first character of every paragraph of the front document to 24pt:</p>
 
-<pre><code>textedit.documents[1].text.paragraphs.size.set(to: 24)
+<pre><code>try textedit.documents[1].text.paragraphs.size.set(to: 24)
 </code></pre>
 
 <p>Or to insert a new paragraph at the end of the document:</p>
 
-<pre><code>textedit.make(new: TED.paragraph,
-               at: TEDApp.documents[1].text.paragraphs.end,
-         withData: "Hello Again, World\n")
+<pre><code>try textedit.make(new: TED.paragraph,
+                   at: TEDApp.documents[1].text.paragraphs.end,
+             withData: "Hello Again, World\n")
 </code></pre>
 
 <p>[TO DO: add note that unlike AS, Swift is sensitive to parameter order, so named params must appear in same order as in glue]</p>

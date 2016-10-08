@@ -6,70 +6,80 @@
 
 [TO DO: need to explain derivation of symbol names (they're a mismash of AppleScript names and ); also, might want to consider changing `float` to `real`]
 
-Apple event descriptor types are mapped to and from Swift/Foundation/SwiftAutomation structs and classes as follows:
+The `NSAppleEventDescriptor` Foundation class provides a low-level wrapper around the Carbon Apple Event Manager APIs for building and sending Apple events, and for encapsulating the parameter and result data to be included in those events. `NSAppleEventDescriptor` defines a `descriptorType` property containing an `OSType` (a.k.a. "four-char code") that describes the type of value it holds (e.g. `'utxt'` = `typeUnicodeText` = UTF16-encoded text), and a `data` property containing the value's data serialized as an `NSData` instance.
+
+Apple event data types include:
+
+* common scalar types such as booleans, integers, doubles, strings, dates and file URLs
+
+* ordered lists
+
+* records (struct-like key-value lists where each key is an `OSType`)
+
+* object specifiers, used to construct _first-class queries_ (also known as _references_ in AppleScript), that identify objects within an application.
+
+`NSAppleEventDescriptor` includes methods for converting common Apple event data types to and from their Foundation equivalents (e.g. `typeUnicodeText` ⟷ `NSString`). SwiftAutomation extends and improves on these basic mappings as follows:
 
 <table width="100%" summary="AE-Foundation type mappings">
 <thead>
 
 <tr><th>AppleScript type</th><th>Descriptor type</th>
-    <th><code>Symbol</code> name</th><th>Cocoa class</th></tr>
+    <th>Symbol name</th><th>Swift</th></tr>
 
 </thead>
 <tbody>
 
 <tr><td><code>boolean</code></td><td><code>typeBoolean</code></td>
-    <td><code>boolean</code></td><td><code>Bool</code></tr>
+    <td><code>AE.boolean</code></td><td><code>Bool</code></tr>
 
 <tr><td><code>integer</code></td><td><code>typeSInt32</code></td>
-    <td><code>integer</code></td><td><code>Int</code></td></tr>
+    <td><code>AE.integer</code></td><td><code>Int</code></td></tr>
 
 <tr><td><code>real</code></td><td><code>typeIEEE64BitFloatingPoint</code></td>
-    <td><code>real</code></td><td><code>Double</code></td></tr>
+    <td><code>AE.real</code></td><td><code>Double</code></td></tr>
 
 <tr><td><code>text</code> [1]</td><td><code>typeUnicodeText</code></td>
-    <td><code>UnicodeText</code></td><td><code>String</code></td></tr>
+    <td><code>AE.UnicodeText</code></td><td><code>String</code></td></tr>
 
 <tr><td><code>list</code></td><td><code>typeAEList</code></td>
-    <td><code>list</code></td><td><code>Array</code></td></tr>
+    <td><code>AE.list</code></td><td><code>Array</code></td></tr>
 
 <tr><td><code>record</code></td><td><code>typeAERecord</code></td>
-    <td><code>record</code></td><td><code>Dictionary</code></td></tr>
+    <td><code>AE.record</code></td><td><code>Dictionary</code></td></tr>
 
 <tr><td><code>date</code></td><td><code>typeLongDateTime</code></td>
-    <td><code>date</code></td><td><code>Date</code></td></tr>
+    <td><code>AE.date</code></td><td><code>Date</code></td></tr>
 
 <tr><td><code>«class bmrk»</code></td><td><code>typeBookmarkData</code></td>
-    <td><code>bookmarkData</code></td><td><code>URL</code> [2]</td></tr>
+    <td><code>AE.bookmarkData</code></td><td><code>URL</code> [2]</td></tr>
 
 <tr><td><code>alias</code></td><td><code>typeAlias</code></td>
-    <td><code>alias</code></td><td><code>URL</code> [2]</td></tr>
+    <td><code>AE.alias</code></td><td><code>URL</code> [2]</td></tr>
 
 <tr><td><code>«class furl»</code></td><td><code>typeFileURL</code></td>
-    <td><code>fileURL</code></td><td><code>URL</code> [2]</td></tr>
+    <td><code>AE.fileURL</code></td><td><code>URL</code> [2]</td></tr>
 
 <tr><td>N/A [3]</td><td><code>typeNull</code></td>
-    <td><code>null</code></td><td><code><var>PREFIX</var>App</code></td></tr>
+    <td><code>AE.null</code></td><td><code><var>PREFIX</var>App</code></td></tr>
 
 <tr><td><code>reference</code></td><td><code>typeObjectSpecifier</code></td>
-    <td><code>reference</code></td><td><code><var>PREFIX</var>Item</code>/<var>PREFIX</var>Items</code> [4]</td></tr>
+    <td><code>AE.reference</code></td><td><code><var>PREFIX</var>Item</code>/<var>PREFIX</var>Items</code> [4]</td></tr>
 
 <tr><td><code>location reference</code></td><td><code>typeInsertionLoc</code></td>
-    <td><code>locationReference</code></td><td><code><var>PREFIX</var>Insertion</code></code> [4]</td></tr>
+    <td><code>AE.locationReference</code></td><td><code><var>PREFIX</var>Insertion</code></code> [4]</td></tr>
 
 <tr><td><code>class</code></td><td><code>typeType</code></td>
-    <td><code>typeClass</code></td><td><code><var>PREFIX</var>Symbol</code> [5]</td></tr>
+    <td><code>AE.typeClass</code></td><td><code><var>PREFIX</var>Symbol</code> [5]</td></tr>
 
 <tr><td><code>constant</code></td><td><code>typeEnumerated</code></td>
-    <td><code>enumerator</code></td><td><var>PREFIX</var>Symbol</code> [5]</td></tr>
+    <td><code>AE.constant</code></td><td><var>PREFIX</var>Symbol</code> [5]</td></tr>
 
 <tr><td><code>property</code></td><td><code>typeProperty</code></td>
-    <td><code>property</code></td><td><var>PREFIX</var>Symbol</code> [5]</td></tr>
+    <td><code>AE.property</code></td><td><var>PREFIX</var>Symbol</code> [5]</td></tr>
 
 </tbody>
 </table>
 
-
-[TO DO: should the above table include `application` for completeness?]
 
 [1] While AppleScript treats `string`, `text`, and `Unicode text` keywords as synonyms for `typeUnicodeText`, the Apple Event Manager still  considers them to be different types (`typeChar`, `cText`, `typeUnicodeText`). When specifying a command's `resultType:` always use <code><var>PREFIX</var>Symbol.unicodeText</code> (or just `AE.unicodeText`) as this is the standard UTF-16 representation that all current macOS apps should support.
 
@@ -86,7 +96,24 @@ Apple event descriptor types are mapped to and from Swift/Foundation/SwiftAutoma
 
 While AE-Swift type conversions generally work quite seamlessly, it is sometimes useful to know some of the details involved, particularly when troubleshooting code that deals with older or buggy applications. The following sections provide additional information.
 
-[TO DO: type mapping implementations are yet to be finalized; update the following sections when done]
+
+### Missing Value
+
+The 'missing value' symbol serves a similar purpose to Swift's `nil`, acting as a placeholder where a value is expected but none is available. On the Apple event side, it is represented as a descriptor of `typeType` with the code value `cMissing` (`'msng'`). SwiftAutomation provides a choice of mappings when unpacking a 'missing value' descriptor as a Swift value:
+
+* `SwiftAutomation.MissingValue` is used when a command's return type is `Any`. Unlike generic `nil` values, `MissingValue` is a unique value of concrete type `MissingValueType` so can be compared for equality without having to cast to a specific type first. For example:
+
+    let path = try TextEdit().documents[1].path() // returns Any
+    if path != MissingValue { ... }
+
+* `Optional<T>.none` is used when a command's return type is declared as `Optional<T>`. For example:
+
+    let path = try TextEdit().documents[1].path() as String?
+    if let realPath = path { ... }
+
+Both values are packed as 'missing value' descriptors when used as a command parameter.
+
+[TO DO: what about documenting `MayBeMissing<T>` and/or the `.missing(MissingValueType)` case in custom enums created via aeglue's `-e` option? there's an argument for removing those features to simplify the API, in which case `MissingValue` will _only_ be returned when return type is `Any`]
 
 
 ### Boolean

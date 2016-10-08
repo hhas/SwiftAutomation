@@ -4,6 +4,7 @@ import Cocoa
 import SwiftAutomation
 
 
+
 let itunes = ITunes()
 let textedit = TextEdit()
 let finder = Finder()
@@ -54,10 +55,21 @@ try finder.home.get(resultType: FIN.alias) as URL
 //try textedit.documents.get() as NSArray //<TEDItem>
 
 
+//let result = try textedit.documents.paragraphs.get() as [Any]
+//print(type(of:result))
+//print(result)
+
+
 //let v = try finder.home.files.name.get() as NSArray//Set<AnyHashable>
 
 //type(of:v)
+do {
+let result = try TextEdit().documents.path.get() as [String?]
 
+print(result)
+} catch {
+print(error)
+}
 
 
 // CustomReflectable FAIL: Could not cast value of type 'SwiftAutomation.ObjectSpecifier' (0x10d705c88) to 'MyPlayground_Sources.FINItem' (0x10d5433c8).

@@ -15,10 +15,14 @@ TO DO:
 
 
 
+- Define standard structs for representing color, position, etc.? (And/Or support packing/unpacking Cocoa equivalents, e.g. NSColor?) The default behavior is to pack/unpack as Array<Int>, but type-safe alternatives could also be provided that ensure whatever type of descriptor an app returns (typeAEList/typeQDRectangle) the final result is normalized to the semantic type specified by the user (e.g. SwiftAutomation.RectangleRecord). Also, how practical to support packing/unpacking image types (a known mess)?
+
+
+
 - Could a Swift REPL be integrated into the AppleScriptToSwift application to create a general-purpose 'SwiftAutomationExplorer.app'? Such an application would also benefit from a built-in dictionary viewer that can display Swift-style application dictionaries without the user having to manually generate them. A. This is out of scope, but would be appropriate for a separate Script Editor-like Swift editor.
 
 
-- once Swift fully supports redistributable frameworks, implement an `aeglue-framework` bash script that takes a folder of generated glue+sdef files then runs /usr/bin/swift to compile, build, and codesign them as an importable framework; another option might be to build and upload to Swift package manager
+- once Swift fully supports redistributable frameworks, implement an `aeglue-framework` bash script that takes a folder of generated glue+sdef files then runs /usr/bin/swift to compile, build, and codesign them as an importable framework and/or Swift package
 
 
 

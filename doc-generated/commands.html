@@ -40,49 +40,99 @@
 
 <h2>Examples</h2>
 
-<pre><code>// tell application "TextEdit" to activate
+<pre><code>// tell app "TextEdit" to activate
 TextEdit().activate()
 
-// tell application "TextEdit" to open fileList
+// tell app "TextEdit" to open fileList
 TextEdit().open(fileList)
 
-// tell application "Finder" to get version
+// tell app "Finder" to get version
 Finder().version.get()
 
-// tell application "Finder" to set name of file "foo.txt" of home to "bar.txt"
+// tell app "Finder" to set name of file "foo.txt" of home to "bar.txt"
 Finder().home.files["foo.txt"].name.set(to: "bar.txt")
 
-// tell application "TextEdit" to count (text of first document) each paragraph
+// tell app "TextEdit" to count text of first document each paragraph
 TextEdit().documents.first.text.count(each: TED.paragraph)
 
-// tell application "TextEdit" to make new document at end of documents
+// tell app "Finder" to move every item of desktop to folder "Documents" of home
+Finder().desktop.items.move(to: FINApp.home.folders["Documents"])
+
+// tell app "TextEdit" to make new document at end of documents
 TextEdit().documents.end.make(new: TED.document)
 
-// tell application "Finder" to get items of home as alias list
+// tell app "Finder" to get items of home as alias list
 Finder().home.items.get(returnType: FIN.alias)
 </code></pre>
 
 <h2>TO DO: return types</h2>
 
-<ul>
-<li><p>Any</p></li>
-<li><p>generic</p></li>
-<li><p>note that some commands</p></li>
-</ul>
+<p>Glue files define two methods for each application command: one that returns <code>Any</code>, which is used when the calling code does not declare a specific return type, and one that returns a generic type (<code>T</code>) that is used when the exact return type can be inferred. </p>
 
-<p>When specifying a command's return type, you may also need tell the application the exact descriptor type (<code>Symbol.alias</code>, <code>Symbol.fileURL</code>, etc). For example, the Finder normally returns file system references as object specifiers:</p>
+<p>Determining the actual type(s) of values returned by any given command is an exercise left to the user: the application's dictionary may be of some help, though any type information it contains is often incomplete or inaccurate; in addition, a command may return a value or list of values (or even nested lists) depending on whether it applies to a single application object or to multiple objects at once. The <code>command(...)-&gt;Any</code> form is particularly useful when testing and exploring an application's scripting interface, allowing you to see exactly what type(s) of value the application returns for that particular command:</p>
 
-<pre><code>let finder = Finder()
+<pre><code>TextEdit().documents.name.get()
+// ["Untitled", "ReadMe.txt"]
 
-finder.home.get()
-// Finder().startupDisk.folders["Users"].folders["Users"]
+TextEdit().documents.path.get()
+// [MissingValue, "/Users/jsmith/ReadMe.txt"]
 </code></pre>
 
-<p>To get the current user's home folder as a <code>URL</code> instead:</p>
+<p>Once you know exactly what type of value to expect, adding an explicit cast to that type ensures that the command will <em>always</em> return a value of that type, or else throw a <code>CommandError</code> if the result descriptor returned by the application could not be coerced to that type:</p>
 
-<pre><code>finder.home.get(resultType: FIN.fileURL) as URL
+<pre><code>TextEdit().documents.name.get() as [String]
+// ["Untitled", "ReadMe.txt"]
+
+TextEdit().documents.path.get() as [String]
+// CommandError -1700: Can't make some data into the expected type.
+//  
+//   TextEdit().documents.path.get()
+//
+// Can't unpack value as Array&lt;String&gt;:
+//
+//   [MissingValue, "/Users/jsmith/ReadMe.txt"]
+//
+// Can't unpack item 1 as String.
+</code></pre>
+
+<p>In the second example above, casting the list of document paths to <code>Array&lt;String&gt;</code> fails because the unsaved document's <code>path</code> property contains 'missing value', not a string. Changing the return type to <code>Array&lt;Optional&lt;String&gt;&gt;</code> tells SwiftAutomation to accept either, converting 'missing value' to <code>nil</code> automatically:</p>
+
+<pre><code>TextEdit().documents.path.get() as [String?]
+// [nil, Optional("/Users/jsmith/ReadMe.txt")]
+</code></pre>
+
+<p>The explicit cast only tells SwiftAutomation how to coerce and unpack the returned descriptor; it does not tell the application what type of value to return. Some application commands (e.g. <code>get</code>) may accept an optional <code>as</code> (<code>keyAERequestedType</code>) parameter indicating the type of value you want it to return, though this parameter is often not shown in the application's dictionary as AppleScript adds it automatically whenever its <code>as</code> operator is applied to a command. For example, Finder's <code>get</code> command normally returns an object specifier when getting a file or folder element:</p>
+
+<pre><code>tell app "Finder" to get home
+-- folder "jsmith" of folder "Users" of startup disk of app "Finder"
+
+finder.home.get() as FINItem
+// Finder().startupDisk.folders["Users"].folders["jsmith"]
+</code></pre>
+
+<p>Adding an <code>as</code> operator tells Finder to return the command's result as a different type; for example, as an <code>alias</code> value:</p>
+
+<pre><code>tell app "Finder" to get home as alias
+-- alias "Macintosh HD:Users:jsmith:"
+</code></pre>
+
+<p>To perform the same command in SwiftAutomation, pass the equivalent <code>Symbol</code> value as the command's <code>resultType:</code> argument: </p>
+
+<pre><code>finder.home.get(resultType: FIN.alias)
 // URL(string:"file:///Users/jsmith")
 </code></pre>
+
+<p>Don't forget that the command's static result type will be <code>Any</code> unless an explicit cast is applied too:</p>
+
+<pre><code>finder.home.get(resultType: FIN.alias) as URL
+// URL(string:"file:///Users/jsmith")
+</code></pre>
+
+<p>Unlike AppleScript's <code>as</code> operator, which both adds an <code>as</code> parameter to the command <em>and</em> coerces its result, SwiftAutomation keeps the two separate for more precise control.</p>
+
+<p>Also be aware that some application commands, e.g. CocoaScripting's <code>save</code>, may define an <code>as:</code> parameter that does not take a symbol name, in which case you should use that parameter as documented, not <code>resultType:</code>.</p>
+
+<p>[TO DO: the above is a bit scrappy and potentially confusing; unfortunately, that's due to inadequate AEOM specs and ill-considered implementation. SA only makes it possible to work with such a mess; it cannot fix it.]</p>
 
 <h2>Special cases</h2>
 

@@ -37,5 +37,5 @@ While SwiftAutomation uses an object-oriented-like syntax for conciseness and re
 
 * Many applications allow a single command to operate on multiple objects at the same time, providing significant performance benefits when manipulating large numbers of application objects. (Conversely, sending lots of commands to manipulate single objects one at a time can severely degrade performance.)
 
-Chapters 2 and 3 of this manual provide further information on how Apple event IPC works and a tutorial-based introduction to the SwiftAutomation bridge. Chapter 4 explains how to generate glue files for controlling specific appications. Chapters 5 through 9 cover the SwiftAutomation API, and chapter 10 discusses techniques for optimising performance.
+Chapters 2 and 3 of this manual provide further information on how Apple event IPC works and a tutorial-based introduction to the SwiftAutomation bridge. Chapters 4 and 10 explain how to generate glue files for controlling specific appications. Chapters 5 through 9 cover the SwiftAutomation API, and chapter 11 discusses techniques for optimising performance.
 

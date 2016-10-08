@@ -176,6 +176,7 @@ let SwiftGlueTemplate = [
 "        throw «SWIFTAE»UnpackError(appData: appData, descriptor: desc, type: «ENUM_TYPE_NAME».self,",
 "                          message: \"Can't coerce descriptor to Swift type: \\(«ENUM_TYPE_NAME».self)\")",
 "    }",
+"    static func SwiftAutomation_noValue() throws -> «ENUM_TYPE_NAME» { «ENUM_NO_VALUE» }",
 "}",
 "«-ENUM_TYPE_DEFINITION»",
 "",
@@ -212,7 +213,7 @@ let SwiftGlueTemplate = [
 "            «PROPERTY_NAME»: try self.SwiftAutomation_unpackProperty(desc, appData: appData, name: \"«PROPERTY_NAME»\", code: «PROPERTY_CODE»)«-UNPACK_PROPERTY»",
 "        )",
 "    }",
-"    public static func SwiftAutomation_noValue() throws -> «STRUCT_NAME» { throw «SWIFTAE»SwiftAutomationError(code: 1) }",
+"    public static func SwiftAutomation_noValue() throws -> «STRUCT_NAME» { throw SwiftAutomationError(code: -1708) }",
 "}«-RECORD_STRUCT_DEFINITION»",
 "",
 ""].joined(separator: "\n")

@@ -37,50 +37,92 @@ For convenience, SwiftAutomation makes application commands available as methods
 
 ## Examples
 
-  // tell application "TextEdit" to activate
+  // tell app "TextEdit" to activate
   TextEdit().activate()
 
-  // tell application "TextEdit" to open fileList
+  // tell app "TextEdit" to open fileList
   TextEdit().open(fileList)
 
-  // tell application "Finder" to get version
+  // tell app "Finder" to get version
   Finder().version.get()
 
-  // tell application "Finder" to set name of file "foo.txt" of home to "bar.txt"
+  // tell app "Finder" to set name of file "foo.txt" of home to "bar.txt"
   Finder().home.files["foo.txt"].name.set(to: "bar.txt")
 
-  // tell application "TextEdit" to count (text of first document) each paragraph
+  // tell app "TextEdit" to count text of first document each paragraph
   TextEdit().documents.first.text.count(each: TED.paragraph)
-
-  // tell application "TextEdit" to make new document at end of documents
+  
+  // tell app "Finder" to move every item of desktop to folder "Documents" of home
+  Finder().desktop.items.move(to: FINApp.home.folders["Documents"])
+  
+  // tell app "TextEdit" to make new document at end of documents
   TextEdit().documents.end.make(new: TED.document)
 
-  // tell application "Finder" to get items of home as alias list
+  // tell app "Finder" to get items of home as alias list
   Finder().home.items.get(returnType: FIN.alias)
 
 
 ## TO DO: return types
 
-- Any
+Glue files define two methods for each application command: one that returns `Any`, which is used when the calling code does not declare a specific return type, and one that returns a generic type (`T`) that is used when the exact return type can be inferred. 
 
-- generic
+Determining the actual type(s) of values returned by any given command is an exercise left to the user: the application's dictionary may be of some help, though any type information it contains is often incomplete or inaccurate; in addition, a command may return a value or list of values (or even nested lists) depending on whether it applies to a single application object or to multiple objects at once. The `command(...)->Any` form is particularly useful when testing and exploring an application's scripting interface, allowing you to see exactly what type(s) of value the application returns for that particular command:
 
-- note that some commands
+  TextEdit().documents.name.get()
+  // ["Untitled", "ReadMe.txt"]
 
-When specifying a command's return type, you may also need tell the application the exact descriptor type (`Symbol.alias`, `Symbol.fileURL`, etc). For example, the Finder normally returns file system references as object specifiers:
+  TextEdit().documents.path.get()
+  // [MissingValue, "/Users/jsmith/ReadMe.txt"]
 
-  let finder = Finder()
+Once you know exactly what type of value to expect, adding an explicit cast to that type ensures that the command will _always_ return a value of that type, or else throw a `CommandError` if the result descriptor returned by the application could not be coerced to that type:
 
-  finder.home.get()
-  // Finder().startupDisk.folders["Users"].folders["Users"]
+  TextEdit().documents.name.get() as [String]
+  // ["Untitled", "ReadMe.txt"]
 
-To get the current user's home folder as a `URL` instead:
+  TextEdit().documents.path.get() as [String]
+  // CommandError -1700: Can't make some data into the expected type.
+  //  
+  //   TextEdit().documents.path.get()
+  //
+  // Can't unpack value as Array<String>:
+  //
+  //   [MissingValue, "/Users/jsmith/ReadMe.txt"]
+  //
+  // Can't unpack item 1 as String.
 
-  finder.home.get(resultType: FIN.fileURL) as URL
+In the second example above, casting the list of document paths to `Array<String>` fails because the unsaved document's `path` property contains 'missing value', not a string. Changing the return type to `Array<Optional<String>>` tells SwiftAutomation to accept either, converting 'missing value' to `nil` automatically:
+
+  TextEdit().documents.path.get() as [String?]
+  // [nil, Optional("/Users/jsmith/ReadMe.txt")]
+
+The explicit cast only tells SwiftAutomation how to coerce and unpack the returned descriptor; it does not tell the application what type of value to return. Some application commands (e.g. `get`) may accept an optional `as` (`keyAERequestedType`) parameter indicating the type of value you want it to return, though this parameter is often not shown in the application's dictionary as AppleScript adds it automatically whenever its `as` operator is applied to a command. For example, Finder's `get` command normally returns an object specifier when getting a file or folder element:
+
+  tell app "Finder" to get home
+  -- folder "jsmith" of folder "Users" of startup disk of app "Finder"
+  
+  finder.home.get() as FINItem
+  // Finder().startupDisk.folders["Users"].folders["jsmith"]
+
+Adding an `as` operator tells Finder to return the command's result as a different type; for example, as an `alias` value:
+
+  tell app "Finder" to get home as alias
+  -- alias "Macintosh HD:Users:jsmith:"
+
+To perform the same command in SwiftAutomation, pass the equivalent `Symbol` value as the command's `resultType:` argument: 
+
+  finder.home.get(resultType: FIN.alias)
   // URL(string:"file:///Users/jsmith")
 
+Don't forget that the command's static result type will be `Any` unless an explicit cast is applied too:
 
+  finder.home.get(resultType: FIN.alias) as URL
+  // URL(string:"file:///Users/jsmith")
 
+Unlike AppleScript's `as` operator, which both adds an `as` parameter to the command _and_ coerces its result, SwiftAutomation keeps the two separate for more precise control.
+
+Also be aware that some application commands, e.g. CocoaScripting's `save`, may define an `as:` parameter that does not take a symbol name, in which case you should use that parameter as documented, not `resultType:`.
+
+[TO DO: the above is a bit scrappy and potentially confusing; unfortunately, that's due to inadequate AEOM specs and ill-considered implementation. SA only makes it possible to work with such a mess; it cannot fix it.]
 
 
 ## Special cases

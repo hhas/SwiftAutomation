@@ -148,7 +148,7 @@ Count the items in the current user's home folder:
   // tell application "Finder" to count items of home
   try finder.home.count(each: FIN.item)
 
-(Note that Finder and many other Carbon applications require the `count` command's `each` parameter to be given. Cocoa-based apps should always accept either form.)
+(Note that Finder and many other Carbon applications require the `count` command's `each` parameter to be given. Cocoa-based apps should accept either form.)
 
 
 ## `make` command

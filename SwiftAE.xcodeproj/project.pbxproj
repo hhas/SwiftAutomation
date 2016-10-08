@@ -209,9 +209,9 @@
 		4F0E39251BA76D8400FF2A96 /* 7 object-specifiers.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "7 object-specifiers.md"; path = "doc-source/7 object-specifiers.md"; sourceTree = "<group>"; };
 		4F0E39261BA76D8400FF2A96 /* 8 commands.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "8 commands.md"; path = "doc-source/8 commands.md"; sourceTree = "<group>"; };
 		4F0E39271BA76D8400FF2A96 /* 9 examples.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "9 examples.md"; path = "doc-source/9 examples.md"; sourceTree = "<group>"; };
-		4F0E39281BA76D8400FF2A96 /* 10 optimizing-performance.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "10 optimizing-performance.md"; path = "doc-source/10 optimizing-performance.md"; sourceTree = "<group>"; };
-		4F0E39291BA76D8400FF2A96 /* 11 low-level-apis.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "11 low-level-apis.md"; path = "doc-source/11 low-level-apis.md"; sourceTree = "<group>"; };
-		4F0E392A1BA76D8400FF2A96 /* 12 notes.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "12 notes.md"; path = "doc-source/12 notes.md"; sourceTree = "<group>"; };
+		4F0E39281BA76D8400FF2A96 /* 11 optimizing-performance.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "11 optimizing-performance.md"; path = "doc-source/11 optimizing-performance.md"; sourceTree = "<group>"; };
+		4F0E39291BA76D8400FF2A96 /* 12 low-level-apis.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "12 low-level-apis.md"; path = "doc-source/12 low-level-apis.md"; sourceTree = "<group>"; };
+		4F0E392A1BA76D8400FF2A96 /* 13 notes.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "13 notes.md"; path = "doc-source/13 notes.md"; sourceTree = "<group>"; };
 		4F0E392B1BA76D8400FF2A96 /* application_architecture.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = application_architecture.gif; path = "doc-source/application_architecture.gif"; sourceTree = "<group>"; };
 		4F0E392C1BA76D8400FF2A96 /* application_architecture2.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = application_architecture2.gif; path = "doc-source/application_architecture2.gif"; sourceTree = "<group>"; };
 		4F0E392D1BA76D8400FF2A96 /* client_app_to_itunes_event.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = client_app_to_itunes_event.gif; path = "doc-source/client_app_to_itunes_event.gif"; sourceTree = "<group>"; };
@@ -265,6 +265,7 @@
 		4F1A57FC1D9E81C300ACFA51 /* MacOSGlues.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MacOSGlues.h; sourceTree = "<group>"; };
 		4F1A57FD1D9E81C300ACFA51 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4F1D12401BA3042600875F74 /* SpecifierExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpecifierExtensions.swift; sourceTree = "<group>"; };
+		4F21AEEF1DA6D004009C3605 /* 10 advanced-type-support.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "10 advanced-type-support.md"; path = "doc-source/10 advanced-type-support.md"; sourceTree = "<group>"; };
 		4F2645AB1BA4F27700256402 /* AEApplicationGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AEApplicationGlue.swift; sourceTree = "<group>"; };
 		4F4C1A0D1D910BDE004F9083 /* TypeExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TypeExtensions.swift; sourceTree = "<group>"; };
 		4F53812A1BA62541001F24A9 /* README */ = {isa = PBXFileReference; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
@@ -385,9 +386,10 @@
 				4F0E39251BA76D8400FF2A96 /* 7 object-specifiers.md */,
 				4F0E39261BA76D8400FF2A96 /* 8 commands.md */,
 				4F0E39271BA76D8400FF2A96 /* 9 examples.md */,
-				4F0E39281BA76D8400FF2A96 /* 10 optimizing-performance.md */,
-				4F0E39291BA76D8400FF2A96 /* 11 low-level-apis.md */,
-				4F0E392A1BA76D8400FF2A96 /* 12 notes.md */,
+				4F21AEEF1DA6D004009C3605 /* 10 advanced-type-support.md */,
+				4F0E39281BA76D8400FF2A96 /* 11 optimizing-performance.md */,
+				4F0E39291BA76D8400FF2A96 /* 12 low-level-apis.md */,
+				4F0E392A1BA76D8400FF2A96 /* 13 notes.md */,
 				4F0E392B1BA76D8400FF2A96 /* application_architecture.gif */,
 				4F0E392C1BA76D8400FF2A96 /* application_architecture2.gif */,
 				4F0E392D1BA76D8400FF2A96 /* client_app_to_itunes_event.gif */,

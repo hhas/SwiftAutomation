@@ -2,7 +2,7 @@
 //  AEApplicationGlue.swift
 //  built-in 
 //  SwiftAutomation.framework 0.1.0
-//  `aeglue -D`
+//  `aeglue -e 'Symbol+String' -e 'String+MissingValue' -D`
 //
 
 
@@ -19,18 +19,20 @@ private let _specifierFormatter = SpecifierFormatter(applicationClassName: "AEAp
                                                      typeNames: [
                                                                      0x616c6973: "alias", // "alis"
                                                                      0x2a2a2a2a: "anything", // "****"
-                                                                     0x62756e64: "applicationBundleId", // "bund"
+                                                                     0x62756e64: "applicationBundleID", // "bund"
                                                                      0x7369676e: "applicationSignature", // "sign"
-                                                                     0x6170726c: "applicationUrl", // "aprl"
+                                                                     0x6170726c: "applicationURL", // "aprl"
                                                                      0x61707220: "April", // "apr\0x20"
                                                                      0x61736b20: "ask", // "ask\0x20"
                                                                      0x61756720: "August", // "aug\0x20"
                                                                      0x62657374: "best", // "best"
+                                                                     0x626d726b: "bookmarkData", // "bmrk"
                                                                      0x626f6f6c: "boolean", // "bool"
                                                                      0x71647274: "boundingRectangle", // "qdrt"
                                                                      0x63617365: "case_", // "case"
                                                                      0x70636c73: "class_", // "pcls"
                                                                      0x636c7274: "colorTable", // "clrt"
+                                                                     0x656e756d: "constant", // "enum"
                                                                      0x74646173: "dashStyle", // "tdas"
                                                                      0x74647461: "data", // "tdta"
                                                                      0x6c647420: "date", // "ldt\0x20"
@@ -39,19 +41,16 @@ private let _specifierFormatter = SpecifierFormatter(applicationClassName: "AEAp
                                                                      0x64696163: "diacriticals", // "diac"
                                                                      0x636f6d70: "doubleInteger", // "comp"
                                                                      0x656e6373: "encodedString", // "encs"
-                                                                     0x656e756d: "enumerator", // "enum"
                                                                      0x45505320: "EPSPicture", // "EPS\0x20"
                                                                      0x65787061: "expansion", // "expa"
-                                                                     0x65787465: "extendedFloat", // "exte"
+                                                                     0x65787465: "extendedReal", // "exte"
                                                                      0x66656220: "February", // "feb\0x20"
                                                                      0x66737266: "fileRef", // "fsrf"
                                                                      0x66737320: "fileSpecification", // "fss\0x20"
-                                                                     0x6675726c: "fileUrl", // "furl"
+                                                                     0x6675726c: "fileURL", // "furl"
                                                                      0x66697864: "fixed", // "fixd"
                                                                      0x66706e74: "fixedPoint", // "fpnt"
                                                                      0x66726374: "fixedRectangle", // "frct"
-                                                                     0x646f7562: "float", // "doub"
-                                                                     0x6c64626c: "float128bit", // "ldbl"
                                                                      0x66726920: "Friday", // "fri\0x20"
                                                                      0x47494666: "GIFPicture", // "GIFf"
                                                                      0x63677478: "graphicText", // "cgtx"
@@ -65,7 +64,8 @@ private let _specifierFormatter = SpecifierFormatter(applicationClassName: "AEAp
                                                                      0x4a504547: "JPEGPicture", // "JPEG"
                                                                      0x6a756c20: "July", // "jul\0x20"
                                                                      0x6a756e20: "June", // "jun\0x20"
-                                                                     0x6b706964: "kernelProcessId", // "kpid"
+                                                                     0x6b706964: "kernelProcessID", // "kpid"
+                                                                     0x6c64626c: "largeReal", // "ldbl"
                                                                      0x6c697374: "list", // "list"
                                                                      0x696e736c: "locationReference", // "insl"
                                                                      0x6c667864: "longFixed", // "lfxd"
@@ -91,6 +91,7 @@ private let _specifierFormatter = SpecifierFormatter(applicationClassName: "AEAp
                                                                      0x70414c4c: "properties", // "pALL"
                                                                      0x70726f70: "property_", // "prop"
                                                                      0x70756e63: "punctuation", // "punc"
+                                                                     0x646f7562: "real", // "doub"
                                                                      0x7265636f: "record", // "reco"
                                                                      0x6f626a20: "reference", // "obj\0x20"
                                                                      0x74723136: "RGB16Color", // "tr16"
@@ -100,8 +101,8 @@ private let _specifierFormatter = SpecifierFormatter(applicationClassName: "AEAp
                                                                      0x73617420: "Saturday", // "sat\0x20"
                                                                      0x73637074: "script", // "scpt"
                                                                      0x73657020: "September", // "sep\0x20"
-                                                                     0x73696e67: "shortFloat", // "sing"
                                                                      0x73686f72: "shortInteger", // "shor"
+                                                                     0x73696e67: "smallReal", // "sing"
                                                                      0x54455854: "string", // "TEXT"
                                                                      0x7374796c: "styledClipboardText", // "styl"
                                                                      0x53545854: "styledText", // "STXT"
@@ -111,10 +112,12 @@ private let _specifierFormatter = SpecifierFormatter(applicationClassName: "AEAp
                                                                      0x54494646: "TIFFPicture", // "TIFF"
                                                                      0x74756520: "Tuesday", // "tue\0x20"
                                                                      0x74797065: "typeClass", // "type"
-                                                                     0x75747874: "unicodeText", // "utxt"
+                                                                     0x75747874: "UnicodeText", // "utxt"
+                                                                     0x75636f6d: "unsignedDoubleInteger", // "ucom"
                                                                      0x6d61676e: "unsignedInteger", // "magn"
-                                                                     0x75743136: "utf16Text", // "ut16"
-                                                                     0x75746638: "utf8Text", // "utf8"
+                                                                     0x75736872: "unsignedShortInteger", // "ushr"
+                                                                     0x75743136: "UTF16Text", // "ut16"
+                                                                     0x75746638: "UTF8Text", // "utf8"
                                                                      0x76657273: "version", // "vers"
                                                                      0x77656420: "Wednesday", // "wed\0x20"
                                                                      0x77686974: "whitespace", // "whit"
@@ -152,18 +155,20 @@ public class AESymbol: Symbol {
         switch (code) {
         case 0x616c6973: return self.alias // "alis"
         case 0x2a2a2a2a: return self.anything // "****"
-        case 0x62756e64: return self.applicationBundleId // "bund"
+        case 0x62756e64: return self.applicationBundleID // "bund"
         case 0x7369676e: return self.applicationSignature // "sign"
-        case 0x6170726c: return self.applicationUrl // "aprl"
+        case 0x6170726c: return self.applicationURL // "aprl"
         case 0x61707220: return self.April // "apr\0x20"
         case 0x61736b20: return self.ask // "ask\0x20"
         case 0x61756720: return self.August // "aug\0x20"
         case 0x62657374: return self.best // "best"
+        case 0x626d726b: return self.bookmarkData // "bmrk"
         case 0x626f6f6c: return self.boolean // "bool"
         case 0x71647274: return self.boundingRectangle // "qdrt"
         case 0x63617365: return self.case_ // "case"
         case 0x70636c73: return self.class_ // "pcls"
         case 0x636c7274: return self.colorTable // "clrt"
+        case 0x656e756d: return self.constant // "enum"
         case 0x74646173: return self.dashStyle // "tdas"
         case 0x74647461: return self.data // "tdta"
         case 0x6c647420: return self.date // "ldt\0x20"
@@ -172,19 +177,16 @@ public class AESymbol: Symbol {
         case 0x64696163: return self.diacriticals // "diac"
         case 0x636f6d70: return self.doubleInteger // "comp"
         case 0x656e6373: return self.encodedString // "encs"
-        case 0x656e756d: return self.enumerator // "enum"
         case 0x45505320: return self.EPSPicture // "EPS\0x20"
         case 0x65787061: return self.expansion // "expa"
-        case 0x65787465: return self.extendedFloat // "exte"
+        case 0x65787465: return self.extendedReal // "exte"
         case 0x66656220: return self.February // "feb\0x20"
         case 0x66737266: return self.fileRef // "fsrf"
         case 0x66737320: return self.fileSpecification // "fss\0x20"
-        case 0x6675726c: return self.fileUrl // "furl"
+        case 0x6675726c: return self.fileURL // "furl"
         case 0x66697864: return self.fixed // "fixd"
         case 0x66706e74: return self.fixedPoint // "fpnt"
         case 0x66726374: return self.fixedRectangle // "frct"
-        case 0x646f7562: return self.float // "doub"
-        case 0x6c64626c: return self.float128bit // "ldbl"
         case 0x66726920: return self.Friday // "fri\0x20"
         case 0x47494666: return self.GIFPicture // "GIFf"
         case 0x63677478: return self.graphicText // "cgtx"
@@ -198,7 +200,8 @@ public class AESymbol: Symbol {
         case 0x4a504547: return self.JPEGPicture // "JPEG"
         case 0x6a756c20: return self.July // "jul\0x20"
         case 0x6a756e20: return self.June // "jun\0x20"
-        case 0x6b706964: return self.kernelProcessId // "kpid"
+        case 0x6b706964: return self.kernelProcessID // "kpid"
+        case 0x6c64626c: return self.largeReal // "ldbl"
         case 0x6c697374: return self.list // "list"
         case 0x696e736c: return self.locationReference // "insl"
         case 0x6c667864: return self.longFixed // "lfxd"
@@ -224,6 +227,7 @@ public class AESymbol: Symbol {
         case 0x70414c4c: return self.properties // "pALL"
         case 0x70726f70: return self.property_ // "prop"
         case 0x70756e63: return self.punctuation // "punc"
+        case 0x646f7562: return self.real // "doub"
         case 0x7265636f: return self.record // "reco"
         case 0x6f626a20: return self.reference // "obj\0x20"
         case 0x74723136: return self.RGB16Color // "tr16"
@@ -233,8 +237,8 @@ public class AESymbol: Symbol {
         case 0x73617420: return self.Saturday // "sat\0x20"
         case 0x73637074: return self.script // "scpt"
         case 0x73657020: return self.September // "sep\0x20"
-        case 0x73696e67: return self.shortFloat // "sing"
         case 0x73686f72: return self.shortInteger // "shor"
+        case 0x73696e67: return self.smallReal // "sing"
         case 0x54455854: return self.string // "TEXT"
         case 0x7374796c: return self.styledClipboardText // "styl"
         case 0x53545854: return self.styledText // "STXT"
@@ -244,10 +248,12 @@ public class AESymbol: Symbol {
         case 0x54494646: return self.TIFFPicture // "TIFF"
         case 0x74756520: return self.Tuesday // "tue\0x20"
         case 0x74797065: return self.typeClass // "type"
-        case 0x75747874: return self.unicodeText // "utxt"
+        case 0x75747874: return self.UnicodeText // "utxt"
+        case 0x75636f6d: return self.unsignedDoubleInteger // "ucom"
         case 0x6d61676e: return self.unsignedInteger // "magn"
-        case 0x75743136: return self.utf16Text // "ut16"
-        case 0x75746638: return self.utf8Text // "utf8"
+        case 0x75736872: return self.unsignedShortInteger // "ushr"
+        case 0x75743136: return self.UTF16Text // "ut16"
+        case 0x75746638: return self.UTF8Text // "utf8"
         case 0x76657273: return self.version // "vers"
         case 0x77656420: return self.Wednesday // "wed\0x20"
         case 0x77686974: return self.whitespace // "whit"
@@ -260,16 +266,18 @@ public class AESymbol: Symbol {
     // Types/properties
     public static let alias = AESymbol(name: "alias", code: 0x616c6973, type: typeType) // "alis"
     public static let anything = AESymbol(name: "anything", code: 0x2a2a2a2a, type: typeType) // "****"
-    public static let applicationBundleId = AESymbol(name: "applicationBundleId", code: 0x62756e64, type: typeType) // "bund"
+    public static let applicationBundleID = AESymbol(name: "applicationBundleID", code: 0x62756e64, type: typeType) // "bund"
     public static let applicationSignature = AESymbol(name: "applicationSignature", code: 0x7369676e, type: typeType) // "sign"
-    public static let applicationUrl = AESymbol(name: "applicationUrl", code: 0x6170726c, type: typeType) // "aprl"
+    public static let applicationURL = AESymbol(name: "applicationURL", code: 0x6170726c, type: typeType) // "aprl"
     public static let April = AESymbol(name: "April", code: 0x61707220, type: typeType) // "apr\0x20"
     public static let August = AESymbol(name: "August", code: 0x61756720, type: typeType) // "aug\0x20"
     public static let best = AESymbol(name: "best", code: 0x62657374, type: typeType) // "best"
+    public static let bookmarkData = AESymbol(name: "bookmarkData", code: 0x626d726b, type: typeType) // "bmrk"
     public static let boolean = AESymbol(name: "boolean", code: 0x626f6f6c, type: typeType) // "bool"
     public static let boundingRectangle = AESymbol(name: "boundingRectangle", code: 0x71647274, type: typeType) // "qdrt"
     public static let class_ = AESymbol(name: "class_", code: 0x70636c73, type: typeType) // "pcls"
     public static let colorTable = AESymbol(name: "colorTable", code: 0x636c7274, type: typeType) // "clrt"
+    public static let constant = AESymbol(name: "constant", code: 0x656e756d, type: typeType) // "enum"
     public static let dashStyle = AESymbol(name: "dashStyle", code: 0x74646173, type: typeType) // "tdas"
     public static let data = AESymbol(name: "data", code: 0x74647461, type: typeType) // "tdta"
     public static let date = AESymbol(name: "date", code: 0x6c647420, type: typeType) // "ldt\0x20"
@@ -277,18 +285,15 @@ public class AESymbol: Symbol {
     public static let decimalStruct = AESymbol(name: "decimalStruct", code: 0x6465636d, type: typeType) // "decm"
     public static let doubleInteger = AESymbol(name: "doubleInteger", code: 0x636f6d70, type: typeType) // "comp"
     public static let encodedString = AESymbol(name: "encodedString", code: 0x656e6373, type: typeType) // "encs"
-    public static let enumerator = AESymbol(name: "enumerator", code: 0x656e756d, type: typeType) // "enum"
     public static let EPSPicture = AESymbol(name: "EPSPicture", code: 0x45505320, type: typeType) // "EPS\0x20"
-    public static let extendedFloat = AESymbol(name: "extendedFloat", code: 0x65787465, type: typeType) // "exte"
+    public static let extendedReal = AESymbol(name: "extendedReal", code: 0x65787465, type: typeType) // "exte"
     public static let February = AESymbol(name: "February", code: 0x66656220, type: typeType) // "feb\0x20"
     public static let fileRef = AESymbol(name: "fileRef", code: 0x66737266, type: typeType) // "fsrf"
     public static let fileSpecification = AESymbol(name: "fileSpecification", code: 0x66737320, type: typeType) // "fss\0x20"
-    public static let fileUrl = AESymbol(name: "fileUrl", code: 0x6675726c, type: typeType) // "furl"
+    public static let fileURL = AESymbol(name: "fileURL", code: 0x6675726c, type: typeType) // "furl"
     public static let fixed = AESymbol(name: "fixed", code: 0x66697864, type: typeType) // "fixd"
     public static let fixedPoint = AESymbol(name: "fixedPoint", code: 0x66706e74, type: typeType) // "fpnt"
     public static let fixedRectangle = AESymbol(name: "fixedRectangle", code: 0x66726374, type: typeType) // "frct"
-    public static let float = AESymbol(name: "float", code: 0x646f7562, type: typeType) // "doub"
-    public static let float128bit = AESymbol(name: "float128bit", code: 0x6c64626c, type: typeType) // "ldbl"
     public static let Friday = AESymbol(name: "Friday", code: 0x66726920, type: typeType) // "fri\0x20"
     public static let GIFPicture = AESymbol(name: "GIFPicture", code: 0x47494666, type: typeType) // "GIFf"
     public static let graphicText = AESymbol(name: "graphicText", code: 0x63677478, type: typeType) // "cgtx"
@@ -301,7 +306,8 @@ public class AESymbol: Symbol {
     public static let JPEGPicture = AESymbol(name: "JPEGPicture", code: 0x4a504547, type: typeType) // "JPEG"
     public static let July = AESymbol(name: "July", code: 0x6a756c20, type: typeType) // "jul\0x20"
     public static let June = AESymbol(name: "June", code: 0x6a756e20, type: typeType) // "jun\0x20"
-    public static let kernelProcessId = AESymbol(name: "kernelProcessId", code: 0x6b706964, type: typeType) // "kpid"
+    public static let kernelProcessID = AESymbol(name: "kernelProcessID", code: 0x6b706964, type: typeType) // "kpid"
+    public static let largeReal = AESymbol(name: "largeReal", code: 0x6c64626c, type: typeType) // "ldbl"
     public static let list = AESymbol(name: "list", code: 0x6c697374, type: typeType) // "list"
     public static let locationReference = AESymbol(name: "locationReference", code: 0x696e736c, type: typeType) // "insl"
     public static let longFixed = AESymbol(name: "longFixed", code: 0x6c667864, type: typeType) // "lfxd"
@@ -324,6 +330,7 @@ public class AESymbol: Symbol {
     public static let processSerialNumber = AESymbol(name: "processSerialNumber", code: 0x70736e20, type: typeType) // "psn\0x20"
     public static let properties = AESymbol(name: "properties", code: 0x70414c4c, type: typeType) // "pALL"
     public static let property_ = AESymbol(name: "property_", code: 0x70726f70, type: typeType) // "prop"
+    public static let real = AESymbol(name: "real", code: 0x646f7562, type: typeType) // "doub"
     public static let record = AESymbol(name: "record", code: 0x7265636f, type: typeType) // "reco"
     public static let reference = AESymbol(name: "reference", code: 0x6f626a20, type: typeType) // "obj\0x20"
     public static let RGB16Color = AESymbol(name: "RGB16Color", code: 0x74723136, type: typeType) // "tr16"
@@ -333,8 +340,8 @@ public class AESymbol: Symbol {
     public static let Saturday = AESymbol(name: "Saturday", code: 0x73617420, type: typeType) // "sat\0x20"
     public static let script = AESymbol(name: "script", code: 0x73637074, type: typeType) // "scpt"
     public static let September = AESymbol(name: "September", code: 0x73657020, type: typeType) // "sep\0x20"
-    public static let shortFloat = AESymbol(name: "shortFloat", code: 0x73696e67, type: typeType) // "sing"
     public static let shortInteger = AESymbol(name: "shortInteger", code: 0x73686f72, type: typeType) // "shor"
+    public static let smallReal = AESymbol(name: "smallReal", code: 0x73696e67, type: typeType) // "sing"
     public static let string = AESymbol(name: "string", code: 0x54455854, type: typeType) // "TEXT"
     public static let styledClipboardText = AESymbol(name: "styledClipboardText", code: 0x7374796c, type: typeType) // "styl"
     public static let styledText = AESymbol(name: "styledText", code: 0x53545854, type: typeType) // "STXT"
@@ -344,10 +351,12 @@ public class AESymbol: Symbol {
     public static let TIFFPicture = AESymbol(name: "TIFFPicture", code: 0x54494646, type: typeType) // "TIFF"
     public static let Tuesday = AESymbol(name: "Tuesday", code: 0x74756520, type: typeType) // "tue\0x20"
     public static let typeClass = AESymbol(name: "typeClass", code: 0x74797065, type: typeType) // "type"
-    public static let unicodeText = AESymbol(name: "unicodeText", code: 0x75747874, type: typeType) // "utxt"
+    public static let UnicodeText = AESymbol(name: "UnicodeText", code: 0x75747874, type: typeType) // "utxt"
+    public static let unsignedDoubleInteger = AESymbol(name: "unsignedDoubleInteger", code: 0x75636f6d, type: typeType) // "ucom"
     public static let unsignedInteger = AESymbol(name: "unsignedInteger", code: 0x6d61676e, type: typeType) // "magn"
-    public static let utf16Text = AESymbol(name: "utf16Text", code: 0x75743136, type: typeType) // "ut16"
-    public static let utf8Text = AESymbol(name: "utf8Text", code: 0x75746638, type: typeType) // "utf8"
+    public static let unsignedShortInteger = AESymbol(name: "unsignedShortInteger", code: 0x75736872, type: typeType) // "ushr"
+    public static let UTF16Text = AESymbol(name: "UTF16Text", code: 0x75743136, type: typeType) // "ut16"
+    public static let UTF8Text = AESymbol(name: "UTF8Text", code: 0x75746638, type: typeType) // "utf8"
     public static let version = AESymbol(name: "version", code: 0x76657273, type: typeType) // "vers"
     public static let Wednesday = AESymbol(name: "Wednesday", code: 0x77656420, type: typeType) // "wed\0x20"
     public static let writingCode = AESymbol(name: "writingCode", code: 0x70736374, type: typeType) // "psct"
@@ -591,6 +600,50 @@ public typealias AERecord = [AESymbol:Any] // default Swift type for AERecordDes
 
 
 
+
+public enum AESymbolOrString: SelfPacking, SelfUnpacking {
+    case symbol(AESymbol)
+    case string(String)
+    
+    public init(_ value: AESymbol) { self = .symbol(value) }
+    public init(_ value: String) { self = .string(value) }
+    
+    public func SwiftAutomation_packSelf(_ appData: AppData) throws -> NSAppleEventDescriptor {
+        switch self {
+        case .symbol(let value): return try appData.pack(value)
+        case .string(let value): return try appData.pack(value)
+        }
+    }
+    public static func SwiftAutomation_unpackSelf(_ desc: NSAppleEventDescriptor, appData: AppData) throws -> AESymbolOrString {
+        do { return .symbol(try appData.unpack(desc) as AESymbol) } catch {}
+        do { return .string(try appData.unpack(desc) as String) } catch {}
+        throw UnpackError(appData: appData, descriptor: desc, type: AESymbolOrString.self,
+                          message: "Can't coerce descriptor to Swift type: \(AESymbolOrString.self)")
+    }
+    static func SwiftAutomation_noValue() throws -> AESymbolOrString { throw SwiftAutomationError(code: -1708) }
+}
+
+public enum AEStringOrMissingValue: SelfPacking, SelfUnpacking {
+    case missing(MissingValueType)
+    case string(String)
+    
+    public init(_ value: MissingValueType) { self = .missing(value) }
+    public init(_ value: String) { self = .string(value) }
+    
+    public func SwiftAutomation_packSelf(_ appData: AppData) throws -> NSAppleEventDescriptor {
+        switch self {
+        case .missing(let value): return try appData.pack(value)
+        case .string(let value): return try appData.pack(value)
+        }
+    }
+    public static func SwiftAutomation_unpackSelf(_ desc: NSAppleEventDescriptor, appData: AppData) throws -> AEStringOrMissingValue {
+        do { return .missing(try appData.unpack(desc) as MissingValueType) } catch {}
+        do { return .string(try appData.unpack(desc) as String) } catch {}
+        throw UnpackError(appData: appData, descriptor: desc, type: AEStringOrMissingValue.self,
+                          message: "Can't coerce descriptor to Swift type: \(AEStringOrMissingValue.self)")
+    }
+    static func SwiftAutomation_noValue() throws -> AEStringOrMissingValue { return .missing(MissingValue) }
+}
 
 
 

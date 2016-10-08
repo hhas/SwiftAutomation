@@ -23,18 +23,7 @@
 <li><p>zero or more <em>parameters</em> to the event handler that receives the event.</p></li>
 </ul>
 
-<p>[TO DO: 'descriptor', typed]</p>
-
-<p>Apple event datatypes include:</p>
-
-<ul>
-<li><p>common scalar types such as booleans, integers, floats, strings, dates and file references</p></li>
-<li><p>ordered lists</p></li>
-<li><p>records (key-value lists where each key is an four-letter code)</p></li>
-<li><p>object specifiers, used to construct <em>first-class queries</em> (also known as <em>references</em> in AppleScript), that identify objects within an application. These query objects are roughly comparable to XPath or CSS selectors.</p></li>
-</ul>
-
-<p>For example, when the user drag-n-drops a file onto TextEdit.app in the Finder, the Finder commands TextEdit to open that file by sending it an <code>aevt/odoc</code> event with a file reference as its main parameter:</p>
+<p>For example, when the user drag-n-drops one or more files onto TextEdit.app in the Finder, the Finder commands TextEdit to open that file by sending it an <code>aevt/odoc</code> event with a list of file identifiers as its direct parameter:</p>
 
 <p><img src="finder_to_textedit_event.gif" alt="Sending Apple event from Finder to TextEdit" /></p>
 
@@ -42,7 +31,7 @@
 
 <p><img src="client_app_to_itunes_event.gif" alt="Sending Apple event from client application to iTunes" /></p>
 
-<p>Applications may respond to an incoming Apple event by sending a reply event back to the client application. The reply event may contain either a return value, if there is one, or an error description if it was unable to handle the event as requested. For example, executing the command <code>TextEdit().name.get()</code> in a client appliation sends TextEdit a <code>core/getd</code> event containing an object specifier identifying the <code>name</code> property of its root <code>application</code> object. TextEdit processes this event, then sends a reply event containing the string '<tt>TextEdit</tt>' back to the client application, where it is returned as the command's result. This exchange is usually performed synchronously, appearing to the user as a simple remote procedure call. Asynchronous messaging is also supported, though is not normally used for desktop automation.</p>
+<p>Applications may respond to an incoming Apple event by sending a reply event back to the client application. The reply event may contain either a return value, if there is one, or an error description if it was unable to handle the event as requested. For example, executing the command <code>TextEdit().name.get()</code> in a client appliation sends TextEdit a <code>core/getd</code> event containing an object specifier identifying the <code>name</code> property of its root <code>application</code> object. TextEdit processes this event, then sends a reply event containing the string "TextEdit" back to the client application, where it is returned as the command's result. This exchange is usually performed synchronously, appearing to the user as a simple remote procedure call. Asynchronous messaging is also supported, though is not normally used for desktop automation.</p>
 
 <h2>What is a scriptable application?</h2>
 
@@ -63,7 +52,7 @@
 
 <h2>What is the Apple Event Object Model?</h2>
 
-<p>The Apple Event Object Model (AEOM) is a View-Controller layer that provides an idealized, user-friendly representation of the application's internal data, allowing clients to identify and manipulate parts of that structure via Apple events. An incoming Apple event representing a particular command (get, set, move, etc.) is unpacked, and any object specifiers in its parameter list are evaluated against the application's AEOM to identify the user-level object(s) upon which the command should act. The command is then applied these objects, with the AEOM translating this into operations upon the application's implementation-level objects. These implementation-level objects are mostly user-data objects in the application's Model layer, plus a few GUI View objects of interest to scripters (such as those representing document windows). The internal architecture of a typical scriptable desktop application might look something like this:</p>
+<p>The Apple Event Object Model (AEOM) is a [TO DO: 'relational graph'] View-Controller layer that provides an idealized, user-friendly representation of the application's internal data, allowing clients to identify and manipulate parts of that structure via Apple events. An incoming Apple event representing a particular command (get, set, move, etc.) is unpacked, and any object specifiers in its parameter list are evaluated against the application's AEOM to identify the user-level object(s) upon which the command should act. The command is then applied these objects, with the AEOM translating this into operations upon the application's implementation-level objects. These implementation-level objects are mostly user-data objects in the application's Model layer, plus a few GUI View objects of interest to scripters (such as those representing document windows). The internal architecture of a typical scriptable desktop application might look something like this:</p>
 
 <p><img src="application_architecture2.gif" alt="Internal architecture of application with Graphical and Apple event interfaces" /></p>
 
@@ -81,33 +70,35 @@
 
 <p>[TO DO: might be worth drawing comparison between an AEOM 'class' and a Swift protocol, in that AEOM classes don't actually [have to] describe distinct types of objects, but rather describe how you can interact with them - e.g. <code>paragraph</code>]</p>
 
-<p>The AEOM is a tree-like structure made up of objects. These objects may have attributes (descriptive values such as class, name, id, size, bounds; usually primitive AE types but occasionally other application objects), e.g.:</p>
+<p>The AEOM is a tree-like structure made up of objects. These objects may contain descriptive attributes such as class, name, id, size, or bounds; for example:</p>
 
-<pre><code>finder.name
-finder.version
-finder.FinderPreferences
+<pre><code>finder.version
+itunes.playerState
+textedit.frontmost
 </code></pre>
 
-<p>and may 'contain' other objects, e.g.:</p>
+<p>and may 'contain' other objects:</p>
 
-<pre><code>finder.FinderWindows
+<pre><code>finder.home
 textedit.documents
+itunes.playlists
 </code></pre>
 
 <p>However, unlike other object models such as DOM, objects within the AEOM are associated with one another by <em>relationships</em> rather than simple physical containment. Think of AEOM as combining aspects of procedural RPC, object-oriented object model and relational database mechanics.</p>
 
-<p>Relationships between objects may be one-to-one, e.g.:</p>
+<p>Relationships between objects may be one-to-one:</p>
 
 <pre><code>finder.home
 itunes.currentTrack
 </code></pre>
 
-<p>or one-to-many, e.g.:</p>
+<p>or one-to-many:</p>
 
 <pre><code>finder.folders
+itunes.playlists
 </code></pre>
 
-<p>While relationships often follow the containment structure of the underlying data structures, e.g.</p>
+<p>While relationships often follow the containment structure of the underlying data structures:</p>
 
 <pre><code>textedit.documents
 </code></pre>
@@ -130,12 +121,12 @@ finder.startupDisk.folders["Users:jsmith:Desktop:"].files
 finder.items[URL(string:"file:///Users/jsmith/Desktop")].files
 </code></pre>
 
-<p>Some specifiers may identify different objects at different times, according to changes in the application's state, e.g.:</p>
+<p>Some specifiers may identify different objects at different times, according to changes in the application's state:</p>
 
 <pre><code>itunes.currentTrack
 </code></pre>
 
-<p>Specifiers may identify objects that do not actually exist as discreet entities within the application's underlying data structures, but are interpreted on the fly as proxies to the relevant portions of implementation-level data structures, e.g.:</p>
+<p>Some specifiers may identify data that doesn't exist as distinct objects within the application's underlying Model layer, but instead describe how to find content within other internal data structures such as a character buffer or SQLite backing store. For instance:</p>
 
 <pre><code>textedit.documents[1].text.characters
 
@@ -144,7 +135,7 @@ textedit.documents[1].text.words
 textedit.documents[1].text.paragraphs
 </code></pre>
 
-<p>all refer to sections of data that's actually stored in a single <code>NSTextStorage</code> object within TextEdit's Model layer. This decoupling of the AEOM from the Model layer's structure allows applications to present data in a way that is convenient to the user, i.e. easy and intuitive to understand and use.</p>
+<p>do not identify actual <code>character</code>, <code>word</code>, or <code>paragraph</code> object instances, but instead describe how to locate a range of data within a single <code>NSTextStorage</code> instance. This decoupling of the AEOM from the Model layer's structure allows applications to present data in a way that is convenient to the user, i.e. easy and intuitive to understand and use.</p>
 
 <p>Finally, one-to-many relationships may be selective in identifying a subset of related elements according to their individual class or shared superclasses. For example:</p>
 
