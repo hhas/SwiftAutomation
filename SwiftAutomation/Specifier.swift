@@ -183,42 +183,44 @@ open class Specifier: Query, SpecifierProtocol {
     // convenience methods for sending Apple events using four-char codes (either OSTypes or Strings)
     
     public func sendAppleEvent<T>(_ eventClass: OSType, _ eventID: OSType, _ parameters: [OSType:Any] = [:],
-                                  requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
+                                  resultType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
                                   withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(eventClass: eventClass, eventID: eventID,
                                                parentSpecifier: self, parameters: parameters,
-                                               requestedType: requestedType, waitReply: waitReply,
+                                               requestedType: resultType, waitReply: waitReply,
                                                sendOptions: sendOptions, withTimeout: withTimeout, considering: considering)
     }
     
     public func sendAppleEvent<T>(_ eventClass: String, _ eventID: String, _ parameters: [String:Any] = [:],
-                                  requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
+                                  resultType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
                                   withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
         var params = [OSType:Any]()
         for (k, v) in parameters { params[try fourCharCode(k)] = v }
         return try self.appData.sendAppleEvent(eventClass: try fourCharCode(eventClass), eventID: try fourCharCode(eventID),
                                                parentSpecifier: self, parameters: params,
-                                               requestedType: requestedType, waitReply: waitReply,
+                                               requestedType: resultType, waitReply: waitReply,
                                                sendOptions: sendOptions, withTimeout: withTimeout, considering: considering)
     }
     
     // non-generic versions of the above methods; these are bound when T can't be inferred (either because caller doesn't use the return value or didn't declare a specific type for it, e.g. `let result = cmd.call()`), in which case Any is used
     
     @discardableResult public func sendAppleEvent(_ eventClass: OSType, _ eventID: OSType, _ parameters: [OSType:Any] = [:],
-                                                  waitReply: Bool = true, sendOptions: SendOptions? = nil,
+                                                  resultType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
                                                   withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(eventClass: eventClass, eventID: eventID,
-                                               parentSpecifier: self, parameters: parameters, waitReply: waitReply,
+                                               parentSpecifier: self, parameters: parameters,
+                                               requestedType: resultType, waitReply: waitReply,
                                                sendOptions: sendOptions, withTimeout: withTimeout, considering: considering)
     }
     
     @discardableResult public func sendAppleEvent(_ eventClass: String, _ eventID: String, _ parameters: [String:Any] = [:],
-                                                  waitReply: Bool = true, sendOptions: SendOptions? = nil,
+                                                  resultType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
                                                   withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         var params = [OSType:Any]()
         for (k, v) in parameters { params[try fourCharCode(k)] = v }
         return try self.appData.sendAppleEvent(eventClass: try fourCharCode(eventClass), eventID: try fourCharCode(eventID),
-                                               parentSpecifier: self, parameters: params, waitReply: waitReply,
+                                               parentSpecifier: self, parameters: params,
+                                               requestedType: resultType, waitReply: waitReply,
                                                sendOptions: sendOptions, withTimeout: withTimeout, considering: considering)
     }
 }

@@ -1,7 +1,5 @@
 # Commands
 
-[TO DO: this chapter is still rough and not fully updated; amongst other things it doesn't discuss how return types work]
-
 ## Syntax
 
 All application commands have the same basic structure: a single, optional direct parameter, followed by zero or more named parameters specific to that command, followed by zero or more event attributes that determine how the Apple event is processed:
@@ -62,7 +60,7 @@ For convenience, SwiftAutomation makes application commands available as methods
   Finder().home.items.get(returnType: FIN.alias)
 
 
-## TO DO: return types
+## Declaring a command's exact return type
 
 Glue files define two methods for each application command: one that returns `Any`, which is used when the calling code does not declare a specific return type, and one that returns a generic type (`T`) that is used when the exact return type can be inferred. 
 

@@ -10,9 +10,7 @@
             <div id="main">
                 <h1>Commands</h1>
                 <div class="navbar"><a href="object-specifiers.html">back</a> | <a href="index.html">index</a> | <a href="examples.html">next</a></div>
-                <p>[TO DO: this chapter is still rough and not fully updated; amongst other things it doesn't discuss how return types work]</p>
-
-<h2>Syntax</h2>
+                <h2>Syntax</h2>
 
 <p>All application commands have the same basic structure: a single, optional direct parameter, followed by zero or more named parameters specific to that command, followed by zero or more event attributes that determine how the Apple event is processed:</p>
 
@@ -65,7 +63,7 @@ TextEdit().documents.end.make(new: TED.document)
 Finder().home.items.get(returnType: FIN.alias)
 </code></pre>
 
-<h2>TO DO: return types</h2>
+<h2>Declaring a command's exact return type</h2>
 
 <p>Glue files define two methods for each application command: one that returns <code>Any</code>, which is used when the calling code does not declare a specific return type, and one that returns a generic type (<code>T</code>) that is used when the exact return type can be inferred. </p>
 

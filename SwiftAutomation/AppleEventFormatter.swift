@@ -168,15 +168,17 @@ public struct CommandDescription {
     // name and parameters
     public let signature: Signature // either keywords or four-char codes
     
-    // attributes
+    // attributes (note that waitReply and withTimeout values are unreliable when extracted from an existing AppleEvent)
     public private(set) var subject: Any? = nil // TO DO: subject or parentSpecifier? (and what, if any, difference does it make?)
-    public private(set) var waitReply: Bool = true // really wantsReply (which could be either wait/queue reply) // TO DO: currently unused by formatAppleEvent() as it's problematic; delete?
-    public private(set) var withTimeout: TimeInterval = defaultTimeout // TO DO: sort constant // TO DO: currently unused by formatAppleEvent() as it's problematic; delete?
+    public private(set) var waitReply: Bool = true // note that existing AppleEvent descriptors contain keyReplyRequestedAttr, which could be either SendOptions.waitForReply or .queueReply
+    // TO DO: also include sendOptions for completeness
+    public private(set) var withTimeout: TimeInterval = defaultTimeout
     public private(set) var considering: ConsideringOptions = [.case]
     
     
     // called by sendAppleEvent with a failed command's details
-    public init(name: String?, eventClass: OSType, eventID: OSType, parentSpecifier: Any?, directParameter: Any, keywordParameters: [KeywordParameter],
+    public init(name: String?, eventClass: OSType, eventID: OSType, parentSpecifier: Any?,
+                directParameter: Any, keywordParameters: [KeywordParameter],
                 requestedType: Symbol?, waitReply: Bool, withTimeout: TimeInterval?, considering: ConsideringOptions?) {
         if let commandName = name {
             self.signature = .named(name: commandName, directParameter: directParameter,

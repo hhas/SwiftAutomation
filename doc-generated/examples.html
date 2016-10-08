@@ -15,22 +15,19 @@
 <h2>Application objects</h2>
 
 <pre><code>// application id "com.apple.Finder"
-
 let finder = Finder() // (use the glue's default bundle ID)
 
-let finder = Finder(bundleIdentifier: "com.apple.finder")
-
 // application "Adobe InDesign CS6"
-
 let indesign = AdobeInDesign(name: "Adobe InDesign CS6")
 
 // application "Macintosh HD:Applications:TextEdit.app:"
-
 let textedit = TextEdit(name: "/Applications/TextEdit.app")
 
 // application "iTunes" of machine "eppc://jsmith@media-mac.local"
-
 let itunes = ITunes(url: URL(string: "eppc://jsmith@media-mac.local/iTunes"))
+
+// application id "com.apple.Stickies" // a non-scriptable application
+let stickies = AEApplication(bundleIdentifier: "com.apple.Stickies")
 </code></pre>
 
 <h2>Property references</h2>
@@ -128,6 +125,15 @@ textedit.documents.end
 textedit.documents[1].text.paragraphs[1].before
 </code></pre>
 
+<h2><code>open</code> command</h2>
+
+<p>Open a document in TextEdit:</p>
+
+<pre><code>// tell application "TextEdit" to open (POSIX file "/Users/jsmith/ReadMe.txt")
+try textedit.open(URL(fileURLWithPath: "/Users/jsmith/ReadMe.txt"))
+// TextEdit().documents["ReadMe.txt"]
+</code></pre>
+
 <h2><code>get</code> command</h2>
 
 <p>Get the name of every folder in the user's home folder:</p>
@@ -136,9 +142,16 @@ textedit.documents[1].text.paragraphs[1].before
 try finder.get(FINApp.home.folders.name)
 </code></pre>
 
-<p>Note that if the direct parameter is omitted from the argument list, the reference that the command is invoked on is used instead. For example, the above example would normally be written as:</p>
+<p>Or, more concisely:</p>
 
 <pre><code>try finder.home.folders.name.get()
+</code></pre>
+
+<p>Remember to declare the command's return type if you intend to use the returned value:</p>
+
+<pre><code>let folderNames = try finder.home.folders.name.get() as [String]
+print(folderNames.joined(separator: ", "))
+// "Desktop, Documents, Downloads, Movies, ..."
 </code></pre>
 
 <h2><code>set</code> command</h2>
@@ -154,13 +167,15 @@ try textedit.documents[1].text.set(to: "Hello World")
 <p>Count the words in a TextEdit document:</p>
 
 <pre><code>// tell application "TextEdit" to count words of document 1
-try textedit.documents[1].words.count()
+try textedit.documents[1].words.count() as Int
+// 42
 </code></pre>
 
 <p>Count the items in the current user's home folder:</p>
 
 <pre><code>// tell application "Finder" to count items of home
-try finder.home.count(each: FIN.item)
+try finder.home.count(each: FIN.item) as Int
+// 11
 </code></pre>
 
 <p>(Note that Finder and many other Carbon applications require the <code>count</code> command's <code>each</code> parameter to be given. Cocoa-based apps should accept either form.)</p>
@@ -171,7 +186,9 @@ try finder.home.count(each: FIN.item)
 
 <pre><code>// tell application "TextEdit" to make new document ¬
 //     with properties {text:"Hello World\n"}
-try textedit.make(new: TED.document, withProperties: [TED.text: "Hello World\n"])
+try textedit.make(new: TED.document, 
+       withProperties: [TED.text: "Hello World\n"]) as TEDItem
+// TextEdit().documents["Untitled"]
 </code></pre>
 
 <p>Append text to a TextEdit document:</p>
@@ -192,6 +209,7 @@ try textedit.make(new: TED.paragraph,
 //   duplicate folder "Projects" of home to disk "Work" with replacing
 // end tell
 try finder.home.folders["Projects"].duplicate(to: FINApp.disks["Backup"], replacing: true)
+// Finder().disks["Backup"].folders["Projects"]
 </code></pre>
 
 <h2><code>add</code> command</h2>
@@ -201,7 +219,21 @@ try finder.home.folders["Projects"].duplicate(to: FINApp.disks["Backup"], replac
 <pre><code>// tell application "Contacts"
 //   add every person whose birth date is not missing value to group "Birthdays"
 // end tell
-try contacts.people[CONIts.birthDate != CON.missingValue].add(to: CONApp.groups["Birthdays"])
+try contacts.people[CONIts.birthDate != MissingValue].add(to: CONApp.groups["Birthdays"])
+</code></pre>
+
+<h2><code>quit</code> command</h2>
+
+<p>Close every TextEdit document without saving:</p>
+
+<pre><code>// tell application "TextEdit" to quit saving no
+try textedit.quit(saving: TED.no)
+</code></pre>
+
+<p>Quit the Stickies app if it's currently running:</p>
+
+<pre><code>let stickies = AEApplication(bundleIdentifier: "com.apple.Stickies") // default glue
+if stickies.isRunning { try? stickies.quit() }
 </code></pre>
 
             </div>

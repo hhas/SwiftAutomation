@@ -2,10 +2,6 @@
 
 ## Overview
 
-[TO DO: finish updating this chapter]
-
-[TO DO: need to explain derivation of symbol names (they're a mismash of AppleScript names and ); also, might want to consider changing `float` to `real`]
-
 The `NSAppleEventDescriptor` Foundation class provides a low-level wrapper around the Carbon Apple Event Manager APIs for building and sending Apple events, and for encapsulating the parameter and result data to be included in those events. `NSAppleEventDescriptor` defines a `descriptorType` property containing an `OSType` (a.k.a. "four-char code") that describes the type of value it holds (e.g. `'utxt'` = `typeUnicodeText` = UTF16-encoded text), and a `data` property containing the value's data serialized as an `NSData` instance.
 
 Apple event data types include:
@@ -89,7 +85,7 @@ Apple event data types include:
 
 [4] Each application glue file defines its own `Item`, `Items`, and `Insertion` subclasses for that particular application, prefixing them with a three-letter code by default; for example, the TextEdit glue defines `TEDItem`, `TEDItems`, and `TEDInsertion` classes. The `Item` and `Items` classes are equivalent to AppleScript's `reference` data type, except that they distinguish between object specifiers that identify a single property/element and object specifiers that identify multiple elements, whereas AppleScript does not.
 
-[5] Each application glue file defines its own `Symbol` subclass for that particular application, prefixing it with a three-letter code by default. For example, the TextEdit glue defines a `TEDSymbol` class, with a shorthand `TED` typealias for convenience.
+[5] Each application glue file defines its own `Symbol` subclass for that particular application, prefixing it with a three-letter code by default. For example, the TextEdit glue defines a `TEDSymbol` class, with a shorthand `TED` typealias for convenience. 
 
 
 ## Mapping notes
@@ -99,7 +95,7 @@ While AE-Swift type conversions generally work quite seamlessly, it is sometimes
 
 ### Missing Value
 
-The 'missing value' symbol serves a similar purpose to Swift's `nil`, acting as a placeholder where a value is expected but none is available. On the Apple event side, it is represented as a descriptor of `typeType` with the code value `cMissing` (`'msng'`). SwiftAutomation provides a choice of mappings when unpacking a 'missing value' descriptor as a Swift value:
+The 'missing value' symbol serves a similar purpose to Swift's `nil`, acting as a placeholder where a value is expected but none is available. On the Apple event side, it is represented as a descriptor of `typeType` with the code value `cMissingValue` (`'msng'`). SwiftAutomation provides a choice of mappings when unpacking a 'missing value' descriptor as a Swift value:
 
 * `SwiftAutomation.MissingValue` is used when a command's return type is `Any`. Unlike generic `nil` values, `MissingValue` is a unique value of concrete type `MissingValueType` so can be compared for equality without having to cast to a specific type first. For example:
 
@@ -111,7 +107,26 @@ The 'missing value' symbol serves a similar purpose to Swift's `nil`, acting as 
     let path = try TextEdit().documents[1].path() as String?
     if let realPath = path { ... }
 
-Both values are packed as 'missing value' descriptors when used as a command parameter.
+Both `MissingValue` and `nil` values are packed as `cMissingValue` descriptors when used in a specifier or command:
+
+  // find everyone without a birthday
+  try Contacts().people[CONIts.birthDate == MissingValue].get() as [CONItem]
+
+  let date: Date? = nil
+  try Contacts().people[CONIts.birthDate == date].get() as [CONItem]
+
+
+  // remove all nicknames!
+  try Contacts().people.nickname(set: MissingValue)
+
+  let name: String? = nil
+  try Contacts().people.nickname(set: name)
+
+Remember though that `nil` is generic so can only be used when its exact type is _already known_; e.g. the following code will give a compiler error "nil is not compatible with expected argument type 'Any'":
+
+  try Contacts().people.nickname(set: nil) // this won't compile
+
+
 
 [TO DO: what about documenting `MayBeMissing<T>` and/or the `.missing(MissingValueType)` case in custom enums created via aeglue's `-e` option? there's an argument for removing those features to simplify the API, in which case `MissingValue` will _only_ be returned when return type is `Any`]
 
@@ -176,7 +191,7 @@ The `typeAERecord` AE type is a struct-like data structure containing zero or mo
 
 If a dictionary includes a `Symbol.class_` (or `Symbol(code:"pcls")`) key whose value is also a `Symbol`, SwiftAutomation will pack the other items into an AE record coerced to that value's' type. [TO DO: add example for clarity] Similarly, when unpacking an record-based descriptor that isn't `typeAERecord`, `typeObjectSpecifier` or other known type, SwiftAutomation will unpack it as an `Dictionary` instance with an additional `Symbol.class_` key and `Symbol` value to indicate the descriptor's type.
 
-AERecords can also be packed/unpacked to/from glue-defined record structs; see the discussion of the `aeglue` tool's `-s` option in Chapter 4.
+AERecords may also be packed and unpacked as glue-defined record structs if preferred; see the section on creating and using custom record structs in [Chapter 10](advanced-type-support.html).
 
 
 ### Types and enumerators
@@ -185,7 +200,7 @@ SwiftAutomation represents both standard Apple event type names and application-
 
   // Standard Apple event data types
   TED.boolean
-  TED.unicodeText
+  TED.UnicodeText
   TED.list
   ...
 
@@ -209,7 +224,9 @@ SwiftAutomation represents both standard Apple event type names and application-
 
 Descriptors of `typeType`, `typeEnumerated`, and `typeProperty` are unpacked as `Symbol` subclass instances, using raw four-char codes instead of names when the corresponding terminology is not available, e.g.:
 
-  TEDSymbol(code: "FooB", type: "type")
+  TEDSymbol(code: "ABCD", type: "type")
+
+Be aware that symbol names for standard data types are derived from AppleScript, not Swift, terminology. Thus the symbolic name for the `typeIEEE64BitFloatingPoint` descriptor type, which maps to AppleScript's `real` type and Swift's `Double` type, is `AE.real` (or <code><var>PREFIX</var>.real</code>), not `AE.double`. This avoids potential conflicts and ensures consistency with standard and custom terminology used by application dictionaries.
 
 
 ### Other types

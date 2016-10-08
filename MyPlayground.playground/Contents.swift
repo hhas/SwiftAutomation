@@ -72,6 +72,10 @@ print(error)
 }
 
 
+
+//try TextEdit().documents[1].path.set(to:nil)
+
+
 // CustomReflectable FAIL: Could not cast value of type 'SwiftAutomation.ObjectSpecifier' (0x10d705c88) to 'MyPlayground_Sources.FINItem' (0x10d5433c8).
 //try finder.home.files[2, 7].get() //as [FINItem]
 

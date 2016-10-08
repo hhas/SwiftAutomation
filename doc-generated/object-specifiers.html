@@ -83,7 +83,7 @@ items[-1]
 <h3>Element by name</h3>
 
 <pre><code>subscript(index: String) -> <var>PREFIX</var>Item
-func named(name: Any) -> <var>PREFIX</var>Item</code></pre>
+func named(_ name: Any) -> <var>PREFIX</var>Item</code></pre>
 
 <p>Examples:</p>
 
@@ -100,9 +100,11 @@ files["index.html"]
 
 <p class="hilitebox">Applications usually treat object names as case-insensitive. Where multiple element have the same name, a by-name specifier only identifies the first element found with that name. (To identify <em>all</em> elements with a particular name, use a by-test specifier instead.)</p>
 
+<p>[TO DO: update once a final decision is made on whether or not to include <code>named()</code> method]</p>
+
 <h3>Element by ID</h3>
 
-<pre><code>func ID(elementID:Any) -&gt; &lt;var&gt;PREFIX&lt;/var&gt;Item
+<pre><code>func ID(_ elementID: Any) -&gt; &lt;var&gt;PREFIX&lt;/var&gt;Item
 </code></pre>
 
 <p>Examples:</p>
@@ -139,8 +141,8 @@ elements<strong>.any</strong> -- random element</code></pre>
 
 <h3>Element by relative position</h3>
 
-<pre><code>func previous(elementClass: Symbol? = nil) -&gt; &lt;var&gt;PREFIX&lt;/var&gt;Item
-func next(elementClass: Symbol? = nil) -&gt; &lt;var&gt;PREFIX&lt;/var&gt;Item
+<pre><code>func previous(_ elementClass: Symbol? = nil) -&gt; &lt;var&gt;PREFIX&lt;/var&gt;Item
+func next(_ elementClass: Symbol? = nil) -&gt; &lt;var&gt;PREFIX&lt;/var&gt;Item
 </code></pre>
 
 <p>Examples:</p>
@@ -229,7 +231,7 @@ text[TEPCon.characters[5], TEPCon.words[-2]]
 <p>TEDIts
 TEDIts.size
 TEDIts.words.first</p></li>
-<li><p>One or more conditional/containment tests, implemented as operators/methods on the specifier being tested. The left-hand operand/receiver must be a <code>&lt;var&gt;PREFIX&lt;/var&gt;Specifier</code> instance; the other operand/argument can be anything.</p>
+<li><p>One or more conditional/containment tests, implemented as operators/methods on the specifier being tested. The left-hand operand/receiver must be a <code>&lt;var&gt;PREFIX&lt;/var&gt;Specifier</code> instance. The right-hand operand/argument can be any value; its type is always <code>Any</code>.</p>
 
 <p>Syntax:</p>
 

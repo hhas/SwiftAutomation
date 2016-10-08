@@ -3,25 +3,21 @@
 // TO DO: include corresponding aeglue commands as comments
 
 ## Application objects
-    
-  // application id "com.apple.Finder"
 
+  // application id "com.apple.Finder"
   let finder = Finder() // (use the glue's default bundle ID)
 
-  let finder = Finder(bundleIdentifier: "com.apple.finder")
-
   // application "Adobe InDesign CS6"
-
   let indesign = AdobeInDesign(name: "Adobe InDesign CS6")
 
   // application "Macintosh HD:Applications:TextEdit.app:"
-
   let textedit = TextEdit(name: "/Applications/TextEdit.app")
 
   // application "iTunes" of machine "eppc://jsmith@media-mac.local"
-
   let itunes = ITunes(url: URL(string: "eppc://jsmith@media-mac.local/iTunes"))
 
+  // application id "com.apple.Stickies" // a non-scriptable application
+  let stickies = AEApplication(bundleIdentifier: "com.apple.Stickies")
 
 ## Property references
 
@@ -118,15 +114,30 @@
   textedit.documents[1].text.paragraphs[1].before
 
 
+## `open` command
+
+Open a document in TextEdit:
+
+  // tell application "TextEdit" to open (POSIX file "/Users/jsmith/ReadMe.txt")
+  try textedit.open(URL(fileURLWithPath: "/Users/jsmith/ReadMe.txt"))
+  // TextEdit().documents["ReadMe.txt"]
+
+
 ## `get` command
 Get the name of every folder in the user's home folder:
 
   // tell application "Finder" to get name of every folder of home
   try finder.get(FINApp.home.folders.name)
 
-Note that if the direct parameter is omitted from the argument list, the reference that the command is invoked on is used instead. For example, the above example would normally be written as:
+Or, more concisely:
 
   try finder.home.folders.name.get()
+
+Remember to declare the command's return type if you intend to use the returned value:
+
+  let folderNames = try finder.home.folders.name.get() as [String]
+  print(folderNames.joined(separator: ", "))
+  // "Desktop, Documents, Downloads, Movies, ..."
 
 
 ## `set` command
@@ -136,17 +147,20 @@ Set the content of a TextEdit document:
   // tell application "TextEdit" to set text of document 1 to "Hello World"
   try textedit.documents[1].text.set(to: "Hello World")
 
+
 ## `count` command
 
 Count the words in a TextEdit document:
 
   // tell application "TextEdit" to count words of document 1
-  try textedit.documents[1].words.count()
+  try textedit.documents[1].words.count() as Int
+  // 42
 
 Count the items in the current user's home folder:
 
   // tell application "Finder" to count items of home
-  try finder.home.count(each: FIN.item)
+  try finder.home.count(each: FIN.item) as Int
+  // 11
 
 (Note that Finder and many other Carbon applications require the `count` command's `each` parameter to be given. Cocoa-based apps should accept either form.)
 
@@ -157,7 +171,9 @@ Create a new TextEdit document:
 
   // tell application "TextEdit" to make new document ¬
   //     with properties {text:"Hello World\n"}
-  try textedit.make(new: TED.document, withProperties: [TED.text: "Hello World\n"])
+  try textedit.make(new: TED.document, 
+         withProperties: [TED.text: "Hello World\n"]) as TEDItem
+  // TextEdit().documents["Untitled"]
 
 Append text to a TextEdit document:
 
@@ -177,6 +193,7 @@ Duplicate a folder to a disk, replacing an existing item if one exists:
   //   duplicate folder "Projects" of home to disk "Work" with replacing
   // end tell
   try finder.home.folders["Projects"].duplicate(to: FINApp.disks["Backup"], replacing: true)
+  // Finder().disks["Backup"].folders["Projects"]
 
 
 ## `add` command
@@ -186,5 +203,21 @@ Add every person with a known birthday to a group named "Birthdays":
   // tell application "Contacts"
   //   add every person whose birth date is not missing value to group "Birthdays"
   // end tell
-  try contacts.people[CONIts.birthDate != CON.missingValue].add(to: CONApp.groups["Birthdays"])
+  try contacts.people[CONIts.birthDate != MissingValue].add(to: CONApp.groups["Birthdays"])
+
+
+## `quit` command
+
+Close every TextEdit document without saving:
+
+  // tell application "TextEdit" to quit saving no
+  try textedit.quit(saving: TED.no)
+
+Quit the Stickies app if it's currently running:
+
+  let stickies = AEApplication(bundleIdentifier: "com.apple.Stickies") // default glue
+  if stickies.isRunning { try? stickies.quit() }
+
+
+
 

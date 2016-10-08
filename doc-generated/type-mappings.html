@@ -12,10 +12,6 @@
                 <div class="navbar"><a href="creating-and-using-static-glues.html">back</a> | <a href="index.html">index</a> | <a href="application-objects.html">next</a></div>
                 <h2>Overview</h2>
 
-<p>[TO DO: finish updating this chapter]</p>
-
-<p>[TO DO: need to explain derivation of symbol names (they're a mismash of AppleScript names and ); also, might want to consider changing <code>float</code> to <code>real</code>]</p>
-
 <p>The <code>NSAppleEventDescriptor</code> Foundation class provides a low-level wrapper around the Carbon Apple Event Manager APIs for building and sending Apple events, and for encapsulating the parameter and result data to be included in those events. <code>NSAppleEventDescriptor</code> defines a <code>descriptorType</code> property containing an <code>OSType</code> (a.k.a. "four-char code") that describes the type of value it holds (e.g. <code>'utxt'</code> = <code>typeUnicodeText</code> = UTF16-encoded text), and a <code>data</code> property containing the value's data serialized as an <code>NSData</code> instance.</p>
 
 <p>Apple event data types include:</p>
@@ -97,7 +93,7 @@
 
 <p>[4] Each application glue file defines its own <code>Item</code>, <code>Items</code>, and <code>Insertion</code> subclasses for that particular application, prefixing them with a three-letter code by default; for example, the TextEdit glue defines <code>TEDItem</code>, <code>TEDItems</code>, and <code>TEDInsertion</code> classes. The <code>Item</code> and <code>Items</code> classes are equivalent to AppleScript's <code>reference</code> data type, except that they distinguish between object specifiers that identify a single property/element and object specifiers that identify multiple elements, whereas AppleScript does not.</p>
 
-<p>[5] Each application glue file defines its own <code>Symbol</code> subclass for that particular application, prefixing it with a three-letter code by default. For example, the TextEdit glue defines a <code>TEDSymbol</code> class, with a shorthand <code>TED</code> typealias for convenience.</p>
+<p>[5] Each application glue file defines its own <code>Symbol</code> subclass for that particular application, prefixing it with a three-letter code by default. For example, the TextEdit glue defines a <code>TEDSymbol</code> class, with a shorthand <code>TED</code> typealias for convenience. </p>
 
 <h2>Mapping notes</h2>
 
@@ -105,7 +101,7 @@
 
 <h3>Missing Value</h3>
 
-<p>The 'missing value' symbol serves a similar purpose to Swift's <code>nil</code>, acting as a placeholder where a value is expected but none is available. On the Apple event side, it is represented as a descriptor of <code>typeType</code> with the code value <code>cMissing</code> (<code>'msng'</code>). SwiftAutomation provides a choice of mappings when unpacking a 'missing value' descriptor as a Swift value:</p>
+<p>The 'missing value' symbol serves a similar purpose to Swift's <code>nil</code>, acting as a placeholder where a value is expected but none is available. On the Apple event side, it is represented as a descriptor of <code>typeType</code> with the code value <code>cMissingValue</code> (<code>'msng'</code>). SwiftAutomation provides a choice of mappings when unpacking a 'missing value' descriptor as a Swift value:</p>
 
 <ul>
 <li><p><code>SwiftAutomation.MissingValue</code> is used when a command's return type is <code>Any</code>. Unlike generic <code>nil</code> values, <code>MissingValue</code> is a unique value of concrete type <code>MissingValueType</code> so can be compared for equality without having to cast to a specific type first. For example:</p>
@@ -120,7 +116,26 @@ if let realPath = path { ... }
 </code></pre></li>
 </ul>
 
-<p>Both values are packed as 'missing value' descriptors when used as a command parameter.</p>
+<p>Both <code>MissingValue</code> and <code>nil</code> values are packed as <code>cMissingValue</code> descriptors when used in a specifier or command:</p>
+
+<pre><code>// find everyone without a birthday
+try Contacts().people[CONIts.birthDate == MissingValue].get() as [CONItem]
+
+let date: Date? = nil
+try Contacts().people[CONIts.birthDate == date].get() as [CONItem]
+
+
+// remove all nicknames!
+try Contacts().people.nickname(set: MissingValue)
+
+let name: String? = nil
+try Contacts().people.nickname(set: name)
+</code></pre>
+
+<p>Remember though that <code>nil</code> is generic so can only be used when its exact type is <em>already known</em>; e.g. the following code will give a compiler error "nil is not compatible with expected argument type 'Any'":</p>
+
+<pre><code>try Contacts().people.nickname(set: nil) // this won't compile
+</code></pre>
 
 <p>[TO DO: what about documenting <code>MayBeMissing&lt;T&gt;</code> and/or the <code>.missing(MissingValueType)</code> case in custom enums created via aeglue's <code>-e</code> option? there's an argument for removing those features to simplify the API, in which case <code>MissingValue</code> will <em>only</em> be returned when return type is <code>Any</code>]</p>
 
@@ -183,7 +198,7 @@ let myHFSPath = HFSPath(fromFileURL: myFile)
 
 <p>If a dictionary includes a <code>Symbol.class_</code> (or <code>Symbol(code:"pcls")</code>) key whose value is also a <code>Symbol</code>, SwiftAutomation will pack the other items into an AE record coerced to that value's' type. [TO DO: add example for clarity] Similarly, when unpacking an record-based descriptor that isn't <code>typeAERecord</code>, <code>typeObjectSpecifier</code> or other known type, SwiftAutomation will unpack it as an <code>Dictionary</code> instance with an additional <code>Symbol.class_</code> key and <code>Symbol</code> value to indicate the descriptor's type.</p>
 
-<p>AERecords can also be packed/unpacked to/from glue-defined record structs; see the discussion of the <code>aeglue</code> tool's <code>-s</code> option in Chapter 4.</p>
+<p>AERecords may also be packed and unpacked as glue-defined record structs if preferred; see the section on creating and using custom record structs in <a href="advanced-type-support.html">Chapter 10</a>.</p>
 
 <h3>Types and enumerators</h3>
 
@@ -191,7 +206,7 @@ let myHFSPath = HFSPath(fromFileURL: myFile)
 
 <pre><code>// Standard Apple event data types
 TED.boolean
-TED.unicodeText
+TED.UnicodeText
 TED.list
 ...
 
@@ -216,8 +231,10 @@ TED.ask
 
 <p>Descriptors of <code>typeType</code>, <code>typeEnumerated</code>, and <code>typeProperty</code> are unpacked as <code>Symbol</code> subclass instances, using raw four-char codes instead of names when the corresponding terminology is not available, e.g.:</p>
 
-<pre><code>TEDSymbol(code: "FooB", type: "type")
+<pre><code>TEDSymbol(code: "ABCD", type: "type")
 </code></pre>
+
+<p>Be aware that symbol names for standard data types are derived from AppleScript, not Swift, terminology. Thus the symbolic name for the <code>typeIEEE64BitFloatingPoint</code> descriptor type, which maps to AppleScript's <code>real</code> type and Swift's <code>Double</code> type, is <code>AE.real</code> (or <code><var>PREFIX</var>.real</code>), not <code>AE.double</code>. This avoids potential conflicts and ensures consistency with standard and custom terminology used by application dictionaries.</p>
 
 <h3>Other types</h3>
 

@@ -74,7 +74,7 @@ Syntax:
 ### Element by name
 
 <pre><code>subscript(index: String) -> <var>PREFIX</var>Item
-func named(name: Any) -> <var>PREFIX</var>Item</code></pre>
+func named(_ name: Any) -> <var>PREFIX</var>Item</code></pre>
 
 Examples:
 
@@ -90,10 +90,12 @@ Syntax:
 
 <p class="hilitebox">Applications usually treat object names as case-insensitive. Where multiple element have the same name, a by-name specifier only identifies the first element found with that name. (To identify <em>all</em> elements with a particular name, use a by-test specifier instead.)</p>
 
+[TO DO: update once a final decision is made on whether or not to include `named()` method]
+
 
 ### Element by ID
 
-  func ID(elementID:Any) -> <var>PREFIX</var>Item
+  func ID(_ elementID: Any) -> <var>PREFIX</var>Item
 
 Examples:
 
@@ -127,8 +129,8 @@ elements<strong>.any</strong> -- random element</code></pre>
 
 ### Element by relative position
 
-  func previous(elementClass: Symbol? = nil) -> <var>PREFIX</var>Item
-  func next(elementClass: Symbol? = nil) -> <var>PREFIX</var>Item
+  func previous(_ elementClass: Symbol? = nil) -> <var>PREFIX</var>Item
+  func next(_ elementClass: Symbol? = nil) -> <var>PREFIX</var>Item
 
 Examples:
 
@@ -208,7 +210,7 @@ Test expressions consist of the following:
   TEDIts.size
   TEDIts.words.first
 
-* One or more conditional/containment tests, implemented as operators/methods on the specifier being tested. The left-hand operand/receiver must be a `<var>PREFIX</var>Specifier` instance; the other operand/argument can be anything.
+* One or more conditional/containment tests, implemented as operators/methods on the specifier being tested. The left-hand operand/receiver must be a `<var>PREFIX</var>Specifier` instance. The right-hand operand/argument can be any value; its type is always `Any`.
 
   Syntax:
 

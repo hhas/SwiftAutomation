@@ -15,6 +15,9 @@ TO DO:
 
 
 
+- sort out inconsistent naming of `resultType:` vs `requestedType:` parameters (i.e. pick one and use it throughout)
+
+
 - Define standard structs for representing color, position, etc.? (And/Or support packing/unpacking Cocoa equivalents, e.g. NSColor?) The default behavior is to pack/unpack as Array<Int>, but type-safe alternatives could also be provided that ensure whatever type of descriptor an app returns (typeAEList/typeQDRectangle) the final result is normalized to the semantic type specified by the user (e.g. SwiftAutomation.RectangleRecord). Also, how practical to support packing/unpacking image types (a known mess)?
 
 
@@ -68,4 +71,6 @@ TO DO:
 
 - implement `SelfPacking` on Range types which always throw a helpful error message should user accidentally write `elements[x...y]` instead of `elements[x,y]`? Currently passing a Range to `subscript[index:]` results in a general PackError("Can't pack as TYPE") when the specifier is used in a command; a message reminding users to construct by-range specifiers using `elements[FROM,TO]` syntax would help reduce confusion. Alternative, could implement a "NonPackable" protocol as an extension of Swift's standard Range types which `subscript[index:Any]` could check for itself and throw immediately if a range is passed (the only caveat is that since Swift's various Range structs don't share a common 'Range' protocol, it'll need to be added to each one separately).
 
+
+- worth including convenience API for interacting with `NSAppleScript`/`NSUserAppleScriptTask`/`OSAScript`? Given that SwiftAutomation provides automatic Swift<->AE type bridging, it seems a pity not to take advantage of it as it'll greatly reduce the amount of effort needed to make Swift apps attachable. Or should that be spun off into its own library to avoid crudding up SwiftAutomation's main API? (Probably the latter, as it allows that code to evolve independently later on. That may be particularly significant if the app also implements its own AEOM which attached scripts will want to interact with; doubly so if Swift ever gets a native AEOM framework [as a non-sucky alternative to CocoaScripting]; triply so if it can get a non-sucky replacement to the awful, archaic, and barely supported/supportable ComponentManager-based OpenScripting [OSA] framework.)
 

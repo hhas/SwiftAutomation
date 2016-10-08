@@ -752,10 +752,10 @@ open class AppData {
         var parameters = parameters
         let directParameter = parameters.removeValue(forKey: _keyDirectObject) ?? NoParameter
         let keywordParameters: [KeywordParameter] = parameters.map({(name: nil, code: $0, value: $1)})
-        return try self.sendAppleEvent(name: nil, eventClass: eventClass, eventID: eventID,
-                                       parentSpecifier: parentSpecifier, directParameter: directParameter,
-                                       keywordParameters: keywordParameters, requestedType: requestedType, waitReply: waitReply,
-                                       sendOptions: sendOptions, withTimeout: withTimeout, considering: considering)
+        return try self.sendAppleEvent(name: nil, eventClass: eventClass, eventID: eventID, parentSpecifier: parentSpecifier,
+                                       directParameter: directParameter, keywordParameters: keywordParameters,
+                                       requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
+                                       withTimeout: withTimeout, considering: considering)
     }
     
     
