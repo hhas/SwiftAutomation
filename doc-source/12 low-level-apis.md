@@ -55,10 +55,10 @@ For example:
   // tell application id "com.apple.TextEdit" to «event aevtquit» given «class savo»: «constant ****ask »
   try textedit.sendAppleEvent("aevt", "quit", ["savo": AE.ask])
 
-<p class="hilitebox">While the Carbon AE headers define constants for common four-char codes, e.g. <code>cDocument</code> = <code>'docu'</code> = <code>0x646f6375</code>, as of Swift3/Xcode8/macOS10.12 some constants are incorrectly mapped to <code>Int<code> (<code>SInt64</code>) instead of <code>OSType</code> (<code>UInt32</code>), so their use is best avoided.</p>
+<p class="hilitebox">While the Carbon AE headers define constants for common four-char codes, e.g. <code>cDocument</code> = <code>'docu'</code> = <code>0x646f6375</code>, as of Swift3/Xcode8/macOS10.12 some constants are incorrectly mapped to <code>Int</code> (<code>SInt64</code>) instead of <code>OSType</code> (<code>UInt32</code>), so their use is best avoided.</p>
 
 
-# Constructing object specifiers using four-char codes
+## Constructing object specifiers using four-char codes
 
 All object specifiers implement low-level methods for constructing property and all-elements specifiers
 

@@ -64,7 +64,7 @@ open class Symbol: Hashable, Equatable, CustomStringConvertible, CustomDebugStri
     
     public var description: String {
         if let name = self.name {
-            return self.nameOnly ? "\(self.typeAliasName)(\(quoteString(name)))" : "\(self.typeAliasName).\(name)"
+            return self.nameOnly ? "\(self.typeAliasName)(\(name.debugDescription))" : "\(self.typeAliasName).\(name)"
         } else {
             return "\(self.typeAliasName)(code:\(formatFourCharCodeString(self.code)),type:\(formatFourCharCodeString(self.type)))"
         }

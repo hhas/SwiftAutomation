@@ -26,7 +26,7 @@ characters/words/paragraphs of documents by index/relative-position/range/filter
 
 Examples:
 
-<pre><code>textedit.<strong>name</strong>
+<pre><code>textedit.<strong>version</strong>
 textedit.documents[1].<strong>text</strong>
 finder.<strong>home</strong>.files.<strong>name</strong></code></pre>
 
@@ -55,20 +55,18 @@ Syntax:
 
 Examples:
 
-[TO DO: this and subsequent examples should appear as complete code, as above, with relevant portions emphasized]
-
-  words[3]
-  items[-1]
+<pre><code>textedit.<strong>documents[1]</strong>
+finder.home.<strong>folders[-2]</strong>.<strong>files[1]</strong></code></pre>
 
 Syntax:
 
-<pre><code>elements<strong>[</strong><var>selector</var><strong>]</strong>
+<pre><code>elements<strong>[<var>selector</var>]</strong>
 
     <var>selector</var> : Int | Any -- the object's index (1-indexed), or other identifying value [1]</code></pre>
 
-[1] While element indexes are normally integers, some applications may also accept other types (e.g. Finder's file/folder/disk specifiers also accept alias values). The only exceptions are `String` and `<var>PREFIX</var>Specifier`, which are used to construct by-name and by-test specifiers respectively.
+[1] While element indexes are normally integers, some applications may also accept other types (e.g. Finder's file/folder/disk specifiers also accept alias values). The only exceptions are `String` and <code><var>PREFIX</var>Specifier</code>, which are used to construct by-name and by-test specifiers respectively.
 
-<p class="hilitebox">Be aware that index-based object specifiers always use _one-indexing_ (i.e. the first item is 1, the second is 2, etc.), not zero-indexing as in Swift (where the first item is 0, the second is 1, etc.).</p>
+<p class="hilitebox">Be aware that index-based object specifiers always use <em>one-indexing</em> (i.e. the first item is 1, the second is 2, etc.), not zero-indexing as in Swift (where the first item is 0, the second is 1, etc.).</p>
 
 
 ### Element by name
@@ -78,14 +76,14 @@ func named(_ name: Any) -> <var>PREFIX</var>Item</code></pre>
 
 Examples:
 
-  disks["Macintosh HD"]
-  files["index.html"]
+<pre><code>textedit.<strong>documents["Untitled"]</strong>
+finder.home.<strong>folders["Documents"]</strong>.<strong>files["ReadMe.txt"]</strong></code></pre>
 
 Specifies the first element with the given name. (The subscript syntax is preferred; the `named` method would only need used if a non-string value was required.)
 
 Syntax:
 
-<pre><code>elements<strong>[</strong><var>selector</var><strong>]</strong>
+<pre><code>elements<strong>[<var>selector</var>]</strong>
         <var>selector</var> : String -- the object's name (as defined in its 'name' property)</code></pre>
 
 <p class="hilitebox">Applications usually treat object names as case-insensitive. Where multiple element have the same name, a by-name specifier only identifies the first element found with that name. (To identify <em>all</em> elements with a particular name, use a by-test specifier instead.)</p>
@@ -95,29 +93,28 @@ Syntax:
 
 ### Element by ID
 
-  func ID(_ elementID: Any) -> <var>PREFIX</var>Item
+<pre><code>func ID(_ elementID: Any) -> <var>PREFIX</var>Item</code></pre>
 
 Examples:
 
-  windows.ID(4321)
+<pre><code>textedit.<strong>windows.ID(4321)</strong></code></pre>
 
 Syntax:
 
-<pre><code>elements<strong>.ID(</strong><var>selector</var><strong>)</strong>
+<pre><code>elements<strong>.ID(<var>selector</var>)</strong>
         <var>selector</var> : Any -- the object's id (as defined in its 'id' property)</code></pre>
 
 ### Element by absolute position
 
-  var first: <var>PREFIX</var>Item {get}
-  var middle: <var>PREFIX</var>Item {get}
-  var last: <var>PREFIX</var>Item {get}
-  var any: <var>PREFIX</var>Item {get}
+<pre><code>var first: <var>PREFIX</var>Item {get}
+var middle: <var>PREFIX</var>Item {get}
+var last: <var>PREFIX</var>Item {get}
+var any: <var>PREFIX</var>Item {get}</code></pre>
 
 Examples:
 
-  documents.first
-  paragraphs.last
-  files.any
+<pre><code>textedit.<strong>documents.first</strong>.text.<strong>paragraphs.last</strong>
+finder.desktop.<strong>files.any</strong></code></pre>
 
 Syntax:
 
@@ -129,13 +126,13 @@ elements<strong>.any</strong> -- random element</code></pre>
 
 ### Element by relative position
 
-  func previous(_ elementClass: Symbol? = nil) -> <var>PREFIX</var>Item
-  func next(_ elementClass: Symbol? = nil) -> <var>PREFIX</var>Item
+<pre><code>func previous(_ elementClass: Symbol? = nil) -> <var>PREFIX</var>Item
+func next(_ elementClass: Symbol? = nil) -> <var>PREFIX</var>Item</code></pre>
 
 Examples:
 
-  words[3].next() // word 4
-  paragraphs[-1].previous(TED.character) // the last character before the last paragraph
+<pre><code>textedit.documents[1].characters[3].<strong>next()</strong>
+textedit.documents[1].paragraphs[-1].<strong>previous(TED.word)</strong></code></pre>
 
 Syntax:
 
@@ -146,17 +143,17 @@ element.<strong>previous(<var>elementClass</var>)</strong>
 element.<strong>next(<var>elementClass</var>)</strong>
 
         <var>elementClass</var> : Symbol -- the name of the previous/next element's class;
-                                            if omitted, the current element's class is used</code></pre>
+                                 if omitted, the current element's class is used</code></pre>
 
 ### Elements by range
 
-  subscript(from: Any, to: Any) -> <var>PREFIX</var>Items
+<pre><code>subscript(from: Any, to: Any) -> <var>PREFIX</var>Items</code></pre>
 
 Examples:
 
-  documents[1, 3]
-  folders["Documents", "Movies"]
-  text[TEPCon.characters[5], TEPCon.words[-2]]
+<pre><code>textedit.<strong>documents[1, 3]</strong>
+finder.home.<strong>folders["Documents", "Movies"]</strong>
+texeditplus.documents[1].<strong>text[TEPCon.characters[5], TEPCon.words[-2]]</strong></code></pre>
 
 Caution:
 
@@ -164,13 +161,13 @@ By-range specifiers must be constructed as <code>elements[<var>start</var>,<var>
 
 Syntax:
 
-<pre><code>elements<strong>[</strong><var>start</var><strong>,</strong> <var>end</var><strong>]</strong>
+<pre><code>elements<strong>[<var>start</var>, <var>end</var>]</strong>
         <var>start</var> : Int | String | <var>PREFIX</var>Item -- start of range
         <var>end</var> : Int | String | <var>PREFIX</var>Item -- end of range</code></pre>
 
 Range references select all elements between and including two object specifiers indicating the start and end of the range. The start and end specifiers are normally declared relative to the container of the elements being selected. 
 
-These sub-specifiers are constructed using the glue's' `<var>PREFIX</var>Con` constant, e.g. `TEDCon`, as their root. For example, to indicate the third paragraph relative to the currrent container object:
+These sub-specifiers are constructed using the glue's <code><var>PREFIX</var>Con</code> constant, e.g. `TEDCon`, as their root. For example, to indicate the third paragraph relative to the currrent container object:
 
   TEDCon.paragraphs[3]
 
@@ -189,11 +186,14 @@ Some applications can handle more complex range references. For example, the fol
 
 ### Elements by test
 
-  subscript(test: TestClause) -> <var>PREFIX</var>Items
+<pre><code>subscript(test: TestClause) -> <var>PREFIX</var>Items</code></pre>
 
 Examples:
 
-  [TO DO: simple example]
+<pre><code>textedit.<strong>documents[TEDIts.path == MissingValue]</strong>
+
+finder.desktop.<strong>files[FINIts.nameExtension.isIn(["txt", "rtf"]) 
+                     && FINIts.modificationDate > (Date()-60*60*24*7)]</strong></code></pre>
 
 Syntax:
 
@@ -210,7 +210,7 @@ Test expressions consist of the following:
   TEDIts.size
   TEDIts.words.first
 
-* One or more conditional/containment tests, implemented as operators/methods on the specifier being tested. The left-hand operand/receiver must be a `<var>PREFIX</var>Specifier` instance. The right-hand operand/argument can be any value; its type is always `Any`.
+* One or more conditional/containment tests, implemented as operators/methods on the specifier being tested. The left-hand operand/receiver must be a <code><var>PREFIX</var>Specifier</code> instance. The right-hand operand/argument can be any value; its type is always `Any`.
 
   Syntax:
 
@@ -258,15 +258,15 @@ specifier.<strong>isIn(</strong><var>value</var><strong>)</strong></code></pre>
 
 Insertion locations can be specified at the beginning or end of all elements, or before or after a specified element or element range.
 
-  var beginning: <var>PREFIX</var>Specifier
-  var end: <var>PREFIX</var>Specifier
-  var before: <var>PREFIX</var>Specifier
-  var after: <var>PREFIX</var>Specifier
+<pre><code>var beginning: <var>PREFIX</var>Specifier
+var end: <var>PREFIX</var>Specifier
+var before: <var>PREFIX</var>Specifier
+var after: <var>PREFIX</var>Specifier</code></pre>
 
 Examples:
 
-  documents.end
-  paragraphs.last.before
+<pre><code>textedit.documents.<strong>end</strong>
+textdit.documents[1].paragraphs[-1].<strong>before</strong></code></pre>
 
 Syntax:
 

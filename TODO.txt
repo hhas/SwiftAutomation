@@ -15,6 +15,19 @@ TO DO:
 
 
 
+- need pure bundleID targeting in sandboxed apps where app's file path isn't available; file a feature request for NSWorkspace.launchApplication(withBundleIdentifier:options:configuration:)throws->NSRunningApplication
+
+
+    // This launches TextEdit if needed and opens the test.txt file in it, returning an NSRunningApplication for the target app or throwing on failure:
+    //try NSWorkspace.shared().launchApplication(at: URL(fileURLWithPath:"/Applications/TextEdit.app"), options: [.withoutActivation], configuration: [NSWorkspaceLaunchConfigurationAppleEvent:evt])
+
+    // This launches TextEdit but doesn't open the file, nor does it identify the launched app, nor throw a meaningful error on failure, nor does its documentation explain how to use it:
+    NSWorkspace.shared().launchApplication(withBundleIdentifier: "com.apple.textedit", options: [], additionalEventParamDescriptor: ???, launchIdentifier: nil)
+
+
+
+
+
 - sort out inconsistent naming of `resultType:` vs `requestedType:` parameters (i.e. pick one and use it throughout)
 
 

@@ -30,10 +30,10 @@ func fourCharCode(_ string: String) throws -> OSType {
     // convert four-character string containing MacOSRoman characters to OSType
     // (this is safer than using UTGetOSTypeFromString, which silently fails if string is malformed)
     guard let data = string.data(using: String.Encoding.macOSRoman) else {
-        throw SwiftAutomationError(code: 1, message: "Invalid four-char code (bad encoding): \(quoteString(string))") // TO DO: what error?
+        throw SwiftAutomationError(code: 1, message: "Invalid four-char code (bad encoding): \(string.debugDescription)") // TO DO: what error?
     }
     if (data.count != 4) {
-        throw SwiftAutomationError(code: 1, message: "Invalid four-char code (wrong length): \(quoteString(string))")
+        throw SwiftAutomationError(code: 1, message: "Invalid four-char code (wrong length): \(string.debugDescription)")
     }
     var tmp: UInt32 = 0
     (data as NSData).getBytes(&tmp, length: 4)

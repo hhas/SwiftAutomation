@@ -2,7 +2,7 @@
 
 ## What is SwiftAutomation?
 
-SwiftAutomation allows you to control "AppleScriptable" macOS applications using Apple's [Swift](https://swift.org/) language. SwiftAutomation makes Swift a true alternative to AppleScript for automating your Mac.
+SwiftAutomation allows you to control "AppleScriptable" macOS applications using Apple Inc's [Swift programming language](https://swift.org/). SwiftAutomation makes Swift a true alternative to AppleScript for automating your Mac.
 
 For example, to get the value of the first paragraph of the topmost document in TextEdit:
 

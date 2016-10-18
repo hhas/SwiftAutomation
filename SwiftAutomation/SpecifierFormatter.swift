@@ -232,7 +232,7 @@ public class SpecifierFormatter {
         case let obj as NSDictionary: // HACK; see also AppData.pack()
             return "[" + obj.map({"\(self.formatValue($0)): \(self.formatValue($1))"}).joined(separator: ", ") + "]"
         case let obj as String:
-            return quoteString(obj)
+            return obj.debugDescription
         case let obj as Date:
             return "Date(timeIntervalSinceReferenceDate:\(obj.timeIntervalSinceReferenceDate)) /*\(obj.description)*/"
         case let obj as URL:
@@ -302,14 +302,6 @@ public class SpecifierFormatter {
 
 /******************************************************************************/
 
-
-func quoteString(_ string: String) -> String {
-    let tmp = NSMutableString(string: string)
-    for (from, to) in [("\\", "\\\\"), ("\"", "\\\""), ("\r", "\\r"), ("\n", "\\n"), ("\t", "\\t")] {
-        tmp.replaceOccurrences(of: from, with: to, options: .literal, range: NSMakeRange(0, tmp.length))
-    }
-    return "\"\(tmp)\""
-}
 
 // convert an OSType to its String literal representation, e.g. 'docu' -> "\"docu\""
 func formatFourCharCodeString(_ code: OSType) -> String {

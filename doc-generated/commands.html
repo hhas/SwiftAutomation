@@ -14,19 +14,19 @@
 
 <p>All application commands have the same basic structure: a single, optional direct parameter, followed by zero or more named parameters specific to that command, followed by zero or more event attributes that determine how the Apple event is processed:</p>
 
-<pre><code>func <var>commandName</var>&lt;T&gt;(directParameter: Any  = NoParameter,
-                 <var>namedParameter1:</var> Any  = NoParameter,
-                 <var>namedParameter2:</var> Any  = NoParameter,
-                 ...
-                 resultType:  Symbol?             = nil,
-                 waitReply:   Bool                = true,
-                 sendOptions: SendOptions?        = nil,
-                 withTimeout: NSTimeInterval?     = nil,
-                 considering: ConsideringOptions? = nil) throws -> T</pre>
+<pre><code>func <var>commandName</var>&lt;T&gt;(_ directParameter: Any = NoParameter,
+                      <var>namedParameter1:</var> Any = NoParameter,
+                      <var>namedParameter2:</var> Any = NoParameter,
+                                   <var>...</var>
+                           resultType: Symbol?             = nil,
+                            waitReply: Bool                = true,
+                          sendOptions: SendOptions?        = nil,
+                          withTimeout: NSTimeInterval?     = nil,
+                          considering: ConsideringOptions? = nil) throws -> T</code></pre>
 
 <ul>
 <li><p><code>directParameter:</code> -- An application command can have either zero or one direct parameters. The application's dictionary indicates which commands take a direct parameter, and if it is optional or required.</p></li>
-<li><p><code>namedParameterN:</code>An application command can have zero or more named parameters. The application's dictionary describes the named parameters for each command, and if they are optional or required.</p></li>
+<li><p><code><var>namedParameterN:</var></code> -- An application command can have zero or more named parameters. The application's dictionary describes the named parameters for each command, and if they are optional or required.</p></li>
 <li><p><code>resultType:</code> -- Some application commands (e.g. <code>get</code>) can return the same result as more than one type. [TO DO: rephrase, making clear that this only indicates the caller's preference as to what type it'd like the command's result to be - a very basic form of content negotiation - there is no guarantee the target app will respect it. Most apps ignore it, and even those that do support it often only do so for <code>get</code>.] For example, <code>Finder().home.get()</code> normally returns an object specifier, but will return a <code>URL</code> value instead if its <code>resultType:</code> is <code>FIN.alias</code>: <code>Finder().home.get(resultType: FIN.alias)</code>. [Note that in AS, <code>COMMAND as TYPE</code> does double duty, both indicating its preferred result type to the app <em>and</em> coercing the actual result when it arrives. In SA, <code>COMMAND as TYPE</code> only performs the latter; the former is done via <code>resultType:</code>.]</p></li>
 <li><p><code>waitReply:</code> -- If <code>true</code> (the default), the command will block until the application sends a reply or the request times out. If <code>false</code>, it will return as soon as the request is sent, ignoring any return values or application errors.</p></li>
 <li><p><code>sendOptions:</code> -- May be used instead of <code>waitReply:</code> if additional/alternative Apple event send options need to be sent. See the <code>NSAppleEventDescriptor.SendOptions</code> documentation for details. (For example, if the <code>.queueReply</code> option is used, the command will immediately return the expected reply event's' return ID as <code>Int</code>, allowing the client to recognize the target application's reply event when it later arrives in its main event queue.)</p></li>

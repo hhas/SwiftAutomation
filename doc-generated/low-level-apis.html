@@ -67,9 +67,9 @@ try textedit.sendAppleEvent("aevt", "odoc", ["----": URL(fileURLWithPath: "/User
 try textedit.sendAppleEvent("aevt", "quit", ["savo": AE.ask])
 </code></pre>
 
-<p class="hilitebox">While the Carbon AE headers define constants for common four-char codes, e.g. <code>cDocument</code> = <code>'docu'</code> = <code>0x646f6375</code>, as of Swift3/Xcode8/macOS10.12 some constants are incorrectly mapped to <code>Int<code> (<code>SInt64</code>) instead of <code>OSType</code> (<code>UInt32</code>), so their use is best avoided.</p>
+<p class="hilitebox">While the Carbon AE headers define constants for common four-char codes, e.g. <code>cDocument</code> = <code>'docu'</code> = <code>0x646f6375</code>, as of Swift3/Xcode8/macOS10.12 some constants are incorrectly mapped to <code>Int</code> (<code>SInt64</code>) instead of <code>OSType</code> (<code>UInt32</code>), so their use is best avoided.</p>
 
-<h1>Constructing object specifiers using four-char codes</h1>
+<h2>Constructing object specifiers using four-char codes</h2>
 
 <p>All object specifiers implement low-level methods for constructing property and all-elements specifiers</p>
 

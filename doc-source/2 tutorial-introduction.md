@@ -1,6 +1,6 @@
 # A tutorial introduction
 
-[CAUTION: This tutorial is incomplete and unfinished, and while it can be read it can't be performed until/unless SwiftAutomation.framework and TextEditGlue.swift can be imported into `/usr/bin/swift`. While the Xcode project does include a playground, this is unsuitable as, unlike the `swift` REPL, it re-evaluates ALL lines of code each time a new line is entered; thus, for example, a `make` command will create multiple new objects while the user is working, while repeated `delete` commands could unintentionally destroy user data.]
+[CAUTION: This tutorial is incomplete and unfinished, and its dependence on `/usr/bin/swift` . While the Xcode project does include a playground, this is unsuitable as, unlike the `swift` REPL, it re-evaluates ALL lines of code each time a new line is entered; thus, for example, a `make` command will create multiple new objects while the user is working, while repeated `delete` commands could unintentionally destroy user data.]
 
 [[TO DO: need to figure out how to import SwiftAutomation.framework and TextEditGlue.swift into `/usr/bin/swift` session, and package this into a simple shell script that configures and launches a tutorial session automatically (for bonus points, the script should also take an optional list of app names and generate and import glues for those too).]
 
@@ -42,7 +42,7 @@ To test, send TextEdit a standard `activate` command:
 
   try textedit.activate()
 
-This should make TextEdit the currently active (frontmost) application, automatically launching it if it isn't already running. All application commands throw on failure, so don't forget to type Swift's `try` keyword before the command or `swift` will refuse to compile it.
+This should make TextEdit the currently active (frontmost) application, automatically launching it if it isn't already running. All application commands throw on failure, so don't forget to type Swift's `try` keyword before a command or else it won't compile.
 
 [TO DO: open TextEdit's SDEF documentation in Script Editor and summarize its contents and organization]
 

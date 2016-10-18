@@ -4,19 +4,19 @@
 
 All application commands have the same basic structure: a single, optional direct parameter, followed by zero or more named parameters specific to that command, followed by zero or more event attributes that determine how the Apple event is processed:
 
-<pre><code>func <var>commandName</var>&lt;T&gt;(directParameter: Any  = NoParameter,
-                 <var>namedParameter1:</var> Any  = NoParameter,
-                 <var>namedParameter2:</var> Any  = NoParameter,
-                 ...
-                 resultType:  Symbol?             = nil,
-                 waitReply:   Bool                = true,
-                 sendOptions: SendOptions?        = nil,
-                 withTimeout: NSTimeInterval?     = nil,
-                 considering: ConsideringOptions? = nil) throws -> T</pre>
+<pre><code>func <var>commandName</var>&lt;T&gt;(_ directParameter: Any = NoParameter,
+                      <var>namedParameter1:</var> Any = NoParameter,
+                      <var>namedParameter2:</var> Any = NoParameter,
+                                   <var>...</var>
+                           resultType: Symbol?             = nil,
+                            waitReply: Bool                = true,
+                          sendOptions: SendOptions?        = nil,
+                          withTimeout: NSTimeInterval?     = nil,
+                          considering: ConsideringOptions? = nil) throws -> T</code></pre>
 
 * `directParameter:` -- An application command can have either zero or one direct parameters. The application's dictionary indicates which commands take a direct parameter, and if it is optional or required.
 
-* `namedParameterN:`An application command can have zero or more named parameters. The application's dictionary describes the named parameters for each command, and if they are optional or required.
+* <code><var>namedParameterN:</var></code> -- An application command can have zero or more named parameters. The application's dictionary describes the named parameters for each command, and if they are optional or required.
 
 * `resultType:` -- Some application commands (e.g. `get`) can return the same result as more than one type. [TO DO: rephrase, making clear that this only indicates the caller's preference as to what type it'd like the command's result to be - a very basic form of content negotiation - there is no guarantee the target app will respect it. Most apps ignore it, and even those that do support it often only do so for `get`.] For example, `Finder().home.get()` normally returns an object specifier, but will return a `URL` value instead if its `resultType:` is `FIN.alias`: `Finder().home.get(resultType: FIN.alias)`. [Note that in AS, `COMMAND as TYPE` does double duty, both indicating its preferred result type to the app _and_ coercing the actual result when it arrives. In SA, `COMMAND as TYPE` only performs the latter; the former is done via `resultType:`.]
 

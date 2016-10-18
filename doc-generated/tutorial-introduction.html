@@ -10,7 +10,7 @@
             <div id="main">
                 <h1>A tutorial introduction</h1>
                 <div class="navbar"><a href="welcome.html">back</a> | <a href="index.html">index</a> | <a href="understanding-apple-events.html">next</a></div>
-                <p>[CAUTION: This tutorial is incomplete and unfinished, and while it can be read it can't be performed until/unless SwiftAutomation.framework and TextEditGlue.swift can be imported into <code>/usr/bin/swift</code>. While the Xcode project does include a playground, this is unsuitable as, unlike the <code>swift</code> REPL, it re-evaluates ALL lines of code each time a new line is entered; thus, for example, a <code>make</code> command will create multiple new objects while the user is working, while repeated <code>delete</code> commands could unintentionally destroy user data.]</p>
+                <p>[CAUTION: This tutorial is incomplete and unfinished, and its dependence on <code>/usr/bin/swift</code> . While the Xcode project does include a playground, this is unsuitable as, unlike the <code>swift</code> REPL, it re-evaluates ALL lines of code each time a new line is entered; thus, for example, a <code>make</code> command will create multiple new objects while the user is working, while repeated <code>delete</code> commands could unintentionally destroy user data.]</p>
 
 <p>[[TO DO: need to figure out how to import SwiftAutomation.framework and TextEditGlue.swift into <code>/usr/bin/swift</code> session, and package this into a simple shell script that configures and launches a tutorial session automatically (for bonus points, the script should also take an optional list of app names and generate and import glues for those too).]</p>
 
@@ -53,7 +53,7 @@
 <pre><code>try textedit.activate()
 </code></pre>
 
-<p>This should make TextEdit the currently active (frontmost) application, automatically launching it if it isn't already running. All application commands throw on failure, so don't forget to type Swift's <code>try</code> keyword before the command or <code>swift</code> will refuse to compile it.</p>
+<p>This should make TextEdit the currently active (frontmost) application, automatically launching it if it isn't already running. All application commands throw on failure, so don't forget to type Swift's <code>try</code> keyword before a command or else it won't compile.</p>
 
 <p>[TO DO: open TextEdit's SDEF documentation in Script Editor and summarize its contents and organization]</p>
 
