@@ -12,10 +12,7 @@ import AppKit
 // TO DO: there are some inbuilt assumptions about `Int` and `UInt` always being 64-bit
 
 
-// TO DO: what happens if caller gives wrong return type for specifiers, e.g. `TextEdit().documents.get() as TEDItems`? (should be `... as [TEDItem]`, as TextEdit always returns a list of single-item specifiers); make sure malformed Specifiers are never returned and error reporting explains the problem (note: this may be an argument in favor of using PREFIXObject and PREFIXElements, except the lack of symmetry in that naming is likely to cause as much confusion as it avoids)
-
-
-let defaultTimeout: TimeInterval = 120 // TO DO: -sendEvent method's default/no timeout options are currently busted <rdar://21477694>
+let defaultTimeout: TimeInterval = 120 // bug workaround: NSAppleEventDescriptor.sendEvent(options:timeout:) method's support for kAEDefaultTimeout=-1 and kNoTimeOut=-2 flags is buggy <rdar://21477694>, so for now the default timeout is hardcoded here as 120sec (same as in AS)
 
 let defaultConsidering: ConsideringOptions = [.case]
 
@@ -182,7 +179,6 @@ open class AppData {
           return NSAppleEventDescriptor(date: obj)
         case let obj as URL:
             if obj.isFileURL {
-             // TO DO: what about packing as typeAlias if it's a bookmark URL? PROBLEM: Unlike Cocoa's NSURL, Swift's URL struct doesn't implement isFileReferenceURL(), so either need to coerce to NSURL in order to determine whether to pack as typeAlias or typeFileURL, or else cross fingers and hope that always packing as typeFileURL won't cause various crusty/flaky/elderly (Carbon) apps to puke because they're expecting typeAlias and don't have the wits to coerce the given descriptor to that type before trying to unpack it. Ideally we'd cache the original AEDesc within the unpacked Swift value (c.f. Specifier), but we can't do that without subclassing, and URL is a struct so we'd have to subclass NSURL (see AppleEventBridge's AEMURL.m for existing implementation of this), but what happens when that gets coerced to a Swift URL? (Seamless Cocoa-Swift integration my arse...). // note: fileReferenceURL support is broken in Swift3: https://bugs.swift.org/browse/SR-2728
                 return NSAppleEventDescriptor(fileURL: obj)
             }
             
@@ -291,8 +287,8 @@ open class AppData {
              if let result = desc.dateValue {
                  return result as! T
              }
-        case is URL.Type, is NSURL.Type: // TO DO: add separate case for NSURL that preserves bookmark info? (problem: unless fileURLValue preserves alias info itself [which it won't], there's a potential race condition between time typeAlias descriptor was coerced down to typeFileURL and the time the NSURL is instantiated and its bookmark set - if the file moves in that time, the new NSURL will have invalid bookmark)
-             if let result = desc.fileURLValue { // note: this coerces all file system-related descriptors down to typeFileURL before unpacking them, so typeAlias/typeBookmarkData (which identify a file system object, not location) descriptors won't round-trip and the resulting URL will only describe the file's location at the time the descriptor was unpacked. This loss of descriptor type/representation information might prove a problem for some older Carbon apps that don't like receiving typeFileURL descriptors when the URL is repacked, but it remains to be seen if this warrants a built-in workaround (e.g. adding an option to return an NSURL which, unlike URL, can hold bookmark data too, or even subclassing NSURL to retain the original descriptor for reuse when repacked)
+        case is URL.Type, is NSURL.Type:
+             if let result = desc.fileURLValue { // note: this coerces all file system-related descriptors down to typeFileURL before unpacking them, so typeAlias/typeBookmarkData descriptors (which identify file system objects, not locations) won't round-trip and the resulting URL will only describe the file's location at the time the descriptor was unpacked.
                  return result as! T
             }
         case is Int8.Type: // lack of common protocols on Integer types is a pain
@@ -332,7 +328,7 @@ open class AppData {
                     let result = Float(exactly: doubleDesc.doubleValue) {
                 return result as! T
             }
-        case is AnyHashable.Type:
+        case is AnyHashable.Type: // while records always unpack as [Symbol:TYPE], [AnyHashable:TYPE] is a valid return type too
             if let result = try self.unpackAsAny(desc) as? AnyHashable {
                 return result as! T
             }
@@ -379,7 +375,7 @@ open class AppData {
     /******************************************************************************/
     // Convert an Apple event descriptor to its preferred Swift type, as determined by its descriptorType
     
-    public func unpackAsAny(_ desc: NSAppleEventDescriptor) throws -> Any { // TO DO: double-check that Optional<T>.some(VALUE)/Optional<T>.none are never returned here (i.e. cMissingValue AEDescs must always unpack as non-generic MissingValue when return type is Any to avoid dropping user into Optional<T>.some(nil) hell, and only unpack as Optional<T>.none when caller has specified an exact type for T, in which case `unpack<T>(_)->T` will unpack it itself.)
+    public func unpackAsAny(_ desc: NSAppleEventDescriptor) throws -> Any { // note: this never returns Optionals (i.e. cMissingValue AEDescs always unpack as MissingValue when return type is Any) to avoid dropping user into Optional<T>.some(Optional<U>.none) hell.
         switch desc.descriptorType {
             // common AE types
         case _typeTrue, _typeFalse, _typeBoolean:
@@ -470,7 +466,7 @@ open class AppData {
     
     
     func recordKey(forCode code: OSType) -> Symbol { // used by Dictionary extension to unpack AERecord's OSType-based keys as glue-defined Symbols
-        return self.glueClasses.symbolType.symbol(code: code, type: _typeProperty, descriptor: nil) // TO DO: confirm using `typeProperty` here won't cause any problems (AppleScript/AEM can be a bit loose on which DescTypes to use on AEDescs that hold OSType data, tending to use typeType for everything that isn't typeEnumerated)
+        return self.glueClasses.symbolType.symbol(code: code, type: _typeProperty, descriptor: nil)
     }
     
     func unpackAsSymbol(_ desc: NSAppleEventDescriptor) -> Symbol {
@@ -550,7 +546,7 @@ open class AppData {
                                              appData: self, descriptor: (fullyUnpackSpecifiers ? nil : desc))
         } catch {
             throw UnpackError(appData: self, descriptor: desc, type: self.glueClasses.objectSpecifierType,
-                              message: "Can't unpack object specifier's selector data.") // TO DO: need to chain errors
+                              message: "Can't unpack object specifier's selector data.", cause: error)
         }
     }
     
@@ -630,16 +626,8 @@ open class AppData {
                                   withTimeout: TimeInterval? = nil, // no. of seconds to wait before raising timeout error (-1712); may also be default/never
                                   considering: ConsideringOptions? = nil) throws -> T { // coerce and unpack result as this type or return raw reply event if T is NSDescriptor; default is Any
         // note: human-readable command and parameter names are only used (if known) in error messages
-        // TO DO: all errors occurring within this method should be caught and rethrown as CommandError, allowing error message to include a description of the failed command as well as the error that occurred (simplest to capture all raw input and error info in CommandError, and only process/format if details are requested, e.g. when generating error description string)
-        
-        
-        // TO DO: currently errors thrown as CommandError should be thrown as something else, which can then be caught and rethrown as CommandError proper with complete description
-        
-        
-        
+        // note: all errors occurring within this method are caught and rethrown as CommandError, allowing error message to provide a description of the failed command as well as the error itself
         var sentEvent: NSAppleEventDescriptor?, repliedEvent: NSAppleEventDescriptor?
-        
-        
         do {
             // Create a new AppleEvent descriptor (throws ConnectionError if target app isn't found)
             let event = NSAppleEventDescriptor(eventClass: eventClass, eventID: eventID, targetDescriptor: try self.targetDescriptor(),
@@ -647,7 +635,7 @@ open class AppData {
             // pack its keyword parameters
             for (paramName, code, value) in keywordParameters where parameterExists(value) {
                 do {
-                    event.setDescriptor(try self.pack(value), forKeyword: code) // TO DO: catch pack errors and rethrow with the name of the failed parameter included
+                    event.setDescriptor(try self.pack(value), forKeyword: code)
                 } catch {
                     throw CommandSubError(code: error._code, message: "Invalid '\(paramName ?? fourCharCode(code))' parameter.", cause: error)
                 }
@@ -688,7 +676,7 @@ open class AppData {
             event.setAttribute(considerations, forKeyword: _enumConsiderations)
             event.setAttribute(consideringIgnoring, forKeyword: _enumConsidsAndIgnores)
             // send the event
-            let sendMode = sendOptions ?? self.defaultSendMode.union(waitReply ? .waitForReply : .noReply) // TO DO: finalize
+            let sendMode = sendOptions ?? self.defaultSendMode.union(waitReply ? .waitForReply : .noReply)
             let timeout = withTimeout ?? defaultTimeout
             var replyEvent: NSAppleEventDescriptor
             sentEvent = event

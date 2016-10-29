@@ -64,16 +64,15 @@ import AppKit
 
 // TO DO: debugDescription that displays raw FCC representation?
 
-// TO DO: Mirror support? currently playground displays a list of specifiers as `[{{...}},{{...}},...]`, although they print() fine elsewhere
-
-// TO DO: send methods should trap errors and rethrow as CommandError that describes the failed command
+// TO DO: Mirror support; currently playground displays a list of specifiers as `[{{...}},{{...}},...]`, although they print() fine elsewhere; unfortunately, Swift's support for custom mirrors seems to be buggy as Playgrounds/REPL tend to crash even before Query.customMirror gets called
 
 
 /******************************************************************************/
 // abstract base class for _all_ specifier and test clause subclasses
 
 
-open class Query: CustomStringConvertible, CustomDebugStringConvertible, /*CustomReflectable,*/ SelfPacking { // TO DO: Equatable? (TBH, comparing and hashing Query objects would be of limited use; not sure it's worth the effort as, ultimately, only the target app can know if two queries identify the same object or not)
+open class Query: CustomStringConvertible, CustomDebugStringConvertible, /*CustomReflectable,*/ SelfPacking {
+    // note: Equatable isn't implemented here as 1. it's rarely necessary to compare two specifiers, and 2. only the target app can know if two queries identify the same object or not, e.g. `Finder().folders["foo"]`, `Finder().desktop.folders["FOO"]`, and `Finder().home.folders["Desktop:Foo"]` all refer to same object (a folder named "foo" on user's desktop) while `Finder.disks["Bar"]` and `Finder.disks["bar"]` do not (since disk names are case-sensitive)
     
     public let appData: AppData
     internal private(set) var _cachedDescriptor: NSAppleEventDescriptor?
@@ -132,8 +131,7 @@ open class Query: CustomStringConvertible, CustomDebugStringConvertible, /*Custo
 /******************************************************************************/
 // abstract base class for all object and insertion specifiers
 // app-specific glues should subclass this and add command methods via protocol extension (mixin) to it and all of its subclasses too
-
-// TO DO: is it practical to prevent commands appearing on untargeted specifiers? (it ought to be doable as long as subclasses and mixins can provide the right class hooks; the main issue is how crazy mad the typing gets)
+// note: while application commands will be mixed-in on both targeted and untargeted specifiers, they will always throw if called on the latter; while it would be possible to differentiate the two it would complicate the implementation while failing to provide any real benefit to users, who are unlikely to make such a mistake in the first place
 
 
 public protocol SpecifierProtocol { // glue-defined Command extensions, and by ObjectSpecifierProtocol
@@ -165,18 +163,15 @@ open class Specifier: Query, SpecifierProtocol {
     // unpacking
     
     override func unpackParentSpecifiers() {
-        guard let descriptor = self._cachedDescriptor else { // TO DO: convert this sanity check to assert?
-            print("Can't unpack parent specifiers as cached descriptor don't exist (this isn't supposed to happen).") // TO DO: DEBUG; delete
-            self._parentQuery = RootSpecifier(rootObject: SwiftAutomationError(code: 1, message: "Can't unpack parent specifiers as cached AppData and/or AEDesc don't exist (this isn't supposed to happen)."), appData: self.appData) // TO DO: implement ErrorSpecifier subclass that takes error info and always raises on use
-            return
-        }
         do {
+            guard let descriptor = self._cachedDescriptor else { // note: this should never fail; if it does, it's an implementation bug
+                throw SwiftAutomationError(code: 1, message: "Can't unpack parent specifiers as cached AppData and/or AEDesc don't exist.")
+            }
             let parentDesc = descriptor.forKeyword(_keyAEContainer)!
             self._parentQuery = try appData.unpack(parentDesc) as Specifier
             self._parentQuery!.unpackParentSpecifiers()
         } catch {
-            print("Deferred unpack parent specifier failed: \(error)") // TO DO: DEBUG; delete
-            self._parentQuery = RootSpecifier(rootObject: (descriptor.forKeyword(_keyAEContainer))!, appData: self.appData) // TO DO: store error in RootSpecifier and raise it on packing
+            self._parentQuery = RootSpecifier(rootObject: error, appData: self.appData) // store error in RootSpecifier and raise it on packing
         }
     }
     
@@ -266,8 +261,6 @@ open class ObjectSpecifier: Specifier, ObjectSpecifierProtocol { // represents p
     public let selectorForm: NSAppleEventDescriptor
     public let selectorData: Any
     
-    // TO DO: ideally want a wantName:String? arg that takes human-readable name, if available, for display purposes (see also previous/next)
-    
     required public init(wantType: NSAppleEventDescriptor, selectorForm: NSAppleEventDescriptor, selectorData: Any,
                          parentQuery: Query?, appData: AppData, descriptor: NSAppleEventDescriptor?) {
         self.wantType = wantType
@@ -307,7 +300,8 @@ open class ObjectSpecifier: Specifier, ObjectSpecifierProtocol { // represents p
     }
         
     // Containment test constructors
-    // TO DO: ideally the following should only appear on objects constructed from an Its root; however, this will make the class/protocol hierarchy more complicated, so may be more hassle than it's worth - maybe explore this later, once the current implementation is fully working
+    
+    // note: ideally the following would only appear on objects constructed from an Its root; however, this would complicate the implementation while failing to provide any real benefit to users, who are unlikely to make such a mistake in the first place
     
     public func beginsWith(_ value: Any) -> TestClause {
         return ComparisonTest(operatorType: _kAEBeginsWithDesc, operand1: self, operand2: value, appData: self.appData, descriptor: nil)
@@ -330,7 +324,7 @@ open class ObjectSpecifier: Specifier, ObjectSpecifierProtocol { // represents p
 // note: each glue should define an Elements class that subclasses ObjectSpecifier and adopts ElementsSpecifierExtension (which adds by range/test/all selectors)
 
 
-public struct RangeSelector: SelfPacking { // holds data for by-range selectors // TO DO: does this need to be public?
+struct RangeSelector: SelfPacking { // holds data for by-range selectors
     // Start and stop are Con-based (i.e. relative to container) specifiers (App-based specifiers will also work, as 
     // long as they have the same parent specifier as the by-range specifier itself). For convenience, users can also
     // pass non-specifier values (typically Strings and Ints) to represent simple by-name and by-index specifiers of
@@ -363,7 +357,7 @@ public struct RangeSelector: SelfPacking { // holds data for by-range selectors 
         }
     }
     
-    public func SwiftAutomation_packSelf(_ appData: AppData) throws -> NSAppleEventDescriptor {
+    func SwiftAutomation_packSelf(_ appData: AppData) throws -> NSAppleEventDescriptor {
         // note: the returned desc will be cached by the ElementsSpecifier, so no need to cache it here
         let desc = NSAppleEventDescriptor.record().coerce(toDescriptorType: _typeRangeDescriptor)!
         desc.setDescriptor(try self.packSelector(self.start, appData: appData), forKeyword: _keyAERangeStart)

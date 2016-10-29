@@ -7,22 +7,21 @@
 
 import Foundation
 
-// TO DO: finalize API
 
 /******************************************************************************/
 // Identifiers (legal characters, reserved names, etc)
 
-let UPPERCHAR  = Set<Character>("ABCDEFGHIJKLMNOPQRSTUVWXYZ".characters)
-let LOWERCHAR  = Set<Character>("abcdefghijklmnopqrstuvwxyz".characters)
-let NUMERIC    = Set<Character>("0123456789".characters)
-let OTHER      = Set<Character>("_".characters)
-let WHITESPACE = Set<Character>(" \t\n\r".characters)
+let uppercaseChars    = Set<Character>("ABCDEFGHIJKLMNOPQRSTUVWXYZ".characters)
+let lowercaseChars    = Set<Character>("abcdefghijklmnopqrstuvwxyz".characters)
+let numericChars      = Set<Character>("0123456789".characters)
+let interstitialChars = Set<Character>("_".characters)
+let whitespaceChars   = Set<Character>(" \t\n\r".characters)
 
 
 
-let legalFirstChars = UPPERCHAR.union(LOWERCHAR).union(OTHER)
-let legalOtherChars = UPPERCHAR.union(LOWERCHAR).union(OTHER).union(NUMERIC)
-let reservedWordSeparators = WHITESPACE.union("-/".characters) // some AETEs may include hyphens and other non-C-identifier/non-space characters in their keyword names, which are problematic in AppleScript (which [e.g.] compiles `trash-object` to `trash - object`) and a PITA in traditionally C-like languages, so we just bite the bullet and treat them all as if they were just simple spaces between words
+let legalFirstChars = uppercaseChars.union(lowercaseChars).union(interstitialChars)
+let legalOtherChars = uppercaseChars.union(lowercaseChars).union(interstitialChars).union(numericChars)
+let reservedWordSeparators = whitespaceChars.union("-/".characters) // some AETEs may include hyphens and other non-C-identifier/non-space characters in their keyword names, which are problematic in AppleScript (which [e.g.] compiles `trash-object` to `trash - object`) and a PITA in traditionally C-like languages, so we just bite the bullet and treat them all as if they were just simple spaces between words
 
 
 // TO DO: updated for Swift3, but could be missing some valid keywords - CHECK!!!
@@ -178,8 +177,7 @@ public class KeywordConverter {
     }
     
     func identifierForAppName(_ appName: String, reservedWords: Set<String>) -> String {
-        // TO DO: see how well this does in practice
-        // TO DO: decide if first letter should always be capitalized (currently it is, e.g. iTunes->ITunes, which is consistent with standard class naming practices, though less visually appealing)
+        // auto-generate a glue's Application class name, e.g. "iTunes" -> "ITunes", "System Events" -> "SystemEvents"
         let tmp = NSMutableString(string: self.convertName(appName, reservedWords: reservedWords))
         tmp.replaceCharacters(in: NSMakeRange(0, 1), with: tmp.substring(with: NSMakeRange(0, 1)).uppercased())
         let result = tmp.copy() as! String

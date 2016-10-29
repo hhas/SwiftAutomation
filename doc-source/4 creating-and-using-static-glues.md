@@ -5,7 +5,7 @@ The SwiftAutomation framework bundle includes an `aeglue` tool for generating st
 
 ## Generating a glue
 
-To add `aeglue` to your Bash shell's search path, add the following line to your `~/.bash_profile`, replacing `/path/to/SwiftAutomation.framework` with the framework's actual path:
+To add `aeglue` to your Bash shell's search path, add the following line to your `~/.bash_profile`, replacing <code><var>/path/to/SwiftAutomation.framework</var></code> with the framework's actual path:
 
 <pre><code>export $PATH="$PATH:<var>/path/to/SwiftAutomation.framework</var>/Resources/bin"</code></pre>
 

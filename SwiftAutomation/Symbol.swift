@@ -71,6 +71,7 @@ open class Symbol: Hashable, Equatable, CustomStringConvertible, CustomDebugStri
     }
     
     public var debugDescription: String { return self.description }
+    
     /*
     public var customMirror: Mirror {
         let children: [Mirror.Child] = [(label: "description", value: self.description), (label: "name", value: self.name),
@@ -78,7 +79,6 @@ open class Symbol: Hashable, Equatable, CustomStringConvertible, CustomDebugStri
         return Mirror(self, children: children, displayStyle: .`class`, ancestorRepresentation: .suppressed)
     }
     */
-    public var hashValue: Int {return self.nameOnly ? self.name!.hashValue : Int(self.code)}
     
     public var descriptor: NSAppleEventDescriptor { // used by SwiftAutomation_packSelf and previous()/next() selectors  
         if self._descriptor == nil {
@@ -98,12 +98,15 @@ open class Symbol: Hashable, Equatable, CustomStringConvertible, CustomDebugStri
         return self.descriptor
     }
     
+    public var hashValue: Int { return self.nameOnly ? self.name!.hashValue : Int(self.code) } // see also comments in `==()` below
+    
     public static func ==(lhs: Symbol, rhs: Symbol) -> Bool {
         // note: operands are not required to be the same subclass as this compares for AE equality only, e.g.:
         //
         //    TED.document == AESymbol(code: "docu") -> true
         //
-        return lhs.nameOnly && rhs.nameOnly ? lhs.name == rhs.name : lhs.code == rhs.code // TO DO: also compare AE types?
+        // note: AE types are also ignored on the [reasonable] assumption that any differences in descriptor type (e.g. typeType vs typeProperty) are irrelevant as apps will only care about the code itself
+        return lhs.nameOnly && rhs.nameOnly ? lhs.name == rhs.name : lhs.code == rhs.code
     }
 }
 

@@ -13,7 +13,6 @@
 
 import Foundation
 
-// TO DO: Would make life easier for users if less useful types aren't listed in introspection APIs, so add a 'legacy' arg to KeywordTerm's init method and flag below so they can be filtered out.
 
 // TO DO: check for any missing terms (e.g. ctxt)
 
