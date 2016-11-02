@@ -295,7 +295,7 @@ for applicationURL in applicationURLs {
         try writeData(data as NSData, toURL: outGlueURL, overwriting: canOverwrite)
         print(outGlueURL.path)
     } catch {
-        print("Error: Couldn't generate glue for \(applicationURL): \(error)", to: &errStream)
+        print("Error \(error._code): Couldn't generate glue for \(applicationURL?.path ?? "default terminology"): \(error)", to: &errStream)
     }
     // generate cheap-n-dirty user documentation
     if let appURL = applicationURL, generateDocumentation {
@@ -305,7 +305,7 @@ for applicationURL in applicationURLs {
             try writeData(sdef as NSData, toURL: outSDEFURL, overwriting: canOverwrite)
             print(outSDEFURL.path)
         } catch {
-            print("Error: Couldn't write SDEF for \(applicationURL): \(error)", to: &errStream)
+            print("Error \(error._code): Couldn't write SDEF for \(applicationURL?.path ?? "default terminology"): \(error)", to: &errStream)
         }
     }
 }

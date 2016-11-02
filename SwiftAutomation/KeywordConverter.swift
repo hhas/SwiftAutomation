@@ -149,14 +149,16 @@ public class KeywordConverter {
             var i = string.startIndex
             var willCapitalize = false
             var charSet = legalFirstChars
-            while i != string.endIndex {
-                while reservedWordSeparators.contains(string[i]) { // skip whitespace, hyphen, slash
+            while i < string.endIndex {
+                while i < string.endIndex && reservedWordSeparators.contains(string[i]) { // skip whitespace, hyphen, slash
                     i = string.index(after: i)
                 }
-                while i != string.endIndex {
+                while i < string.endIndex {
                     let c = string[i]
                     if charSet.contains(c) {
                         result += (willCapitalize ? String(c).uppercased() : String(c))
+                    } else if numericChars.contains(c) { // first character in name is a digit
+                        result += "_\(String(c))"
                     } else if c == "&" {
                         result += "And"
                     } else if reservedWordSeparators.contains(c) {
@@ -170,7 +172,9 @@ public class KeywordConverter {
                 }
                 willCapitalize = true
             }
-            if reservedWords.contains(result) || result.hasPrefix("_") || result == "" { result = self.escapeName(result) }
+            if reservedWords.contains(result) || result.hasPrefix("_") || result == "" {
+                result = self.escapeName(result)
+            }
             self._cache[string] = String(result)
             return result
         }
@@ -222,7 +226,7 @@ public class KeywordConverter {
         return result
     }
         
-    public func escapeName(_ s: String) -> String {
+    public func escapeName(_ s: String) -> String { // important: escapeName must always return a non-empty string
         return "\(s)_"
     }
 }

@@ -11,10 +11,37 @@ import Carbon
 
 // TO DO: the SDEF parser currently ignores `event` elements, on the assumption those are ONLY intended to be implemented as handlers in an OSA script and WON'T ever work as commands (OTOH, the AETE parser will include them because AETEs don't distinguish between command and event definitions, so macOS's SDEF-to-AETE converter will represent event handler definitions as command definitions)
 
+// TO DO: the following parseXXXCharCode() functions are currently defined as top level functions rather than private methods of SDEFParser as swift::TypeBase::getCanonicalType() crashes when the method's return type is OSType/UInt32 (though `(OSType,OSType)` works without problem)...another fine example of Swift's "seamless ObjC bridging" at work, no doubt. See if it'll distill down to a simple test case later on and submit bug report, assuming there isn't already one filed.
+
+func parseFourCharCode(_ string: NSString) throws -> OSType { // class, property, enum, param, etc. code
+    if string.length == 10 && (string.hasPrefix("0x") || string.hasPrefix("0X")) { // e.g. "0x00000001"
+        guard let result = UInt32(string.substring(with: NSRange(location: 2, length: 8)), radix: 16) else {
+            throw AutomationError(code: 1, message: "Invalid four-char code (bad representation): \(string.debugDescription)")
+        }
+        return result
+    } else {
+        return try fourCharCode(string as String)
+    }
+}
+    
+func parseEightCharCode(_ string: NSString) throws -> (OSType, OSType) { // eventClass and eventID code
+    if string.length == 8 {
+        return (try fourCharCode(string.substring(to: 4)), try fourCharCode(string.substring(from: 4)))
+    } else if string.length == 18 && (string.hasPrefix("0x") || string.hasPrefix("0X")) { // e.g. "0x0123456701234567"
+        guard let eventClass = UInt32(string.substring(with: NSRange(location: 2, length: 8)), radix: 16),
+                let eventID = UInt32(string.substring(with: NSRange(location: 10, length: 8)), radix: 16) else {
+            throw AutomationError(code: 1, message: "Invalid four-char code (bad representation): \(string.debugDescription)")
+        }
+        return (eventClass, eventID)
+    } else {
+        throw AutomationError(code: 1, message: "Invalid 'code' attribute (wrong length).")
+    }
+}
+
 
 
 public class SDEFParser: NSObject, XMLParserDelegate, ApplicationTerminology {
-
+    
     public private(set) var types: KeywordTerms = []
     public private(set) var enumerators: KeywordTerms = []
     public private(set) var properties: KeywordTerms = []
@@ -72,13 +99,9 @@ public class SDEFParser: NSObject, XMLParserDelegate, ApplicationTerminology {
                 if name == "" {
                     throw TerminologyError("Malformed \(tagName) in SDEF: empty 'name' attribute.")
                 }
-                if codeString.length != 8 {
-                    throw TerminologyError("Malformed \(tagName) in SDEF: invalid 'code' attribute (wrong length).")
-                }
-                var eventClass: OSType, eventID: OSType
+                let eventClass: OSType, eventID: OSType
                 do {
-                    eventClass = try fourCharCode(codeString.substring(to: 4))
-                    eventID = try fourCharCode(codeString.substring(from: 4))
+                    (eventClass, eventID) = try parseEightCharCode(codeString)
                 } catch {
                     throw TerminologyError("Malformed \(tagName) in SDEF: invalid 'code' attribute (\(error)).")
                 }
@@ -116,14 +139,14 @@ public class SDEFParser: NSObject, XMLParserDelegate, ApplicationTerminology {
     
     // used by parser() callback
     func parseKeywordTerm(_ tagName: String, attributes: [String:String]) throws -> (String, OSType) {
-        guard let name = attributes["name"], let codeString = attributes["code"] else {
+        guard let name = attributes["name"], let codeString = attributes["code"] as NSString? else {
             throw TerminologyError("Malformed \(tagName) in SDEF: missing 'name' or 'code' attribute.")
         }
         if name == "" {
             throw TerminologyError("Malformed \(tagName) in SDEF: empty 'name' attribute.")
         }
         do {
-            return (name, try fourCharCode(codeString))
+            return (name, try parseFourCharCode(codeString))
         } catch {
             throw TerminologyError("Malformed \(tagName) in SDEF: invalid 'code' attribute (\(error)).")
         }
