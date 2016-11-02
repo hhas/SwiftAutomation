@@ -2927,7 +2927,7 @@ public class SEVItem: SwiftAutomation.ObjectSpecifier, SEVObject {
 }
 
 // by-range/by-test/all
-public class SEVItems: SEVItem, SwiftAutomation.ElementsSpecifierExtension {}
+public class SEVItems: SEVItem, SwiftAutomation.MultipleObjectSpecifierExtension {}
 
 // App/Con/Its
 public class SEVRoot: SwiftAutomation.RootSpecifier, SEVObject, SwiftAutomation.RootSpecifierExtension {

@@ -1086,7 +1086,7 @@ public class SAFItem: SwiftAutomation.ObjectSpecifier, SAFObject {
 }
 
 // by-range/by-test/all
-public class SAFItems: SAFItem, SwiftAutomation.ElementsSpecifierExtension {}
+public class SAFItems: SAFItem, SwiftAutomation.MultipleObjectSpecifierExtension {}
 
 // App/Con/Its
 public class SAFRoot: SwiftAutomation.RootSpecifier, SAFObject, SwiftAutomation.RootSpecifierExtension {

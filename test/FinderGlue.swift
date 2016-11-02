@@ -1972,7 +1972,7 @@ public class FINItem: ObjectSpecifier, FINObject {
 }
 
 // by-range/by-test/all
-public class FINItems: FINItem, ElementsSpecifierExtension {}
+public class FINItems: FINItem, MultipleObjectSpecifierExtension {}
 
 // App/Con/Its
 public class FINRoot: RootSpecifier, FINObject, RootSpecifierExtension {

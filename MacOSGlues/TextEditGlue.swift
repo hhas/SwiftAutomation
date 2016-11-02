@@ -961,7 +961,7 @@ public class TEDItem: SwiftAutomation.ObjectSpecifier, TEDObject {
 }
 
 // by-range/by-test/all
-public class TEDItems: TEDItem, SwiftAutomation.ElementsSpecifierExtension {}
+public class TEDItems: TEDItem, SwiftAutomation.MultipleObjectSpecifierExtension {}
 
 // App/Con/Its
 public class TEDRoot: SwiftAutomation.RootSpecifier, TEDObject, SwiftAutomation.RootSpecifierExtension {

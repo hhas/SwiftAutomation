@@ -671,7 +671,7 @@ public class REMItem: SwiftAutomation.ObjectSpecifier, REMObject {
 }
 
 // by-range/by-test/all
-public class REMItems: REMItem, SwiftAutomation.ElementsSpecifierExtension {}
+public class REMItems: REMItem, SwiftAutomation.MultipleObjectSpecifierExtension {}
 
 // App/Con/Its
 public class REMRoot: SwiftAutomation.RootSpecifier, REMObject, SwiftAutomation.RootSpecifierExtension {

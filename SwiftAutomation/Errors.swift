@@ -114,7 +114,7 @@ let unpackErrorCode = errAECoercionFail
 
 func errorMessage(_ err: Any) -> String {
     switch err {
-    case let e as SwiftAutomationError:
+    case let e as AutomationError:
         return e.message ?? "Error \(e.code)."
     case is NSError:
         return (err as! NSError).localizedDescription
@@ -130,7 +130,7 @@ func errorMessage(_ err: Any) -> String {
 // error classes
 
 // base class for all SwiftAutomation-raised errors (not including NSErrors raised by underlying Cocoa APIs)
-public class SwiftAutomationError: Error, CustomStringConvertible { // TO DO: rename `AutomationError?`
+public class AutomationError: Error, CustomStringConvertible {
     public let _domain = "SwiftAutomation"
     public let _code: Int // the OSStatus if known, or generic error code if not
     public let cause: Error? // the error that triggered this failure, if any
@@ -155,7 +155,7 @@ public class SwiftAutomationError: Error, CustomStringConvertible { // TO DO: re
 }
 
 
-public class ConnectionError: SwiftAutomationError {
+public class ConnectionError: AutomationError {
     
     public let target: TargetApplication
     
@@ -168,7 +168,7 @@ public class ConnectionError: SwiftAutomationError {
 }
 
 
-public class PackError: SwiftAutomationError {
+public class PackError: AutomationError {
     
     let object: Any
     
@@ -183,7 +183,7 @@ public class PackError: SwiftAutomationError {
     }
 }
 
-public class UnpackError: SwiftAutomationError {
+public class UnpackError: AutomationError {
     
     let type: Any.Type
     let appData: AppData
@@ -211,14 +211,11 @@ public class UnpackError: SwiftAutomationError {
 }
 
 
-public class CommandSubError: SwiftAutomationError {} // intermediate errors thrown in sendAppleEvent() // TO DO: either split into specific error classes (BadParameterError, AppleEventManagerError, etc) or else get rid of this and just raise SwiftAutomationError
-
-
 /******************************************************************************/
 // standard command error
 
 
-public class CommandError: SwiftAutomationError { // raised whenever an application command fails
+public class CommandError: AutomationError { // raised whenever an application command fails
     
     let commandInfo: CommandDescription // TO DO: this should always be given
     let appData: AppData
@@ -287,7 +284,7 @@ public class CommandError: SwiftAutomationError { // raised whenever an applicat
         var cause: Error? = self.cause
         while cause != nil {
             string += "\n\n\(errorMessage(cause!))"
-            cause = (cause as? SwiftAutomationError)?.cause
+            cause = (cause as? AutomationError)?.cause
         }
         return string
     }

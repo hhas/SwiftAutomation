@@ -1316,7 +1316,7 @@ public class DVDItem: SwiftAutomation.ObjectSpecifier, DVDObject {
 }
 
 // by-range/by-test/all
-public class DVDItems: DVDItem, SwiftAutomation.ElementsSpecifierExtension {}
+public class DVDItems: DVDItem, SwiftAutomation.MultipleObjectSpecifierExtension {}
 
 // App/Con/Its
 public class DVDRoot: SwiftAutomation.RootSpecifier, DVDObject, SwiftAutomation.RootSpecifierExtension {

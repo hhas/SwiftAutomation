@@ -196,14 +196,16 @@ public class SpecifierFormatter {
         return "<\(type(of: specifier))(want:\(specifier.wantType),form:\(specifier.selectorForm),seld:\(self.formatValue(specifier.selectorData)),from:\(self.format(specifier.parentQuery)))>"
     }
     
+    private let _comparisonOperators = [_kAELessThan: "<", _kAELessThanEquals: "<=", _kAEEquals: "==",
+                                        _kAENotEquals: "!=", kAEGreaterThan: ">", _kAEGreaterThanEquals: ">="]
+    private let _logicalOperators = [_kAEBeginsWith: "beginsWith", _kAEEndsWith: "endsWith", _kAEContains: "contains", _kAEIsIn: "isIn"]
+    
     func formatComparisonTest(_ specifier: ComparisonTest) -> String {
         let operand1 = self.formatValue(specifier.operand1), operand2 = self.formatValue(specifier.operand2)
         let opcode = specifier.operatorType.enumCodeValue
-        if let name = [_kAELessThan: "<", _kAELessThanEquals: "<=", _kAEEquals: "==",
-                       _kAENotEquals: "!=", kAEGreaterThan: ">", _kAEGreaterThanEquals: ">="][opcode] {
+        if let name = self._comparisonOperators[opcode] {
             return "\(operand1) \(name) \(operand2)"
-        } else if let name = [_kAEBeginsWith: "beginsWith", _kAEEndsWith: "endsWith",
-                              _kAEContains: "contains", _kAEIsIn: "isIn"][opcode] {
+        } else if let name = self._logicalOperators[opcode] {
             return "\(operand1).\(name)(\(operand2))"
         }
         return "<\(type(of: specifier))(relo:\(specifier.operatorType),obj1:\(self.formatValue(operand1)),obj2:\(self.formatValue(operand2)))>"

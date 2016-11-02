@@ -550,12 +550,17 @@ open class AppData {
         }
     }
     
+    private let _comparisonOperatorCodes: Set<OSType> = [_kAELessThan, _kAELessThanEquals, _kAEEquals,
+                                                         _kAENotEquals, kAEGreaterThan, _kAEGreaterThanEquals,
+                                                         _kAEBeginsWith, _kAEEndsWith, _kAEContains, _kAEIsIn]
+    private let _logicalOperatorCodes: Set<OSType> = [_kAEAND, _kAEOR, _kAENOT]
+    
     func unpackAsComparisonDescriptor(_ desc: NSAppleEventDescriptor) throws -> TestClause {
         if let operatorType = desc.forKeyword(_keyAECompOperator),
             let operand1Desc = desc.forKeyword(_keyAEObject1),
-            let operand2Desc = desc.forKeyword(_keyAEObject2) {
-                // TO DO: sanity-check that operatorType is valid (kAELessThan, etc)?
-                // TO DO: if the following fail, catch and rethrow with the full comparison descriptor for context? or is this just getting overly paranoid for non-user errors that'll never occur in practice
+            let operand2Desc = desc.forKeyword(_keyAEObject2),
+            !self._comparisonOperatorCodes.contains(operatorType.enumCodeValue) {
+                // don't bother with dedicated error reporting here as malformed operand descs that cause the following unpack calls to fail are unlikely in practice, and will still be caught and reported further up the call chain anyway
                 let operand1 = try self.unpackAsAny(operand1Desc)
                 let operand2 = try self.unpackAsAny(operand2Desc)
                 if operatorType.typeCodeValue == _kAEContains && !(operand1 is ObjectSpecifier) {
@@ -567,14 +572,13 @@ open class AppData {
                 } // else fall through to throw
         }
         throw UnpackError(appData: self, descriptor: desc, type: TestClause.self, message: "Can't unpack comparison test: malformed descriptor.")
-        
     }
     
     func unpackAsLogicalDescriptor(_ desc: NSAppleEventDescriptor) throws -> TestClause {
         if let operatorType = desc.forKeyword(_keyAELogicalOperator),
-            let operandsDesc = desc.forKeyword(_keyAEObject) {
-                // TO DO: also check operatorType is valid?
-                let operands = try self.unpack(operandsDesc) as [TestClause] // TO DO: catch and rethrow with additional details
+            let operandsDesc = desc.forKeyword(_keyAEObject),
+            !self._logicalOperatorCodes.contains(operatorType.enumCodeValue) {
+                let operands = try self.unpack(operandsDesc) as [TestClause]
                 return LogicalTest(operatorType: operatorType, operands: operands, appData: self, descriptor: desc)
         }
         throw UnpackError(appData: self, descriptor: desc, type: TestClause.self, message: "Can't unpack logical test: malformed descriptor.")
@@ -637,7 +641,7 @@ open class AppData {
                 do {
                     event.setDescriptor(try self.pack(value), forKeyword: code)
                 } catch {
-                    throw CommandSubError(code: error._code, message: "Invalid '\(paramName ?? fourCharCode(code))' parameter.", cause: error)
+                    throw AutomationError(code: error._code, message: "Invalid '\(paramName ?? fourCharCode(code))' parameter.", cause: error)
                 }
             }
             // pack event's direct parameter and/or subject attribute
@@ -705,13 +709,13 @@ open class AppData {
                 if T.self == ReplyEventDescriptor.self { // return the entire reply event as-is
                     return ReplyEventDescriptor(descriptor: replyEvent) as! T
                 } else if replyEvent.paramDescriptor(forKeyword: _keyErrorNumber)?.int32Value ?? 0 != 0 { // check if an application error occurred
-                    throw CommandSubError(code: Int(replyEvent.paramDescriptor(forKeyword: _keyErrorNumber)!.int32Value))
+                    throw AutomationError(code: Int(replyEvent.paramDescriptor(forKeyword: _keyErrorNumber)!.int32Value))
                 } else if let resultDesc = replyEvent.paramDescriptor(forKeyword: _keyDirectObject) {
                     return try self.unpack(resultDesc) as T
                 } // no return value or error, so fall through
             } else if sendMode.contains(.queueReply) { // get the return ID that will be used by the reply event so that client code's main loop can identify that reply event in its own event queue later on
                 guard let returnIDDesc = event.attributeDescriptor(forKeyword: _keyReturnIDAttr) else { // sanity check
-                    throw CommandSubError(code: defaultErrorCode, message: "Can't get keyReturnIDAttr.")
+                    throw AutomationError(code: defaultErrorCode, message: "Can't get keyReturnIDAttr.")
                 }
                 return try self.unpack(returnIDDesc)
             }
@@ -721,7 +725,7 @@ open class AppData {
             } else if let t = T.self as? SelfUnpacking.Type { // cover the crusty Carbon app case in a type-safe way (e.g. if the command usually returns a list, the caller will naturally expect it _always_ to return one so T will be Array<>, in which case return an empty array; OTOH, if the command usually returns a string, the user will _have_ to specify MayBeMissing<String>/Optional<String> or else they'll get an UnpackError)
                 do { return try t.SwiftAutomation_noValue() as! T } catch {} // fallthrough if T can't provide an 'empty' representation of itself
             }
-            throw CommandSubError(code: defaultErrorCode, message: "Caller requested \(T.self) result but application didn't return anything.")
+            throw AutomationError(code: defaultErrorCode, message: "Caller requested \(T.self) result but application didn't return anything.")
         } catch {
             let commandDescription = CommandDescription(name: name, eventClass: eventClass, eventID: eventID, parentSpecifier: parentSpecifier,
                                                         directParameter: directParameter, keywordParameters: keywordParameters,

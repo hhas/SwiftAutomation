@@ -1,5 +1,7 @@
 //: Playground - noun: a place where people can play
 
+// TO DO: delete this playground from project once finished with ad-hoc testing. (Running application commands in playgrounds is wildly unsafe, as *all* commands in the playground are re-executed *every time* the user makes a change - this isn't a problem for safe, idempotent commands like `get` and `count`, but it's a serious pain with commands like `make` and a serious risk with commands like `move` and `delete`. This is a flaw in playgrounds that affects ALL code that has external side-effects, not just SwiftAutomation.)
+
 import Cocoa
 import SwiftAutomation
 

@@ -127,7 +127,7 @@ let SwiftGlueTemplate = [
 "}",
 "",
 "// by-range/by-test/all",
-"public class «PREFIX»Items: «PREFIX»Item, «SWIFTAE»ElementsSpecifierExtension {}",
+"public class «PREFIX»Items: «PREFIX»Item, «SWIFTAE»MultipleObjectSpecifierExtension {}",
 "",
 "// App/Con/Its",
 "public class «PREFIX»Root: «SWIFTAE»RootSpecifier, «PREFIX»Object, «SWIFTAE»RootSpecifierExtension {",
@@ -213,7 +213,7 @@ let SwiftGlueTemplate = [
 "            «PROPERTY_NAME»: try self.SwiftAutomation_unpackProperty(desc, appData: appData, name: \"«PROPERTY_NAME»\", code: «PROPERTY_CODE»)«-UNPACK_PROPERTY»",
 "        )",
 "    }",
-"    public static func SwiftAutomation_noValue() throws -> «STRUCT_NAME» { throw SwiftAutomationError(code: -1708) }",
+"    public static func SwiftAutomation_noValue() throws -> «STRUCT_NAME» { throw AutomationError(code: -1708) }",
 "}«-RECORD_STRUCT_DEFINITION»",
 "",
 ""].joined(separator: "\n")

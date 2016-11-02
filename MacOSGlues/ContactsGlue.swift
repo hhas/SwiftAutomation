@@ -1062,7 +1062,7 @@ public class CONItem: SwiftAutomation.ObjectSpecifier, CONObject {
 }
 
 // by-range/by-test/all
-public class CONItems: CONItem, SwiftAutomation.ElementsSpecifierExtension {}
+public class CONItems: CONItem, SwiftAutomation.MultipleObjectSpecifierExtension {}
 
 // App/Con/Its
 public class CONRoot: SwiftAutomation.RootSpecifier, CONObject, SwiftAutomation.RootSpecifierExtension {

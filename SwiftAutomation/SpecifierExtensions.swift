@@ -10,6 +10,7 @@
 //     AEApp.elements(cDocument)["README"].property(cText).elements(cParagraph)[1,-2]
 //
 
+// TO DO: should prob. go ahead and implement `all` property, just to ensure it can be done; can always comment out/leave it undocumented
 
 // TO DO: also define `var all: Self.MultipleObjectSpecifierType {...}` which would convert a property specifier [_formPropertyDesc] to an all-elements specifier [_formAbsolutePositionDesc + _kAEAllDesc]? As with `named()`, it would provide parity with AS and cover all eventualities; see also special handling of 'text' keyword in GlueTable.add(), e.g. if `app.document` returns property specifier but an all-elements specifier is needed, `app.document.all` would force it to the latter.
 //
@@ -87,7 +88,6 @@ public extension ObjectSpecifierExtension {
     
     // relative position selectors
     public func previous(_ elementClass: Symbol? = nil) -> Self.ObjectSpecifierType {
-        // TO DO: getting `elementClass!.descriptor` here will be problematic in dynamic glues, where all Symbol instances are name-only and their four-char-codes are looked up dynamically when packing the Apple event, as that's the only time a targeted AppData instance containing the target app's own terminology tables is guaranteed to be available as commands can only be dispatched by object specifiers that have a full Application root (self.appData will be untargeted if the specifier was constructed from an App/Con/Its root)
         return Self.ObjectSpecifierType(wantType: elementClass == nil ? self.wantType : elementClass!.descriptor,
                                         selectorForm: _formRelativePositionDesc, selectorData: _kAEPreviousDesc,
                                         parentQuery: (self as! Query), appData: self.appData, descriptor: nil)
@@ -122,14 +122,19 @@ public extension ObjectSpecifierExtension {
 /******************************************************************************/
 // Multi-element specifier; represents a one-to-many relationship between nodes in the app's AEOM graph
 
-public protocol ElementsSpecifierExtension: ObjectSpecifierExtension {} // TO DO: rename `MultiObjectSpecifierExtension` for consistency with naming elsewhere
+public protocol MultipleObjectSpecifierExtension: ObjectSpecifierExtension {}
 
-extension ElementsSpecifierExtension {
+extension MultipleObjectSpecifierExtension {
 
     // Note: calling an element[s] selector on an all-elements specifier effectively replaces its original gAll selector data with the new selector data, instead of extending the specifier chain. This ensures that applying any selector to `elements[all]` produces `elements[selector]` (effectively replacing the existing selector), while applying a second selector to `elements[selector]` produces `elements[selector][selector2]` (appending the second selection to the first) as normal; e.g. `first document whose modified is true` would be written as `documents[Its.modified==true].first`.
     var baseQuery: Query {
-        return self.selectorData as? NSAppleEventDescriptor === _kAEAllDesc ? self.parentQuery : (self as! Query)
-    } // TO DO: fix (Q. is this TODO still relevant?)
+        if let desc = self.selectorData as? NSAppleEventDescriptor,
+                desc.descriptorType == _typeAbsoluteOrdinal && desc.enumCodeValue == _kAEAll {
+            return self.parentQuery
+        } else {
+            return self as! Query
+        }
+    }
     
     // by-index, by-name, by-test
     public subscript(index: Any) -> Self.ObjectSpecifierType {
@@ -154,7 +159,7 @@ extension ElementsSpecifierExtension {
     }
     
     // by-name, by-id, by-range
-    public func named(_ name: Any) -> Self.ObjectSpecifierType { // use this if name is not a String, else use subscript // TO DO: trying to think of a use case where this has ever been found necessary; DELETE?
+    public func named(_ name: Any) -> Self.ObjectSpecifierType { // use this if name is not a String, else use subscript // TO DO: trying to think of a use case where this has ever been found necessary; DELETE? (see also TODOs on whether or not to add an explicit `all` selector property)
         return Self.ObjectSpecifierType(wantType: self.wantType,
                                         selectorForm: _formNameDesc, selectorData: name,
                                         parentQuery: self.baseQuery, appData: self.appData, descriptor: nil)
@@ -217,7 +222,6 @@ extension Application {
     private init(target: TargetApplication, launchOptions: LaunchOptions, relaunchMode: RelaunchMode) {
         let appData = Self.untargetedAppData.targetedCopy(target, launchOptions: launchOptions, relaunchMode: relaunchMode)
         self.init(rootObject: AppRootDesc, appData: appData)
-        // TO DO: is there any way to store this new Application object into appData so that it can be returned when unpacking specifier roots, without creating either circular refcounts or expired weakrefs? (the alternative is just for AppData to instantiate Application each time, but to do that it needs to know its exact class… perhaps this can be stored in GlueClasses, which already holds Specifier, Root, etc classes?)
     }
     
     public init(name: String, launchOptions: LaunchOptions = DefaultLaunchOptions, relaunchMode: RelaunchMode = DefaultRelaunchMode) {
@@ -241,7 +245,7 @@ extension Application {
     }
     
     
-    public static func currentApplication() -> Self { // TO DO: rename `current` for consistency with current Swift naming conventions
+    public static func currentApplication() -> Self {
         let appData = Self.untargetedAppData.targetedCopy(.current, launchOptions: DefaultLaunchOptions, relaunchMode: DefaultRelaunchMode)
         return self.init(rootObject: AppRootDesc, appData: appData)
     }

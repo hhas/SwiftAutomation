@@ -961,7 +961,7 @@ public class TEDItem: ObjectSpecifier, TEDObject {
 }
 
 // by-range/by-test/all
-public class TEDItems: TEDItem, ElementsSpecifierExtension {}
+public class TEDItems: TEDItem, MultipleObjectSpecifierExtension {}
 
 // App/Con/Its
 public class TEDRoot: RootSpecifier, TEDObject, RootSpecifierExtension {
@@ -1035,6 +1035,6 @@ public struct TEDDocumentRecord: SelfPacking, SelfUnpacking {
             text: try self.SwiftAutomation_unpackProperty(desc, appData: appData, name: "text", code: 0x63747874)
         )
     }
-    public static func SwiftAutomation_noValue() throws -> TEDDocumentRecord { throw SwiftAutomationError(code: 1) }
+    public static func SwiftAutomation_noValue() throws -> TEDDocumentRecord { throw AutomationError(code: 1) }
 }
 

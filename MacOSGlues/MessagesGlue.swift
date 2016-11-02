@@ -1395,7 +1395,7 @@ public class MESItem: SwiftAutomation.ObjectSpecifier, MESObject {
 }
 
 // by-range/by-test/all
-public class MESItems: MESItem, SwiftAutomation.ElementsSpecifierExtension {}
+public class MESItems: MESItem, SwiftAutomation.MultipleObjectSpecifierExtension {}
 
 // App/Con/Its
 public class MESRoot: SwiftAutomation.RootSpecifier, MESObject, SwiftAutomation.RootSpecifierExtension {

@@ -30,10 +30,10 @@ func fourCharCode(_ string: String) throws -> OSType {
     // convert four-character string containing MacOSRoman characters to OSType
     // (this is safer than using UTGetOSTypeFromString, which silently fails if string is malformed)
     guard let data = string.data(using: String.Encoding.macOSRoman) else {
-        throw SwiftAutomationError(code: 1, message: "Invalid four-char code (bad encoding): \(string.debugDescription)") // TO DO: what error?
+        throw AutomationError(code: 1, message: "Invalid four-char code (bad encoding): \(string.debugDescription)")
     }
     if (data.count != 4) {
-        throw SwiftAutomationError(code: 1, message: "Invalid four-char code (wrong length): \(string.debugDescription)")
+        throw AutomationError(code: 1, message: "Invalid four-char code (wrong length): \(string.debugDescription)")
     }
     var tmp: UInt32 = 0
     (data as NSData).getBytes(&tmp, length: 4)
@@ -67,7 +67,7 @@ let symbolDescriptorTypes: Set<DescType> = [typeType, typeEnumerated, typeProper
 
 
 /******************************************************************************/
-// consids/ignores options defined in ASRegistry.h (it's crappy design and a complete mess, and most apps don't even support it, but what we're stuck with)
+// consids/ignores options are defined in ASRegistry.h (they're a crappy design and a complete mess, and most apps completely ignore them, but we support them anyway in order to ensure feature parity with AS)
 
 public enum Considerations {
     case `case`
@@ -76,7 +76,7 @@ public enum Considerations {
     case hyphens
     case expansion
     case punctuation
-    //  case Replies // TO DO: check if this is ever supplied by AS; if it is, might be an idea to add it; if not, delete
+//  case replies // TO DO: check if this is ever supplied by AS; if it is, might be an idea to add it; if not, delete
     case numericStrings
 }
 
@@ -240,7 +240,7 @@ public enum TargetApplication {
         if self.isRunning {
             let errorNumber = self.sendLaunchEvent(processDescriptor: try self.descriptor()!)
             if !LaunchEventSucceededErrorNumbers.contains(errorNumber) {
-                throw SwiftAutomationError(code: errorNumber, message: "Can't launch application.")
+                throw AutomationError(code: errorNumber, message: "Can't launch application.")
             }
         } else {
             switch self {

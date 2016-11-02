@@ -1175,7 +1175,7 @@ public class AUTItem: SwiftAutomation.ObjectSpecifier, AUTObject {
 }
 
 // by-range/by-test/all
-public class AUTItems: AUTItem, SwiftAutomation.ElementsSpecifierExtension {}
+public class AUTItems: AUTItem, SwiftAutomation.MultipleObjectSpecifierExtension {}
 
 // App/Con/Its
 public class AUTRoot: SwiftAutomation.RootSpecifier, AUTObject, SwiftAutomation.RootSpecifierExtension {

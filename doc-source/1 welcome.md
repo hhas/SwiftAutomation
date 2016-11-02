@@ -23,6 +23,13 @@ Or to create a new "Hello World!" document in TextEdit:
   try textedit.make(new: TED.document, withProperties: [TED.text: "Hello World!"])
 
 
+## Getting SwiftAutomation
+
+To clone the [SwiftAutomation repository](https://bitbucket.org/hhas/swiftae) to your own machine:
+
+  git clone https://bitbucket.org/hhas/swiftae.git
+
+
 ## Before you start...
 
 In order to use SwiftAutomation effectively, you will need to understand the differences between the Apple event and Swift/Cocoa object systems.

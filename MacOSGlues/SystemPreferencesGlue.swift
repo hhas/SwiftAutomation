@@ -647,7 +647,7 @@ public class SPRItem: SwiftAutomation.ObjectSpecifier, SPRObject {
 }
 
 // by-range/by-test/all
-public class SPRItems: SPRItem, SwiftAutomation.ElementsSpecifierExtension {}
+public class SPRItems: SPRItem, SwiftAutomation.MultipleObjectSpecifierExtension {}
 
 // App/Con/Its
 public class SPRRoot: SwiftAutomation.RootSpecifier, SPRObject, SwiftAutomation.RootSpecifierExtension {

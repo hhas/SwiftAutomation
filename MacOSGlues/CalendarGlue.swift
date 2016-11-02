@@ -931,7 +931,7 @@ public class CALItem: SwiftAutomation.ObjectSpecifier, CALObject {
 }
 
 // by-range/by-test/all
-public class CALItems: CALItem, SwiftAutomation.ElementsSpecifierExtension {}
+public class CALItems: CALItem, SwiftAutomation.MultipleObjectSpecifierExtension {}
 
 // App/Con/Its
 public class CALRoot: SwiftAutomation.RootSpecifier, CALObject, SwiftAutomation.RootSpecifierExtension {

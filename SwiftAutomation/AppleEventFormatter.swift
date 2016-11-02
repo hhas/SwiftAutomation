@@ -40,7 +40,7 @@ public func formatAppleEvent(descriptor event: NSAppleEventDescriptor, useTermin
         let errn = event.paramDescriptor(forKeyword: _keyErrorNumber)?.int32Value ?? 0
         if errn != 0 { // format error message
             let errs = event.paramDescriptor(forKeyword: _keyErrorString)?.stringValue
-            return SwiftAutomationError(code: Int(errn), message: errs).description // TO DO: use CommandError? (need to check it's happy with only replyEvent arg)
+            return AutomationError(code: Int(errn), message: errs).description // TO DO: use CommandError? (need to check it's happy with only replyEvent arg)
         } else if let reply = event.paramDescriptor(forKeyword: _keyDirectObject) { // format return value
             return appData.formatter.format((try? appData.unpackAsAny(reply)) ?? reply)
         } else {

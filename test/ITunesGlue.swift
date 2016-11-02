@@ -2210,7 +2210,7 @@ public class ITUItem: ObjectSpecifier, ITUObject {
 }
 
 // by-range/by-test/all
-public class ITUItems: ITUItem, ElementsSpecifierExtension {}
+public class ITUItems: ITUItem, MultipleObjectSpecifierExtension {}
 
 // App/Con/Its
 public class ITURoot: RootSpecifier, ITUObject, RootSpecifierExtension {

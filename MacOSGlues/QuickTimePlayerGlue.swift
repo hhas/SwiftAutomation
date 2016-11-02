@@ -938,7 +938,7 @@ public class QTPItem: SwiftAutomation.ObjectSpecifier, QTPObject {
 }
 
 // by-range/by-test/all
-public class QTPItems: QTPItem, SwiftAutomation.ElementsSpecifierExtension {}
+public class QTPItems: QTPItem, SwiftAutomation.MultipleObjectSpecifierExtension {}
 
 // App/Con/Its
 public class QTPRoot: SwiftAutomation.RootSpecifier, QTPObject, SwiftAutomation.RootSpecifierExtension {

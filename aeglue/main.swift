@@ -148,7 +148,7 @@ func writeData(_ data: NSData, toURL: URL, overwriting: Bool) throws {
     do {
         try data.write(to: toURL as URL, options: (overwriting ? .atomic : .withoutOverwriting))
     } catch {
-        throw SwiftAutomationError(code: error._code, message: "Can't write file: \(toURL.path). \(error)")
+        throw AutomationError(code: error._code, message: "Can't write file: \(toURL.path). \(error)")
     }
 }
 
@@ -295,8 +295,7 @@ for applicationURL in applicationURLs {
         try writeData(data as NSData, toURL: outGlueURL, overwriting: canOverwrite)
         print(outGlueURL.path)
     } catch {
-        print("Couldn't generate glue: \(error)", to: &errStream)
-        exit(Int32(error._code))
+        print("Error: Couldn't generate glue for \(applicationURL): \(error)", to: &errStream)
     }
     // generate cheap-n-dirty user documentation
     if let appURL = applicationURL, generateDocumentation {
@@ -306,8 +305,7 @@ for applicationURL in applicationURLs {
             try writeData(sdef as NSData, toURL: outSDEFURL, overwriting: canOverwrite)
             print(outSDEFURL.path)
         } catch {
-            print("Couldn't write SDEF: \(error)", to: &errStream)
-            exit(Int32(error._code))
+            print("Error: Couldn't write SDEF for \(applicationURL): \(error)", to: &errStream)
         }
     }
 }

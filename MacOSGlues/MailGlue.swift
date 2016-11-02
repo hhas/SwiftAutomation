@@ -1932,7 +1932,7 @@ public class MAIItem: SwiftAutomation.ObjectSpecifier, MAIObject {
 }
 
 // by-range/by-test/all
-public class MAIItems: MAIItem, SwiftAutomation.ElementsSpecifierExtension {}
+public class MAIItems: MAIItem, SwiftAutomation.MultipleObjectSpecifierExtension {}
 
 // App/Con/Its
 public class MAIRoot: SwiftAutomation.RootSpecifier, MAIObject, SwiftAutomation.RootSpecifierExtension {

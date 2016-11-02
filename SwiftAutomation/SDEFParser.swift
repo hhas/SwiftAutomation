@@ -137,7 +137,7 @@ public func GetScriptingDefinition(_ url: URL) throws -> Data {
     var sdef: Unmanaged<CFData>?
     let err = OSACopyScriptingDefinitionFromURL(url as NSURL, 0, &sdef)
     if err != 0 {
-        throw SwiftAutomationError(code: Int(err), message: "Can't retrieve SDEF.")
+        throw AutomationError(code: Int(err), message: "Can't retrieve SDEF.")
     }
     return sdef!.takeRetainedValue() as Data
 }

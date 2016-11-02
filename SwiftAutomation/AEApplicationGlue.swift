@@ -573,7 +573,7 @@ public class AEItem: ObjectSpecifier, AEObject {
 }
 
 // by-range/by-test/all
-public class AEItems: AEItem, ElementsSpecifierExtension {}
+public class AEItems: AEItem, MultipleObjectSpecifierExtension {}
 
 // App/Con/Its
 public class AERoot: RootSpecifier, AEObject, RootSpecifierExtension {
@@ -620,7 +620,7 @@ public enum AESymbolOrString: SelfPacking, SelfUnpacking {
         throw UnpackError(appData: appData, descriptor: desc, type: AESymbolOrString.self,
                           message: "Can't coerce descriptor to Swift type: \(AESymbolOrString.self)")
     }
-    static func SwiftAutomation_noValue() throws -> AESymbolOrString { throw SwiftAutomationError(code: -1708) }
+    static func SwiftAutomation_noValue() throws -> AESymbolOrString { throw AutomationError(code: -1708) }
 }
 
 public enum AEStringOrMissingValue: SelfPacking, SelfUnpacking {

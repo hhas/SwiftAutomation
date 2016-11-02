@@ -633,7 +633,7 @@ public class NOTItem: SwiftAutomation.ObjectSpecifier, NOTObject {
 }
 
 // by-range/by-test/all
-public class NOTItems: NOTItem, SwiftAutomation.ElementsSpecifierExtension {}
+public class NOTItems: NOTItem, SwiftAutomation.MultipleObjectSpecifierExtension {}
 
 // App/Con/Its
 public class NOTRoot: SwiftAutomation.RootSpecifier, NOTObject, SwiftAutomation.RootSpecifierExtension {

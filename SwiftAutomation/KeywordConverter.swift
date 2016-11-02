@@ -112,7 +112,7 @@ func isCIdentifier(_ string: String) -> Bool { // returns true if string is a va
 func validateCIdentifier(_ string: String) throws { // throws if not a legal [C-style] identifier in Swift (i.e. contains invalid characters or conflicts with an existing Swift keyword)
     // TO DO: this should really check for valid Swift identifiers, though since all supported stdlib and glue types use C-style names this'll do for now
     if !isCIdentifier(string) || reservedSwiftKeywords.contains(string) {
-        throw SwiftAutomationError(code: 1, message: "Not a valid identifier: '\(string)'")
+        throw AutomationError(code: 1, message: "Not a valid identifier: '\(string)'")
     }
 }
 

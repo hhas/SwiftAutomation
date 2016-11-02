@@ -2210,7 +2210,7 @@ public class ITUItem: SwiftAutomation.ObjectSpecifier, ITUObject {
 }
 
 // by-range/by-test/all
-public class ITUItems: ITUItem, SwiftAutomation.ElementsSpecifierExtension {}
+public class ITUItems: ITUItem, SwiftAutomation.MultipleObjectSpecifierExtension {}
 
 // App/Con/Its
 public class ITURoot: SwiftAutomation.RootSpecifier, ITUObject, SwiftAutomation.RootSpecifierExtension {

@@ -1183,7 +1183,7 @@ public class XCOItem: SwiftAutomation.ObjectSpecifier, XCOObject {
 }
 
 // by-range/by-test/all
-public class XCOItems: XCOItem, SwiftAutomation.ElementsSpecifierExtension {}
+public class XCOItems: XCOItem, SwiftAutomation.MultipleObjectSpecifierExtension {}
 
 // App/Con/Its
 public class XCORoot: SwiftAutomation.RootSpecifier, XCOObject, SwiftAutomation.RootSpecifierExtension {

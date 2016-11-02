@@ -1972,7 +1972,7 @@ public class FINItem: SwiftAutomation.ObjectSpecifier, FINObject {
 }
 
 // by-range/by-test/all
-public class FINItems: FINItem, SwiftAutomation.ElementsSpecifierExtension {}
+public class FINItems: FINItem, SwiftAutomation.MultipleObjectSpecifierExtension {}
 
 // App/Con/Its
 public class FINRoot: SwiftAutomation.RootSpecifier, FINObject, SwiftAutomation.RootSpecifierExtension {

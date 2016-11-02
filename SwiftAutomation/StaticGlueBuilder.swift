@@ -43,7 +43,7 @@ func isReservedGlueTypeName(_ string: String) -> Bool {
 
 
 
-public class SyntaxError: SwiftAutomationError {
+public class SyntaxError: AutomationError {
     
     init(_ message: String) {
         super.init(code: 1, message: message)
@@ -444,7 +444,7 @@ public class StaticGlueTemplate {
                 }
             }
             subtemplate.insertString("ENUM_NO_VALUE",
-                 (definition.cases[0].name == "missing" ? "return .missing(MissingValue)" : "throw SwiftAutomationError(code: -1708)"))
+                 (definition.cases[0].name == "missing" ? "return .missing(MissingValue)" : "throw AutomationError(code: -1708)"))
         }
     }
     

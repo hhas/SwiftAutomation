@@ -8,7 +8,7 @@ import Foundation
 
 
 
-public class TerminologyError: SwiftAutomationError {
+public class TerminologyError: AutomationError {
     public init(_ message: String) {
         super.init(code: errOSACorruptTerminology, message: message)
     }

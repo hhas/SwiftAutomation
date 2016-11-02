@@ -165,7 +165,7 @@ open class Specifier: Query, SpecifierProtocol {
     override func unpackParentSpecifiers() {
         do {
             guard let descriptor = self._cachedDescriptor else { // note: this should never fail; if it does, it's an implementation bug
-                throw SwiftAutomationError(code: 1, message: "Can't unpack parent specifiers as cached AppData and/or AEDesc don't exist.")
+                throw AutomationError(code: 1, message: "Can't unpack parent specifiers as cached AppData and/or AEDesc don't exist.")
             }
             let parentDesc = descriptor.forKeyword(_keyAEContainer)!
             self._parentQuery = try appData.unpack(parentDesc) as Specifier
@@ -321,7 +321,7 @@ open class ObjectSpecifier: Specifier, ObjectSpecifierProtocol { // represents p
 /******************************************************************************/
 // Multi-element specifiers; represents a one-to-many relationship between nodes in the app's AEOM graph
 
-// note: each glue should define an Elements class that subclasses ObjectSpecifier and adopts ElementsSpecifierExtension (which adds by range/test/all selectors)
+// note: each glue should define an Elements class that subclasses ObjectSpecifier and adopts MultipleObjectSpecifierExtension (which adds by range/test/all selectors)
 
 
 struct RangeSelector: SelfPacking { // holds data for by-range selectors
@@ -358,7 +358,7 @@ struct RangeSelector: SelfPacking { // holds data for by-range selectors
     }
     
     func SwiftAutomation_packSelf(_ appData: AppData) throws -> NSAppleEventDescriptor {
-        // note: the returned desc will be cached by the ElementsSpecifier, so no need to cache it here
+        // note: the returned desc will be cached by the MultipleObjectSpecifier, so no need to cache it here
         let desc = NSAppleEventDescriptor.record().coerce(toDescriptorType: _typeRangeDescriptor)!
         desc.setDescriptor(try self.packSelector(self.start, appData: appData), forKeyword: _keyAERangeStart)
         desc.setDescriptor(try self.packSelector(self.stop, appData: appData), forKeyword: _keyAERangeStop)
@@ -370,7 +370,7 @@ struct RangeSelector: SelfPacking { // holds data for by-range selectors
 /******************************************************************************/
 // Test clause; used in by-test specifiers
 
-// note: glues don't define their own TestClause subclasses as tests don't implement any app-specific vars/methods, only the logical operators defined below, and there's little point doing so for static typechecking purposes as any values not handled by ElementsSpecifierExtension's subscript(test:TestClause) are accepted by its subscript(index:Any), so still wouldn't be caught at runtime (OTOH, it'd be worth considering should subscript(test:) need to be replaced with a separate byTest() method for any reason)
+// note: glues don't define their own TestClause subclasses as tests don't implement any app-specific vars/methods, only the logical operators defined below, and there's little point doing so for static typechecking purposes as any values not handled by MultipleObjectSpecifierExtension's subscript(test:TestClause) are accepted by its subscript(index:Any), so still wouldn't be caught at runtime (OTOH, it'd be worth considering should subscript(test:) need to be replaced with a separate byTest() method for any reason)
 
 
 // note: only TestClauses constructed from Its roots are actually valid; however, enfording this at compile-time would require a more complex class/protocol structure, while checking this at runtime would require calling Query.rootSpecifier.rootObject and checking object is 'its' descriptor. As it's highly unlikely users will use an App or Con root by accident, we'll live recklessly and let the gods of AppleScript punish any user foolish enough to do so.
