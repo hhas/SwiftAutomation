@@ -87,7 +87,7 @@
 
 <p>[1] While AppleScript treats <code>string</code>, <code>text</code>, and <code>Unicode text</code> keywords as synonyms for <code>typeUnicodeText</code>, the Apple Event Manager still  considers them to be different types (<code>typeChar</code>, <code>cText</code>, <code>typeUnicodeText</code>). When specifying a command's <code>resultType:</code> always use <code><var>PREFIX</var>Symbol.unicodeText</code> (or just <code>AE.unicodeText</code>) as this is the standard UTF-16 representation that all current macOS apps should support.</p>
 
-<p>[2] Bookmark, Alias, FSRef, and FileURL descriptors are all currently mapped to Swift <code>URL</code> structs. [TO DO: bookmark/alias types identify file system <em>objects</em> [e.g. by inode], whereas FSRef/FileURL identify file system locations; however, only NSURL can distinguish the two so for now any Bookmark/Alias information will be lost on conversion to Swift <code>URL</code> instances, while <code>URL</code> will always pack as typeFileURL. This may change in future depending on how many compatibility issues with older Carbon apps this lack of roundtripping throws up.]</p>
+<p>[2] <code>typeBookmarkData</code>, <code>typeAlias</code>, <code>typeFSRef</code>, and <code>typeFileURL</code> descriptors are all unpacked Swift <code>URL</code> structs. <code>URL</code> structs are always packed as <code>typeFileURL</code> descriptors. (Be aware that Swift's <code>URL</code> structs only hold path information, so any alias/bookmark data identifying the original file system object is lost.)</p>
 
 <p>[3] While the <code>typeNull</code> descriptor is used to represent the root application object in an object specifier, this root object is not visible within AppleScript which prefers to display the object specifier's target (e.g. <code>application "NAME"</code>, <code>«script»</code>) instead. AppleScript does define a <code>null</code> keyword, but this is never used.</p>
 
@@ -101,7 +101,7 @@
 
 <h3>Missing Value</h3>
 
-<p>The 'missing value' symbol serves a similar purpose to Swift's <code>nil</code>, acting as a placeholder where a value is expected but none is available. On the Apple event side, it is represented as a descriptor of <code>typeType</code> with the code value <code>cMissingValue</code> (<code>'msng'</code>). SwiftAutomation provides a choice of mappings when unpacking a 'missing value' descriptor as a Swift value:</p>
+<p>AppleScript's <code>missing value</code> symbol serves a similar purpose to Swift's <code>nil</code>, acting as a placeholder where a value is expected but none is available. On the Apple event side, it is represented as a descriptor of <code>typeType</code> with the code value <code>cMissingValue</code> (<code>'msng'</code>). SwiftAutomation provides a choice of mappings when unpacking a <code>missing value</code> descriptor as a Swift value:</p>
 
 <ul>
 <li><p><code>SwiftAutomation.MissingValue</code> is used when a command's return type is <code>Any</code>. Unlike generic <code>nil</code> values, <code>MissingValue</code> is a unique value of concrete type <code>MissingValueType</code> so can be compared for equality without having to cast to a specific type first. For example:</p>

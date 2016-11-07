@@ -7,6 +7,10 @@ import Foundation
 import AppKit
 
 
+/******************************************************************************/
+
+// TO DO: file feature request, then update the following comments
+
 // TO DO: while NSWorkspace.launchApplication(at:options:configuration:) is a well-designed and reliable API for launching applications given a file URL to their .app bundles, it's pretty much useless in a sandboxed app as the sandbox severely restricts access to file system information, so won't allow other apps' file URLs to be obtained. e.g. See <http://mjtsai.com/blog/2016/09/30/sandboxed-launch-services/>
 //
 //  AFAICT, the only reliable option within a sandboxed app is to launch the app by bundle ID, not URL, using NSWorkspace's:
@@ -20,6 +24,39 @@ import AppKit
 //
 // TO DO: file a Radar for a better launchApplication(withBundleID:…) method that addresses all the above issues; though we're still going to need a sandbox-compatible solution for launching by bundle ID that works in 10.11+, so probably a case of design the new launchApplication(withBundleID:…) method we'd like to see in 10.13+, then hack up the current implementation to fall back to the existing launchApplication(withBundleID:…) method when it finds itself in a sandbox where the TargetApplication.bundleIdentifier(String) case is unable to get the app's file URL.
 
+
+
+extension NSWorkspace { // KLUDGE: NSWorkspace has a good method for launching apps by file URL, and a crap one for launching by bundle ID; unfortunately, only the latter can be used in sandboxed apps. This extension adds a launchApplication(withBundleIdentifier:options:configuration:)throws->NSRunningApplication method that has a good API and the least compromised behavior, insulating TargetApplication code from the crappiness that hides within. If/when Apple adds a real, robust version of this method to NSWorkspace, this extension can (and should) go away.
+    
+    // caution: the configuration parameter is ignored in sandboxed apps; this is unavoidable
+    func launchApplication(withBundleIdentifier bundleID: String, options: NSWorkspaceLaunchOptions = [],
+                           configuration: [String : Any]) throws -> NSRunningApplication {
+        // if one or more processes with the given bundle ID is already running, return the first one found
+        let foundProcesses = NSRunningApplication.runningApplications(withBundleIdentifier: bundleID)
+        if foundProcesses.count > 0 {
+            return foundProcesses[0]
+        }
+        // first try to get the app's file URL, as this lets us use the better launchApplication(at:options:configuration:) method…
+        if let url = NSWorkspace.shared().urlForApplication(withBundleIdentifier: bundleID) {
+            do {
+                return try NSWorkspace.shared().launchApplication(at: url, options: options, configuration: configuration)
+            } catch {} // for now, we're not sure if urlForApplication(withBundleIdentifier:) will always return nil if blocked by sandbox; if it returns garbage URL instead then hopefully that'll cause launchApplication(at:...) to throw
+        }
+        // …else fall back to the inferior launchApplication(withBundleIdentifier:options:additionalEventParamDescriptor:launchIdentifier:)
+        var options = options
+        options.remove(.async)
+        if NSWorkspace.shared().launchApplication(withBundleIdentifier: bundleID, options: options,
+                                                  additionalEventParamDescriptor: nil, launchIdentifier: nil) {
+            // TO DO: confirm that launchApplication() never returns before process is available (otherwise the following will need to be in a loop that blocks until it is available or the loop times out)
+            let foundProcesses = NSRunningApplication.runningApplications(withBundleIdentifier: bundleID)
+            if foundProcesses.count > 0 {
+                return foundProcesses[0]
+            }
+        }
+        throw NSError(domain: NSCocoaErrorDomain, code: 1, userInfo:
+                      [NSLocalizedDescriptionKey: "Can't find/launch application \(bundleID.debugDescription)"]) // TO DO: what error to report here, since launchApplication(withBundleIdentifier:options:additionalEventParamDescriptor:launchIdentifier:) doesn't provide any error info itself?
+    }
+}
 
 
 /******************************************************************************/
@@ -288,11 +325,13 @@ public enum TargetApplication {
             } else {
                 throw ConnectionError(target: self, message: "Invalid URL scheme (not file/eppc): \(url)")
             }
-        case .bundleIdentifier(let bundleIdentifier, _):
-            if let url = NSWorkspace.shared().urlForApplication(withBundleIdentifier: bundleIdentifier) {
-                return try self.processDescriptorForLocalApplication(url: url, launchOptions: launchOptions)
-            } else {
-                throw ConnectionError(target: self, message: "Application not found: \(bundleIdentifier)")
+        case .bundleIdentifier(let bundleID, _):
+            do {
+                let runningProcess = try NSWorkspace.shared().launchApplication(withBundleIdentifier: bundleID,
+                                                                                options: launchOptions, configuration: [:])
+                return NSAppleEventDescriptor(processIdentifier: runningProcess.processIdentifier)
+            } catch {
+                throw ConnectionError(target: self, message: "Can't find/launch application: \(bundleID)", cause: error)
             }
         case .processIdentifier(let pid):
             return NSAppleEventDescriptor(processIdentifier: pid)

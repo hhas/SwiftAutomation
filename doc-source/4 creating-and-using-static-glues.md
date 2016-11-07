@@ -75,6 +75,15 @@ For compatibility, `aeglue` normally sends the application an `ascr/gdte` event 
 The `-S` option may be quicker when generating glues for CocoaScripting-based apps which already contain SDEF resources. When using the `-S` option to work around buggy `ascr/gdte` event handlers in AETE-based Carbon apps, be aware that macOS's AETE-to-SDEF converter is not 100% reliable. For example, four-char code strings containing non-printing characters fail to appear in the generated SDEF XML, in which case `aeglue` will warn of their omission and you'll have to correct the glue files manually or use SwiftAutomation's lower-level `OSType`-based APIs in order to access the affected objects/commands.
 
 
+<div class="hilitebox">
+<p>Tip: When getting started, a quick way to generate standard glues for all scriptable applications in <code>/Applications</code>, including those in subfolders, is to run the following commands:</p>
+
+<pre><code>mkdir AllGlues && cd AllGlues && aeglue -S /Applications/**.app</code></pre>
+
+<p><code>aeglue</code> will log error messages for problematic applications (e.g. those without dictionaries or whose dictionaries contain significant flaws). Any glues that are unsatisfactory or require extra customization can then be manually regenerated one at a time with the appropriate options.</p>
+</div>
+
+
 ## Using a glue
 
 To include the generated glue file in your project:

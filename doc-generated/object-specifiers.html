@@ -12,15 +12,9 @@
                 <div class="navbar"><a href="application-objects.html">back</a> | <a href="index.html">index</a> | <a href="commands.html">next</a></div>
                 <h2>How object specifiers work</h2>
 
-<p>[TO DO: document class hierarchy as used in glues]</p>
+<p>As explained in chapter 3, a property contains either a simple value describing an object attribute (<code>name</code>, <code>class</code>, <code>creationDate</code>, etc.) or an object specifier representing a one-to-one relationship between objects (e.g. <code>home</code>, <code>currentTrack</code>), while elements represent a one-to-many relationship between objects (<code>documents</code>, <code>folders</code>, <code>fileTracks</code>, etc). [TO DO: document class hierarchy as used in glues; note that PREFIXItem identifies a single property or element while PREFIXItems identifies zero or more elements, and summarize the selectors]</p>
 
-<p>[TO DO: finish (note that this is a bit of a rehash of ch.2; might be simpler just to refer users back to that)]</p>
-
-<p>A property contains either a simple value describing an object attribute (<code>name</code>, <code>class</code>, <code>creationDate</code>, etc.) or an object specifier representing a one-to-one relationship between objects (e.g. <code>home</code>, <code>currentTrack</code>).</p>
-
-<p>Elements represent a one-to-many relationship between objects (<code>documents</code>, <code>folders</code>, <code>fileTracks</code>, etc). </p>
-
-<p>[TO DO: note that both appear as read-only properties on glue-defined ObjectSpecifier+RootSpecifier subclasses; users don't instantiate Specifier classes directly but instead construct via chained property/method calls from glue's Application class or untargeted <code>RootSpecifier</code> constants (<var>PREFIX</var>App, <var>PREFIX</var>Con, <var>PREFIX</var>Its)]</p>
+<p>[TO DO: note that all properties and elements appear as read-only properties on glue-defined ObjectSpecifier and RootSpecifier subclasses; users don't instantiate Specifier classes directly but instead construct via chained property/method calls from glue's Application class or untargeted <code>RootSpecifier</code> constants (<var>PREFIX</var>App, <var>PREFIX</var>Con, <var>PREFIX</var>Its)]</p>
 
 <p>characters/words/paragraphs of documents by index/relative-position/range/filter</p>
 

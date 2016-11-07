@@ -89,3 +89,8 @@ TO DO:
 
 - default SendMode is currently [.canSwitchLayer,.waitReply]; confirm this is same as AppleScript
 
+
+- any value in bridging typeTIFF, typePICT, etc to NSImage? (IIRC these types can be a bit flaky)
+
+- typeBookmark/typeAlias descriptors identify file system *objects* [e.g. by inode], whereas typeFSRef/typeFileURL identify file system locations; however, only NSURL can distinguish the two so for now any Bookmark/Alias information will be lost on conversion to Swift `URL` instances, while `URL` will always pack as typeFileURL. This may change in future depending on how many compatibility issues with older Carbon apps this lack of roundtripping throws up.]
+

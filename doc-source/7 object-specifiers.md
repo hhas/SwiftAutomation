@@ -2,15 +2,9 @@
 
 ## How object specifiers work
 
-[TO DO: document class hierarchy as used in glues]
+As explained in chapter 3, a property contains either a simple value describing an object attribute (`name`, `class`, `creationDate`, etc.) or an object specifier representing a one-to-one relationship between objects (e.g. `home`, `currentTrack`), while elements represent a one-to-many relationship between objects (`documents`, `folders`, `fileTracks`, etc). [TO DO: document class hierarchy as used in glues; note that PREFIXItem identifies a single property or element while PREFIXItems identifies zero or more elements, and summarize the selectors]
 
-[TO DO: finish (note that this is a bit of a rehash of ch.2; might be simpler just to refer users back to that)]
-
-A property contains either a simple value describing an object attribute (`name`, `class`, `creationDate`, etc.) or an object specifier representing a one-to-one relationship between objects (e.g. `home`, `currentTrack`).
-
-Elements represent a one-to-many relationship between objects (`documents`, `folders`, `fileTracks`, etc). 
-
-[TO DO: note that both appear as read-only properties on glue-defined ObjectSpecifier+RootSpecifier subclasses; users don't instantiate Specifier classes directly but instead construct via chained property/method calls from glue's Application class or untargeted `RootSpecifier` constants (<var>PREFIX</var>App, <var>PREFIX</var>Con, <var>PREFIX</var>Its)]
+[TO DO: note that all properties and elements appear as read-only properties on glue-defined ObjectSpecifier and RootSpecifier subclasses; users don't instantiate Specifier classes directly but instead construct via chained property/method calls from glue's Application class or untargeted `RootSpecifier` constants (<var>PREFIX</var>App, <var>PREFIX</var>Con, <var>PREFIX</var>Its)]
 
 characters/words/paragraphs of documents by index/relative-position/range/filter
  
