@@ -24,10 +24,14 @@
 
 <p class="hilitebox">Caution: It is recommended that you do not have any other documents open in TextEdit during this tutorial, as accidental alterations to existing documents are easy to make and may not be undoable.</p>
 
+<p>[TO DO: SwiftAE project now includes <code>Install for Tutorial</code> scheme that builds both SwiftAutomation and MacOSGlues targets; only problem is Xcode 8.1 isn't installing them for some reason, could update the following hashbang always to use <code>/Library/Frameworks</code>]</p>
+
 <p>To begin, build the SwiftAE project's MacOSGlues target then launch the <code>swift</code> interpreter in Terminal, replacing <code><var>/path/to/products</var></code> with the path to the directory containing the newly built <code>SwiftAutomation.framework</code> and <code>MacOSGlues.framework</code> bundles:</p>
 
+<p>[TO DO: use <code>#!/usr/bin/swift -target x86_64-apple-macosx10.12 -F /Library/Frameworks</code>, as swift seems to default to 10.10 SDK in some situations but SwiftAutomation requires 10.11+]</p>
+
 <pre><code><strong>jsmith$ swift -F <var>/path/to/products</var></strong>
-<span style="color:gray;">Welcome to Apple Swift version 2.0 (700.0.38.1 700.0.53). Type :help for assistance.
+<span style="color:gray;">Welcome to Apple Swift version 3.0.1 (...) Type :help for assistance.
   1&gt;</span></code></pre>
 
 <h2>Target TextEdit</h2>
@@ -116,7 +120,7 @@
 
 <p>As before, SwiftAutomation provides alternative convenience forms that allow the above command to be written more neatly as this:</p>
 
-<pre><code>doc.text.get()
+<pre><code>try doc.text.get()
 </code></pre>
 
 <h2>Set the document's content</h2>
@@ -186,6 +190,43 @@ try textedit.documents.text.get()
 </code></pre>
 
 <p>[TO DO: add note that unlike AS, Swift is sensitive to parameter order, so named params must appear in same order as in glue]</p>
+
+<h2>Writing a standalone 'script'</h2>
+
+<p>[TO DO: need notes on how damn twitchy this is (hopefully things'll improve once Swift gets a stable ABI and can build portable frameworks)]</p>
+
+<p>For example, the following Swift 'script' file, when saved to disk and made executable (<code>chmod +x /path/to/script</code>), returns the path to the folder shown in the frontmost Finder window (if any):</p>
+
+<pre><code>#!/usr/bin/swift -target x86_64-apple-macosx10.12 -F /Library/Frameworks
+
+import Foundation
+import SwiftAutomation
+import MacOSGlues
+
+public struct StderrStream: TextOutputStream {
+  public mutating func write(_ string: String) { fputs(string, stderr) }
+}
+public var errStream = StderrStream()
+
+do {
+  let finder = Finder()
+  let selection = try finder.selection.get() as [FINItem]
+  let frontFolder: FINItem
+  if selection.count &gt; 0 {
+    let item = selection[0]
+    frontFolder = [FIN.disk, FIN.folder].contains(try item.class_.get()) ? item : try item.container.get() as FINItem
+  } else if try finder.FinderWindows[1].exists() as Bool {
+    // TO DO: this doesn't work if Trash window (Finder bug) or computerContainer
+    frontFolder = try finder.FinderWindows[1].target.get() as FINItem
+  } else {
+    frontFolder = finder.desktop
+  }
+  let fileURL = try frontFolder.get(requestedType: FIN.alias) as URL
+  print(fileURL.path)
+} catch {
+  print(error, to: &amp;errStream)
+}
+</code></pre>
 
             </div>
         </div>

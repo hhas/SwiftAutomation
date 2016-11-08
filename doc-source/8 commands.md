@@ -8,7 +8,7 @@ All application commands have the same basic structure: a single, optional direc
                       <var>namedParameter1:</var> Any = NoParameter,
                       <var>namedParameter2:</var> Any = NoParameter,
                                    <var>...</var>
-                           resultType: Symbol?             = nil,
+                        requestedType: Symbol?             = nil,
                             waitReply: Bool                = true,
                           sendOptions: SendOptions?        = nil,
                           withTimeout: NSTimeInterval?     = nil,
@@ -18,7 +18,7 @@ All application commands have the same basic structure: a single, optional direc
 
 * <code><var>namedParameterN:</var></code> -- An application command can have zero or more named parameters. The application's dictionary describes the named parameters for each command, and if they are optional or required.
 
-* `resultType:` -- Some application commands (e.g. `get`) can return the same result as more than one type. [TO DO: rephrase, making clear that this only indicates the caller's preference as to what type it'd like the command's result to be - a very basic form of content negotiation - there is no guarantee the target app will respect it. Most apps ignore it, and even those that do support it often only do so for `get`.] For example, `Finder().home.get()` normally returns an object specifier, but will return a `URL` value instead if its `resultType:` is `FIN.alias`: `Finder().home.get(resultType: FIN.alias)`. [Note that in AS, `COMMAND as TYPE` does double duty, both indicating its preferred result type to the app _and_ coercing the actual result when it arrives. In SA, `COMMAND as TYPE` only performs the latter; the former is done via `resultType:`.]
+* `requestedType:` -- Some application commands (e.g. `get`) can return the same result as more than one type. [TO DO: rephrase, making clear that this only indicates the caller's preference as to what type it'd like the command's result to be - a very basic form of content negotiation - there is no guarantee the target app will respect it. Most apps ignore it, and even those that do support it often only do so for `get`.] For example, `Finder().home.get()` normally returns an object specifier, but will return a `URL` value instead if its `requestedType:` is `FIN.alias`: `Finder().home.get(requestedType: FIN.alias)`. [Note that in AS, `COMMAND as TYPE` does double duty, both indicating its preferred result type to the app _and_ coercing the actual result when it arrives. In SA, `COMMAND as TYPE` only performs the latter; the former is done via `requestedType:`.]
 
 * `waitReply:` -- If `true` (the default), the command will block until the application sends a reply or the request times out. If `false`, it will return as soon as the request is sent, ignoring any return values or application errors.
 
@@ -106,19 +106,19 @@ Adding an `as` operator tells Finder to return the command's result as a differe
   tell app "Finder" to get home as alias
   -- alias "Macintosh HD:Users:jsmith:"
 
-To perform the same command in SwiftAutomation, pass the equivalent `Symbol` value as the command's `resultType:` argument: 
+To perform the same command in SwiftAutomation, pass the equivalent `Symbol` value as the command's `requestedType:` argument: 
 
-  finder.home.get(resultType: FIN.alias)
+  finder.home.get(requestedType: FIN.alias)
   // URL(string:"file:///Users/jsmith")
 
 Don't forget that the command's static result type will be `Any` unless an explicit cast is applied too:
 
-  finder.home.get(resultType: FIN.alias) as URL
+  finder.home.get(requestedType: FIN.alias) as URL
   // URL(string:"file:///Users/jsmith")
 
 Unlike AppleScript's `as` operator, which both adds an `as` parameter to the command _and_ coerces its result, SwiftAutomation keeps the two separate for more precise control.
 
-Also be aware that some application commands, e.g. CocoaScripting's `save`, may define an `as:` parameter that does not take a symbol name, in which case you should use that parameter as documented, not `resultType:`.
+Also be aware that some application commands, e.g. CocoaScripting's `save`, may define an `as:` parameter that does not take a symbol name, in which case you should use that parameter as documented, not `requestedType:`.
 
 [TO DO: the above is a bit scrappy and potentially confusing; unfortunately, that's due to inadequate AEOM specs and ill-considered implementation. SA only makes it possible to work with such a mess; it cannot fix it.]
 

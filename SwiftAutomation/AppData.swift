@@ -670,7 +670,7 @@ open class AppData {
                 }
             }
             event.setAttribute(subjectDesc, forKeyword: _keySubjectAttr)
-            // pack requested type (`as`) parameter, if specified; note: most apps ignore this, but a few may recognize it (usually in `get` commands)  even if they don't define it in their dictionary (another AppleScript-introduced quirk); e.g. `Finder().home.get(resultType:FIN.alias) as URL` tells Finder to return a typeAlias descriptor instead of typeObjectSpecifier, which can then be unpacked as URL
+            // pack requested type (`as`) parameter, if specified; note: most apps ignore this, but a few may recognize it (usually in `get` commands)  even if they don't define it in their dictionary (another AppleScript-introduced quirk); e.g. `Finder().home.get(requestedType:FIN.alias) as URL` tells Finder to return a typeAlias descriptor instead of typeObjectSpecifier, which can then be unpacked as URL
             if let type = requestedType {
                 event.setDescriptor(NSAppleEventDescriptor(typeCode: type.code), forKeyword: _keyAERequestedType)
             }
@@ -764,7 +764,7 @@ open class AppData {
         }
         assert(self._transactionID == _kAnyTransactionID, "Transaction \(self._transactionID) already active.")
         self._transactionID = try self.sendAppleEvent(name: nil, eventClass: _kAEMiscStandards, eventID: _kAEBeginTransaction,
-                                                      parentSpecifier: AEApp, directParameter: session) as AETransactionID
+                                                      parentSpecifier: AEApp, directParameter: session as Any) as AETransactionID
         defer {
             self._transactionID = _kAnyTransactionID
         }

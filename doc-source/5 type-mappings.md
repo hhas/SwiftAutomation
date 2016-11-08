@@ -77,7 +77,7 @@ Apple event data types include:
 </table>
 
 
-[1] While AppleScript treats `string`, `text`, and `Unicode text` keywords as synonyms for `typeUnicodeText`, the Apple Event Manager still  considers them to be different types (`typeChar`, `cText`, `typeUnicodeText`). When specifying a command's `resultType:` always use <code><var>PREFIX</var>Symbol.unicodeText</code> (or just `AE.unicodeText`) as this is the standard UTF-16 representation that all current macOS apps should support.
+[1] While AppleScript treats `string`, `text`, and `Unicode text` keywords as synonyms for `typeUnicodeText`, the Apple Event Manager still  considers them to be different types (`typeChar`, `cText`, `typeUnicodeText`). When specifying a command's `requestedType:` always use <code><var>PREFIX</var>Symbol.unicodeText</code> (or just `AE.unicodeText`) as this is the standard UTF-16 representation that all current macOS apps should support.
 
 [2] `typeBookmarkData`, `typeAlias`, `typeFSRef`, and `typeFileURL` descriptors are all unpacked Swift `URL` structs. `URL` structs are always packed as `typeFileURL` descriptors. (Be aware that Swift's `URL` structs only hold path information, so any alias/bookmark data identifying the original file system object is lost.)
 
@@ -116,7 +116,7 @@ Both `MissingValue` and `nil` values are packed as `cMissingValue` descriptors w
   try Contacts().people[CONIts.birthDate == date].get() as [CONItem]
 
 
-  // remove all nicknames!
+  // clear all nicknames!
   try Contacts().people.nickname(set: MissingValue)
 
   let name: String? = nil

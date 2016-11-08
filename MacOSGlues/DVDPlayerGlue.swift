@@ -762,463 +762,463 @@ public protocol DVDCommand: SwiftAutomation.SpecifierProtocol {} // provides AE 
 
 extension DVDCommand {
     @discardableResult public func activate(_ directParameter: Any = SwiftAutomation.NoParameter,
-            resultType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "activate", eventClass: 0x6d697363, eventID: 0x61637476, // "misc"/"actv"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     public func activate<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
-            resultType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "activate", eventClass: 0x6d697363, eventID: 0x61637476, // "misc"/"actv"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     @discardableResult public func ejectDvd(_ directParameter: Any = SwiftAutomation.NoParameter,
-            resultType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "ejectDvd", eventClass: 0x64766478, eventID: 0x6576656a, // "dvdx"/"evej"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     public func ejectDvd<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
-            resultType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "ejectDvd", eventClass: 0x64766478, eventID: 0x6576656a, // "dvdx"/"evej"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     @discardableResult public func exitClipMode(_ directParameter: Any = SwiftAutomation.NoParameter,
-            resultType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "exitClipMode", eventClass: 0x64766478, eventID: 0x65766563, // "dvdx"/"evec"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     public func exitClipMode<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
-            resultType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "exitClipMode", eventClass: 0x64766478, eventID: 0x65766563, // "dvdx"/"evec"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     @discardableResult public func fastForwardDvd(_ directParameter: Any = SwiftAutomation.NoParameter,
-            resultType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "fastForwardDvd", eventClass: 0x64766478, eventID: 0x65766666, // "dvdx"/"evff"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     public func fastForwardDvd<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
-            resultType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "fastForwardDvd", eventClass: 0x64766478, eventID: 0x65766666, // "dvdx"/"evff"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     @discardableResult public func get(_ directParameter: Any = SwiftAutomation.NoParameter,
-            resultType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "get", eventClass: 0x636f7265, eventID: 0x67657464, // "core"/"getd"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     public func get<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
-            resultType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "get", eventClass: 0x636f7265, eventID: 0x67657464, // "core"/"getd"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     @discardableResult public func go(_ directParameter: Any = SwiftAutomation.NoParameter,
-            resultType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "go", eventClass: 0x64766478, eventID: 0x6576676f, // "dvdx"/"evgo"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     public func go<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
-            resultType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "go", eventClass: 0x64766478, eventID: 0x6576676f, // "dvdx"/"evgo"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     @discardableResult public func obscureCursor(_ directParameter: Any = SwiftAutomation.NoParameter,
-            resultType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "obscureCursor", eventClass: 0x64766478, eventID: 0x65766f63, // "dvdx"/"evoc"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     public func obscureCursor<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
-            resultType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "obscureCursor", eventClass: 0x64766478, eventID: 0x65766f63, // "dvdx"/"evoc"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     @discardableResult public func open(_ directParameter: Any = SwiftAutomation.NoParameter,
-            resultType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "open", eventClass: 0x61657674, eventID: 0x6f646f63, // "aevt"/"odoc"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     public func open<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
-            resultType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "open", eventClass: 0x61657674, eventID: 0x6f646f63, // "aevt"/"odoc"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     @discardableResult public func openDvdVideoFolder(_ directParameter: Any = SwiftAutomation.NoParameter,
-            resultType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "openDvdVideoFolder", eventClass: 0x64766478, eventID: 0x6f647666, // "dvdx"/"odvf"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     public func openDvdVideoFolder<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
-            resultType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "openDvdVideoFolder", eventClass: 0x64766478, eventID: 0x6f647666, // "dvdx"/"odvf"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     @discardableResult public func openLocation(_ directParameter: Any = SwiftAutomation.NoParameter,
             window: Any = SwiftAutomation.NoParameter,
-            resultType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "openLocation", eventClass: 0x4755524c, eventID: 0x4755524c, // "GURL"/"GURL"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                     ("window", 0x57494e44, window), // "WIND"
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     public func openLocation<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
             window: Any = SwiftAutomation.NoParameter,
-            resultType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "openLocation", eventClass: 0x4755524c, eventID: 0x4755524c, // "GURL"/"GURL"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                     ("window", 0x57494e44, window), // "WIND"
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     @discardableResult public func openVIDEO_TS(_ directParameter: Any = SwiftAutomation.NoParameter,
-            resultType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "openVIDEO_TS", eventClass: 0x64766478, eventID: 0x6f767473, // "dvdx"/"ovts"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     public func openVIDEO_TS<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
-            resultType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "openVIDEO_TS", eventClass: 0x64766478, eventID: 0x6f767473, // "dvdx"/"ovts"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     @discardableResult public func pauseDvd(_ directParameter: Any = SwiftAutomation.NoParameter,
-            resultType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "pauseDvd", eventClass: 0x64766478, eventID: 0x65767073, // "dvdx"/"evps"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     public func pauseDvd<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
-            resultType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "pauseDvd", eventClass: 0x64766478, eventID: 0x65767073, // "dvdx"/"evps"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     @discardableResult public func playBookmark(_ directParameter: Any = SwiftAutomation.NoParameter,
-            resultType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "playBookmark", eventClass: 0x64766478, eventID: 0x6576626b, // "dvdx"/"evbk"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     public func playBookmark<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
-            resultType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "playBookmark", eventClass: 0x64766478, eventID: 0x6576626b, // "dvdx"/"evbk"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     @discardableResult public func playDvd(_ directParameter: Any = SwiftAutomation.NoParameter,
-            resultType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "playDvd", eventClass: 0x64766478, eventID: 0x6576706c, // "dvdx"/"evpl"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     public func playDvd<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
-            resultType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "playDvd", eventClass: 0x64766478, eventID: 0x6576706c, // "dvdx"/"evpl"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     @discardableResult public func playNamedBookmark(_ directParameter: Any = SwiftAutomation.NoParameter,
-            resultType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "playNamedBookmark", eventClass: 0x64766478, eventID: 0x6576626e, // "dvdx"/"evbn"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     public func playNamedBookmark<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
-            resultType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "playNamedBookmark", eventClass: 0x64766478, eventID: 0x6576626e, // "dvdx"/"evbn"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     @discardableResult public func playNamedVideoClip(_ directParameter: Any = SwiftAutomation.NoParameter,
-            resultType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "playNamedVideoClip", eventClass: 0x64766478, eventID: 0x6576636e, // "dvdx"/"evcn"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     public func playNamedVideoClip<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
-            resultType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "playNamedVideoClip", eventClass: 0x64766478, eventID: 0x6576636e, // "dvdx"/"evcn"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     @discardableResult public func playNextChapter(_ directParameter: Any = SwiftAutomation.NoParameter,
-            resultType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "playNextChapter", eventClass: 0x64766478, eventID: 0x65766e63, // "dvdx"/"evnc"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     public func playNextChapter<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
-            resultType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "playNextChapter", eventClass: 0x64766478, eventID: 0x65766e63, // "dvdx"/"evnc"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     @discardableResult public func playPreviousChapter(_ directParameter: Any = SwiftAutomation.NoParameter,
-            resultType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "playPreviousChapter", eventClass: 0x64766478, eventID: 0x65767063, // "dvdx"/"evpc"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     public func playPreviousChapter<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
-            resultType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "playPreviousChapter", eventClass: 0x64766478, eventID: 0x65767063, // "dvdx"/"evpc"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     @discardableResult public func playVideoClip(_ directParameter: Any = SwiftAutomation.NoParameter,
-            resultType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "playVideoClip", eventClass: 0x64766478, eventID: 0x65767663, // "dvdx"/"evvc"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     public func playVideoClip<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
-            resultType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "playVideoClip", eventClass: 0x64766478, eventID: 0x65767663, // "dvdx"/"evvc"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     @discardableResult public func press(_ directParameter: Any = SwiftAutomation.NoParameter,
-            resultType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "press", eventClass: 0x64766478, eventID: 0x65767072, // "dvdx"/"evpr"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     public func press<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
-            resultType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "press", eventClass: 0x64766478, eventID: 0x65767072, // "dvdx"/"evpr"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     @discardableResult public func print(_ directParameter: Any = SwiftAutomation.NoParameter,
-            resultType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "print", eventClass: 0x61657674, eventID: 0x70646f63, // "aevt"/"pdoc"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     public func print<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
-            resultType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "print", eventClass: 0x61657674, eventID: 0x70646f63, // "aevt"/"pdoc"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     @discardableResult public func quit(_ directParameter: Any = SwiftAutomation.NoParameter,
             saving: Any = SwiftAutomation.NoParameter,
-            resultType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "quit", eventClass: 0x61657674, eventID: 0x71756974, // "aevt"/"quit"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                     ("saving", 0x7361766f, saving), // "savo"
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     public func quit<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
             saving: Any = SwiftAutomation.NoParameter,
-            resultType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "quit", eventClass: 0x61657674, eventID: 0x71756974, // "aevt"/"quit"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                     ("saving", 0x7361766f, saving), // "savo"
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     @discardableResult public func reopen(_ directParameter: Any = SwiftAutomation.NoParameter,
-            resultType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "reopen", eventClass: 0x61657674, eventID: 0x72617070, // "aevt"/"rapp"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     public func reopen<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
-            resultType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "reopen", eventClass: 0x61657674, eventID: 0x72617070, // "aevt"/"rapp"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     @discardableResult public func rewindDvd(_ directParameter: Any = SwiftAutomation.NoParameter,
-            resultType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "rewindDvd", eventClass: 0x64766478, eventID: 0x65767277, // "dvdx"/"evrw"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     public func rewindDvd<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
-            resultType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "rewindDvd", eventClass: 0x64766478, eventID: 0x65767277, // "dvdx"/"evrw"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     @discardableResult public func run(_ directParameter: Any = SwiftAutomation.NoParameter,
-            resultType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "run", eventClass: 0x61657674, eventID: 0x6f617070, // "aevt"/"oapp"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     public func run<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
-            resultType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "run", eventClass: 0x61657674, eventID: 0x6f617070, // "aevt"/"oapp"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     @discardableResult public func set(_ directParameter: Any = SwiftAutomation.NoParameter,
             to: Any = SwiftAutomation.NoParameter,
-            resultType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "set", eventClass: 0x636f7265, eventID: 0x73657464, // "core"/"setd"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                     ("to", 0x64617461, to), // "data"
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     public func set<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
             to: Any = SwiftAutomation.NoParameter,
-            resultType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "set", eventClass: 0x636f7265, eventID: 0x73657464, // "core"/"setd"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                     ("to", 0x64617461, to), // "data"
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     @discardableResult public func stepDvd(_ directParameter: Any = SwiftAutomation.NoParameter,
-            resultType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "stepDvd", eventClass: 0x64766478, eventID: 0x65767370, // "dvdx"/"evsp"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     public func stepDvd<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
-            resultType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "stepDvd", eventClass: 0x64766478, eventID: 0x65767370, // "dvdx"/"evsp"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     @discardableResult public func stopDvd(_ directParameter: Any = SwiftAutomation.NoParameter,
-            resultType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "stopDvd", eventClass: 0x64766478, eventID: 0x65767374, // "dvdx"/"evst"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     public func stopDvd<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
-            resultType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "stopDvd", eventClass: 0x64766478, eventID: 0x65767374, // "dvdx"/"evst"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: sendOptions,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
 }

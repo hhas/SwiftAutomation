@@ -15,8 +15,7 @@ TO DO:
 
 
 
-- need pure bundleID targeting in sandboxed apps where app's file path isn't available; file a feature request for NSWorkspace.launchApplication(withBundleIdentifier:options:configuration:)throws->NSRunningApplication
-
+- file a feature request for NSWorkspace.launchApplication(withBundleIdentifier:options:configuration:)throws->NSRunningApplication
 
     // This launches TextEdit if needed and opens the test.txt file in it, returning an NSRunningApplication for the target app or throwing on failure:
     //try NSWorkspace.shared().launchApplication(at: URL(fileURLWithPath:"/Applications/TextEdit.app"), options: [.withoutActivation], configuration: [NSWorkspaceLaunchConfigurationAppleEvent:evt])
@@ -27,11 +26,7 @@ TO DO:
 
 
 
-
-- sort out inconsistent naming of `resultType:` vs `requestedType:` parameters (i.e. pick one and use it throughout)
-
-
-- Define standard structs for representing color, position, etc.? (And/Or support packing/unpacking Cocoa equivalents, e.g. NSColor?) The default behavior is to pack/unpack as Array<Int>, but type-safe alternatives could also be provided that ensure whatever type of descriptor an app returns (typeAEList/typeQDRectangle) the final result is normalized to the semantic type specified by the user (e.g. SwiftAutomation.RectangleRecord). Also, how practical to support packing/unpacking image types (a known mess)?
+- Define standard structs for representing color, position, etc.? (And/Or support packing/unpacking Cocoa equivalents, e.g. NSColor?) The default behavior is to pack/unpack as Array<Int>, but type-safe alternatives could also be provided that ensure whatever type of descriptor an app returns (typeAEList/typeQDRectangle) the final result is normalized to the semantic type specified by the user (e.g. SwiftAutomation.RectangleRecord). Also, how practical to support packing/unpacking image types (a known mess), e.g. bridging typeTIFF, typePICT, etc to NSImage?
 
 
 
@@ -43,10 +38,6 @@ TO DO:
 
 
 - by-test selector currently doesn't confirm ITS-based root before packing test clause; similarly, by-range selector doesn't confirm APP/CON-based roots for start+stop specifiers; implementing this either means extra mixin subclasses (so type system can enforce it) or pack-time checking (so it can be reported as a command error) - though whether it's worth doing has yet to be decided (having a complete set of specifier variants just for constructing `its` based specifiers will add code complexity and would be problematic for unpacking since objspecs need to be fully unpacked to determine root type but standard behavior is to shallow unpack objspecs for efficiency and only fully unpack when necessary)
-
-
-- should glues use `as:` rather than `resultType:`? Q. is it practical to do so, given that `as` is an app-definable parameter, not an AEM-defined attribute? (terminology parsers would need to ignore `("as",keyAERequestedType)` if it appears in a command definition, and escape any partial matches - e.g. StdAdds commands use 'as..' and 'as.A' as well as 'rtyp', so the former should always appear as `as_:`)
-
 
 
 -  unlike AppleScript, which allows `every element of...` to be used as an explicit alternative to `elements of...`, there is not an `all` by-ordinal selector var defined on MultipleObjectSpecifier. While one could be added, there's never been a reported use case to indicate the need for it (specifically, where an app's terminology fails to distinguish a property vs elements name, the classic example being the `text` keyword which is such a mess it has special-case treatment built into AppleEventBridge's terminology parsers to ensure AppleEventBridge glues disambiguate it in exactly the same way that AppleScript does). (note: symbols can also be passed to elements[idx]; however, it's more about forcing a 'property' specifier to be an all-elements specifier so don't think that helps in itself)
@@ -71,7 +62,10 @@ TO DO:
 - currently Application.customRoot(object) allows the creation of individual object specifiers with a non-typeNull terminator, e.g. `Finder().customRoot(aURL).name` is equivalent to `tell app "Finder" to name of POSIX file "..."`. In practice, this is almost never neeeded (or supported by apps), but it's included for maximum AppleScript 'quirk-for-quirk' compatibility. Should AppData also provide an option to set the default app root object to be used in building and unpacking _all_ object specifiers? The only place this might be useful is in Automator when packing fully qualified object specifiers; OTOH, fully qualified object specifiers always were a bad solution to the problem of binding AEAddressDescs to objspec descriptors, and Automator's a dead-end and largely moribund product anyway.
 
 
-- note that file system specifiers (typeAlias, typeFileURL, typeFSRef, etc) currently don't roundtrip (they all get coerced down to typeFileURL, regardless of their original type, and URL instances always pack as typeFileURL); this may or may not be a problem when dealing with older Carbon apps. One solution may be an `isFileURLCompatible` flag that, if set to false, packs URLs as as typeAlias if the path identifies an existing FS object and typeFileURL if it does not. (Packing as typeFSRef is redundant and typeFSS is defunct, so those should not need supported.) -- TBH, probably best forget about roundtripping these types, pack all file: URLs as typeFileURL, and hope for the best: 1. there's no way to attach their AEDescs to a URL struct, and 2. URL structs don't support isFileReferenceURL so there's no way to tell if they're a bookmark (in which case pack as typeAlias) or a path (pack as typeFileURL).
+- note that file system specifiers (typeAlias, typeFileURL, typeFSRef, etc) currently don't roundtrip (they all get coerced down to typeFileURL, regardless of their original type, and URL instances always pack as typeFileURL); this may or may not be a problem when dealing with older Carbon apps. One solution may be an `isFileURLCompatible` flag that, if set to false, packs URLs as as typeAlias if the path identifies an existing FS object and typeFileURL if it does not. (Packing as typeFSRef is redundant and typeFSS is defunct, so those should not need supported.) -- TBH, probably best forget about roundtripping these types, pack all file: URLs as typeFileURL, and hope for the best: 1. there's no way to attach their AEDescs to a URL struct, and 2. URL structs don't support isFileReferenceURL so there's no way to tell if they're a bookmark (in which case pack as typeAlias) or a path (pack as typeFileURL)
+
+    - typeBookmark/typeAlias descriptors identify file system *objects* [e.g. by inode], whereas typeFSRef/typeFileURL identify file system locations; however, only NSURL can distinguish the two so for now any Bookmark/Alias information will be lost on conversion to Swift `URL` instances, while `URL` will always pack as typeFileURL. This may change in future depending on how many compatibility issues with older Carbon apps this lack of roundtripping throws up.]
+
 
 
 - Q. how difficult would it be to auto-generate enum/struct/typealias type definitions from an app's AETE/SDEF? (bearing in mind that AETE/SDEF-supplied type info is frequently vague, ambiguous, incomplete, and/or wrong, so a manual option will always be required as well); this basically falls into same camp as how to auto-generate struct-based record definitions as a more static-friendly alternative to AppData's standard AERecordDesc<->[Symbol:Any] mapping; may be worth exploring later (and will need a manual format string option as well, e.g. "STRUCTNAME=PROPERTY1:TYPE1+PROPERTY2:TYPE2+...").
@@ -81,8 +75,6 @@ TO DO:
     FWIW, if a pure-Swift AEOM handler framework ever gets built, it could address all these issues by radically simplifying and comprehensively prescribing the AEOM spec, then generate a formal IDL from the implementation which could be used to generate a robust glue (not to mention much more detailed user documentation, free test suites, and reliable implementation). Until then, the only value in auto-generating these definitions (as format strings only, not as Swift code) would be to give users a starting point from which to make their own corrections; and under the circumstances it'd simpler for them just to write minimal format strings for the bits of records they'll actually use, or just use the standard [Symbol:Any] dictionaries and do their own checking/casting of property values as needed. (Though if SwiftAutomation ever catches on then app developers might consider creating and distributing ready-to-use glue modules themselves, saving users the hassle of generating their own, at which point more powerful tools might be of some advantage).
 
 
-- implement `SelfPacking` on Range types which always throw a helpful error message should user accidentally write `elements[x...y]` instead of `elements[x,y]`? Currently passing a Range to `subscript[index:]` results in a general PackError("Can't pack as TYPE") when the specifier is used in a command; a message reminding users to construct by-range specifiers using `elements[FROM,TO]` syntax would help reduce confusion. Alternative, could implement a "NonPackable" protocol as an extension of Swift's standard Range types which `subscript[index:Any]` could check for itself and throw immediately if a range is passed (the only caveat is that since Swift's various Range structs don't share a common 'Range' protocol, it'll need to be added to each one separately).
-
 
 - worth including convenience API for interacting with `NSAppleScript`/`NSUserAppleScriptTask`/`OSAScript`? Given that SwiftAutomation provides automatic Swift<->AE type bridging, it seems a pity not to take advantage of it as it'll greatly reduce the amount of effort needed to make Swift apps attachable. Or should that be spun off into its own library to avoid crudding up SwiftAutomation's main API? (Probably the latter, as it allows that code to evolve independently later on. That may be particularly significant if the app also implements its own AEOM which attached scripts will want to interact with; doubly so if Swift ever gets a native AEOM framework [as a non-sucky alternative to CocoaScripting]; triply so if it can get a non-sucky replacement to the awful, archaic, and barely supported/supportable ComponentManager-based OpenScripting [OSA] framework.)
 
@@ -90,7 +82,4 @@ TO DO:
 - default SendMode is currently [.canSwitchLayer,.waitReply]; confirm this is same as AppleScript
 
 
-- any value in bridging typeTIFF, typePICT, etc to NSImage? (IIRC these types can be a bit flaky)
-
-- typeBookmark/typeAlias descriptors identify file system *objects* [e.g. by inode], whereas typeFSRef/typeFileURL identify file system locations; however, only NSURL can distinguish the two so for now any Bookmark/Alias information will be lost on conversion to Swift `URL` instances, while `URL` will always pack as typeFileURL. This may change in future depending on how many compatibility issues with older Carbon apps this lack of roundtripping throws up.]
 

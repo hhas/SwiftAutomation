@@ -9,17 +9,11 @@
 //
 
 
-// TO DO: customMirror // error: Playground execution aborted: error: Execution was interrupted, reason: EXC_BAD_ACCESS (code=1, address=0x0).
-
-
-
-
-
 import Foundation
 
 
 
-open class Symbol: Hashable, Equatable, CustomStringConvertible, CustomDebugStringConvertible, /*CustomReflectable,*/ SelfPacking {
+open class Symbol: Hashable, Equatable, CustomStringConvertible, CustomDebugStringConvertible, CustomReflectable, SelfPacking {
     
     private var _descriptor: NSAppleEventDescriptor?
     public let name: String?, code: OSType, type: OSType
@@ -60,7 +54,7 @@ open class Symbol: Hashable, Equatable, CustomStringConvertible, CustomDebugStri
         return self.init(name: string, code: noOSType, type: noOSType, descriptor: descriptor)
     }
     
-    //
+    // display
     
     public var description: String {
         if let name = self.name {
@@ -72,13 +66,13 @@ open class Symbol: Hashable, Equatable, CustomStringConvertible, CustomDebugStri
     
     public var debugDescription: String { return self.description }
     
-    /*
     public var customMirror: Mirror {
-        let children: [Mirror.Child] = [(label: "description", value: self.description), (label: "name", value: self.name),
+        let children: [Mirror.Child] = [(label: "description", value: self.description), (label: "name", value: self.name ?? ""),
                                         (label: "code", value: fourCharCode(self.code)), (label: "type", value: fourCharCode(self.type))]
         return Mirror(self, children: children, displayStyle: .`class`, ancestorRepresentation: .suppressed)
     }
-    */
+    
+    // packing
     
     public var descriptor: NSAppleEventDescriptor { // used by SwiftAutomation_packSelf and previous()/next() selectors  
         if self._descriptor == nil {
@@ -97,6 +91,8 @@ open class Symbol: Hashable, Equatable, CustomStringConvertible, CustomDebugStri
     public func SwiftAutomation_packSelf(_ appData: AppData) throws -> NSAppleEventDescriptor {
         return self.descriptor
     }
+    
+    // equatable, hashable
     
     public var hashValue: Int { return self.nameOnly ? self.name!.hashValue : Int(self.code) } // see also comments in `==()` below
     

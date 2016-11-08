@@ -85,7 +85,7 @@
 </tbody>
 </table>
 
-<p>[1] While AppleScript treats <code>string</code>, <code>text</code>, and <code>Unicode text</code> keywords as synonyms for <code>typeUnicodeText</code>, the Apple Event Manager still  considers them to be different types (<code>typeChar</code>, <code>cText</code>, <code>typeUnicodeText</code>). When specifying a command's <code>resultType:</code> always use <code><var>PREFIX</var>Symbol.unicodeText</code> (or just <code>AE.unicodeText</code>) as this is the standard UTF-16 representation that all current macOS apps should support.</p>
+<p>[1] While AppleScript treats <code>string</code>, <code>text</code>, and <code>Unicode text</code> keywords as synonyms for <code>typeUnicodeText</code>, the Apple Event Manager still  considers them to be different types (<code>typeChar</code>, <code>cText</code>, <code>typeUnicodeText</code>). When specifying a command's <code>requestedType:</code> always use <code><var>PREFIX</var>Symbol.unicodeText</code> (or just <code>AE.unicodeText</code>) as this is the standard UTF-16 representation that all current macOS apps should support.</p>
 
 <p>[2] <code>typeBookmarkData</code>, <code>typeAlias</code>, <code>typeFSRef</code>, and <code>typeFileURL</code> descriptors are all unpacked Swift <code>URL</code> structs. <code>URL</code> structs are always packed as <code>typeFileURL</code> descriptors. (Be aware that Swift's <code>URL</code> structs only hold path information, so any alias/bookmark data identifying the original file system object is lost.)</p>
 
@@ -125,7 +125,7 @@ let date: Date? = nil
 try Contacts().people[CONIts.birthDate == date].get() as [CONItem]
 
 
-// remove all nicknames!
+// clear all nicknames!
 try Contacts().people.nickname(set: MissingValue)
 
 let name: String? = nil

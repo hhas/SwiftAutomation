@@ -6,10 +6,10 @@ import Cocoa
 import SwiftAutomation
 
 
-
-let itunes = ITunes()
+let iitunes = ITunes()
 let textedit = TextEdit()
 let finder = Finder()
+
 
 /*
 let state: ITU = try itunes.playerState.get()
@@ -36,7 +36,7 @@ try doc.name.get() as String
 
 */
 
-try finder.home.get(resultType: FIN.alias) as URL
+try finder.home.get(requestedType: FIN.alias) as URL
 
 //try itunes.tracks.any.play()
 
@@ -87,9 +87,9 @@ print(error)
 //try finder.home.files[1..<4].name.get() // note: this form is not supported
 
 
+[AE(code:"2345")]
 
-
-
+[AEApp.elements("docu").property("ctxt")]
 
 
 

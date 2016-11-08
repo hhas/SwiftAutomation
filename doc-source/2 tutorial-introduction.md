@@ -8,16 +8,21 @@
 
 [TO DO: could probably do with getting user to open sdef in Script Editor for an overview of how API docs are structured]
 
+
 This chapter provides a practical taste of application scripting with Swift and SwiftAutomation. Later chapters cover the technical details of SwiftAutomation usage that are mostly skimmed over here.
 
 The following tutorial uses SwiftAutomation, TextEdit and the interactive command line `swift` interpreter to perform a simple 'Hello World' exercise. 
 
 <p class="hilitebox">Caution: It is recommended that you do not have any other documents open in TextEdit during this tutorial, as accidental alterations to existing documents are easy to make and may not be undoable.</p>
 
+[TO DO: SwiftAE project now includes `Install for Tutorial` scheme that builds both SwiftAutomation and MacOSGlues targets; only problem is Xcode 8.1 isn't installing them for some reason, could update the following hashbang always to use `/Library/Frameworks`]
+
 To begin, build the SwiftAE project's MacOSGlues target then launch the `swift` interpreter in Terminal, replacing <code><var>/path/to/products</var></code> with the path to the directory containing the newly built `SwiftAutomation.framework` and `MacOSGlues.framework` bundles:
 
+[TO DO: use `#!/usr/bin/swift -target x86_64-apple-macosx10.12 -F /Library/Frameworks`, as swift seems to default to 10.10 SDK in some situations but SwiftAutomation requires 10.11+]
+
 <pre><code><strong>jsmith$ swift -F <var>/path/to/products</var></strong>
-<span style="color:gray;">Welcome to Apple Swift version 2.0 (700.0.38.1 700.0.53). Type :help for assistance.
+<span style="color:gray;">Welcome to Apple Swift version 3.0.1 (...) Type :help for assistance.
   1&gt;</span></code></pre>
 
 
@@ -102,7 +107,7 @@ the result is an object specifier, `TextEdit().documents[1].text`, not the value
 
 As before, SwiftAutomation provides alternative convenience forms that allow the above command to be written more neatly as this:
 
-  doc.text.get()
+  try doc.text.get()
 
 
 
@@ -175,5 +180,43 @@ Or to insert a new paragraph at the end of the document:
                withData: "Hello Again, World\n")
 
 [TO DO: add note that unlike AS, Swift is sensitive to parameter order, so named params must appear in same order as in glue]
+
+
+## Writing a standalone 'script'
+
+[TO DO: need notes on how damn twitchy this is (hopefully things'll improve once Swift gets a stable ABI and can build portable frameworks)]
+
+For example, the following Swift 'script' file, when saved to disk and made executable (`chmod +x /path/to/script`), returns the path to the folder shown in the frontmost Finder window (if any):
+
+  #!/usr/bin/swift -target x86_64-apple-macosx10.12 -F /Library/Frameworks
+  
+  import Foundation
+  import SwiftAutomation
+  import MacOSGlues
+
+  public struct StderrStream: TextOutputStream {
+    public mutating func write(_ string: String) { fputs(string, stderr) }
+  }
+  public var errStream = StderrStream()
+
+  do {
+    let finder = Finder()
+    let selection = try finder.selection.get() as [FINItem]
+    let frontFolder: FINItem
+    if selection.count > 0 {
+      let item = selection[0]
+      frontFolder = [FIN.disk, FIN.folder].contains(try item.class_.get()) ? item : try item.container.get() as FINItem
+    } else if try finder.FinderWindows[1].exists() as Bool {
+      // TO DO: this doesn't work if Trash window (Finder bug) or computerContainer
+      frontFolder = try finder.FinderWindows[1].target.get() as FINItem
+    } else {
+      frontFolder = finder.desktop
+    }
+    let fileURL = try frontFolder.get(requestedType: FIN.alias) as URL
+    print(fileURL.path)
+  } catch {
+    print(error, to: &errStream)
+  }
+
 
 

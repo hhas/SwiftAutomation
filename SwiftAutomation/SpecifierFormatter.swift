@@ -272,7 +272,7 @@ public class SpecifierFormatter {
             }
             parentSpecifier += ".\(name)"
             for (key, value) in keywordParameters { args.append("\(key): \(self.format(value))") }
-            if let symbol = requestedType { args.append("resultType: \(symbol)") }
+            if let symbol = requestedType { args.append("requestedType: \(symbol)") }
         case .codes(let eventClass, let eventID, let parameters):
             if let subject = description.subject {
                 parentSpecifier = self.format(subject)

@@ -64,14 +64,12 @@ import AppKit
 
 // TO DO: debugDescription that displays raw FCC representation?
 
-// TO DO: Mirror support; currently playground displays a list of specifiers as `[{{...}},{{...}},...]`, although they print() fine elsewhere; unfortunately, Swift's support for custom mirrors seems to be buggy as Playgrounds/REPL tend to crash even before Query.customMirror gets called
-
 
 /******************************************************************************/
 // abstract base class for _all_ specifier and test clause subclasses
 
 
-open class Query: CustomStringConvertible, CustomDebugStringConvertible, /*CustomReflectable,*/ SelfPacking {
+open class Query: CustomStringConvertible, CustomDebugStringConvertible, CustomReflectable, SelfPacking {
     // note: Equatable isn't implemented here as 1. it's rarely necessary to compare two specifiers, and 2. only the target app can know if two queries identify the same object or not, e.g. `Finder().folders["foo"]`, `Finder().desktop.folders["FOO"]`, and `Finder().home.folders["Desktop:Foo"]` all refer to same object (a folder named "foo" on user's desktop) while `Finder.disks["Bar"]` and `Finder.disks["bar"]` do not (since disk names are case-sensitive)
     
     public let appData: AppData
@@ -113,18 +111,14 @@ open class Query: CustomStringConvertible, CustomDebugStringConvertible, /*Custo
     public var description: String { return self.appData.formatter.format(self) }
     
     public var debugDescription: String { return self.description }
-
     
-    // Ignored for Application object, and doesn't get called for Item object as the following error occurs first:
-    // 2016-10-01 13:03:05.760074 repl_swift[11993:780266] Could not cast value of type 'SwiftAutomation.ObjectSpecifier' (0x101cdbd10) to 'MacOSGlues.FINItem' (0x103afef40).
-    /*
     public var customMirror: Mirror {
-        // TO DO: ideally subclasses would override to mirror the AERecords that make up the specifier, plus the target application (if any), but seeing as the /usr/bin/swift REPL falls on its arse before it even gets this property there's little point implementing it right now; furthermore, right-hand pane in playgrounds sometimes displays value's description (e.g. for TEDItem) and other times its mirror representation (e.g. for [TEDItem]), which makes it bloody useless too (i.e. REPL and playground users should ALWAYS see the description, unless they explicitly request the debugDescription or mirror representation themselves, e.g. for pathological curiosity or debugging purposes)
-        //print("\(self) \(type(of: self))")
-        let children: [Mirror.Child] = [(label: "description", value: self.description), (label: "descriptor", value: self._cachedDescriptor)]
+        let children: [Mirror.Child] = [(label: "description", value: self.description),
+                                        (label: "descriptor", value: self._cachedDescriptor as Any),
+                                        (label: "target", value: self.appData.target)]
         return Mirror(self, children: children, displayStyle: Mirror.DisplayStyle.`class`, ancestorRepresentation: .suppressed)
     }
- */
+    
 }
 
 
@@ -178,44 +172,44 @@ open class Specifier: Query, SpecifierProtocol {
     // convenience methods for sending Apple events using four-char codes (either OSTypes or Strings)
     
     public func sendAppleEvent<T>(_ eventClass: OSType, _ eventID: OSType, _ parameters: [OSType:Any] = [:],
-                                  resultType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
+                                  requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
                                   withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(eventClass: eventClass, eventID: eventID,
                                                parentSpecifier: self, parameters: parameters,
-                                               requestedType: resultType, waitReply: waitReply,
+                                               requestedType: requestedType, waitReply: waitReply,
                                                sendOptions: sendOptions, withTimeout: withTimeout, considering: considering)
     }
     
     public func sendAppleEvent<T>(_ eventClass: String, _ eventID: String, _ parameters: [String:Any] = [:],
-                                  resultType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
+                                  requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
                                   withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
         var params = [OSType:Any]()
         for (k, v) in parameters { params[try fourCharCode(k)] = v }
         return try self.appData.sendAppleEvent(eventClass: try fourCharCode(eventClass), eventID: try fourCharCode(eventID),
                                                parentSpecifier: self, parameters: params,
-                                               requestedType: resultType, waitReply: waitReply,
+                                               requestedType: requestedType, waitReply: waitReply,
                                                sendOptions: sendOptions, withTimeout: withTimeout, considering: considering)
     }
     
     // non-generic versions of the above methods; these are bound when T can't be inferred (either because caller doesn't use the return value or didn't declare a specific type for it, e.g. `let result = cmd.call()`), in which case Any is used
     
     @discardableResult public func sendAppleEvent(_ eventClass: OSType, _ eventID: OSType, _ parameters: [OSType:Any] = [:],
-                                                  resultType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
+                                                  requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
                                                   withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(eventClass: eventClass, eventID: eventID,
                                                parentSpecifier: self, parameters: parameters,
-                                               requestedType: resultType, waitReply: waitReply,
+                                               requestedType: requestedType, waitReply: waitReply,
                                                sendOptions: sendOptions, withTimeout: withTimeout, considering: considering)
     }
     
     @discardableResult public func sendAppleEvent(_ eventClass: String, _ eventID: String, _ parameters: [String:Any] = [:],
-                                                  resultType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
+                                                  requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
                                                   withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         var params = [OSType:Any]()
         for (k, v) in parameters { params[try fourCharCode(k)] = v }
         return try self.appData.sendAppleEvent(eventClass: try fourCharCode(eventClass), eventID: try fourCharCode(eventID),
                                                parentSpecifier: self, parameters: params,
-                                               requestedType: resultType, waitReply: waitReply,
+                                               requestedType: requestedType, waitReply: waitReply,
                                                sendOptions: sendOptions, withTimeout: withTimeout, considering: considering)
     }
 }
