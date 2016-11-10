@@ -78,7 +78,7 @@ The `-S` option may be quicker when generating glues for CocoaScripting-based ap
 <div class="hilitebox">
 <p>Tip: When getting started, a quick way to generate standard glues for all scriptable applications in <code>/Applications</code>, including those in subfolders, is to run the following commands:</p>
 
-<pre><code>mkdir AllGlues && cd AllGlues && aeglue -S /Applications/**.app</code></pre>
+<pre><code>mkdir AllGlues && cd AllGlues && aeglue -S /Applications/*.app /Applications/*/*.app</code></pre>
 
 <p><code>aeglue</code> will log error messages for problematic applications (e.g. those without dictionaries or whose dictionaries contain significant flaws). Any glues that are unsatisfactory or require extra customization can then be manually regenerated one at a time with the appropriate options.</p>
 </div>

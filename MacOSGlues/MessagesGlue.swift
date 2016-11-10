@@ -23,9 +23,9 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x616c6973: "alias", // "alis"
                                                                      0x2a2a2a2a: "anything", // "****"
                                                                      0x63617070: "application", // "capp"
-                                                                     0x62756e64: "applicationBundleId", // "bund"
+                                                                     0x62756e64: "applicationBundleID", // "bund"
                                                                      0x7369676e: "applicationSignature", // "sign"
-                                                                     0x6170726c: "applicationUrl", // "aprl"
+                                                                     0x6170726c: "applicationURL", // "aprl"
                                                                      0x61707220: "April", // "apr\0x20"
                                                                      0x61736b20: "ask", // "ask\0x20"
                                                                      0x61747473: "attachment", // "atts"
@@ -40,6 +40,7 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x61776179: "away", // "away"
                                                                      0x62657374: "best", // "best"
                                                                      0x73737562: "Bonjour", // "ssub"
+                                                                     0x626d726b: "bookmarkData", // "bmrk"
                                                                      0x626f6f6c: "boolean", // "bool"
                                                                      0x71647274: "boundingRectangle", // "qdrt"
                                                                      0x70626e64: "bounds", // "pbnd"
@@ -52,14 +53,15 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x49434374: "chatType", // "ICCt"
                                                                      0x70636c73: "class_", // "pcls"
                                                                      0x68636c62: "closeable", // "hclb"
-                                                                     0x636f6c72: "color", // "colr"
                                                                      0x63524742: "color", // "cRGB"
+                                                                     0x636f6c72: "color", // "colr"
                                                                      0x636c7274: "colorTable", // "clrt"
-                                                                     0x49434163: "connected", // "ICAc"
                                                                      0x636f6e6e: "connected", // "conn"
+                                                                     0x49434163: "connected", // "ICAc"
                                                                      0x49434178: "connecting", // "ICAx"
                                                                      0x636f6e67: "connecting", // "cong"
                                                                      0x73737461: "connectionStatus", // "ssta"
+                                                                     0x656e756d: "constant", // "enum"
                                                                      0x74646173: "dashStyle", // "tdas"
                                                                      0x74647461: "data", // "tdta"
                                                                      0x6c647420: "date", // "ldt\0x20"
@@ -75,10 +77,9 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x656e626c: "enabled", // "enbl"
                                                                      0x656e6373: "encodedString", // "encs"
                                                                      0x4943416e: "ended", // "ICAn"
-                                                                     0x656e756d: "enumerator", // "enum"
                                                                      0x45505320: "EPSPicture", // "EPS\0x20"
                                                                      0x65787061: "expansion", // "expa"
-                                                                     0x65787465: "extendedFloat", // "exte"
+                                                                     0x65787465: "extendedReal", // "exte"
                                                                      0x46547365: "failed", // "FTse"
                                                                      0x66656220: "February", // "feb\0x20"
                                                                      0x66696c65: "file", // "file"
@@ -89,15 +90,13 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x4654707a: "fileSize", // "FTpz"
                                                                      0x66737320: "fileSpecification", // "fss\0x20"
                                                                      0x746e6672: "fileTransfer", // "tnfr"
-                                                                     0x6675726c: "fileUrl", // "furl"
+                                                                     0x6675726c: "fileURL", // "furl"
                                                                      0x4654737a: "finalizing", // "FTsz"
                                                                      0x46547366: "finished", // "FTsf"
                                                                      0x7072666e: "firstName", // "prfn"
                                                                      0x66697864: "fixed", // "fixd"
                                                                      0x66706e74: "fixedPoint", // "fpnt"
                                                                      0x66726374: "fixedRectangle", // "frct"
-                                                                     0x646f7562: "float", // "doub"
-                                                                     0x6c64626c: "float128bit", // "ldbl"
                                                                      0x666f6e74: "font", // "font"
                                                                      0x66726920: "Friday", // "fri\0x20"
                                                                      0x70697366: "frontmost", // "pisf"
@@ -130,7 +129,8 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x4a504547: "JPEGPicture", // "JPEG"
                                                                      0x6a756c20: "July", // "jul\0x20"
                                                                      0x6a756e20: "June", // "jun\0x20"
-                                                                     0x6b706964: "kernelProcessId", // "kpid"
+                                                                     0x6b706964: "kernelProcessID", // "kpid"
+                                                                     0x6c64626c: "largeReal", // "ldbl"
                                                                      0x70724c6e: "lastName", // "prLn"
                                                                      0x6c697374: "list", // "list"
                                                                      0x696e736c: "locationReference", // "insl"
@@ -171,6 +171,7 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x70414c4c: "properties", // "pALL"
                                                                      0x70726f70: "property_", // "prop"
                                                                      0x70756e63: "punctuation", // "punc"
+                                                                     0x646f7562: "real", // "doub"
                                                                      0x7265636f: "record", // "reco"
                                                                      0x6f626a20: "reference", // "obj\0x20"
                                                                      0x7072737a: "resizable", // "prsz"
@@ -185,11 +186,11 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x73657020: "September", // "sep\0x20"
                                                                      0x69637376: "service", // "icsv"
                                                                      0x73747970: "serviceType", // "styp"
-                                                                     0x73696e67: "shortFloat", // "sing"
                                                                      0x73686f72: "shortInteger", // "shor"
                                                                      0x69634664: "showingFullScreen", // "icFd"
                                                                      0x69634c64: "showingLocalVideo", // "icLd"
                                                                      0x7074737a: "size", // "ptsz"
+                                                                     0x73696e67: "smallReal", // "sing"
                                                                      0x49434343: "started", // "ICCC"
                                                                      0x73746174: "status", // "stat"
                                                                      0x736d7367: "statusMessage", // "smsg"
@@ -207,19 +208,21 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x46547066: "transferStatus", // "FTpf"
                                                                      0x74756520: "Tuesday", // "tue\0x20"
                                                                      0x74797065: "typeClass", // "type"
-                                                                     0x75747874: "unicodeText", // "utxt"
+                                                                     0x75747874: "UnicodeText", // "utxt"
                                                                      0x756e6b6e: "unknown", // "unkn"
+                                                                     0x75636f6d: "unsignedDoubleInteger", // "ucom"
                                                                      0x6d61676e: "unsignedInteger", // "magn"
+                                                                     0x75736872: "unsignedShortInteger", // "ushr"
                                                                      0x49434375: "updated", // "ICCu"
-                                                                     0x75743136: "utf16Text", // "ut16"
-                                                                     0x75746638: "utf8Text", // "utf8"
+                                                                     0x75743136: "UTF16Text", // "ut16"
+                                                                     0x75746638: "UTF8Text", // "utf8"
                                                                      0x76657273: "version", // "vers"
                                                                      0x49434176: "video", // "ICAv"
                                                                      0x69637663: "videoChat", // "icvc"
                                                                      0x76636f6e: "videoChat", // "vcon"
                                                                      0x70766973: "visible", // "pvis"
-                                                                     0x46547377: "waiting", // "FTsw"
                                                                      0x49434177: "waiting", // "ICAw"
+                                                                     0x46547377: "waiting", // "FTsw"
                                                                      0x77656420: "Wednesday", // "wed\0x20"
                                                                      0x77686974: "whitespace", // "whit"
                                                                      0x6377696e: "window", // "cwin"
@@ -337,9 +340,9 @@ public class MESSymbol: SwiftAutomation.Symbol {
         case 0x616c6973: return self.alias // "alis"
         case 0x2a2a2a2a: return self.anything // "****"
         case 0x63617070: return self.application // "capp"
-        case 0x62756e64: return self.applicationBundleId // "bund"
+        case 0x62756e64: return self.applicationBundleID // "bund"
         case 0x7369676e: return self.applicationSignature // "sign"
-        case 0x6170726c: return self.applicationUrl // "aprl"
+        case 0x6170726c: return self.applicationURL // "aprl"
         case 0x61707220: return self.April // "apr\0x20"
         case 0x61736b20: return self.ask // "ask\0x20"
         case 0x61747473: return self.attachment // "atts"
@@ -354,6 +357,7 @@ public class MESSymbol: SwiftAutomation.Symbol {
         case 0x61776179: return self.away // "away"
         case 0x62657374: return self.best // "best"
         case 0x73737562: return self.Bonjour // "ssub"
+        case 0x626d726b: return self.bookmarkData // "bmrk"
         case 0x626f6f6c: return self.boolean // "bool"
         case 0x71647274: return self.boundingRectangle // "qdrt"
         case 0x70626e64: return self.bounds // "pbnd"
@@ -366,14 +370,15 @@ public class MESSymbol: SwiftAutomation.Symbol {
         case 0x49434374: return self.chatType // "ICCt"
         case 0x70636c73: return self.class_ // "pcls"
         case 0x68636c62: return self.closeable // "hclb"
-        case 0x636f6c72: return self.color // "colr"
         case 0x63524742: return self.color // "cRGB"
+        case 0x636f6c72: return self.color // "colr"
         case 0x636c7274: return self.colorTable // "clrt"
-        case 0x49434163: return self.connected // "ICAc"
         case 0x636f6e6e: return self.connected // "conn"
+        case 0x49434163: return self.connected // "ICAc"
         case 0x49434178: return self.connecting // "ICAx"
         case 0x636f6e67: return self.connecting // "cong"
         case 0x73737461: return self.connectionStatus // "ssta"
+        case 0x656e756d: return self.constant // "enum"
         case 0x74646173: return self.dashStyle // "tdas"
         case 0x74647461: return self.data // "tdta"
         case 0x6c647420: return self.date // "ldt\0x20"
@@ -389,10 +394,9 @@ public class MESSymbol: SwiftAutomation.Symbol {
         case 0x656e626c: return self.enabled // "enbl"
         case 0x656e6373: return self.encodedString // "encs"
         case 0x4943416e: return self.ended // "ICAn"
-        case 0x656e756d: return self.enumerator // "enum"
         case 0x45505320: return self.EPSPicture // "EPS\0x20"
         case 0x65787061: return self.expansion // "expa"
-        case 0x65787465: return self.extendedFloat // "exte"
+        case 0x65787465: return self.extendedReal // "exte"
         case 0x46547365: return self.failed // "FTse"
         case 0x66656220: return self.February // "feb\0x20"
         case 0x66696c65: return self.file // "file"
@@ -403,15 +407,13 @@ public class MESSymbol: SwiftAutomation.Symbol {
         case 0x4654707a: return self.fileSize // "FTpz"
         case 0x66737320: return self.fileSpecification // "fss\0x20"
         case 0x746e6672: return self.fileTransfer // "tnfr"
-        case 0x6675726c: return self.fileUrl // "furl"
+        case 0x6675726c: return self.fileURL // "furl"
         case 0x4654737a: return self.finalizing // "FTsz"
         case 0x46547366: return self.finished // "FTsf"
         case 0x7072666e: return self.firstName // "prfn"
         case 0x66697864: return self.fixed // "fixd"
         case 0x66706e74: return self.fixedPoint // "fpnt"
         case 0x66726374: return self.fixedRectangle // "frct"
-        case 0x646f7562: return self.float // "doub"
-        case 0x6c64626c: return self.float128bit // "ldbl"
         case 0x666f6e74: return self.font // "font"
         case 0x66726920: return self.Friday // "fri\0x20"
         case 0x70697366: return self.frontmost // "pisf"
@@ -444,7 +446,8 @@ public class MESSymbol: SwiftAutomation.Symbol {
         case 0x4a504547: return self.JPEGPicture // "JPEG"
         case 0x6a756c20: return self.July // "jul\0x20"
         case 0x6a756e20: return self.June // "jun\0x20"
-        case 0x6b706964: return self.kernelProcessId // "kpid"
+        case 0x6b706964: return self.kernelProcessID // "kpid"
+        case 0x6c64626c: return self.largeReal // "ldbl"
         case 0x70724c6e: return self.lastName // "prLn"
         case 0x6c697374: return self.list // "list"
         case 0x696e736c: return self.locationReference // "insl"
@@ -485,6 +488,7 @@ public class MESSymbol: SwiftAutomation.Symbol {
         case 0x70414c4c: return self.properties // "pALL"
         case 0x70726f70: return self.property_ // "prop"
         case 0x70756e63: return self.punctuation // "punc"
+        case 0x646f7562: return self.real // "doub"
         case 0x7265636f: return self.record // "reco"
         case 0x6f626a20: return self.reference // "obj\0x20"
         case 0x7072737a: return self.resizable // "prsz"
@@ -499,11 +503,11 @@ public class MESSymbol: SwiftAutomation.Symbol {
         case 0x73657020: return self.September // "sep\0x20"
         case 0x69637376: return self.service // "icsv"
         case 0x73747970: return self.serviceType // "styp"
-        case 0x73696e67: return self.shortFloat // "sing"
         case 0x73686f72: return self.shortInteger // "shor"
         case 0x69634664: return self.showingFullScreen // "icFd"
         case 0x69634c64: return self.showingLocalVideo // "icLd"
         case 0x7074737a: return self.size // "ptsz"
+        case 0x73696e67: return self.smallReal // "sing"
         case 0x49434343: return self.started // "ICCC"
         case 0x73746174: return self.status // "stat"
         case 0x736d7367: return self.statusMessage // "smsg"
@@ -521,19 +525,21 @@ public class MESSymbol: SwiftAutomation.Symbol {
         case 0x46547066: return self.transferStatus // "FTpf"
         case 0x74756520: return self.Tuesday // "tue\0x20"
         case 0x74797065: return self.typeClass // "type"
-        case 0x75747874: return self.unicodeText // "utxt"
+        case 0x75747874: return self.UnicodeText // "utxt"
         case 0x756e6b6e: return self.unknown // "unkn"
+        case 0x75636f6d: return self.unsignedDoubleInteger // "ucom"
         case 0x6d61676e: return self.unsignedInteger // "magn"
+        case 0x75736872: return self.unsignedShortInteger // "ushr"
         case 0x49434375: return self.updated // "ICCu"
-        case 0x75743136: return self.utf16Text // "ut16"
-        case 0x75746638: return self.utf8Text // "utf8"
+        case 0x75743136: return self.UTF16Text // "ut16"
+        case 0x75746638: return self.UTF8Text // "utf8"
         case 0x76657273: return self.version // "vers"
         case 0x49434176: return self.video // "ICAv"
         case 0x69637663: return self.videoChat // "icvc"
         case 0x76636f6e: return self.videoChat // "vcon"
         case 0x70766973: return self.visible // "pvis"
-        case 0x46547377: return self.waiting // "FTsw"
         case 0x49434177: return self.waiting // "ICAw"
+        case 0x46547377: return self.waiting // "FTsw"
         case 0x77656420: return self.Wednesday // "wed\0x20"
         case 0x77686974: return self.whitespace // "whit"
         case 0x6377696e: return self.window // "cwin"
@@ -552,9 +558,9 @@ public class MESSymbol: SwiftAutomation.Symbol {
     public static let alias = MESSymbol(name: "alias", code: 0x616c6973, type: typeType) // "alis"
     public static let anything = MESSymbol(name: "anything", code: 0x2a2a2a2a, type: typeType) // "****"
     public static let application = MESSymbol(name: "application", code: 0x63617070, type: typeType) // "capp"
-    public static let applicationBundleId = MESSymbol(name: "applicationBundleId", code: 0x62756e64, type: typeType) // "bund"
+    public static let applicationBundleID = MESSymbol(name: "applicationBundleID", code: 0x62756e64, type: typeType) // "bund"
     public static let applicationSignature = MESSymbol(name: "applicationSignature", code: 0x7369676e, type: typeType) // "sign"
-    public static let applicationUrl = MESSymbol(name: "applicationUrl", code: 0x6170726c, type: typeType) // "aprl"
+    public static let applicationURL = MESSymbol(name: "applicationURL", code: 0x6170726c, type: typeType) // "aprl"
     public static let April = MESSymbol(name: "April", code: 0x61707220, type: typeType) // "apr\0x20"
     public static let attachment = MESSymbol(name: "attachment", code: 0x61747473, type: typeType) // "atts"
     public static let attributeRun = MESSymbol(name: "attributeRun", code: 0x63617472, type: typeType) // "catr"
@@ -563,6 +569,7 @@ public class MESSymbol: SwiftAutomation.Symbol {
     public static let authorizationRequest = MESSymbol(name: "authorizationRequest", code: 0x62617271, type: typeType) // "barq"
     public static let avConnectionStatus = MESSymbol(name: "avConnectionStatus", code: 0x69634163, type: typeType) // "icAc"
     public static let best = MESSymbol(name: "best", code: 0x62657374, type: typeType) // "best"
+    public static let bookmarkData = MESSymbol(name: "bookmarkData", code: 0x626d726b, type: typeType) // "bmrk"
     public static let boolean = MESSymbol(name: "boolean", code: 0x626f6f6c, type: typeType) // "bool"
     public static let boundingRectangle = MESSymbol(name: "boundingRectangle", code: 0x71647274, type: typeType) // "qdrt"
     public static let bounds = MESSymbol(name: "bounds", code: 0x70626e64, type: typeType) // "pbnd"
@@ -576,6 +583,7 @@ public class MESSymbol: SwiftAutomation.Symbol {
     public static let color = MESSymbol(name: "color", code: 0x636f6c72, type: typeType) // "colr"
     public static let colorTable = MESSymbol(name: "colorTable", code: 0x636c7274, type: typeType) // "clrt"
     public static let connectionStatus = MESSymbol(name: "connectionStatus", code: 0x73737461, type: typeType) // "ssta"
+    public static let constant = MESSymbol(name: "constant", code: 0x656e756d, type: typeType) // "enum"
     public static let dashStyle = MESSymbol(name: "dashStyle", code: 0x74646173, type: typeType) // "tdas"
     public static let data = MESSymbol(name: "data", code: 0x74647461, type: typeType) // "tdta"
     public static let date = MESSymbol(name: "date", code: 0x6c647420, type: typeType) // "ldt\0x20"
@@ -586,9 +594,8 @@ public class MESSymbol: SwiftAutomation.Symbol {
     public static let doubleInteger = MESSymbol(name: "doubleInteger", code: 0x636f6d70, type: typeType) // "comp"
     public static let enabled = MESSymbol(name: "enabled", code: 0x656e626c, type: typeType) // "enbl"
     public static let encodedString = MESSymbol(name: "encodedString", code: 0x656e6373, type: typeType) // "encs"
-    public static let enumerator = MESSymbol(name: "enumerator", code: 0x656e756d, type: typeType) // "enum"
     public static let EPSPicture = MESSymbol(name: "EPSPicture", code: 0x45505320, type: typeType) // "EPS\0x20"
-    public static let extendedFloat = MESSymbol(name: "extendedFloat", code: 0x65787465, type: typeType) // "exte"
+    public static let extendedReal = MESSymbol(name: "extendedReal", code: 0x65787465, type: typeType) // "exte"
     public static let February = MESSymbol(name: "February", code: 0x66656220, type: typeType) // "feb\0x20"
     public static let file = MESSymbol(name: "file", code: 0x66696c65, type: typeType) // "file"
     public static let fileProgress = MESSymbol(name: "fileProgress", code: 0x46547070, type: typeType) // "FTpp"
@@ -596,13 +603,11 @@ public class MESSymbol: SwiftAutomation.Symbol {
     public static let fileSize = MESSymbol(name: "fileSize", code: 0x4654707a, type: typeType) // "FTpz"
     public static let fileSpecification = MESSymbol(name: "fileSpecification", code: 0x66737320, type: typeType) // "fss\0x20"
     public static let fileTransfer = MESSymbol(name: "fileTransfer", code: 0x746e6672, type: typeType) // "tnfr"
-    public static let fileUrl = MESSymbol(name: "fileUrl", code: 0x6675726c, type: typeType) // "furl"
+    public static let fileURL = MESSymbol(name: "fileURL", code: 0x6675726c, type: typeType) // "furl"
     public static let firstName = MESSymbol(name: "firstName", code: 0x7072666e, type: typeType) // "prfn"
     public static let fixed = MESSymbol(name: "fixed", code: 0x66697864, type: typeType) // "fixd"
     public static let fixedPoint = MESSymbol(name: "fixedPoint", code: 0x66706e74, type: typeType) // "fpnt"
     public static let fixedRectangle = MESSymbol(name: "fixedRectangle", code: 0x66726374, type: typeType) // "frct"
-    public static let float = MESSymbol(name: "float", code: 0x646f7562, type: typeType) // "doub"
-    public static let float128bit = MESSymbol(name: "float128bit", code: 0x6c64626c, type: typeType) // "ldbl"
     public static let font = MESSymbol(name: "font", code: 0x666f6e74, type: typeType) // "font"
     public static let Friday = MESSymbol(name: "Friday", code: 0x66726920, type: typeType) // "fri\0x20"
     public static let frontmost = MESSymbol(name: "frontmost", code: 0x70697366, type: typeType) // "pisf"
@@ -625,7 +630,8 @@ public class MESSymbol: SwiftAutomation.Symbol {
     public static let JPEGPicture = MESSymbol(name: "JPEGPicture", code: 0x4a504547, type: typeType) // "JPEG"
     public static let July = MESSymbol(name: "July", code: 0x6a756c20, type: typeType) // "jul\0x20"
     public static let June = MESSymbol(name: "June", code: 0x6a756e20, type: typeType) // "jun\0x20"
-    public static let kernelProcessId = MESSymbol(name: "kernelProcessId", code: 0x6b706964, type: typeType) // "kpid"
+    public static let kernelProcessID = MESSymbol(name: "kernelProcessID", code: 0x6b706964, type: typeType) // "kpid"
+    public static let largeReal = MESSymbol(name: "largeReal", code: 0x6c64626c, type: typeType) // "ldbl"
     public static let lastName = MESSymbol(name: "lastName", code: 0x70724c6e, type: typeType) // "prLn"
     public static let list = MESSymbol(name: "list", code: 0x6c697374, type: typeType) // "list"
     public static let locationReference = MESSymbol(name: "locationReference", code: 0x696e736c, type: typeType) // "insl"
@@ -657,6 +663,7 @@ public class MESSymbol: SwiftAutomation.Symbol {
     public static let processSerialNumber = MESSymbol(name: "processSerialNumber", code: 0x70736e20, type: typeType) // "psn\0x20"
     public static let properties = MESSymbol(name: "properties", code: 0x70414c4c, type: typeType) // "pALL"
     public static let property_ = MESSymbol(name: "property_", code: 0x70726f70, type: typeType) // "prop"
+    public static let real = MESSymbol(name: "real", code: 0x646f7562, type: typeType) // "doub"
     public static let record = MESSymbol(name: "record", code: 0x7265636f, type: typeType) // "reco"
     public static let reference = MESSymbol(name: "reference", code: 0x6f626a20, type: typeType) // "obj\0x20"
     public static let resizable = MESSymbol(name: "resizable", code: 0x7072737a, type: typeType) // "prsz"
@@ -672,11 +679,11 @@ public class MESSymbol: SwiftAutomation.Symbol {
     public static let September = MESSymbol(name: "September", code: 0x73657020, type: typeType) // "sep\0x20"
     public static let service = MESSymbol(name: "service", code: 0x69637376, type: typeType) // "icsv"
     public static let serviceType = MESSymbol(name: "serviceType", code: 0x73747970, type: typeType) // "styp"
-    public static let shortFloat = MESSymbol(name: "shortFloat", code: 0x73696e67, type: typeType) // "sing"
     public static let shortInteger = MESSymbol(name: "shortInteger", code: 0x73686f72, type: typeType) // "shor"
     public static let showingFullScreen = MESSymbol(name: "showingFullScreen", code: 0x69634664, type: typeType) // "icFd"
     public static let showingLocalVideo = MESSymbol(name: "showingLocalVideo", code: 0x69634c64, type: typeType) // "icLd"
     public static let size = MESSymbol(name: "size", code: 0x7074737a, type: typeType) // "ptsz"
+    public static let smallReal = MESSymbol(name: "smallReal", code: 0x73696e67, type: typeType) // "sing"
     public static let started = MESSymbol(name: "started", code: 0x49434343, type: typeType) // "ICCC"
     public static let status = MESSymbol(name: "status", code: 0x73746174, type: typeType) // "stat"
     public static let statusMessage = MESSymbol(name: "statusMessage", code: 0x736d7367, type: typeType) // "smsg"
@@ -692,11 +699,13 @@ public class MESSymbol: SwiftAutomation.Symbol {
     public static let transferStatus = MESSymbol(name: "transferStatus", code: 0x46547066, type: typeType) // "FTpf"
     public static let Tuesday = MESSymbol(name: "Tuesday", code: 0x74756520, type: typeType) // "tue\0x20"
     public static let typeClass = MESSymbol(name: "typeClass", code: 0x74797065, type: typeType) // "type"
-    public static let unicodeText = MESSymbol(name: "unicodeText", code: 0x75747874, type: typeType) // "utxt"
+    public static let UnicodeText = MESSymbol(name: "UnicodeText", code: 0x75747874, type: typeType) // "utxt"
+    public static let unsignedDoubleInteger = MESSymbol(name: "unsignedDoubleInteger", code: 0x75636f6d, type: typeType) // "ucom"
     public static let unsignedInteger = MESSymbol(name: "unsignedInteger", code: 0x6d61676e, type: typeType) // "magn"
+    public static let unsignedShortInteger = MESSymbol(name: "unsignedShortInteger", code: 0x75736872, type: typeType) // "ushr"
     public static let updated = MESSymbol(name: "updated", code: 0x49434375, type: typeType) // "ICCu"
-    public static let utf16Text = MESSymbol(name: "utf16Text", code: 0x75743136, type: typeType) // "ut16"
-    public static let utf8Text = MESSymbol(name: "utf8Text", code: 0x75746638, type: typeType) // "utf8"
+    public static let UTF16Text = MESSymbol(name: "UTF16Text", code: 0x75743136, type: typeType) // "ut16"
+    public static let UTF8Text = MESSymbol(name: "UTF8Text", code: 0x75746638, type: typeType) // "utf8"
     public static let version = MESSymbol(name: "version", code: 0x76657273, type: typeType) // "vers"
     public static let videoChat = MESSymbol(name: "videoChat", code: 0x69637663, type: typeType) // "icvc"
     public static let visible = MESSymbol(name: "visible", code: 0x70766973, type: typeType) // "pvis"
@@ -800,6 +809,218 @@ extension MESCommand {
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
+    @discardableResult public func activeChatMessageReceived(_ directParameter: Any = SwiftAutomation.NoParameter,
+            from: Any = SwiftAutomation.NoParameter,
+            for_: Any = SwiftAutomation.NoParameter,
+            with: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
+        return try self.appData.sendAppleEvent(name: "activeChatMessageReceived", eventClass: 0x69636874, eventID: 0x68653138, // "icht"/"he18"
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
+                    ("from", 0x68657072, from), // "hepr"
+                    ("for_", 0x68656374, for_), // "hect"
+                    ("with", 0x68656564, with), // "heed"
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
+                withTimeout: withTimeout, considering: considering)
+    }
+    public func activeChatMessageReceived<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            from: Any = SwiftAutomation.NoParameter,
+            for_: Any = SwiftAutomation.NoParameter,
+            with: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent(name: "activeChatMessageReceived", eventClass: 0x69636874, eventID: 0x68653138, // "icht"/"he18"
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
+                    ("from", 0x68657072, from), // "hepr"
+                    ("for_", 0x68656374, for_), // "hect"
+                    ("with", 0x68656564, with), // "heed"
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
+                withTimeout: withTimeout, considering: considering)
+    }
+    @discardableResult public func addressedChatRoomMessageReceived(_ directParameter: Any = SwiftAutomation.NoParameter,
+            from: Any = SwiftAutomation.NoParameter,
+            for_: Any = SwiftAutomation.NoParameter,
+            with: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
+        return try self.appData.sendAppleEvent(name: "addressedChatRoomMessageReceived", eventClass: 0x69636874, eventID: 0x68653137, // "icht"/"he17"
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
+                    ("from", 0x68657072, from), // "hepr"
+                    ("for_", 0x68656374, for_), // "hect"
+                    ("with", 0x68656564, with), // "heed"
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
+                withTimeout: withTimeout, considering: considering)
+    }
+    public func addressedChatRoomMessageReceived<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            from: Any = SwiftAutomation.NoParameter,
+            for_: Any = SwiftAutomation.NoParameter,
+            with: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent(name: "addressedChatRoomMessageReceived", eventClass: 0x69636874, eventID: 0x68653137, // "icht"/"he17"
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
+                    ("from", 0x68657072, from), // "hepr"
+                    ("for_", 0x68656374, for_), // "hect"
+                    ("with", 0x68656564, with), // "heed"
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
+                withTimeout: withTimeout, considering: considering)
+    }
+    @discardableResult public func addressedMessageReceived(_ directParameter: Any = SwiftAutomation.NoParameter,
+            from: Any = SwiftAutomation.NoParameter,
+            for_: Any = SwiftAutomation.NoParameter,
+            with: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
+        return try self.appData.sendAppleEvent(name: "addressedMessageReceived", eventClass: 0x69636874, eventID: 0x68653139, // "icht"/"he19"
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
+                    ("from", 0x68657072, from), // "hepr"
+                    ("for_", 0x68656374, for_), // "hect"
+                    ("with", 0x68656564, with), // "heed"
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
+                withTimeout: withTimeout, considering: considering)
+    }
+    public func addressedMessageReceived<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            from: Any = SwiftAutomation.NoParameter,
+            for_: Any = SwiftAutomation.NoParameter,
+            with: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent(name: "addressedMessageReceived", eventClass: 0x69636874, eventID: 0x68653139, // "icht"/"he19"
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
+                    ("from", 0x68657072, from), // "hepr"
+                    ("for_", 0x68656374, for_), // "hect"
+                    ("with", 0x68656564, with), // "heed"
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
+                withTimeout: withTimeout, considering: considering)
+    }
+    @discardableResult public func avChatEnded(_ directParameter: Any = SwiftAutomation.NoParameter,
+            with: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
+        return try self.appData.sendAppleEvent(name: "avChatEnded", eventClass: 0x69636874, eventID: 0x68653133, // "icht"/"he13"
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
+                    ("with", 0x68656564, with), // "heed"
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
+                withTimeout: withTimeout, considering: considering)
+    }
+    public func avChatEnded<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            with: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent(name: "avChatEnded", eventClass: 0x69636874, eventID: 0x68653133, // "icht"/"he13"
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
+                    ("with", 0x68656564, with), // "heed"
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
+                withTimeout: withTimeout, considering: considering)
+    }
+    @discardableResult public func avChatStarted(_ directParameter: Any = SwiftAutomation.NoParameter,
+            with: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
+        return try self.appData.sendAppleEvent(name: "avChatStarted", eventClass: 0x69636874, eventID: 0x68653039, // "icht"/"he09"
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
+                    ("with", 0x68656564, with), // "heed"
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
+                withTimeout: withTimeout, considering: considering)
+    }
+    public func avChatStarted<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            with: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent(name: "avChatStarted", eventClass: 0x69636874, eventID: 0x68653039, // "icht"/"he09"
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
+                    ("with", 0x68656564, with), // "heed"
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
+                withTimeout: withTimeout, considering: considering)
+    }
+    @discardableResult public func buddyAuthorizationRequested(_ directParameter: Any = SwiftAutomation.NoParameter,
+            with: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
+        return try self.appData.sendAppleEvent(name: "buddyAuthorizationRequested", eventClass: 0x69636874, eventID: 0x68653134, // "icht"/"he14"
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
+                    ("with", 0x68656564, with), // "heed"
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
+                withTimeout: withTimeout, considering: considering)
+    }
+    public func buddyAuthorizationRequested<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            with: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent(name: "buddyAuthorizationRequested", eventClass: 0x69636874, eventID: 0x68653134, // "icht"/"he14"
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
+                    ("with", 0x68656564, with), // "heed"
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
+                withTimeout: withTimeout, considering: considering)
+    }
+    @discardableResult public func buddyBecameAvailable(_ directParameter: Any = SwiftAutomation.NoParameter,
+            with: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
+        return try self.appData.sendAppleEvent(name: "buddyBecameAvailable", eventClass: 0x69636874, eventID: 0x68653032, // "icht"/"he02"
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
+                    ("with", 0x68656564, with), // "heed"
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
+                withTimeout: withTimeout, considering: considering)
+    }
+    public func buddyBecameAvailable<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            with: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent(name: "buddyBecameAvailable", eventClass: 0x69636874, eventID: 0x68653032, // "icht"/"he02"
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
+                    ("with", 0x68656564, with), // "heed"
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
+                withTimeout: withTimeout, considering: considering)
+    }
+    @discardableResult public func buddyBecameUnavailable(_ directParameter: Any = SwiftAutomation.NoParameter,
+            with: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
+        return try self.appData.sendAppleEvent(name: "buddyBecameUnavailable", eventClass: 0x69636874, eventID: 0x68653033, // "icht"/"he03"
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
+                    ("with", 0x68656564, with), // "heed"
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
+                withTimeout: withTimeout, considering: considering)
+    }
+    public func buddyBecameUnavailable<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            with: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent(name: "buddyBecameUnavailable", eventClass: 0x69636874, eventID: 0x68653033, // "icht"/"he03"
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
+                    ("with", 0x68656564, with), // "heed"
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
+                withTimeout: withTimeout, considering: considering)
+    }
+    @discardableResult public func chatRoomMessageReceived(_ directParameter: Any = SwiftAutomation.NoParameter,
+            from: Any = SwiftAutomation.NoParameter,
+            for_: Any = SwiftAutomation.NoParameter,
+            with: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
+        return try self.appData.sendAppleEvent(name: "chatRoomMessageReceived", eventClass: 0x69636874, eventID: 0x68653132, // "icht"/"he12"
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
+                    ("from", 0x68657072, from), // "hepr"
+                    ("for_", 0x68656374, for_), // "hect"
+                    ("with", 0x68656564, with), // "heed"
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
+                withTimeout: withTimeout, considering: considering)
+    }
+    public func chatRoomMessageReceived<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            from: Any = SwiftAutomation.NoParameter,
+            for_: Any = SwiftAutomation.NoParameter,
+            with: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent(name: "chatRoomMessageReceived", eventClass: 0x69636874, eventID: 0x68653132, // "icht"/"he12"
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
+                    ("from", 0x68657072, from), // "hepr"
+                    ("for_", 0x68656374, for_), // "hect"
+                    ("with", 0x68656564, with), // "heed"
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
+                withTimeout: withTimeout, considering: considering)
+    }
     @discardableResult public func close(_ directParameter: Any = SwiftAutomation.NoParameter,
             saving: Any = SwiftAutomation.NoParameter,
             savingIn: Any = SwiftAutomation.NoParameter,
@@ -821,6 +1042,26 @@ extension MESCommand {
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                     ("saving", 0x7361766f, saving), // "savo"
                     ("savingIn", 0x6b66696c, savingIn), // "kfil"
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
+                withTimeout: withTimeout, considering: considering)
+    }
+    @discardableResult public func completedFileTransfer(_ directParameter: Any = SwiftAutomation.NoParameter,
+            with: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
+        return try self.appData.sendAppleEvent(name: "completedFileTransfer", eventClass: 0x69636874, eventID: 0x68653131, // "icht"/"he11"
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
+                    ("with", 0x68656564, with), // "heed"
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
+                withTimeout: withTimeout, considering: considering)
+    }
+    public func completedFileTransfer<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            with: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent(name: "completedFileTransfer", eventClass: 0x69636874, eventID: 0x68653131, // "icht"/"he11"
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
+                    ("with", 0x68656564, with), // "heed"
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
@@ -972,6 +1213,30 @@ extension MESCommand {
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
+    @discardableResult public func loginFinished(_ directParameter: Any = SwiftAutomation.NoParameter,
+            for_: Any = SwiftAutomation.NoParameter,
+            with: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
+        return try self.appData.sendAppleEvent(name: "loginFinished", eventClass: 0x69636874, eventID: 0x68653030, // "icht"/"he00"
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
+                    ("for_", 0x68656163, for_), // "heac"
+                    ("with", 0x68656564, with), // "heed"
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
+                withTimeout: withTimeout, considering: considering)
+    }
+    public func loginFinished<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            for_: Any = SwiftAutomation.NoParameter,
+            with: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent(name: "loginFinished", eventClass: 0x69636874, eventID: 0x68653030, // "icht"/"he00"
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
+                    ("for_", 0x68656163, for_), // "heac"
+                    ("with", 0x68656564, with), // "heed"
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
+                withTimeout: withTimeout, considering: considering)
+    }
     @discardableResult public func logOut(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
@@ -985,6 +1250,30 @@ extension MESCommand {
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "logOut", eventClass: 0x69636874, eventID: 0x6c6f676f, // "icht"/"logo"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
+                withTimeout: withTimeout, considering: considering)
+    }
+    @discardableResult public func logoutFinished(_ directParameter: Any = SwiftAutomation.NoParameter,
+            for_: Any = SwiftAutomation.NoParameter,
+            with: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
+        return try self.appData.sendAppleEvent(name: "logoutFinished", eventClass: 0x69636874, eventID: 0x68653031, // "icht"/"he01"
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
+                    ("for_", 0x68656163, for_), // "heac"
+                    ("with", 0x68656564, with), // "heed"
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
+                withTimeout: withTimeout, considering: considering)
+    }
+    public func logoutFinished<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            for_: Any = SwiftAutomation.NoParameter,
+            with: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent(name: "logoutFinished", eventClass: 0x69636874, eventID: 0x68653031, // "icht"/"he01"
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
+                    ("for_", 0x68656163, for_), // "heac"
+                    ("with", 0x68656564, with), // "heed"
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
@@ -1017,6 +1306,58 @@ extension MESCommand {
                     ("at", 0x696e7368, at), // "insh"
                     ("withContents", 0x64617461, withContents), // "data"
                     ("withProperties", 0x70726474, withProperties), // "prdt"
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
+                withTimeout: withTimeout, considering: considering)
+    }
+    @discardableResult public func messageReceived(_ directParameter: Any = SwiftAutomation.NoParameter,
+            from: Any = SwiftAutomation.NoParameter,
+            for_: Any = SwiftAutomation.NoParameter,
+            with: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
+        return try self.appData.sendAppleEvent(name: "messageReceived", eventClass: 0x69636874, eventID: 0x68653034, // "icht"/"he04"
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
+                    ("from", 0x68657072, from), // "hepr"
+                    ("for_", 0x68656374, for_), // "hect"
+                    ("with", 0x68656564, with), // "heed"
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
+                withTimeout: withTimeout, considering: considering)
+    }
+    public func messageReceived<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            from: Any = SwiftAutomation.NoParameter,
+            for_: Any = SwiftAutomation.NoParameter,
+            with: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent(name: "messageReceived", eventClass: 0x69636874, eventID: 0x68653034, // "icht"/"he04"
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
+                    ("from", 0x68657072, from), // "hepr"
+                    ("for_", 0x68656374, for_), // "hect"
+                    ("with", 0x68656564, with), // "heed"
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
+                withTimeout: withTimeout, considering: considering)
+    }
+    @discardableResult public func messageSent(_ directParameter: Any = SwiftAutomation.NoParameter,
+            for_: Any = SwiftAutomation.NoParameter,
+            with: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
+        return try self.appData.sendAppleEvent(name: "messageSent", eventClass: 0x69636874, eventID: 0x68653035, // "icht"/"he05"
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
+                    ("for_", 0x68656374, for_), // "hect"
+                    ("with", 0x68656564, with), // "heed"
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
+                withTimeout: withTimeout, considering: considering)
+    }
+    public func messageSent<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            for_: Any = SwiftAutomation.NoParameter,
+            with: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent(name: "messageSent", eventClass: 0x69636874, eventID: 0x68653035, // "icht"/"he05"
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
+                    ("for_", 0x68656374, for_), // "hect"
+                    ("with", 0x68656564, with), // "heed"
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
@@ -1109,6 +1450,110 @@ extension MESCommand {
         return try self.appData.sendAppleEvent(name: "quit", eventClass: 0x61657674, eventID: 0x71756974, // "aevt"/"quit"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                     ("saving", 0x7361766f, saving), // "savo"
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
+                withTimeout: withTimeout, considering: considering)
+    }
+    @discardableResult public func receivedAudioInvitation(_ directParameter: Any = SwiftAutomation.NoParameter,
+            from: Any = SwiftAutomation.NoParameter,
+            for_: Any = SwiftAutomation.NoParameter,
+            with: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
+        return try self.appData.sendAppleEvent(name: "receivedAudioInvitation", eventClass: 0x69636874, eventID: 0x68653037, // "icht"/"he07"
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
+                    ("from", 0x68657072, from), // "hepr"
+                    ("for_", 0x68656374, for_), // "hect"
+                    ("with", 0x68656564, with), // "heed"
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
+                withTimeout: withTimeout, considering: considering)
+    }
+    public func receivedAudioInvitation<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            from: Any = SwiftAutomation.NoParameter,
+            for_: Any = SwiftAutomation.NoParameter,
+            with: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent(name: "receivedAudioInvitation", eventClass: 0x69636874, eventID: 0x68653037, // "icht"/"he07"
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
+                    ("from", 0x68657072, from), // "hepr"
+                    ("for_", 0x68656374, for_), // "hect"
+                    ("with", 0x68656564, with), // "heed"
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
+                withTimeout: withTimeout, considering: considering)
+    }
+    @discardableResult public func receivedFileTransferInvitation(_ directParameter: Any = SwiftAutomation.NoParameter,
+            with: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
+        return try self.appData.sendAppleEvent(name: "receivedFileTransferInvitation", eventClass: 0x69636874, eventID: 0x68653130, // "icht"/"he10"
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
+                    ("with", 0x68656564, with), // "heed"
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
+                withTimeout: withTimeout, considering: considering)
+    }
+    public func receivedFileTransferInvitation<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            with: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent(name: "receivedFileTransferInvitation", eventClass: 0x69636874, eventID: 0x68653130, // "icht"/"he10"
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
+                    ("with", 0x68656564, with), // "heed"
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
+                withTimeout: withTimeout, considering: considering)
+    }
+    @discardableResult public func receivedTextInvitation(_ directParameter: Any = SwiftAutomation.NoParameter,
+            from: Any = SwiftAutomation.NoParameter,
+            for_: Any = SwiftAutomation.NoParameter,
+            with: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
+        return try self.appData.sendAppleEvent(name: "receivedTextInvitation", eventClass: 0x69636874, eventID: 0x68653036, // "icht"/"he06"
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
+                    ("from", 0x68657072, from), // "hepr"
+                    ("for_", 0x68656374, for_), // "hect"
+                    ("with", 0x68656564, with), // "heed"
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
+                withTimeout: withTimeout, considering: considering)
+    }
+    public func receivedTextInvitation<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            from: Any = SwiftAutomation.NoParameter,
+            for_: Any = SwiftAutomation.NoParameter,
+            with: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent(name: "receivedTextInvitation", eventClass: 0x69636874, eventID: 0x68653036, // "icht"/"he06"
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
+                    ("from", 0x68657072, from), // "hepr"
+                    ("for_", 0x68656374, for_), // "hect"
+                    ("with", 0x68656564, with), // "heed"
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
+                withTimeout: withTimeout, considering: considering)
+    }
+    @discardableResult public func receivedVideoInvitation(_ directParameter: Any = SwiftAutomation.NoParameter,
+            from: Any = SwiftAutomation.NoParameter,
+            for_: Any = SwiftAutomation.NoParameter,
+            with: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
+        return try self.appData.sendAppleEvent(name: "receivedVideoInvitation", eventClass: 0x69636874, eventID: 0x68653038, // "icht"/"he08"
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
+                    ("from", 0x68657072, from), // "hepr"
+                    ("for_", 0x68656374, for_), // "hect"
+                    ("with", 0x68656564, with), // "heed"
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
+                withTimeout: withTimeout, considering: considering)
+    }
+    public func receivedVideoInvitation<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            from: Any = SwiftAutomation.NoParameter,
+            for_: Any = SwiftAutomation.NoParameter,
+            with: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent(name: "receivedVideoInvitation", eventClass: 0x69636874, eventID: 0x68653038, // "icht"/"he08"
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
+                    ("from", 0x68657072, from), // "hepr"
+                    ("for_", 0x68656374, for_), // "hect"
+                    ("with", 0x68656564, with), // "heed"
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }

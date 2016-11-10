@@ -4,7 +4,7 @@
 //
 //  tests // TO DO: move ad-hoc tests to separate target; replace this with examples of use
 //
-//
+//  TO DO: test `all` selector works correctly (should convert property specifier to all-elements specifier, return all-elements specifier as-is, and report send-time error if called on anything else)
 //
 
 import AppKit

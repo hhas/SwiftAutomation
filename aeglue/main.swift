@@ -152,11 +152,6 @@ func writeData(_ data: NSData, toURL: URL, overwriting: Bool) throws {
     }
 }
 
-public struct StderrStream: TextOutputStream {
-    public mutating func write(_ string: String) { fputs(string, stderr) }
-}
-public var errStream = StderrStream()
-
 
 // parsed options
 

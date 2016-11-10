@@ -10,29 +10,13 @@
             <div id="main">
                 <h1>A tutorial introduction</h1>
                 <div class="navbar"><a href="welcome.html">back</a> | <a href="index.html">index</a> | <a href="understanding-apple-events.html">next</a></div>
-                <p>[CAUTION: This tutorial is incomplete and unfinished, and its dependence on <code>/usr/bin/swift</code> . While the Xcode project does include a playground, this is unsuitable as, unlike the <code>swift</code> REPL, it re-evaluates ALL lines of code each time a new line is entered; thus, for example, a <code>make</code> command will create multiple new objects while the user is working, while repeated <code>delete</code> commands could unintentionally destroy user data.]</p>
+                <p>This chapter provides a practical taste of application scripting with Swift and SwiftAutomation. Later chapters cover the technical details of SwiftAutomation usage that are mostly skimmed over here.</p>
 
-<p>[[TO DO: need to figure out how to import SwiftAutomation.framework and TextEditGlue.swift into <code>/usr/bin/swift</code> session, and package this into a simple shell script that configures and launches a tutorial session automatically (for bonus points, the script should also take an optional list of app names and generate and import glues for those too).]</p>
+<p>The following tutorial uses SwiftAutomation, TextEdit and the command line <code>swift</code> program to perform a simple 'Hello World' exercise.</p>
 
-<p>[TO DO: TextEdit now returns by-name document specifiers; update code examples accordingly]</p>
-
-<p>[TO DO: could probably do with getting user to open sdef in Script Editor for an overview of how API docs are structured]</p>
-
-<p>This chapter provides a practical taste of application scripting with Swift and SwiftAutomation. Later chapters cover the technical details of SwiftAutomation usage that are mostly skimmed over here.</p>
-
-<p>The following tutorial uses SwiftAutomation, TextEdit and the interactive command line <code>swift</code> interpreter to perform a simple 'Hello World' exercise. </p>
+<p>[TO DO: because Swift's 'REPL' is worse than useless at displaying Specifier objects (it dumps 100s of lines of Specifier's internal structure instead of just printing its description string) the least awful option for now would be to construct the tutorial in such a way that it could be worked through in a manually executed playground. e.g. Show how to add a <code>make</code> command, then show how to add a command that closes all open documents without saving; this can then be placed at the top of the playground to clear previous windows each time the playground is re-run.]</p>
 
 <p class="hilitebox">Caution: It is recommended that you do not have any other documents open in TextEdit during this tutorial, as accidental alterations to existing documents are easy to make and may not be undoable.</p>
-
-<p>[TO DO: SwiftAE project now includes <code>Install for Tutorial</code> scheme that builds both SwiftAutomation and MacOSGlues targets; only problem is Xcode 8.1 isn't installing them for some reason, could update the following hashbang always to use <code>/Library/Frameworks</code>]</p>
-
-<p>To begin, build the SwiftAE project's MacOSGlues target then launch the <code>swift</code> interpreter in Terminal, replacing <code><var>/path/to/products</var></code> with the path to the directory containing the newly built <code>SwiftAutomation.framework</code> and <code>MacOSGlues.framework</code> bundles:</p>
-
-<p>[TO DO: use <code>#!/usr/bin/swift -target x86_64-apple-macosx10.12 -F /Library/Frameworks</code>, as swift seems to default to 10.10 SDK in some situations but SwiftAutomation requires 10.11+]</p>
-
-<pre><code><strong>jsmith$ swift -F <var>/path/to/products</var></strong>
-<span style="color:gray;">Welcome to Apple Swift version 3.0.1 (...) Type :help for assistance.
-  1&gt;</span></code></pre>
 
 <h2>Target TextEdit</h2>
 
@@ -41,9 +25,7 @@
 <pre><code>import SwiftAutomation; import MacOSGlues
 </code></pre>
 
-<p>The <code>MacOSGlues.framework</code> contains ready-to-use glues for many of the "AppleScriptable" applications found in macOS, including Finder, iTunes, and TextEdit. Each glue file defines the Swift classes needed to control one particular application – in this case TextEdit – using human-readable code.</p>
-
-<p>(Glues for other applications can be created using SwiftAutomation's <code>aeglue</code> tool; see chapter 4 for details.) </p>
+<p>The <code>MacOSGlues.framework</code> contains ready-to-use glues for many of the "AppleScriptable" applications provided by macOS, including Finder, iTunes, and TextEdit. Each glue file defines the Swift classes that enable you to control one particular application using human-readable code. Glues for other applications can be created using SwiftAutomation's <code>aeglue</code> tool; see chapter 4 for details.</p>
 
 <p>Next, create a new <code>Application</code> object for controlling TextEdit:</p>
 
@@ -59,9 +41,9 @@
 
 <p>This should make TextEdit the currently active (frontmost) application, automatically launching it if it isn't already running. All application commands throw on failure, so don't forget to type Swift's <code>try</code> keyword before a command or else it won't compile.</p>
 
-<p>[TO DO: open TextEdit's SDEF documentation in Script Editor and summarize its contents and organization]</p>
+<p>[TO DO: open TextEdit's SDEF documentation in Script Editor and summarize its contents and organization; alternatively, bundle the MacOSGlues sdefs in AppleScriptToSwift and provide a menu and dictionary viewer for viewing them there]</p>
 
-<p>[TO DO: note that get/set aren't usually documented]</p>
+<p>[TO DO: note that get/set aren't normally documented in app dictionaries]</p>
 
 <h2>Create a new document</h2>
 
@@ -86,7 +68,7 @@
 <pre><code>let doc = try textedit.make(new: TED.document) as TEDItem
 </code></pre>
 
-<p>Declaring the command's return type (<code>TEDItem</code>) is not essential, but greatly improves both usability and reliability. Without it, the Swift compiler will infer the <code>doc</code> variable's type to be <code>Any</code>, allowing it to hold any value that the application might return. However, you won't be able to use the returned value's properties and methods until you cast that variable to a more specific type. Applying the cast directly to the command's result not only allows the Swift compiler to infer the <code>doc</code> variable's exact type, it also instructs SwiftAutomation to convert whatever result the application returns to that exact type or else throw an error if that conversion isn't supported. This provides robust yet flexible type-safe bridging between Apple event's weak, dynamic type system and Swift's strong, static one.</p>
+<p>Declaring the command's return type (<code>TEDItem</code>) is not essential, but greatly improves both usability and reliability. Without it, the Swift compiler will infer the <code>doc</code> variable's type to be <code>Any</code>, allowing it to hold any value that the application might return. However, you won't be able to use the returned value's properties and methods until you cast it to a more specific type. Casting the command's return value directly not only allows the Swift compiler to infer the <code>doc</code> variable's exact type, it also tells SwiftAutomation to coerce whatever value the application returns to that type before unpacking it, or else throw an error if that conversion isn't supported. For instance, if an application command returns an integer, you would normally cast it to <code>Int</code>; however you could also cast it to <code>String</code>, in which case SwiftAutomation will perform that coercion automatically and return a string instead. This provides robust yet flexible type-safe bridging between Apple event's weak, dynamic type system and Swift's strong, static one.</p>
 
 <p>[TO DO: don't say what TEDItem actually means...when should that be clarified?]</p>
 
@@ -193,11 +175,15 @@ try textedit.documents.text.get()
 
 <h2>Writing a standalone 'script'</h2>
 
-<p>[TO DO: need notes on how damn twitchy this is (hopefully things'll improve once Swift gets a stable ABI and can build portable frameworks)]</p>
+<p>[TO DO: add note on writing and running 'scripts' using the following hashbang]</p>
+
+<pre><code>#!/usr/bin/swift -target x86_64-apple-macosx10.11 -F /Library/Frameworks</code></pre>
 
 <p>For example, the following Swift 'script' file, when saved to disk and made executable (<code>chmod +x /path/to/script</code>), returns the path to the folder shown in the frontmost Finder window (if any):</p>
 
 <pre><code>#!/usr/bin/swift -target x86_64-apple-macosx10.12 -F /Library/Frameworks
+
+// Output path to frontmost Finder window (or a selected folder within).
 
 import Foundation
 import SwiftAutomation
@@ -210,21 +196,22 @@ public var errStream = StderrStream()
 
 do {
   let finder = Finder()
-  let selection = try finder.selection.get() as [FINItem]
+  let selection: [FINItem] = try finder.selection.get()
   let frontFolder: FINItem
   if selection.count &gt; 0 {
     let item = selection[0]
-    frontFolder = [FIN.disk, FIN.folder].contains(try item.class_.get()) ? item : try item.container.get() as FINItem
-  } else if try finder.FinderWindows[1].exists() as Bool {
-    // TO DO: this doesn't work if Trash window (Finder bug) or computerContainer
-    frontFolder = try finder.FinderWindows[1].target.get() as FINItem
+    frontFolder = [FIN.disk, FIN.folder].contains(try item.class_.get()) ? item : try item.container.get()
+  } else if try finder.FinderWindows[1].exists() {
+    // TO DO: this doesn't work if Computer/Trash window
+    frontFolder = try finder.FinderWindows[1].target.get()
   } else {
     frontFolder = finder.desktop
   }
-  let fileURL = try frontFolder.get(requestedType: FIN.alias) as URL
+  let fileURL: URL = try frontFolder.get(requestedType: FIN.fileURL)
   print(fileURL.path)
 } catch {
   print(error, to: &amp;errStream)
+  exit(1)
 }
 </code></pre>
 

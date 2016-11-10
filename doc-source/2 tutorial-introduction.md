@@ -1,30 +1,12 @@
 # A tutorial introduction
 
-[CAUTION: This tutorial is incomplete and unfinished, and its dependence on `/usr/bin/swift` . While the Xcode project does include a playground, this is unsuitable as, unlike the `swift` REPL, it re-evaluates ALL lines of code each time a new line is entered; thus, for example, a `make` command will create multiple new objects while the user is working, while repeated `delete` commands could unintentionally destroy user data.]
-
-[[TO DO: need to figure out how to import SwiftAutomation.framework and TextEditGlue.swift into `/usr/bin/swift` session, and package this into a simple shell script that configures and launches a tutorial session automatically (for bonus points, the script should also take an optional list of app names and generate and import glues for those too).]
-
-[TO DO: TextEdit now returns by-name document specifiers; update code examples accordingly]
-
-[TO DO: could probably do with getting user to open sdef in Script Editor for an overview of how API docs are structured]
-
-
 This chapter provides a practical taste of application scripting with Swift and SwiftAutomation. Later chapters cover the technical details of SwiftAutomation usage that are mostly skimmed over here.
 
-The following tutorial uses SwiftAutomation, TextEdit and the interactive command line `swift` interpreter to perform a simple 'Hello World' exercise. 
+The following tutorial uses SwiftAutomation, TextEdit and the command line `swift` program to perform a simple 'Hello World' exercise.
+
+[TO DO: because Swift's 'REPL' is worse than useless at displaying Specifier objects (it dumps 100s of lines of Specifier's internal structure instead of just printing its description string) the least awful option for now would be to construct the tutorial in such a way that it could be worked through in a manually executed playground. e.g. Show how to add a `make` command, then show how to add a command that closes all open documents without saving; this can then be placed at the top of the playground to clear previous windows each time the playground is re-run.]
 
 <p class="hilitebox">Caution: It is recommended that you do not have any other documents open in TextEdit during this tutorial, as accidental alterations to existing documents are easy to make and may not be undoable.</p>
-
-[TO DO: SwiftAE project now includes `Install for Tutorial` scheme that builds both SwiftAutomation and MacOSGlues targets; only problem is Xcode 8.1 isn't installing them for some reason, could update the following hashbang always to use `/Library/Frameworks`]
-
-To begin, build the SwiftAE project's MacOSGlues target then launch the `swift` interpreter in Terminal, replacing <code><var>/path/to/products</var></code> with the path to the directory containing the newly built `SwiftAutomation.framework` and `MacOSGlues.framework` bundles:
-
-[TO DO: use `#!/usr/bin/swift -target x86_64-apple-macosx10.12 -F /Library/Frameworks`, as swift seems to default to 10.10 SDK in some situations but SwiftAutomation requires 10.11+]
-
-<pre><code><strong>jsmith$ swift -F <var>/path/to/products</var></strong>
-<span style="color:gray;">Welcome to Apple Swift version 3.0.1 (...) Type :help for assistance.
-  1&gt;</span></code></pre>
-
 
 
 ## Target TextEdit
@@ -33,9 +15,7 @@ The first step is to import the Swift glue file for TextEdit:
 
   import SwiftAutomation; import MacOSGlues
 
-The `MacOSGlues.framework` contains ready-to-use glues for many of the "AppleScriptable" applications found in macOS, including Finder, iTunes, and TextEdit. Each glue file defines the Swift classes needed to control one particular application – in this case TextEdit – using human-readable code.
-
-(Glues for other applications can be created using SwiftAutomation's `aeglue` tool; see chapter 4 for details.) 
+The `MacOSGlues.framework` contains ready-to-use glues for many of the "AppleScriptable" applications provided by macOS, including Finder, iTunes, and TextEdit. Each glue file defines the Swift classes that enable you to control one particular application using human-readable code. Glues for other applications can be created using SwiftAutomation's `aeglue` tool; see chapter 4 for details.
 
 Next, create a new `Application` object for controlling TextEdit:
 
@@ -49,9 +29,9 @@ To test, send TextEdit a standard `activate` command:
 
 This should make TextEdit the currently active (frontmost) application, automatically launching it if it isn't already running. All application commands throw on failure, so don't forget to type Swift's `try` keyword before a command or else it won't compile.
 
-[TO DO: open TextEdit's SDEF documentation in Script Editor and summarize its contents and organization]
+[TO DO: open TextEdit's SDEF documentation in Script Editor and summarize its contents and organization; alternatively, bundle the MacOSGlues sdefs in AppleScriptToSwift and provide a menu and dictionary viewer for viewing them there]
 
-[TO DO: note that get/set aren't usually documented]
+[TO DO: note that get/set aren't normally documented in app dictionaries]
 
 ## Create a new document
 
@@ -74,7 +54,7 @@ This specifier can be assigned to a constant or variable for easy reuse. Use the
 
   let doc = try textedit.make(new: TED.document) as TEDItem
 
-Declaring the command's return type (`TEDItem`) is not essential, but greatly improves both usability and reliability. Without it, the Swift compiler will infer the `doc` variable's type to be `Any`, allowing it to hold any value that the application might return. However, you won't be able to use the returned value's properties and methods until you cast that variable to a more specific type. Applying the cast directly to the command's result not only allows the Swift compiler to infer the `doc` variable's exact type, it also instructs SwiftAutomation to convert whatever result the application returns to that exact type or else throw an error if that conversion isn't supported. This provides robust yet flexible type-safe bridging between Apple event's weak, dynamic type system and Swift's strong, static one.
+Declaring the command's return type (`TEDItem`) is not essential, but greatly improves both usability and reliability. Without it, the Swift compiler will infer the `doc` variable's type to be `Any`, allowing it to hold any value that the application might return. However, you won't be able to use the returned value's properties and methods until you cast it to a more specific type. Casting the command's return value directly not only allows the Swift compiler to infer the `doc` variable's exact type, it also tells SwiftAutomation to coerce whatever value the application returns to that type before unpacking it, or else throw an error if that conversion isn't supported. For instance, if an application command returns an integer, you would normally cast it to `Int`; however you could also cast it to `String`, in which case SwiftAutomation will perform that coercion automatically and return a string instead. This provides robust yet flexible type-safe bridging between Apple event's weak, dynamic type system and Swift's strong, static one.
 
 [TO DO: don't say what TEDItem actually means...when should that be clarified?]
 
@@ -184,12 +164,17 @@ Or to insert a new paragraph at the end of the document:
 
 ## Writing a standalone 'script'
 
-[TO DO: need notes on how damn twitchy this is (hopefully things'll improve once Swift gets a stable ABI and can build portable frameworks)]
+[TO DO: add note on writing and running 'scripts' using the following hashbang]
+
+<pre><code>#!/usr/bin/swift -target x86_64-apple-macosx10.11 -F /Library/Frameworks</code></pre>
+
 
 For example, the following Swift 'script' file, when saved to disk and made executable (`chmod +x /path/to/script`), returns the path to the folder shown in the frontmost Finder window (if any):
 
   #!/usr/bin/swift -target x86_64-apple-macosx10.12 -F /Library/Frameworks
-  
+
+  // Output path to frontmost Finder window (or a selected folder within).
+
   import Foundation
   import SwiftAutomation
   import MacOSGlues
@@ -201,21 +186,22 @@ For example, the following Swift 'script' file, when saved to disk and made exec
 
   do {
     let finder = Finder()
-    let selection = try finder.selection.get() as [FINItem]
+    let selection: [FINItem] = try finder.selection.get()
     let frontFolder: FINItem
     if selection.count > 0 {
       let item = selection[0]
-      frontFolder = [FIN.disk, FIN.folder].contains(try item.class_.get()) ? item : try item.container.get() as FINItem
-    } else if try finder.FinderWindows[1].exists() as Bool {
-      // TO DO: this doesn't work if Trash window (Finder bug) or computerContainer
-      frontFolder = try finder.FinderWindows[1].target.get() as FINItem
+      frontFolder = [FIN.disk, FIN.folder].contains(try item.class_.get()) ? item : try item.container.get()
+    } else if try finder.FinderWindows[1].exists() {
+      // TO DO: this doesn't work if Computer/Trash window
+      frontFolder = try finder.FinderWindows[1].target.get()
     } else {
       frontFolder = finder.desktop
     }
-    let fileURL = try frontFolder.get(requestedType: FIN.alias) as URL
+    let fileURL: URL = try frontFolder.get(requestedType: FIN.fileURL)
     print(fileURL.path)
   } catch {
     print(error, to: &errStream)
+    exit(1)
   }
 
 

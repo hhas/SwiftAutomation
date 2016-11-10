@@ -12,16 +12,12 @@
 //  May also be used by dynamic AE bridges.
 //
 
+// TO DO: this isn't the most efficient design: the parser loops over entire dictionary to extract lists of name+code pairs, then GlueTable loops over those again. Ideally parsers would add entries to glue tables directly as they read dictionaries; however, this'll need some thought as the order in which duplicate names/codes are read is significant. The current implementation mimics the AS behavior (when names are duplicated the last definition is used; however, when codes are duplicated the first definition is used); any replacement would need to do likewise.
+
+
 import Foundation
 
 
-// helper function; used to construct keys for commandsByCode dictionary
-public func CommandTermKey(_ eventClass: OSType, _ eventID: OSType) -> UInt64 {
-    return UInt64(eventClass) << 32 | UInt64(eventID)
-}
-
-
-// TO DO: add `var description: String {...}` that returns pretty-printed literal representation that can be written directly to file as a static keyword<->FCC table, which users can modify manually in order to correct for defective terms? (might be better leaving it to a `format()` method that can be customized for different languages, or else export in a generic data format (e.g. JSON) that is trivial to edit and parse back in)
 
 public class GlueTable {
     // provides lookup tables used by language-specific bridges to pack/unpack/format symbols, specifiers, and commands
@@ -60,7 +56,8 @@ public class GlueTable {
     
     // copies of SwiftAutomation's built-in terms, used to disambiguate any conflicting app-defined names
     private var defaultTypesByName: [String:NSAppleEventDescriptor] = [:]
-    // TO DO: what about built-in property [and elements] names?
+    private var defaultPropertiesByName: [String:KeywordTerm] = [:]
+    private var defaultElementsByName: [String:KeywordTerm] = [:]
     private var defaultCommandsByName: [String:CommandTerm] = [:]
     
     private let keywordConverter: KeywordConverterProtocol
@@ -71,19 +68,21 @@ public class GlueTable {
         // retain copies of default type and command terms; these will be used to disambiguate
         // any conflicting application-defined terms added later
         self.defaultTypesByName = self.typesByName
+        self.defaultPropertiesByName = self.propertiesByName
+        self.defaultElementsByName = self.elementsByName
         self.defaultCommandsByName = self.commandsByName
     }
-
-    private func add(symbolKeywords keywords: KeywordTerms, descriptorType: OSType) {
+    
+    
+    private func add(symbolKeywords keywords: [KeywordTerm], descriptorType: OSType) {
         let len = keywords.count
         for i in 0..<len {
-            // add a definition to typeByCode table
-            // to handle synonyms, if same code appears more than once then use name from last definition in list
-            do {
+            do { // add a definition to typeByCode table
+                // to handle synonyms, if same code appears more than once then uses name from last definition in list
                 let term = keywords[i]
                 var name = term.name
                 let code = term.code
-                if !(name == "missing value" && code == _cMissingValue) { // (`missing value` is special case)
+                if !(name == "missing value" && code == _cMissingValue) { // (ignore `missing value` as it's treated separately)
                     // escape definitions that semi-overlap default definitions
                     if let desc = self.defaultTypesByName[name] {
                         if desc.typeCodeValue != code {
@@ -95,13 +94,12 @@ public class GlueTable {
                     self.typesByCode[code] = name
                 }
             }
-            // add a definition to typeByName table
-            // to handle synonyms, if same name appears more than once then use code from first definition in list
-            do {
+            do { // add a definition to typeByName table
+                // to handle synonyms, if same name appears more than once then uses code from first definition in list (iterating array in reverse ensures this)
                 let term = keywords[len - 1 - i]
                 var name = term.name
                 var code = term.code // actually constant, but NSAppleEventDescriptor constructor below insists on var
-                if !(name == "missing value" && code == _cMissingValue) { // (`missing value` is special case)
+                if !(name == "missing value" && code == _cMissingValue) { // (ignore `missing value` as it's treated separately)
                     // escape definitions that semi-overlap default definitions
                     if let desc = self.defaultTypesByName[name] {
                         if desc.typeCodeValue != code {
@@ -109,38 +107,51 @@ public class GlueTable {
                             term.name = name
                         }
                     }
+                    // add item
+                    self.typesByName[name] = NSAppleEventDescriptor(descriptorType: descriptorType,
+                                                                    bytes: &code, length: MemoryLayout<OSType>.size)
                 }
-                // add item
-                self.typesByName[name] = NSAppleEventDescriptor(descriptorType: descriptorType, bytes: &code, length: MemoryLayout<OSType>.size)
             }
         }
     }
 
-    private func add(specifierKeywords keywords: KeywordTerms,
-                     nameTable: inout [String:KeywordTerm], codeTable: inout [OSType:String]) {
+    private func add(specifierKeywords keywords: [KeywordTerm], nameTable: inout [String:KeywordTerm],
+                     codeTable: inout [OSType:String], defaultKeywordsByName: [String:KeywordTerm]) {
         let len = keywords.count
         for i in 0..<len {
-            // add a definition to the byCode table
-            // to handle synonyms, if same code appears more than once then use name from last definition in list
-            do {
+            do { // add a definition to the elementsByCode/propertiesByCode table
+                // to handle synonyms, if same code appears more than once then uses name from last definition in list
                 let term = keywords[i]
-                codeTable[term.code] = term.name
+                var name = term.name
+                let code = term.code
+                if let defaultTerm = defaultKeywordsByName[name] {
+                    if code != defaultTerm.code {
+                        name = self.keywordConverter.escapeName(name)
+                        term.name = name
+                    }
+                }
+                codeTable[code] = name
             }
-            // TO DO: escape definitions that semi-overlap default definitions? (see TODO at top)
-            // add a definition to the byName table
-            // to handle synonyms, if same name appears more than once then use code from first definition in list
-            do {
+            do { // add a definition to the elementsByName/propertiesByName table
+                // to handle synonyms, if same name appears more than once then uses code from first definition in list (iterating array in reverse ensures this)
                 let term = keywords[len - 1 - i]
-                nameTable[term.name] = term
+                var name = term.name
+                let code = term.code
+                if let defaultTerm = defaultKeywordsByName[name] {
+                    if code != defaultTerm.code {
+                        name = self.keywordConverter.escapeName(name)
+                        term.name = name
+                    }
+                }
+                nameTable[name] = term
             }
         }
     }
 
     private func add(commandKeywords commands: [CommandTerm]) {
-        // To handle synonyms, if two commands have same name but different codes, only the first
-        // definition should be used (iterating array in reverse ensures this)
         let len = commands.count
         for i in 0..<len {
+            // to handle synonyms, if two commands have same name but different codes, only the first definition should be used (iterating array in reverse ensures this)
             let term = commands[len - 1 - i]
             var name = term.name;
             let eventClass = term.eventClass
@@ -155,7 +166,7 @@ public class GlueTable {
             }
             // add item
             self.commandsByName[name] = term
-            self.commandsByCode[CommandTermKey(eventClass, eventID)] = term
+            self.commandsByCode[eightCharCode(eventClass, eventID)] = term
         }
     }
 
@@ -167,8 +178,10 @@ public class GlueTable {
         self.add(symbolKeywords: terms.enumerators, descriptorType: typeEnumerated)
         self.add(symbolKeywords: terms.types, descriptorType: typeType)
         // build specifier tables
-        self.add(specifierKeywords: terms.elements, nameTable: &self.elementsByName, codeTable: &self.elementsByCode)
-        self.add(specifierKeywords: terms.properties, nameTable: &self.propertiesByName, codeTable: &self.propertiesByCode)
+        self.add(specifierKeywords: terms.elements, nameTable: &self.elementsByName,
+                 codeTable: &self.elementsByCode, defaultKeywordsByName: self.defaultElementsByName)
+        self.add(specifierKeywords: terms.properties, nameTable: &self.propertiesByName,
+                 codeTable: &self.propertiesByCode, defaultKeywordsByName: self.defaultPropertiesByName)
         // build command table
         self.add(commandKeywords: terms.commands)
         // special case: if property table contains a 'text' definition, move it to element table
@@ -184,8 +197,8 @@ public class GlueTable {
     //
     
     public func add(AETE descriptor: NSAppleEventDescriptor) throws {
-        // use `try AEApplication(url: url).getAETE()` to retrieve typeAETE descriptor via an 'ascr'/'gdte' Apple event
-        // use `OSAGetSysTerminology()` to get typeAEUT (language component)'s AETE/AEUT resource (e.g. for AppleScript's built-in terminology)
+        // note: use `try AEApplication(url: url).getAETE()` to retrieve typeAETE descriptor via an 'ascr'/'gdte' Apple event, or use
+        // `OSAGetSysTerminology()` to get typeAEUT (language component)'s AETE/AEUT resource (e.g. for AppleScript's built-in terminology)
         let parser = AETEParser(keywordConverter: self.keywordConverter)
         try parser.parse(descriptor)
         self.add(terminology: parser)

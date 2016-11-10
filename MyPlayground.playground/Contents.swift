@@ -6,7 +6,7 @@ import Cocoa
 import SwiftAutomation
 
 
-let iitunes = ITunes()
+let itunes = ITunes()
 let textedit = TextEdit()
 let finder = Finder()
 

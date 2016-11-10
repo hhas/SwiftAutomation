@@ -14,11 +14,11 @@ import Foundation
 
 public class AETEParser: ApplicationTerminology {
     
-    public private(set) var types: KeywordTerms = []
-    public private(set) var enumerators: KeywordTerms = []
-    public private(set) var properties: KeywordTerms = []
-    public private(set) var elements: KeywordTerms = []
-    public var commands: CommandTerms { return Array(self.commandsDict.values) }
+    public private(set) var types: [KeywordTerm] = []
+    public private(set) var enumerators: [KeywordTerm] = []
+    public private(set) var properties: [KeywordTerm] = []
+    public private(set) var elements: [KeywordTerm] = []
+    public var commands: [CommandTerm] { return Array(self.commandsDict.values) }
     
     private var commandsDict = [String:CommandTerm]()
     private let keywordConverter: KeywordConverterProtocol
@@ -289,7 +289,7 @@ public class AETEParser: ApplicationTerminology {
 
 
 
-extension AEApplication { // TO DO: extend AppData first, with convenience methods on AEApplication?
+extension AEApplication { // extends the built-in Application object with convenience method for getting its AETE resource
 
     public func getAETE() throws -> NSAppleEventDescriptor {
         return try self.sendAppleEvent(_kASAppleScriptSuite, _kGetAETE, [keyDirectObject:0]) as NSAppleEventDescriptor

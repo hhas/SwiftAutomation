@@ -472,7 +472,7 @@
             <enumerator name="MAI.richFormat" code="dmrt" description="Rich Text"></enumerator>
         </enumeration>
         <enumeration name="HeaderDetail" code="hede" hidden="yes">
-            <enumerator name="MAI.all" code="hdal" description="All"></enumerator>
+            <enumerator name="MAI.all_" code="hdal" description="All"></enumerator>
             <enumerator name="MAI.custom" code="hdcu" description="Custom"></enumerator>
             <enumerator name="MAI.default_" code="hdde" description="Default"></enumerator>
             <enumerator name="MAI.noHeaders" code="hdnn" description="No headers"></enumerator>

@@ -19,44 +19,52 @@
 		4F0E39D21BB00B3300FF2A96 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39D11BB00B3300FF2A96 /* AppDelegate.m */; };
 		4F0E39D41BB0342600FF2A96 /* SAEFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39D31BB0342600FF2A96 /* SAEFormatter.swift */; };
 		4F0E39D61BB0504D00FF2A96 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39D51BB0504D00FF2A96 /* main.m */; };
-		4F1A57FE1D9E81C300ACFA51 /* MacOSGlues.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F1A57FC1D9E81C300ACFA51 /* MacOSGlues.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4F1A58141D9EA09B00ACFA51 /* SwiftAutomation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4FFF5D241D899F0D008ED4F5 /* SwiftAutomation.framework */; };
 		4F1A58151D9EA09B00ACFA51 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F63C4331B7CF1C4000D74EE /* Foundation.framework */; };
+		4F35D7BA1DD4A6B2006A22E8 /* MacOSGlues.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F35D7901DD4A6B2006A22E8 /* MacOSGlues.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4F35D7BB1DD4A6B2006A22E8 /* AutomatorGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F35D7911DD4A6B2006A22E8 /* AutomatorGlue.swift.sdef */; };
+		4F35D7BC1DD4A6B2006A22E8 /* CalendarGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F35D7921DD4A6B2006A22E8 /* CalendarGlue.swift.sdef */; };
+		4F35D7BD1DD4A6B2006A22E8 /* ContactsGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F35D7931DD4A6B2006A22E8 /* ContactsGlue.swift.sdef */; };
+		4F35D7BE1DD4A6B2006A22E8 /* DVDPlayerGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F35D7941DD4A6B2006A22E8 /* DVDPlayerGlue.swift.sdef */; };
+		4F35D7BF1DD4A6B2006A22E8 /* FinderGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F35D7951DD4A6B2006A22E8 /* FinderGlue.swift.sdef */; };
+		4F35D7C01DD4A6B2006A22E8 /* GarageBandGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F35D7961DD4A6B2006A22E8 /* GarageBandGlue.swift.sdef */; };
+		4F35D7C11DD4A6B2006A22E8 /* ITunesGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F35D7971DD4A6B2006A22E8 /* ITunesGlue.swift.sdef */; };
+		4F35D7C21DD4A6B2006A22E8 /* MailGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F35D7981DD4A6B2006A22E8 /* MailGlue.swift.sdef */; };
+		4F35D7C31DD4A6B2006A22E8 /* MessagesGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F35D7991DD4A6B2006A22E8 /* MessagesGlue.swift.sdef */; };
+		4F35D7C41DD4A6B2006A22E8 /* NotesGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F35D79A1DD4A6B2006A22E8 /* NotesGlue.swift.sdef */; };
+		4F35D7C51DD4A6B2006A22E8 /* PhotosGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F35D79B1DD4A6B2006A22E8 /* PhotosGlue.swift.sdef */; };
+		4F35D7C61DD4A6B2006A22E8 /* QuickTimePlayerGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F35D79C1DD4A6B2006A22E8 /* QuickTimePlayerGlue.swift.sdef */; };
+		4F35D7C71DD4A6B2006A22E8 /* RemindersGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F35D79D1DD4A6B2006A22E8 /* RemindersGlue.swift.sdef */; };
+		4F35D7C81DD4A6B2006A22E8 /* SafariGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F35D79E1DD4A6B2006A22E8 /* SafariGlue.swift.sdef */; };
+		4F35D7C91DD4A6B2006A22E8 /* ScriptEditorGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F35D79F1DD4A6B2006A22E8 /* ScriptEditorGlue.swift.sdef */; };
+		4F35D7CA1DD4A6B2006A22E8 /* SystemEventsGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F35D7A01DD4A6B2006A22E8 /* SystemEventsGlue.swift.sdef */; };
+		4F35D7CB1DD4A6B2006A22E8 /* SystemPreferencesGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F35D7A11DD4A6B2006A22E8 /* SystemPreferencesGlue.swift.sdef */; };
+		4F35D7CC1DD4A6B2006A22E8 /* TerminalGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F35D7A21DD4A6B2006A22E8 /* TerminalGlue.swift.sdef */; };
+		4F35D7CD1DD4A6B2006A22E8 /* TextEditGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F35D7A31DD4A6B2006A22E8 /* TextEditGlue.swift.sdef */; };
+		4F35D7CE1DD4A6B2006A22E8 /* XcodeGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F35D7A41DD4A6B2006A22E8 /* XcodeGlue.swift.sdef */; };
+		4F35D7CF1DD4A6B2006A22E8 /* AutomatorGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F35D7A51DD4A6B2006A22E8 /* AutomatorGlue.swift */; };
+		4F35D7D01DD4A6B2006A22E8 /* CalendarGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F35D7A61DD4A6B2006A22E8 /* CalendarGlue.swift */; };
+		4F35D7D11DD4A6B2006A22E8 /* ContactsGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F35D7A71DD4A6B2006A22E8 /* ContactsGlue.swift */; };
+		4F35D7D21DD4A6B2006A22E8 /* DVDPlayerGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F35D7A81DD4A6B2006A22E8 /* DVDPlayerGlue.swift */; };
+		4F35D7D31DD4A6B2006A22E8 /* FinderGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F35D7A91DD4A6B2006A22E8 /* FinderGlue.swift */; };
+		4F35D7D41DD4A6B2006A22E8 /* GarageBandGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F35D7AA1DD4A6B2006A22E8 /* GarageBandGlue.swift */; };
+		4F35D7D51DD4A6B2006A22E8 /* ITunesGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F35D7AB1DD4A6B2006A22E8 /* ITunesGlue.swift */; };
+		4F35D7D61DD4A6B2006A22E8 /* MailGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F35D7AC1DD4A6B2006A22E8 /* MailGlue.swift */; };
+		4F35D7D71DD4A6B2006A22E8 /* MessagesGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F35D7AD1DD4A6B2006A22E8 /* MessagesGlue.swift */; };
+		4F35D7D81DD4A6B2006A22E8 /* NotesGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F35D7AE1DD4A6B2006A22E8 /* NotesGlue.swift */; };
+		4F35D7D91DD4A6B2006A22E8 /* PhotosGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F35D7AF1DD4A6B2006A22E8 /* PhotosGlue.swift */; };
+		4F35D7DA1DD4A6B2006A22E8 /* QuickTimePlayerGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F35D7B01DD4A6B2006A22E8 /* QuickTimePlayerGlue.swift */; };
+		4F35D7DB1DD4A6B2006A22E8 /* RemindersGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F35D7B11DD4A6B2006A22E8 /* RemindersGlue.swift */; };
+		4F35D7DC1DD4A6B2006A22E8 /* SafariGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F35D7B21DD4A6B2006A22E8 /* SafariGlue.swift */; };
+		4F35D7DD1DD4A6B2006A22E8 /* ScriptEditorGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F35D7B31DD4A6B2006A22E8 /* ScriptEditorGlue.swift */; };
+		4F35D7DE1DD4A6B2006A22E8 /* SystemEventsGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F35D7B41DD4A6B2006A22E8 /* SystemEventsGlue.swift */; };
+		4F35D7DF1DD4A6B2006A22E8 /* SystemPreferencesGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F35D7B51DD4A6B2006A22E8 /* SystemPreferencesGlue.swift */; };
+		4F35D7E01DD4A6B2006A22E8 /* TerminalGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F35D7B61DD4A6B2006A22E8 /* TerminalGlue.swift */; };
+		4F35D7E11DD4A6B2006A22E8 /* TextEditGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F35D7B71DD4A6B2006A22E8 /* TextEditGlue.swift */; };
+		4F35D7E21DD4A6B2006A22E8 /* XcodeGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F35D7B81DD4A6B2006A22E8 /* XcodeGlue.swift */; };
 		4F4C1A0E1D910BDE004F9083 /* TypeExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F4C1A0D1D910BDE004F9083 /* TypeExtensions.swift */; };
 		4F4C1A0F1D910E41004F9083 /* TypeExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F4C1A0D1D910BDE004F9083 /* TypeExtensions.swift */; };
 		4F4C1A101D910E4B004F9083 /* TypeExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F4C1A0D1D910BDE004F9083 /* TypeExtensions.swift */; };
-		4F5CBD9F1D9EA35F00F58D1B /* AutomatorGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F5CBD7F1D9EA35F00F58D1B /* AutomatorGlue.swift */; };
-		4F5CBDA01D9EA35F00F58D1B /* CalendarGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F5CBD801D9EA35F00F58D1B /* CalendarGlue.swift */; };
-		4F5CBDA11D9EA35F00F58D1B /* ContactsGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F5CBD811D9EA35F00F58D1B /* ContactsGlue.swift */; };
-		4F5CBDA21D9EA35F00F58D1B /* DVDPlayerGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F5CBD821D9EA35F00F58D1B /* DVDPlayerGlue.swift */; };
-		4F5CBDA31D9EA35F00F58D1B /* FinderGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F5CBD831D9EA35F00F58D1B /* FinderGlue.swift */; };
-		4F5CBDA41D9EA35F00F58D1B /* ITunesGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F5CBD841D9EA35F00F58D1B /* ITunesGlue.swift */; };
-		4F5CBDA51D9EA35F00F58D1B /* MailGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F5CBD851D9EA35F00F58D1B /* MailGlue.swift */; };
-		4F5CBDA61D9EA35F00F58D1B /* MessagesGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F5CBD861D9EA35F00F58D1B /* MessagesGlue.swift */; };
-		4F5CBDA71D9EA35F00F58D1B /* NotesGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F5CBD871D9EA35F00F58D1B /* NotesGlue.swift */; };
-		4F5CBDA81D9EA35F00F58D1B /* QuickTimePlayerGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F5CBD881D9EA35F00F58D1B /* QuickTimePlayerGlue.swift */; };
-		4F5CBDA91D9EA35F00F58D1B /* RemindersGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F5CBD891D9EA35F00F58D1B /* RemindersGlue.swift */; };
-		4F5CBDAA1D9EA35F00F58D1B /* SafariGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F5CBD8A1D9EA35F00F58D1B /* SafariGlue.swift */; };
-		4F5CBDAB1D9EA35F00F58D1B /* SystemEventsGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F5CBD8B1D9EA35F00F58D1B /* SystemEventsGlue.swift */; };
-		4F5CBDAC1D9EA35F00F58D1B /* SystemPreferencesGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F5CBD8C1D9EA35F00F58D1B /* SystemPreferencesGlue.swift */; };
-		4F5CBDAD1D9EA35F00F58D1B /* TextEditGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F5CBD8D1D9EA35F00F58D1B /* TextEditGlue.swift */; };
-		4F5CBDAE1D9EA35F00F58D1B /* XcodeGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F5CBD8E1D9EA35F00F58D1B /* XcodeGlue.swift */; };
-		4F5CBDB01D9EA3AE00F58D1B /* AutomatorGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F5CBD6F1D9EA35F00F58D1B /* AutomatorGlue.swift.sdef */; };
-		4F5CBDB11D9EA3AE00F58D1B /* CalendarGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F5CBD701D9EA35F00F58D1B /* CalendarGlue.swift.sdef */; };
-		4F5CBDB21D9EA3AE00F58D1B /* ContactsGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F5CBD711D9EA35F00F58D1B /* ContactsGlue.swift.sdef */; };
-		4F5CBDB31D9EA3AE00F58D1B /* DVDPlayerGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F5CBD721D9EA35F00F58D1B /* DVDPlayerGlue.swift.sdef */; };
-		4F5CBDB41D9EA3AE00F58D1B /* FinderGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F5CBD731D9EA35F00F58D1B /* FinderGlue.swift.sdef */; };
-		4F5CBDB51D9EA3AE00F58D1B /* ITunesGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F5CBD741D9EA35F00F58D1B /* ITunesGlue.swift.sdef */; };
-		4F5CBDB61D9EA3AE00F58D1B /* MailGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F5CBD751D9EA35F00F58D1B /* MailGlue.swift.sdef */; };
-		4F5CBDB71D9EA3AE00F58D1B /* MessagesGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F5CBD761D9EA35F00F58D1B /* MessagesGlue.swift.sdef */; };
-		4F5CBDB81D9EA3AE00F58D1B /* NotesGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F5CBD771D9EA35F00F58D1B /* NotesGlue.swift.sdef */; };
-		4F5CBDB91D9EA3AE00F58D1B /* QuickTimePlayerGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F5CBD781D9EA35F00F58D1B /* QuickTimePlayerGlue.swift.sdef */; };
-		4F5CBDBA1D9EA3AE00F58D1B /* RemindersGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F5CBD791D9EA35F00F58D1B /* RemindersGlue.swift.sdef */; };
-		4F5CBDBB1D9EA3AE00F58D1B /* SafariGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F5CBD7A1D9EA35F00F58D1B /* SafariGlue.swift.sdef */; };
-		4F5CBDBC1D9EA3AE00F58D1B /* SystemEventsGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F5CBD7B1D9EA35F00F58D1B /* SystemEventsGlue.swift.sdef */; };
-		4F5CBDBD1D9EA3AE00F58D1B /* SystemPreferencesGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F5CBD7C1D9EA35F00F58D1B /* SystemPreferencesGlue.swift.sdef */; };
-		4F5CBDBE1D9EA3AE00F58D1B /* TextEditGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F5CBD7D1D9EA35F00F58D1B /* TextEditGlue.swift.sdef */; };
-		4F5CBDBF1D9EA3AE00F58D1B /* XcodeGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F5CBD7E1D9EA35F00F58D1B /* XcodeGlue.swift.sdef */; };
 		4F9AFB531D5E9B4100A71890 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F9AFB451D5E99FC00A71890 /* main.swift */; };
 		4FB7D8751D5EA60F00F0DB36 /* AppData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F63C4401B86A335000D74EE /* AppData.swift */; };
 		4FB7D8761D5EA60F00F0DB36 /* Specifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F63C42F1B7CF133000D74EE /* Specifier.swift */; };
@@ -262,45 +270,53 @@
 		4F1A57F11D9AAF5C00ACFA51 /* tutorial-introduction.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = "tutorial-introduction.html"; sourceTree = "<group>"; };
 		4F1A57F21D9AAF5C00ACFA51 /* type-mappings.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = "type-mappings.html"; sourceTree = "<group>"; };
 		4F1A57FA1D9E81C300ACFA51 /* MacOSGlues.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = MacOSGlues.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		4F1A57FC1D9E81C300ACFA51 /* MacOSGlues.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MacOSGlues.h; sourceTree = "<group>"; };
-		4F1A57FD1D9E81C300ACFA51 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4F1D12401BA3042600875F74 /* SpecifierExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpecifierExtensions.swift; sourceTree = "<group>"; };
 		4F21AEEF1DA6D004009C3605 /* 10 advanced-type-support.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "10 advanced-type-support.md"; path = "doc-source/10 advanced-type-support.md"; sourceTree = "<group>"; };
 		4F2645AB1BA4F27700256402 /* AEApplicationGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AEApplicationGlue.swift; sourceTree = "<group>"; };
+		4F35D7901DD4A6B2006A22E8 /* MacOSGlues.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MacOSGlues.h; sourceTree = "<group>"; };
+		4F35D7911DD4A6B2006A22E8 /* AutomatorGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = AutomatorGlue.swift.sdef; sourceTree = "<group>"; };
+		4F35D7921DD4A6B2006A22E8 /* CalendarGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = CalendarGlue.swift.sdef; sourceTree = "<group>"; };
+		4F35D7931DD4A6B2006A22E8 /* ContactsGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = ContactsGlue.swift.sdef; sourceTree = "<group>"; };
+		4F35D7941DD4A6B2006A22E8 /* DVDPlayerGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = DVDPlayerGlue.swift.sdef; sourceTree = "<group>"; };
+		4F35D7951DD4A6B2006A22E8 /* FinderGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = FinderGlue.swift.sdef; sourceTree = "<group>"; };
+		4F35D7961DD4A6B2006A22E8 /* GarageBandGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = GarageBandGlue.swift.sdef; sourceTree = "<group>"; };
+		4F35D7971DD4A6B2006A22E8 /* ITunesGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = ITunesGlue.swift.sdef; sourceTree = "<group>"; };
+		4F35D7981DD4A6B2006A22E8 /* MailGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = MailGlue.swift.sdef; sourceTree = "<group>"; };
+		4F35D7991DD4A6B2006A22E8 /* MessagesGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = MessagesGlue.swift.sdef; sourceTree = "<group>"; };
+		4F35D79A1DD4A6B2006A22E8 /* NotesGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = NotesGlue.swift.sdef; sourceTree = "<group>"; };
+		4F35D79B1DD4A6B2006A22E8 /* PhotosGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = PhotosGlue.swift.sdef; sourceTree = "<group>"; };
+		4F35D79C1DD4A6B2006A22E8 /* QuickTimePlayerGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = QuickTimePlayerGlue.swift.sdef; sourceTree = "<group>"; };
+		4F35D79D1DD4A6B2006A22E8 /* RemindersGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = RemindersGlue.swift.sdef; sourceTree = "<group>"; };
+		4F35D79E1DD4A6B2006A22E8 /* SafariGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = SafariGlue.swift.sdef; sourceTree = "<group>"; };
+		4F35D79F1DD4A6B2006A22E8 /* ScriptEditorGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = ScriptEditorGlue.swift.sdef; sourceTree = "<group>"; };
+		4F35D7A01DD4A6B2006A22E8 /* SystemEventsGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = SystemEventsGlue.swift.sdef; sourceTree = "<group>"; };
+		4F35D7A11DD4A6B2006A22E8 /* SystemPreferencesGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = SystemPreferencesGlue.swift.sdef; sourceTree = "<group>"; };
+		4F35D7A21DD4A6B2006A22E8 /* TerminalGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = TerminalGlue.swift.sdef; sourceTree = "<group>"; };
+		4F35D7A31DD4A6B2006A22E8 /* TextEditGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = TextEditGlue.swift.sdef; sourceTree = "<group>"; };
+		4F35D7A41DD4A6B2006A22E8 /* XcodeGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = XcodeGlue.swift.sdef; sourceTree = "<group>"; };
+		4F35D7A51DD4A6B2006A22E8 /* AutomatorGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AutomatorGlue.swift; sourceTree = "<group>"; };
+		4F35D7A61DD4A6B2006A22E8 /* CalendarGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CalendarGlue.swift; sourceTree = "<group>"; };
+		4F35D7A71DD4A6B2006A22E8 /* ContactsGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactsGlue.swift; sourceTree = "<group>"; };
+		4F35D7A81DD4A6B2006A22E8 /* DVDPlayerGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DVDPlayerGlue.swift; sourceTree = "<group>"; };
+		4F35D7A91DD4A6B2006A22E8 /* FinderGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FinderGlue.swift; sourceTree = "<group>"; };
+		4F35D7AA1DD4A6B2006A22E8 /* GarageBandGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GarageBandGlue.swift; sourceTree = "<group>"; };
+		4F35D7AB1DD4A6B2006A22E8 /* ITunesGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ITunesGlue.swift; sourceTree = "<group>"; };
+		4F35D7AC1DD4A6B2006A22E8 /* MailGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MailGlue.swift; sourceTree = "<group>"; };
+		4F35D7AD1DD4A6B2006A22E8 /* MessagesGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessagesGlue.swift; sourceTree = "<group>"; };
+		4F35D7AE1DD4A6B2006A22E8 /* NotesGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotesGlue.swift; sourceTree = "<group>"; };
+		4F35D7AF1DD4A6B2006A22E8 /* PhotosGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotosGlue.swift; sourceTree = "<group>"; };
+		4F35D7B01DD4A6B2006A22E8 /* QuickTimePlayerGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QuickTimePlayerGlue.swift; sourceTree = "<group>"; };
+		4F35D7B11DD4A6B2006A22E8 /* RemindersGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemindersGlue.swift; sourceTree = "<group>"; };
+		4F35D7B21DD4A6B2006A22E8 /* SafariGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SafariGlue.swift; sourceTree = "<group>"; };
+		4F35D7B31DD4A6B2006A22E8 /* ScriptEditorGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScriptEditorGlue.swift; sourceTree = "<group>"; };
+		4F35D7B41DD4A6B2006A22E8 /* SystemEventsGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SystemEventsGlue.swift; sourceTree = "<group>"; };
+		4F35D7B51DD4A6B2006A22E8 /* SystemPreferencesGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SystemPreferencesGlue.swift; sourceTree = "<group>"; };
+		4F35D7B61DD4A6B2006A22E8 /* TerminalGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TerminalGlue.swift; sourceTree = "<group>"; };
+		4F35D7B71DD4A6B2006A22E8 /* TextEditGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextEditGlue.swift; sourceTree = "<group>"; };
+		4F35D7B81DD4A6B2006A22E8 /* XcodeGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XcodeGlue.swift; sourceTree = "<group>"; };
+		4F35D7B91DD4A6B2006A22E8 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4F4C1A0D1D910BDE004F9083 /* TypeExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TypeExtensions.swift; sourceTree = "<group>"; };
 		4F53812A1BA62541001F24A9 /* README */ = {isa = PBXFileReference; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
-		4F5CBD6F1D9EA35F00F58D1B /* AutomatorGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = AutomatorGlue.swift.sdef; sourceTree = "<group>"; };
-		4F5CBD701D9EA35F00F58D1B /* CalendarGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = CalendarGlue.swift.sdef; sourceTree = "<group>"; };
-		4F5CBD711D9EA35F00F58D1B /* ContactsGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = ContactsGlue.swift.sdef; sourceTree = "<group>"; };
-		4F5CBD721D9EA35F00F58D1B /* DVDPlayerGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = DVDPlayerGlue.swift.sdef; sourceTree = "<group>"; };
-		4F5CBD731D9EA35F00F58D1B /* FinderGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = FinderGlue.swift.sdef; sourceTree = "<group>"; };
-		4F5CBD741D9EA35F00F58D1B /* ITunesGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = ITunesGlue.swift.sdef; sourceTree = "<group>"; };
-		4F5CBD751D9EA35F00F58D1B /* MailGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = MailGlue.swift.sdef; sourceTree = "<group>"; };
-		4F5CBD761D9EA35F00F58D1B /* MessagesGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = MessagesGlue.swift.sdef; sourceTree = "<group>"; };
-		4F5CBD771D9EA35F00F58D1B /* NotesGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = NotesGlue.swift.sdef; sourceTree = "<group>"; };
-		4F5CBD781D9EA35F00F58D1B /* QuickTimePlayerGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = QuickTimePlayerGlue.swift.sdef; sourceTree = "<group>"; };
-		4F5CBD791D9EA35F00F58D1B /* RemindersGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = RemindersGlue.swift.sdef; sourceTree = "<group>"; };
-		4F5CBD7A1D9EA35F00F58D1B /* SafariGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = SafariGlue.swift.sdef; sourceTree = "<group>"; };
-		4F5CBD7B1D9EA35F00F58D1B /* SystemEventsGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = SystemEventsGlue.swift.sdef; sourceTree = "<group>"; };
-		4F5CBD7C1D9EA35F00F58D1B /* SystemPreferencesGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = SystemPreferencesGlue.swift.sdef; sourceTree = "<group>"; };
-		4F5CBD7D1D9EA35F00F58D1B /* TextEditGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = TextEditGlue.swift.sdef; sourceTree = "<group>"; };
-		4F5CBD7E1D9EA35F00F58D1B /* XcodeGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = XcodeGlue.swift.sdef; sourceTree = "<group>"; };
-		4F5CBD7F1D9EA35F00F58D1B /* AutomatorGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AutomatorGlue.swift; sourceTree = "<group>"; };
-		4F5CBD801D9EA35F00F58D1B /* CalendarGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CalendarGlue.swift; sourceTree = "<group>"; };
-		4F5CBD811D9EA35F00F58D1B /* ContactsGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactsGlue.swift; sourceTree = "<group>"; };
-		4F5CBD821D9EA35F00F58D1B /* DVDPlayerGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DVDPlayerGlue.swift; sourceTree = "<group>"; };
-		4F5CBD831D9EA35F00F58D1B /* FinderGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FinderGlue.swift; sourceTree = "<group>"; };
-		4F5CBD841D9EA35F00F58D1B /* ITunesGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ITunesGlue.swift; sourceTree = "<group>"; };
-		4F5CBD851D9EA35F00F58D1B /* MailGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MailGlue.swift; sourceTree = "<group>"; };
-		4F5CBD861D9EA35F00F58D1B /* MessagesGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessagesGlue.swift; sourceTree = "<group>"; };
-		4F5CBD871D9EA35F00F58D1B /* NotesGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotesGlue.swift; sourceTree = "<group>"; };
-		4F5CBD881D9EA35F00F58D1B /* QuickTimePlayerGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QuickTimePlayerGlue.swift; sourceTree = "<group>"; };
-		4F5CBD891D9EA35F00F58D1B /* RemindersGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemindersGlue.swift; sourceTree = "<group>"; };
-		4F5CBD8A1D9EA35F00F58D1B /* SafariGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SafariGlue.swift; sourceTree = "<group>"; };
-		4F5CBD8B1D9EA35F00F58D1B /* SystemEventsGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SystemEventsGlue.swift; sourceTree = "<group>"; };
-		4F5CBD8C1D9EA35F00F58D1B /* SystemPreferencesGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SystemPreferencesGlue.swift; sourceTree = "<group>"; };
-		4F5CBD8D1D9EA35F00F58D1B /* TextEditGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextEditGlue.swift; sourceTree = "<group>"; };
-		4F5CBD8E1D9EA35F00F58D1B /* XcodeGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XcodeGlue.swift; sourceTree = "<group>"; };
 		4F63C4271B7CF06E000D74EE /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		4F63C42F1B7CF133000D74EE /* Specifier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Specifier.swift; sourceTree = "<group>"; };
 		4F63C4331B7CF1C4000D74EE /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -488,40 +504,48 @@
 		4F1A57FB1D9E81C300ACFA51 /* MacOSGlues */ = {
 			isa = PBXGroup;
 			children = (
-				4F1A57FC1D9E81C300ACFA51 /* MacOSGlues.h */,
-				4F1A57FD1D9E81C300ACFA51 /* Info.plist */,
-				4F5CBD6F1D9EA35F00F58D1B /* AutomatorGlue.swift.sdef */,
-				4F5CBD701D9EA35F00F58D1B /* CalendarGlue.swift.sdef */,
-				4F5CBD711D9EA35F00F58D1B /* ContactsGlue.swift.sdef */,
-				4F5CBD721D9EA35F00F58D1B /* DVDPlayerGlue.swift.sdef */,
-				4F5CBD731D9EA35F00F58D1B /* FinderGlue.swift.sdef */,
-				4F5CBD741D9EA35F00F58D1B /* ITunesGlue.swift.sdef */,
-				4F5CBD751D9EA35F00F58D1B /* MailGlue.swift.sdef */,
-				4F5CBD761D9EA35F00F58D1B /* MessagesGlue.swift.sdef */,
-				4F5CBD771D9EA35F00F58D1B /* NotesGlue.swift.sdef */,
-				4F5CBD781D9EA35F00F58D1B /* QuickTimePlayerGlue.swift.sdef */,
-				4F5CBD791D9EA35F00F58D1B /* RemindersGlue.swift.sdef */,
-				4F5CBD7A1D9EA35F00F58D1B /* SafariGlue.swift.sdef */,
-				4F5CBD7B1D9EA35F00F58D1B /* SystemEventsGlue.swift.sdef */,
-				4F5CBD7C1D9EA35F00F58D1B /* SystemPreferencesGlue.swift.sdef */,
-				4F5CBD7D1D9EA35F00F58D1B /* TextEditGlue.swift.sdef */,
-				4F5CBD7E1D9EA35F00F58D1B /* XcodeGlue.swift.sdef */,
-				4F5CBD7F1D9EA35F00F58D1B /* AutomatorGlue.swift */,
-				4F5CBD801D9EA35F00F58D1B /* CalendarGlue.swift */,
-				4F5CBD811D9EA35F00F58D1B /* ContactsGlue.swift */,
-				4F5CBD821D9EA35F00F58D1B /* DVDPlayerGlue.swift */,
-				4F5CBD831D9EA35F00F58D1B /* FinderGlue.swift */,
-				4F5CBD841D9EA35F00F58D1B /* ITunesGlue.swift */,
-				4F5CBD851D9EA35F00F58D1B /* MailGlue.swift */,
-				4F5CBD861D9EA35F00F58D1B /* MessagesGlue.swift */,
-				4F5CBD871D9EA35F00F58D1B /* NotesGlue.swift */,
-				4F5CBD881D9EA35F00F58D1B /* QuickTimePlayerGlue.swift */,
-				4F5CBD891D9EA35F00F58D1B /* RemindersGlue.swift */,
-				4F5CBD8A1D9EA35F00F58D1B /* SafariGlue.swift */,
-				4F5CBD8B1D9EA35F00F58D1B /* SystemEventsGlue.swift */,
-				4F5CBD8C1D9EA35F00F58D1B /* SystemPreferencesGlue.swift */,
-				4F5CBD8D1D9EA35F00F58D1B /* TextEditGlue.swift */,
-				4F5CBD8E1D9EA35F00F58D1B /* XcodeGlue.swift */,
+				4F35D7901DD4A6B2006A22E8 /* MacOSGlues.h */,
+				4F35D7911DD4A6B2006A22E8 /* AutomatorGlue.swift.sdef */,
+				4F35D7921DD4A6B2006A22E8 /* CalendarGlue.swift.sdef */,
+				4F35D7931DD4A6B2006A22E8 /* ContactsGlue.swift.sdef */,
+				4F35D7941DD4A6B2006A22E8 /* DVDPlayerGlue.swift.sdef */,
+				4F35D7951DD4A6B2006A22E8 /* FinderGlue.swift.sdef */,
+				4F35D7961DD4A6B2006A22E8 /* GarageBandGlue.swift.sdef */,
+				4F35D7971DD4A6B2006A22E8 /* ITunesGlue.swift.sdef */,
+				4F35D7981DD4A6B2006A22E8 /* MailGlue.swift.sdef */,
+				4F35D7991DD4A6B2006A22E8 /* MessagesGlue.swift.sdef */,
+				4F35D79A1DD4A6B2006A22E8 /* NotesGlue.swift.sdef */,
+				4F35D79B1DD4A6B2006A22E8 /* PhotosGlue.swift.sdef */,
+				4F35D79C1DD4A6B2006A22E8 /* QuickTimePlayerGlue.swift.sdef */,
+				4F35D79D1DD4A6B2006A22E8 /* RemindersGlue.swift.sdef */,
+				4F35D79E1DD4A6B2006A22E8 /* SafariGlue.swift.sdef */,
+				4F35D79F1DD4A6B2006A22E8 /* ScriptEditorGlue.swift.sdef */,
+				4F35D7A01DD4A6B2006A22E8 /* SystemEventsGlue.swift.sdef */,
+				4F35D7A11DD4A6B2006A22E8 /* SystemPreferencesGlue.swift.sdef */,
+				4F35D7A21DD4A6B2006A22E8 /* TerminalGlue.swift.sdef */,
+				4F35D7A31DD4A6B2006A22E8 /* TextEditGlue.swift.sdef */,
+				4F35D7A41DD4A6B2006A22E8 /* XcodeGlue.swift.sdef */,
+				4F35D7A51DD4A6B2006A22E8 /* AutomatorGlue.swift */,
+				4F35D7A61DD4A6B2006A22E8 /* CalendarGlue.swift */,
+				4F35D7A71DD4A6B2006A22E8 /* ContactsGlue.swift */,
+				4F35D7A81DD4A6B2006A22E8 /* DVDPlayerGlue.swift */,
+				4F35D7A91DD4A6B2006A22E8 /* FinderGlue.swift */,
+				4F35D7AA1DD4A6B2006A22E8 /* GarageBandGlue.swift */,
+				4F35D7AB1DD4A6B2006A22E8 /* ITunesGlue.swift */,
+				4F35D7AC1DD4A6B2006A22E8 /* MailGlue.swift */,
+				4F35D7AD1DD4A6B2006A22E8 /* MessagesGlue.swift */,
+				4F35D7AE1DD4A6B2006A22E8 /* NotesGlue.swift */,
+				4F35D7AF1DD4A6B2006A22E8 /* PhotosGlue.swift */,
+				4F35D7B01DD4A6B2006A22E8 /* QuickTimePlayerGlue.swift */,
+				4F35D7B11DD4A6B2006A22E8 /* RemindersGlue.swift */,
+				4F35D7B21DD4A6B2006A22E8 /* SafariGlue.swift */,
+				4F35D7B31DD4A6B2006A22E8 /* ScriptEditorGlue.swift */,
+				4F35D7B41DD4A6B2006A22E8 /* SystemEventsGlue.swift */,
+				4F35D7B51DD4A6B2006A22E8 /* SystemPreferencesGlue.swift */,
+				4F35D7B61DD4A6B2006A22E8 /* TerminalGlue.swift */,
+				4F35D7B71DD4A6B2006A22E8 /* TextEditGlue.swift */,
+				4F35D7B81DD4A6B2006A22E8 /* XcodeGlue.swift */,
+				4F35D7B91DD4A6B2006A22E8 /* Info.plist */,
 			);
 			path = MacOSGlues;
 			sourceTree = "<group>";
@@ -608,7 +632,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4F1A57FE1D9E81C300ACFA51 /* MacOSGlues.h in Headers */,
+				4F35D7BA1DD4A6B2006A22E8 /* MacOSGlues.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -738,7 +762,7 @@
 					4F1A57F91D9E81C300ACFA51 = {
 						CreatedOnToolsVersion = 8.0;
 						DevelopmentTeam = 27XZ82KJ77;
-						LastSwiftMigration = 0800;
+						LastSwiftMigration = 0810;
 						ProvisioningStyle = Automatic;
 					};
 					4F9AFB351D5B58EB00A71890 = {
@@ -788,22 +812,26 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4F5CBDB01D9EA3AE00F58D1B /* AutomatorGlue.swift.sdef in Resources */,
-				4F5CBDB11D9EA3AE00F58D1B /* CalendarGlue.swift.sdef in Resources */,
-				4F5CBDB21D9EA3AE00F58D1B /* ContactsGlue.swift.sdef in Resources */,
-				4F5CBDB31D9EA3AE00F58D1B /* DVDPlayerGlue.swift.sdef in Resources */,
-				4F5CBDB41D9EA3AE00F58D1B /* FinderGlue.swift.sdef in Resources */,
-				4F5CBDB51D9EA3AE00F58D1B /* ITunesGlue.swift.sdef in Resources */,
-				4F5CBDB61D9EA3AE00F58D1B /* MailGlue.swift.sdef in Resources */,
-				4F5CBDB71D9EA3AE00F58D1B /* MessagesGlue.swift.sdef in Resources */,
-				4F5CBDB81D9EA3AE00F58D1B /* NotesGlue.swift.sdef in Resources */,
-				4F5CBDB91D9EA3AE00F58D1B /* QuickTimePlayerGlue.swift.sdef in Resources */,
-				4F5CBDBA1D9EA3AE00F58D1B /* RemindersGlue.swift.sdef in Resources */,
-				4F5CBDBB1D9EA3AE00F58D1B /* SafariGlue.swift.sdef in Resources */,
-				4F5CBDBC1D9EA3AE00F58D1B /* SystemEventsGlue.swift.sdef in Resources */,
-				4F5CBDBD1D9EA3AE00F58D1B /* SystemPreferencesGlue.swift.sdef in Resources */,
-				4F5CBDBE1D9EA3AE00F58D1B /* TextEditGlue.swift.sdef in Resources */,
-				4F5CBDBF1D9EA3AE00F58D1B /* XcodeGlue.swift.sdef in Resources */,
+				4F35D7CD1DD4A6B2006A22E8 /* TextEditGlue.swift.sdef in Resources */,
+				4F35D7BB1DD4A6B2006A22E8 /* AutomatorGlue.swift.sdef in Resources */,
+				4F35D7C01DD4A6B2006A22E8 /* GarageBandGlue.swift.sdef in Resources */,
+				4F35D7BC1DD4A6B2006A22E8 /* CalendarGlue.swift.sdef in Resources */,
+				4F35D7C11DD4A6B2006A22E8 /* ITunesGlue.swift.sdef in Resources */,
+				4F35D7BD1DD4A6B2006A22E8 /* ContactsGlue.swift.sdef in Resources */,
+				4F35D7BE1DD4A6B2006A22E8 /* DVDPlayerGlue.swift.sdef in Resources */,
+				4F35D7CE1DD4A6B2006A22E8 /* XcodeGlue.swift.sdef in Resources */,
+				4F35D7C21DD4A6B2006A22E8 /* MailGlue.swift.sdef in Resources */,
+				4F35D7C81DD4A6B2006A22E8 /* SafariGlue.swift.sdef in Resources */,
+				4F35D7C41DD4A6B2006A22E8 /* NotesGlue.swift.sdef in Resources */,
+				4F35D7C71DD4A6B2006A22E8 /* RemindersGlue.swift.sdef in Resources */,
+				4F35D7C91DD4A6B2006A22E8 /* ScriptEditorGlue.swift.sdef in Resources */,
+				4F35D7C31DD4A6B2006A22E8 /* MessagesGlue.swift.sdef in Resources */,
+				4F35D7C51DD4A6B2006A22E8 /* PhotosGlue.swift.sdef in Resources */,
+				4F35D7CA1DD4A6B2006A22E8 /* SystemEventsGlue.swift.sdef in Resources */,
+				4F35D7BF1DD4A6B2006A22E8 /* FinderGlue.swift.sdef in Resources */,
+				4F35D7C61DD4A6B2006A22E8 /* QuickTimePlayerGlue.swift.sdef in Resources */,
+				4F35D7CB1DD4A6B2006A22E8 /* SystemPreferencesGlue.swift.sdef in Resources */,
+				4F35D7CC1DD4A6B2006A22E8 /* TerminalGlue.swift.sdef in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -860,22 +888,26 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4F5CBDA81D9EA35F00F58D1B /* QuickTimePlayerGlue.swift in Sources */,
-				4F5CBDAB1D9EA35F00F58D1B /* SystemEventsGlue.swift in Sources */,
-				4F5CBDA91D9EA35F00F58D1B /* RemindersGlue.swift in Sources */,
-				4F5CBDA31D9EA35F00F58D1B /* FinderGlue.swift in Sources */,
-				4F5CBDA71D9EA35F00F58D1B /* NotesGlue.swift in Sources */,
-				4F5CBDA01D9EA35F00F58D1B /* CalendarGlue.swift in Sources */,
-				4F5CBDA61D9EA35F00F58D1B /* MessagesGlue.swift in Sources */,
-				4F5CBDA41D9EA35F00F58D1B /* ITunesGlue.swift in Sources */,
-				4F5CBD9F1D9EA35F00F58D1B /* AutomatorGlue.swift in Sources */,
-				4F5CBDA21D9EA35F00F58D1B /* DVDPlayerGlue.swift in Sources */,
-				4F5CBDAE1D9EA35F00F58D1B /* XcodeGlue.swift in Sources */,
-				4F5CBDAD1D9EA35F00F58D1B /* TextEditGlue.swift in Sources */,
-				4F5CBDAC1D9EA35F00F58D1B /* SystemPreferencesGlue.swift in Sources */,
-				4F5CBDA51D9EA35F00F58D1B /* MailGlue.swift in Sources */,
-				4F5CBDAA1D9EA35F00F58D1B /* SafariGlue.swift in Sources */,
-				4F5CBDA11D9EA35F00F58D1B /* ContactsGlue.swift in Sources */,
+				4F35D7D31DD4A6B2006A22E8 /* FinderGlue.swift in Sources */,
+				4F35D7D71DD4A6B2006A22E8 /* MessagesGlue.swift in Sources */,
+				4F35D7DF1DD4A6B2006A22E8 /* SystemPreferencesGlue.swift in Sources */,
+				4F35D7D61DD4A6B2006A22E8 /* MailGlue.swift in Sources */,
+				4F35D7E11DD4A6B2006A22E8 /* TextEditGlue.swift in Sources */,
+				4F35D7D01DD4A6B2006A22E8 /* CalendarGlue.swift in Sources */,
+				4F35D7D51DD4A6B2006A22E8 /* ITunesGlue.swift in Sources */,
+				4F35D7E01DD4A6B2006A22E8 /* TerminalGlue.swift in Sources */,
+				4F35D7DD1DD4A6B2006A22E8 /* ScriptEditorGlue.swift in Sources */,
+				4F35D7D41DD4A6B2006A22E8 /* GarageBandGlue.swift in Sources */,
+				4F35D7DA1DD4A6B2006A22E8 /* QuickTimePlayerGlue.swift in Sources */,
+				4F35D7DE1DD4A6B2006A22E8 /* SystemEventsGlue.swift in Sources */,
+				4F35D7D81DD4A6B2006A22E8 /* NotesGlue.swift in Sources */,
+				4F35D7DB1DD4A6B2006A22E8 /* RemindersGlue.swift in Sources */,
+				4F35D7CF1DD4A6B2006A22E8 /* AutomatorGlue.swift in Sources */,
+				4F35D7DC1DD4A6B2006A22E8 /* SafariGlue.swift in Sources */,
+				4F35D7D21DD4A6B2006A22E8 /* DVDPlayerGlue.swift in Sources */,
+				4F35D7D11DD4A6B2006A22E8 /* ContactsGlue.swift in Sources */,
+				4F35D7E21DD4A6B2006A22E8 /* XcodeGlue.swift in Sources */,
+				4F35D7D91DD4A6B2006A22E8 /* PhotosGlue.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1083,7 +1115,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				PRODUCT_BUNDLE_IDENTIFIER = org.bitbucket.hhas.MacOSGlues;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = NO;
+				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 3.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -1248,7 +1280,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = org.bitbucket.hhas.SwiftAutomation;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = NO;
+				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 3.0;
 				VERSIONING_SYSTEM = "apple-generic";

@@ -21,11 +21,11 @@ public class DefaultTerminology: ApplicationTerminology {
     
     // note: each client language should create its own DefaultTerminology instance, passing its own keyword converter to init, then pass the resulting DefaultTerminology instance to GlueData constructor // TO DO: would probably be cleaner if KeywordConverter base class automatically created and cached DefaultTerminology instances
     
-    public let types: KeywordTerms
-    public let enumerators: KeywordTerms
-    public let properties: KeywordTerms
-    public let elements: KeywordTerms
-    public let commands: CommandTerms
+    public let types: [KeywordTerm]
+    public let enumerators: [KeywordTerm]
+    public let properties: [KeywordTerm]
+    public let elements: [KeywordTerm]
+    public let commands: [CommandTerm]
 
     init(keywordConverter: KeywordConverterProtocol) {
         self.types = self._types.map({KeywordTerm(name: keywordConverter.convertSpecifierName($0), kind: .elementOrType, code: $1)})

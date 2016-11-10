@@ -8,25 +8,10 @@ import AppKit
 
 
 /******************************************************************************/
-
-// TO DO: file feature request, then update the following comments
-
-// TO DO: while NSWorkspace.launchApplication(at:options:configuration:) is a well-designed and reliable API for launching applications given a file URL to their .app bundles, it's pretty much useless in a sandboxed app as the sandbox severely restricts access to file system information, so won't allow other apps' file URLs to be obtained. e.g. See <http://mjtsai.com/blog/2016/09/30/sandboxed-launch-services/>
-//
-//  AFAICT, the only reliable option within a sandboxed app is to launch the app by bundle ID, not URL, using NSWorkspace's:
-//
-//    launchApplication(withBundleIdentifier:options:additionalEventParamDescriptor:launchIdentifier:)->Bool
-//
-// Unlike launchApplication(at:URL…), however, launchApplication(withBundleIdentifier:…) doesn't return an NSRunningApplication instance for the process that it's just launched, only a Bool to indicate success or failure. However, we can't construct a typeKernelProcessID AEAddressDesc for sending Apple events to that app unless we can get the new process's NSRunningApplication.processIdentifier. A possible workaround would be to call NSRunningApplication.runningApplications(withBundleIdentifier:) afterwards and fish around in there in the hopes of finding a single process with the same bundle ID, but that may be fragile: e.g. what if it returns zero matches, or finds two or more matches?
-//
-// In addition, launchApplication(withBundleID:…) doesn't provide any useful error information when it fails, nor does it allow a first event to be passed, only a `with properties` parameter that gets packed into whatever first event it decides to make itself, so in every respect other than sandbox compatibility it really is a lousy PITA.
-//
-//
-// TO DO: file a Radar for a better launchApplication(withBundleID:…) method that addresses all the above issues; though we're still going to need a sandbox-compatible solution for launching by bundle ID that works in 10.11+, so probably a case of design the new launchApplication(withBundleID:…) method we'd like to see in 10.13+, then hack up the current implementation to fall back to the existing launchApplication(withBundleID:…) method when it finds itself in a sandbox where the TargetApplication.bundleIdentifier(String) case is unable to get the app's file URL.
+// KLUDGE: NSWorkspace provides a good method for launching apps by file URL, and a crap one for launching by bundle ID - unfortunately, only the latter can be used in sandboxed apps. This extension adds a launchApplication(withBundleIdentifier:options:configuration:)throws->NSRunningApplication method that has a good API and the least compromised behavior, insulating TargetApplication code from the crappiness that hides within. If/when Apple adds a real, robust version of this method to NSWorkspace <rdar://29159280>, this extension can (and should) go away.
 
 
-
-extension NSWorkspace { // KLUDGE: NSWorkspace has a good method for launching apps by file URL, and a crap one for launching by bundle ID; unfortunately, only the latter can be used in sandboxed apps. This extension adds a launchApplication(withBundleIdentifier:options:configuration:)throws->NSRunningApplication method that has a good API and the least compromised behavior, insulating TargetApplication code from the crappiness that hides within. If/when Apple adds a real, robust version of this method to NSWorkspace, this extension can (and should) go away.
+extension NSWorkspace { 
     
     // caution: the configuration parameter is ignored in sandboxed apps; this is unavoidable
     func launchApplication(withBundleIdentifier bundleID: String, options: NSWorkspaceLaunchOptions = [],
@@ -60,8 +45,19 @@ extension NSWorkspace { // KLUDGE: NSWorkspace has a good method for launching a
 
 
 /******************************************************************************/
+// logging
+
+
+struct StderrStream: TextOutputStream {
+    public mutating func write(_ string: String) { fputs(string, stderr) }
+}
+var errStream = StderrStream()
+
+
+/******************************************************************************/
 // convert between 4-character strings and OSTypes (use these instead of calling UTGetOSTypeFromString/UTCopyStringFromOSType directly)
 
+// TO DO: any value in making the following functions public?
 
 func fourCharCode(_ string: String) throws -> OSType {
     // convert four-character string containing MacOSRoman characters to OSType
@@ -80,6 +76,11 @@ func fourCharCode(_ string: String) throws -> OSType {
 func fourCharCode(_ code: OSType) -> String {
     // convert an OSType to four-character string containing MacOSRoman characters
     return UTCreateStringForOSType(code).takeRetainedValue() as String
+}
+
+func eightCharCode(_ eventClass: OSType, _ eventID: OSType) -> UInt64 {
+    // used to construct keys for GlueTable.commandsByCode dictionary
+    return UInt64(eventClass) << 32 | UInt64(eventID)
 }
 
 

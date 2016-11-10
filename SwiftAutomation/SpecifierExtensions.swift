@@ -116,6 +116,23 @@ public extension ObjectSpecifierExtension {
         return Self.InsertionSpecifierType(insertionLocation: _kAEAfterDesc,
                                            parentQuery: (self as! Query), appData: self.appData, descriptor: nil)
     }
+    
+    public var all: Self.MultipleObjectSpecifierType { // TO DO: this is rather nasty; check it works but best not to document it
+        if self.selectorForm.typeCodeValue == _formPropertyID {
+            return Self.MultipleObjectSpecifierType(wantType: self.selectorData as! NSAppleEventDescriptor,
+                                                    selectorForm: _formAbsolutePositionDesc, selectorData: _kAEAllDesc,
+                                                    parentQuery: self.parentQuery, appData: self.appData, descriptor: nil)
+        } else if self.selectorForm.typeCodeValue == _formAbsolutePosition
+                && (self.selectorData as? NSAppleEventDescriptor)?.enumCodeValue == _kAEAll,
+                let specifier = self as? Self.MultipleObjectSpecifierType {
+            return specifier
+        } else {
+            let error = AutomationError(code: 1, message: "Invalid specifier: \(self).all")
+            return Self.MultipleObjectSpecifierType(wantType: self.wantType,
+                                                    selectorForm: _formAbsolutePositionDesc, selectorData: error,
+                                                    parentQuery: self.parentQuery, appData: self.appData, descriptor: nil)
+        }
+    }
 }
 
 

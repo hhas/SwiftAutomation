@@ -24,14 +24,14 @@ For example, to open a file:
 
   // tell application id "com.apple.TextEdit" to open (POSIX file "/Users/jsmith/ReadMe.txt")
   let textedit = AEApplication(bundleIdentifier: "com.apple.TextEdit")
-  try textedit.open([URL(fileURLWithPath: "/Users/jsmith/ReadMe.txt")])
+  try textedit.open(URL(fileURLWithPath: "/Users/jsmith/ReadMe.txt"))
 
 Or to quit multiple applications without saving changes to any open documents:
 
-<pre><code>for appName in ["<var>SomeApp</var>", "<var>AnotherApp</var>", ...] {
-  let app = AEApplication(name: appName)
-  if app.isRunning { try? app.quit(saving: AE.no) }
-}</code></pre>
+  for appName in ["TextEdit", "Preview", "Script Editor"] {
+    let app = AEApplication(name: appName)
+    if app.isRunning { try? app.quit(saving: AE.no) }
+  }
 
 
 ## Sending Apple events using four-char codes

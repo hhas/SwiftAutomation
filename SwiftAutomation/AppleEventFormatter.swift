@@ -208,7 +208,7 @@ public struct CommandDescription {
         //
         let eventClass = event.attributeDescriptor(forKeyword: _keyEventClassAttr)!.typeCodeValue
         let eventID = event.attributeDescriptor(forKeyword: _keyEventIDAttr)!.typeCodeValue
-        if let commandInfo = appData.glueTable.commandsByCode[CommandTermKey(eventClass, eventID)] {
+        if let commandInfo = appData.glueTable.commandsByCode[eightCharCode(eventClass, eventID)] {
             var keywordParameters = [(String, Any)]()
             for paramInfo in commandInfo.orderedParameters { // this ignores parameters that don't have a keyword name; it should also ignore ("as",keyAERequestedType) parameter (this is probably best done by ensuring that command parsers always omit it)
                 if let value = rawParameters[paramInfo.code] {

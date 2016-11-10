@@ -74,6 +74,8 @@ public let reservedSpecifierMethods: Set<String> = [ // TO DO: review; some name
     "middle",
     "last",
     "any",
+    "named",
+    "all",
     // Test clauses
     "beginsWith",
     "endsWith",

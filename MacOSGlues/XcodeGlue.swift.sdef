@@ -15,6 +15,14 @@
                 <type type="document"></type>
                 <type type="document" list="yes"></type>
             </result>
+            <documentation>
+                <html>
+                        &lt;div style="margin-top:8px;background-color:#eee;padding:8px;"&gt;
+                        &lt;p&gt;KNOWN ISSUE: The open command in Xcode sometimes fails to return the opened document. It is recommended to ignore the result of the open command and instead find the opened document in the application's documents.&lt;/p&gt;
+                        &lt;/div&gt;
+                    
+                </html>
+            </documentation>
         </command>
         <enumeration name="save options" code="savo">
             <enumerator name="XCO.yes" code="yes " description="Save the file."></enumerator>

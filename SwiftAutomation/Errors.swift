@@ -121,8 +121,6 @@ func errorMessage(_ err: Any) -> String {
     default:
         return String(describing: err)
     }
-    
-
 }
 
 
@@ -146,11 +144,20 @@ public class AutomationError: Error, CustomStringConvertible {
     public var code: Int { return self._code }
     public var message: String? { return self._message } // TO DO: make non-optional?
     
-    public var description: String {
+    func description(_ previousCode: Int, separator: String = " ") -> String {
         let msg = self.message ?? descriptionForError[self._code]
-        var string = msg == nil ? "." : ": \(msg!)"
-        if let cause = self.cause { string += "\n\(cause)" }
-        return "Error \(self._code)\(string)"
+        var string = self._code == previousCode ? "" : "Error \(self._code)\(msg == nil ? "." : ": ")"
+        if msg != nil { string += msg! }
+        if let error = self.cause as? AutomationError {
+            string += "\(separator)\(error.description(self._code))"
+        } else if let error = self.cause {
+            string += "\(separator)\(error)"
+        }
+        return string
+    }
+
+    public var description: String {
+        return self.description(0)
     }
 }
 
@@ -281,10 +288,10 @@ public class CommandError: AutomationError { // raised whenever an application c
         var string = "CommandError \(self._code): \(self.message ?? "")\n\n\t\(self.commandDescription)"
         if let expectedType = self.expectedType { string += "\n\n\tExpected type: \(expectedType)" }
         if let offendingObject = self.offendingObject { string += "\n\n\tOffending object: \(offendingObject)" }
-        var cause: Error? = self.cause
-        while cause != nil {
-            string += "\n\n\(errorMessage(cause!))"
-            cause = (cause as? AutomationError)?.cause
+        if let error = self.cause as? AutomationError {
+            string += "\n\n" + error.description(self._code, separator: "\n\n")
+        } else if let error = self.cause {
+            string += "\n\n\(error)"
         }
         return string
     }

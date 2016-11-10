@@ -8,17 +8,17 @@ All application commands have the same basic structure: a single, optional direc
                       <var>namedParameter1:</var> Any = NoParameter,
                       <var>namedParameter2:</var> Any = NoParameter,
                                    <var>...</var>
-                        requestedType: Symbol?             = nil,
-                            waitReply: Bool                = true,
-                          sendOptions: SendOptions?        = nil,
-                          withTimeout: NSTimeInterval?     = nil,
+                        requestedType: Symbol? = nil,
+                            waitReply: Bool = true,
+                          sendOptions: SendOptions? = nil,
+                          withTimeout: NSTimeInterval? = nil,
                           considering: ConsideringOptions? = nil) throws -> T</code></pre>
 
 * `directParameter:` -- An application command can have either zero or one direct parameters. The application's dictionary indicates which commands take a direct parameter, and if it is optional or required.
 
 * <code><var>namedParameterN:</var></code> -- An application command can have zero or more named parameters. The application's dictionary describes the named parameters for each command, and if they are optional or required.
 
-* `requestedType:` -- Some application commands (e.g. `get`) can return the same result as more than one type. [TO DO: rephrase, making clear that this only indicates the caller's preference as to what type it'd like the command's result to be - a very basic form of content negotiation - there is no guarantee the target app will respect it. Most apps ignore it, and even those that do support it often only do so for `get`.] For example, `Finder().home.get()` normally returns an object specifier, but will return a `URL` value instead if its `requestedType:` is `FIN.alias`: `Finder().home.get(requestedType: FIN.alias)`. [Note that in AS, `COMMAND as TYPE` does double duty, both indicating its preferred result type to the app _and_ coercing the actual result when it arrives. In SA, `COMMAND as TYPE` only performs the latter; the former is done via `requestedType:`.]
+* `requestedType:` -- Some application commands (e.g. `get`) can return the same result as more than one type. [TO DO: rephrase, making clear that this only indicates the caller's preference as to what type it'd like the command's result to be - a very basic form of content negotiation - there is no guarantee the target app will respect it. Most apps ignore it, and even those that do support it often only do so for `get`.] For example, `Finder().home.get()` normally returns an object specifier, but will return a `URL` value instead if its `requestedType:` is `FIN.alias`: `Finder().home.get(requestedType: FIN.alias)`.
 
 * `waitReply:` -- If `true` (the default), the command will block until the application sends a reply or the request times out. If `false`, it will return as soon as the request is sent, ignoring any return values or application errors.
 
@@ -32,17 +32,16 @@ All application commands have the same basic structure: a single, optional direc
 For convenience, SwiftAutomation makes application commands available as methods on every object specifier. Due to the technical limitations of application dictionaries, the user must determine for themselves which commands can operate on a particular reference. Some applications document this information separately.
 
 
-
 ## Examples
 
   // tell app "TextEdit" to activate
   TextEdit().activate()
 
-  // tell app "TextEdit" to open fileList
-  TextEdit().open(fileList)
-
   // tell app "Finder" to get version
   Finder().version.get()
+
+  // tell app "TextEdit" to open (POSIX file "/Users/jsmith/ReadMe.txt")
+  try TextEdit().open(URL(fileURLWithPath: "/Users/jsmith/ReadMe.txt"))
 
   // tell app "Finder" to set name of file "foo.txt" of home to "bar.txt"
   Finder().home.files["foo.txt"].name.set(to: "bar.txt")

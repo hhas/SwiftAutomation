@@ -34,15 +34,16 @@ quit( [ saving: AE.yes|AE.no|AE.ask ] )
 
 <pre><code>// tell application id "com.apple.TextEdit" to open (POSIX file "/Users/jsmith/ReadMe.txt")
 let textedit = AEApplication(bundleIdentifier: "com.apple.TextEdit")
-try textedit.open([URL(fileURLWithPath: "/Users/jsmith/ReadMe.txt")])
+try textedit.open(URL(fileURLWithPath: "/Users/jsmith/ReadMe.txt"))
 </code></pre>
 
 <p>Or to quit multiple applications without saving changes to any open documents:</p>
 
-<pre><code>for appName in ["<var>SomeApp</var>", "<var>AnotherApp</var>", ...] {
+<pre><code>for appName in ["TextEdit", "Preview", "Script Editor"] {
   let app = AEApplication(name: appName)
   if app.isRunning { try? app.quit(saving: AE.no) }
-}</code></pre>
+}
+</code></pre>
 
 <h2>Sending Apple events using four-char codes</h2>
 

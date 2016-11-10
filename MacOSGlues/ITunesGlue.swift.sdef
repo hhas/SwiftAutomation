@@ -548,7 +548,7 @@
         <enumeration name="eRpt" code="eRpt">
             <enumerator name="ITU.off" code="kRpO"></enumerator>
             <enumerator name="ITU.one" code="kRp1"></enumerator>
-            <enumerator name="ITU.all" code="kAll"></enumerator>
+            <enumerator name="ITU.all_" code="kAll"></enumerator>
         </enumeration>
         <enumeration name="eShM" code="eShM">
             <enumerator name="ITU.songs" code="kShS"></enumerator>
@@ -572,7 +572,7 @@
         </enumeration>
         <enumeration name="eSrA" code="eSrA">
             <enumerator name="ITU.albums" code="kSrL" description="albums only"></enumerator>
-            <enumerator name="ITU.all" code="kAll" description="all text fields"></enumerator>
+            <enumerator name="ITU.all_" code="kAll" description="all text fields"></enumerator>
             <enumerator name="ITU.artists" code="kSrR" description="artists only"></enumerator>
             <enumerator name="ITU.composers" code="kSrC" description="composers only"></enumerator>
             <enumerator name="ITU.displayed" code="kSrV" description="visible text fields"></enumerator>
