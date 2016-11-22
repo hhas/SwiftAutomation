@@ -43,9 +43,18 @@ try textedit.make(new: TED.document, withProperties: [TED.text: "Hello World!"])
 
 <p>Minimum requirements: macOS 10.11 and Xcode 8.1/Swift 3.0.1.</p>
 
-<p>When working through the SwiftAutomation tutorial and writing Swift "scripts" that are compiled and executed via <code>/usr/bin/swift</code> each time they are run, the simplest way to get started is to build the SwiftAE project's Release target, then copy the SwiftAutomation and MacOSGlues frameworks to <code>/Library/Frameworks</code> and the AppleScriptToSwift application to <code>/Applications</code>.</p>
+<p>When working through the SwiftAutomation tutorial and writing <code>#!/usr/bin/swift</code> "scripts" that are compiled and executed each time they are run, the simplest way to get started is to build the SwiftAE project's Release target and then create symlinks to the SwiftAutomation and MacOSGlues frameworks in <code>/Library/Frameworks</code>:</p>
 
-<p class="hilitebox">When using these frameworks, remember that Swift does not yet provide a stable ABI so Swift programs can only import frameworks compiled with <em>exactly</em> the same version of Swift. Therefore you must rebuild and reinstall these frameworks whenever you install a new version of Xcode/Swift, and avoid linking to them in compiled Swift programs that you intend to distribute.</p>
+<pre><code>cd /Library/Frameworks
+sudo ln -s <var>/path/to/</var>Build/Products/Release/SwiftAutomation.framework
+sudo ln -s <var>/path/to/</var>Build/Products/Release/MacOSGlues.framework</code></pre>
+
+<p>and a symlink to the AppleScriptToSwift application in <code>/Applications</code>:</p>
+
+<pre><code>cd /Applications
+sudo ln -s <var>/path/to/</var>Build/Products/Release/AppleScriptToSwift.app</code></pre>
+
+<p class="hilitebox">When using these frameworks, remember that Swift does not yet provide a stable ABI so Swift programs can only import frameworks compiled with <em>exactly</em> the same version of Swift. Therefore you must rebuild these frameworks whenever you install a new version of Xcode/Swift. [TO DO: what about embedding in CLI and GUI apps? easiest would be to link to instructions in Swift/Xcode docs]</p>
 
 <h2>Before you start...</h2>
 

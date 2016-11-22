@@ -10,13 +10,14 @@
             <div id="main">
                 <h1>Creating and using static glues</h1>
                 <div class="navbar"><a href="understanding-apple-events.html">back</a> | <a href="index.html">index</a> | <a href="type-mappings.html">next</a></div>
-                <p>The SwiftAutomation framework bundle includes an <code>aeglue</code> tool for generating static glue files. Glues enable you to control "AppleScriptable" applications using human-readable property and method names derived from their built-in terminology resources.</p>
+                <p>The SwiftAutomation framework includes a command line <code>aeglue</code> tool for generating static glue files. Glues enable you to control "AppleScriptable" applications using human-readable property and method names derived from their built-in terminology resources.</p>
 
 <h2>Generating a glue</h2>
 
-<p>To add <code>aeglue</code> to your Bash shell's search path, add the following line to your <code>~/.bash_profile</code>, replacing <code><var>/path/to/SwiftAutomation.framework</var></code> with the framework's actual path:</p>
+<p>For convenience, add the following shortcut to your <code>~/.bash_profile</code>:</p>
 
-<pre><code>export $PATH="$PATH:<var>/path/to/SwiftAutomation.framework</var>/Resources/bin"</code></pre>
+<pre><code>alias aeglue=/Library/Frameworks/SwiftAutomation.framework/Resources/bin/aeglue
+</code></pre>
 
 <p>To view the <code>aeglue</code> tool's full documentation:</p>
 
