@@ -1,6 +1,11 @@
 TO DO:
 
 
+
+- Rename AppleScriptToSwift.app to `SwiftAutomation Assistant.app` and add dictionary viewer.
+
+
+
 - For convenience, generated glues include a convenience initializer containing the bundleID for the target application, allowing user to write [e.g.] `TextEdit()` as shorthand for `TextEdit(bundleIndentifier: "com.apple.TextEdit")`. However, in Swift3/Xcode8, if the glue's application class uses the following convenience initializer, it crashes with EXC_BAD_ACCESS, presumably due to a Swift bug:
 
         public class TextEdit: TEDRoot, Application {
@@ -22,12 +27,8 @@ TO DO:
 - Could a Swift REPL be integrated into the AppleScriptToSwift application to create a general-purpose 'SwiftAutomationExplorer.app'? Such an application would also benefit from a built-in dictionary viewer that can display Swift-style application dictionaries without the user having to manually generate them. A. This is out of scope, but would be appropriate for a separate Script Editor-like Swift editor.
 
 
+
 - once Swift fully supports redistributable frameworks, implement an `aeglue-framework` bash script that takes a folder of generated glue+sdef files then runs /usr/bin/swift to compile, build, and codesign them as an importable framework and/or Swift package
-
-
-
-- by-test selector currently doesn't confirm ITS-based root before packing test clause; similarly, by-range selector doesn't confirm APP/CON-based roots for start+stop specifiers; implementing this either means extra mixin subclasses (so type system can enforce it) or pack-time checking (so it can be reported as a command error) - though whether it's worth doing has yet to be decided (having a complete set of specifier variants just for constructing `its` based specifiers will add code complexity and would be problematic for unpacking since objspecs need to be fully unpacked to determine root type but standard behavior is to shallow unpack objspecs for efficiency and only fully unpack when necessary)
-
 
 
 

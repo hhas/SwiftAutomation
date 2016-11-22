@@ -317,6 +317,9 @@ open class ObjectSpecifier: Specifier, ObjectSpecifierProtocol { // represents p
 
 // note: each glue should define an Elements class that subclasses ObjectSpecifier and adopts MultipleObjectSpecifierExtension (which adds by range/test/all selectors)
 
+// note: by-range selector doesn't confirm APP/CON-based roots for start+stop specifiers; as with ITS-based roots this would add significant complexity to class hierarchy in order to detect mistakes that are unlikely to be made in practice (most errors are likely to be made further down the chain, e.g. getting the 'containment' hierarchy for more complex specifiers incorrect)
+
+
 
 struct RangeSelector: SelfPacking { // holds data for by-range selectors
     // Start and stop are Con-based (i.e. relative to container) specifiers (App-based specifiers will also work, as 

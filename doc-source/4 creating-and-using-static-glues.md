@@ -1,13 +1,13 @@
 # Creating and using static glues
 
-The SwiftAutomation framework bundle includes an `aeglue` tool for generating static glue files. Glues enable you to control "AppleScriptable" applications using human-readable property and method names derived from their built-in terminology resources.
+The SwiftAutomation framework includes a command line `aeglue` tool for generating static glue files. Glues enable you to control "AppleScriptable" applications using human-readable property and method names derived from their built-in terminology resources.
 
 
 ## Generating a glue
 
-To add `aeglue` to your Bash shell's search path, add the following line to your `~/.bash_profile`, replacing <code><var>/path/to/SwiftAutomation.framework</var></code> with the framework's actual path:
+For convenience, add the following shortcut to your `~/.bash_profile`:
 
-<pre><code>export $PATH="$PATH:<var>/path/to/SwiftAutomation.framework</var>/Resources/bin"</code></pre>
+  alias aeglue=/Library/Frameworks/SwiftAutomation.framework/Resources/bin/aeglue
 
 To view the `aeglue` tool's full documentation:
 

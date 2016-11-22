@@ -4,14 +4,27 @@ This chapter provides a practical taste of application scripting with Swift and 
 
 The following tutorial uses SwiftAutomation, TextEdit and the command line `swift` program to perform a simple 'Hello World' exercise.
 
-[TO DO: because Swift's 'REPL' is worse than useless at displaying Specifier objects (it dumps 100s of lines of Specifier's internal structure instead of just printing its description string) the least awful option for now would be to construct the tutorial in such a way that it could be worked through in a manually executed playground. e.g. Show how to add a `make` command, then show how to add a command that closes all open documents without saving; this can then be placed at the top of the playground to clear previous windows each time the playground is re-run.]
 
 <p class="hilitebox">Caution: It is recommended that you do not have any other documents open in TextEdit during this tutorial, as accidental alterations to existing documents are easy to make and may not be undoable.</p>
+
+## Caveat scolasticus
+
+In an ideal world the following exercises would be performed in Swift's interactive command-line REPL; unfortunately, while the REPL will execute application commands without problem, the displayed results are utterly unreadable whenever a Specifier object is returned, thanks to LLDB dumping 1000s of lines of internal object structure instead of just printing its `debugDescription` string as a sane REPL would. There is a [bug filed](https://bugs.swift.org/browse/SR-3195) on this; feel free to help bump it up the priority list.
+
+(Playgrounds are even less suitable, as they re-execute _all_ statements whenever a line is changed, so are both extremely annoying and highly unsafe when executing commands such as `set`, `make`, `delete`, etc. that change an application's state.)
+
+For now, the following exercises should be written in a plain text/code editor as non-interactive `.swift` "scripts" containing the following first line:
+
+  #!/usr/bin/swift -target x86_64-apple-macosx10.12 -F /Library/Frameworks
+
+Scripts may be run separately in Terminal (run <code>chmod +x <var>NAME</var>.swift</code> to make a shell script directly executable), or directly from your code editor if it supports this. For instance, the free TextWrangler editor from [Bare Bones Software](http://www.barebones.com) has a `#! ➝ Run` menu option that will execute "shell scripts" directly, avoiding the need to jump back and forth between editor and shell.
 
 
 ## Target TextEdit
 
 The first step is to import the Swift glue file for TextEdit:
+
+  #!/usr/bin/swift -target x86_64-apple-macosx10.12 -F /Library/Frameworks
 
   import SwiftAutomation; import MacOSGlues
 
@@ -21,19 +34,41 @@ Next, create a new `Application` object for controlling TextEdit:
 
   let textedit = TextEdit()
 
-By default, the new `Application` object will use the bundle identifier of the application from which the glue was created; in this case `"com.apple.TextEdit"`. Other ways in which applications can be identified include by name (e.g. `"TextEdit"`), full path (`"/Applications/TextEdit.app"`), and even remote URL (`eppc://my-other-mac.local/TextEdit`), but for most tasks the default behavior is sufficient.
+By default, the new `Application` object will use the bundle identifier of the application from which the glue was created; in this case `"com.apple.TextEdit"`. Other ways in which applications can be identified include by name (e.g. "TextEdit"), full path ("/Applications/TextEdit.app"), and even remote URL ("eppc://my-other-mac.local/TextEdit"), but for most tasks the default behavior is sufficient.
 
-To test, send TextEdit a standard `activate` command:
+Now type the following line and run the script:
 
   try textedit.activate()
 
-This should make TextEdit the currently active (frontmost) application, automatically launching it if it isn't already running. All application commands throw on failure, so don't forget to type Swift's `try` keyword before a command or else it won't compile.
+This will make TextEdit the currently active (frontmost) application. (`activate` is a standard command to which _all_ applications should respond.) If the target application isn't already running then SwiftAutomation will automatically launch it before sending it the command. 
 
-[TO DO: open TextEdit's SDEF documentation in Script Editor and summarize its contents and organization; alternatively, bundle the MacOSGlues sdefs in AppleScriptToSwift and provide a menu and dictionary viewer for viewing them there]
+All application commands throw errors upon failure, so make sure you add a `try` keyword before a command or Swift will refuse to compile it.
 
-[TO DO: note that get/set aren't normally documented in app dictionaries]
 
-## Create a new document
+## Get TextEdit's documents
+
+[TO DO: need a sentence here stating that most 'scriptable' apps have a hierarchical 'object model'. e.g. To refer to TE's document objects:]
+
+  textedit.documents
+
+[To get a list of currently open TE documents, send TextEdit a `get` command asking for that reference]
+
+  print(try textedit.documents.get())
+
+Running the script will produce output that looks something like this (assuming TextEdit opened a new, empty document upon launch):
+
+  [TextEdit().documents["Untitled"]]
+
+[The result here is a Swift array containing a single _object specifier_. Think of a specifier as a simple first-class query, not unlike an XQuery path but composed of nested objects instead of a slash-delimited string.]
+
+[We'll do more with `get` shortly, but first let's see how to create new objects:]
+
+
+## Create a new TextEdit document
+
+Before we explore document objects more deeply, let's look at how to create new objects. In a traditional DOM-style API, create a new instance of its `Node` class, assigning the new object to a temporary variable if needed while you set up its state, then insert this new new into a `Array<Node>` in an existing `Node` instance. However, Apple event IPC deals with _remote_ objects, not local ones, meaning you cannot create or store objects in your own code as they exist in a completely separate process.
+
+[need a sentence about changing app state by manipulating object graph, as opposed to more familiar Cocoa approach of instantiating classes and inserting objects into an array]
 
 First, create a new TextEdit document by making a new `document` object. This is done using the `make` command, passing it a single named parameter, `new:`, indicating the type of object to create; in this case `TED.document`:
 
@@ -66,6 +101,11 @@ Here we tell TextEdit to create a new document object containing the text "Hello
 
 
 [TO DO: this will work better if the above `make` command is expanded to include `withProperties: [TED.text:"Hello World!"]`]. The next task will be to `get()` that document's text, which makes the point that object specifiers are only used to construct _queries_; to actually get a value from the application you _have_ to use a command, e.g. `get()`. (Kinda like the difference between putting together a file path, e.g. "/Users/jsmith/" + "TODO.txt", that describes the location of some data, and passing that path to a `read()` command to actually obtain the data from that location.) Once getting is covered, the `set()` example can show how to change that content to something else. In addition, the `get()` example can explain the shorthand form that allows the command's direct parameter to be used as its subject for conciseness, i.e. `textedit.get(doc.text)` -> `doc.text.get()]
+
+
+[TO DO: open TextEdit's SDEF documentation in Script Editor and summarize its contents and organization; alternatively, bundle the MacOSGlues sdefs in AppleScriptToSwift and provide a menu and dictionary viewer for viewing them there]
+
+[TO DO: note that get/set aren't normally documented in app dictionaries]
 
 
 
@@ -169,7 +209,7 @@ Or to insert a new paragraph at the end of the document:
 <pre><code>#!/usr/bin/swift -target x86_64-apple-macosx10.11 -F /Library/Frameworks</code></pre>
 
 
-For example, the following Swift 'script' file, when saved to disk and made executable (`chmod +x /path/to/script`), returns the path to the folder shown in the frontmost Finder window (if any):
+For example, the following Swift 'script' file, when saved to disk and made executable (`chmod +x /path/to/script`), returns the path to the folder shown in the frontmost Finder window (if any): [TO DO: rephrase as step-by-step exercise]
 
   #!/usr/bin/swift -target x86_64-apple-macosx10.12 -F /Library/Frameworks
 

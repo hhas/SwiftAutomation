@@ -338,7 +338,6 @@
 		4FFF5D261D899F0D008ED4F5 /* SwiftAutomation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwiftAutomation.h; sourceTree = "<group>"; };
 		4FFF5D271D899F0D008ED4F5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4FFF5D491D89A26C008ED4F5 /* SwiftGlueTemplate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftGlueTemplate.swift; sourceTree = "<group>"; };
-		4FFF5D631D8A8836008ED4F5 /* MyPlayground.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = MyPlayground.playground; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -574,7 +573,6 @@
 			children = (
 				4F53812A1BA62541001F24A9 /* README */,
 				4FEFCF1C1B93A31E0013FFC8 /* TODO.txt */,
-				4FFF5D631D8A8836008ED4F5 /* MyPlayground.playground */,
 				4F0E38FF1BA76C8300FF2A96 /* doc-source */,
 				4F0E39311BA864A400FF2A96 /* doc-generated */,
 				4F2645A61BA3F58F00256402 /* bin */,

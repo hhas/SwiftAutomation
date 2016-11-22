@@ -31,9 +31,18 @@ To clone the [SwiftAutomation repository](https://bitbucket.org/hhas/swiftae) to
 
 Minimum requirements: macOS 10.11 and Xcode 8.1/Swift 3.0.1.
 
-When working through the SwiftAutomation tutorial and writing Swift "scripts" that are compiled and executed via `/usr/bin/swift` each time they are run, the simplest way to get started is to build the SwiftAE project's Release target, then copy the SwiftAutomation and MacOSGlues frameworks to `/Library/Frameworks` and the AppleScriptToSwift application to `/Applications`.
+When working through the SwiftAutomation tutorial and writing `#!/usr/bin/swift` "scripts" that are compiled and executed each time they are run, the simplest way to get started is to build the SwiftAE project's Release target and then create symlinks to the SwiftAutomation and MacOSGlues frameworks in `/Library/Frameworks`:
 
-<p class="hilitebox">When using these frameworks, remember that Swift does not yet provide a stable ABI so Swift programs can only import frameworks compiled with <em>exactly</em> the same version of Swift. Therefore you must rebuild and reinstall these frameworks whenever you install a new version of Xcode/Swift, and avoid linking to them in compiled Swift programs that you intend to distribute.</p>
+<pre><code>cd /Library/Frameworks
+sudo ln -s <var>/path/to/</var>Build/Products/Release/SwiftAutomation.framework
+sudo ln -s <var>/path/to/</var>Build/Products/Release/MacOSGlues.framework</code></pre>
+
+and a symlink to the AppleScriptToSwift application in `/Applications`:
+
+<pre><code>cd /Applications
+sudo ln -s <var>/path/to/</var>Build/Products/Release/AppleScriptToSwift.app</code></pre>
+
+<p class="hilitebox">When using these frameworks, remember that Swift does not yet provide a stable ABI so Swift programs can only import frameworks compiled with <em>exactly</em> the same version of Swift. Therefore you must rebuild these frameworks whenever you install a new version of Xcode/Swift. [TO DO: what about embedding in CLI and GUI apps? easiest would be to link to instructions in Swift/Xcode docs]</p>
 
 
 ## Before you start...
