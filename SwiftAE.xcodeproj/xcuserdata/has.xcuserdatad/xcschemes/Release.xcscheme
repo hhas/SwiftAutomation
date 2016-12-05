@@ -34,20 +34,6 @@
                ReferencedContainer = "container:SwiftAE.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "4F0E399B1BAF7A7400FF2A96"
-               BuildableName = "AppleScriptToSwift.app"
-               BlueprintName = "AppleScriptToSwift"
-               ReferencedContainer = "container:SwiftAE.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction

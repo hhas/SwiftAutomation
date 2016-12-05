@@ -9,45 +9,36 @@
         <div id="wrap">
             <div id="main">
                 <h1>Welcome</h1>
-                <div class="navbar"><a href="index.html">index</a> | <a href="tutorial-introduction.html">next</a></div>
+                <div class="navbar"><a href="index.html">index</a> | <a href="installing-swiftautomation.html">next</a></div>
                 <h2>What is SwiftAutomation?</h2>
 
-<p>SwiftAutomation allows you to control "AppleScriptable" macOS applications using Apple Inc's <a href="https://swift.org/">Swift programming language</a>. SwiftAutomation makes Swift a true alternative to AppleScript for automating your Mac.</p>
+<p>SwiftAutomation enables you to control "AppleScriptable" macOS applications using Apple Inc's <a href="https://swift.org/">Swift programming language</a>. SwiftAutomation makes Swift a true alternative to AppleScript for automating your Mac.</p>
 
 <p>For example, to get the value of the first paragraph of the topmost document in TextEdit:</p>
 
-<pre><code>let result = try TextEdit().documents[1].paragraphs[1].get() as String
+<pre><code>try TextEdit().documents[1].paragraphs[1].get() as String
 </code></pre>
 
 <p>This is equivalent to the AppleScript statement:</p>
 
-<pre><code>tell application id "com.apple.TextEdit" to get paragraph 1 of document 1
+<pre><code>tell application "TextEdit" to get paragraph 1 of document 1
 </code></pre>
 
 <p>Or to create a new "Hello World!" document in TextEdit:</p>
 
-<pre><code>// tell application id "com.apple.TextEdit"
-//   make new document with properties {text:"Hello World!"}
-// end tell
-
-let textedit = TextEdit()
-try textedit.make(new: TED.document, withProperties: [TED.text: "Hello World!"])
+<pre><code>try TextEdit().make(new: TED.document, 
+                    withProperties: [TED.text: "Hello World!"])
 </code></pre>
 
-<h2>Getting SwiftAutomation</h2>
+<p>which is equivalent to this:</p>
 
-<p>To clone the <a href="https://bitbucket.org/hhas/swiftae">SwiftAutomation repository</a> to your own machine:</p>
-
-<pre><code>git clone https://bitbucket.org/hhas/swiftae.git
+<pre><code>tell app "TextEdit" to make new document ¬
+                            with properties {text: "Hello World!"}
 </code></pre>
 
-<p>Minimum requirements: macOS 10.11 and Xcode 8.1/Swift 3.0.1.</p>
+<h2>How does SwiftAutomation differ to Cocoa OOP?</h2>
 
-<p>When working through the SwiftAutomation tutorial and writing Swift "scripts" that are compiled and executed via <code>/usr/bin/swift</code> each time they are run, the simplest way to get started is to build the SwiftAE project's Release target, then copy the SwiftAutomation and MacOSGlues frameworks to <code>/Library/Frameworks</code> and the AppleScriptToSwift application to <code>/Applications</code>.</p>
-
-<p class="hilitebox">When using these frameworks, remember that Swift does not yet provide a stable ABI so Swift programs can only import frameworks compiled with <em>exactly</em> the same version of Swift. Therefore you must rebuild and reinstall these frameworks whenever you install a new version of Xcode/Swift, and avoid linking to them in compiled Swift programs that you intend to distribute.</p>
-
-<h2>Before you start...</h2>
+<p>[TO DO: how best to pitch this section?]</p>
 
 <p>In order to use SwiftAutomation effectively, you will need to understand the differences between the Apple event and Swift/Cocoa object systems.</p>
 
@@ -65,6 +56,6 @@ try textedit.make(new: TED.document, withProperties: [TED.text: "Hello World!"])
 
             </div>
         </div>
-        <div id="footer"><div class="navbar"><a href="index.html">index</a> | <a href="tutorial-introduction.html">next</a></div></div>
+        <div id="footer"><div class="navbar"><a href="index.html">index</a> | <a href="installing-swiftautomation.html">next</a></div></div>
     </body>
 </html>

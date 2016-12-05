@@ -2,41 +2,31 @@
 
 ## What is SwiftAutomation?
 
-SwiftAutomation allows you to control "AppleScriptable" macOS applications using Apple Inc's [Swift programming language](https://swift.org/). SwiftAutomation makes Swift a true alternative to AppleScript for automating your Mac.
+SwiftAutomation enables you to control "AppleScriptable" macOS applications using Apple Inc's [Swift programming language](https://swift.org/). SwiftAutomation makes Swift a true alternative to AppleScript for automating your Mac.
 
 For example, to get the value of the first paragraph of the topmost document in TextEdit:
 
-  let result = try TextEdit().documents[1].paragraphs[1].get() as String
+  try TextEdit().documents[1].paragraphs[1].get() as String
 
 This is equivalent to the AppleScript statement:
 
-  tell application id "com.apple.TextEdit" to get paragraph 1 of document 1
+  tell application "TextEdit" to get paragraph 1 of document 1
 
 
 Or to create a new "Hello World!" document in TextEdit:
 
-  // tell application id "com.apple.TextEdit"
-  //   make new document with properties {text:"Hello World!"}
-  // end tell
+  try TextEdit().make(new: TED.document, 
+                      withProperties: [TED.text: "Hello World!"])
 
-  let textedit = TextEdit()
-  try textedit.make(new: TED.document, withProperties: [TED.text: "Hello World!"])
+which is equivalent to this:
 
-
-## Getting SwiftAutomation
-
-To clone the [SwiftAutomation repository](https://bitbucket.org/hhas/swiftae) to your own machine:
-
-  git clone https://bitbucket.org/hhas/swiftae.git
-
-Minimum requirements: macOS 10.11 and Xcode 8.1/Swift 3.0.1.
-
-When working through the SwiftAutomation tutorial and writing Swift "scripts" that are compiled and executed via `/usr/bin/swift` each time they are run, the simplest way to get started is to build the SwiftAE project's Release target, then copy the SwiftAutomation and MacOSGlues frameworks to `/Library/Frameworks` and the AppleScriptToSwift application to `/Applications`.
-
-<p class="hilitebox">When using these frameworks, remember that Swift does not yet provide a stable ABI so Swift programs can only import frameworks compiled with <em>exactly</em> the same version of Swift. Therefore you must rebuild and reinstall these frameworks whenever you install a new version of Xcode/Swift, and avoid linking to them in compiled Swift programs that you intend to distribute.</p>
+  tell app "TextEdit" to make new document ¬
+                              with properties {text: "Hello World!"}
 
 
-## Before you start...
+## How does SwiftAutomation differ to Cocoa OOP?
+
+[TO DO: how best to pitch this section?]
 
 In order to use SwiftAutomation effectively, you will need to understand the differences between the Apple event and Swift/Cocoa object systems.
 

@@ -209,17 +209,17 @@
 /* Begin PBXFileReference section */
 		4F0E39001BA76CB600FF2A96 /* mkdoc */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = mkdoc; sourceTree = "<group>"; };
 		4F0E391F1BA76D8400FF2A96 /* 1 welcome.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "1 welcome.md"; path = "doc-source/1 welcome.md"; sourceTree = "<group>"; };
-		4F0E39201BA76D8400FF2A96 /* 3 understanding-apple-events.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "3 understanding-apple-events.md"; path = "doc-source/3 understanding-apple-events.md"; sourceTree = "<group>"; };
-		4F0E39211BA76D8400FF2A96 /* 2 tutorial-introduction.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "2 tutorial-introduction.md"; path = "doc-source/2 tutorial-introduction.md"; sourceTree = "<group>"; };
-		4F0E39221BA76D8400FF2A96 /* 4 creating-and-using-static-glues.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "4 creating-and-using-static-glues.md"; path = "doc-source/4 creating-and-using-static-glues.md"; sourceTree = "<group>"; };
-		4F0E39231BA76D8400FF2A96 /* 5 type-mappings.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "5 type-mappings.md"; path = "doc-source/5 type-mappings.md"; sourceTree = "<group>"; };
-		4F0E39241BA76D8400FF2A96 /* 6 application-objects.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "6 application-objects.md"; path = "doc-source/6 application-objects.md"; sourceTree = "<group>"; };
-		4F0E39251BA76D8400FF2A96 /* 7 object-specifiers.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "7 object-specifiers.md"; path = "doc-source/7 object-specifiers.md"; sourceTree = "<group>"; };
-		4F0E39261BA76D8400FF2A96 /* 8 commands.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "8 commands.md"; path = "doc-source/8 commands.md"; sourceTree = "<group>"; };
-		4F0E39271BA76D8400FF2A96 /* 9 examples.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "9 examples.md"; path = "doc-source/9 examples.md"; sourceTree = "<group>"; };
-		4F0E39281BA76D8400FF2A96 /* 11 optimizing-performance.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "11 optimizing-performance.md"; path = "doc-source/11 optimizing-performance.md"; sourceTree = "<group>"; };
-		4F0E39291BA76D8400FF2A96 /* 12 low-level-apis.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "12 low-level-apis.md"; path = "doc-source/12 low-level-apis.md"; sourceTree = "<group>"; };
-		4F0E392A1BA76D8400FF2A96 /* 13 notes.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "13 notes.md"; path = "doc-source/13 notes.md"; sourceTree = "<group>"; };
+		4F0E39201BA76D8400FF2A96 /* 4 understanding-apple-events.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "4 understanding-apple-events.md"; path = "doc-source/4 understanding-apple-events.md"; sourceTree = "<group>"; };
+		4F0E39211BA76D8400FF2A96 /* 3 tutorial-introduction.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "3 tutorial-introduction.md"; path = "doc-source/3 tutorial-introduction.md"; sourceTree = "<group>"; };
+		4F0E39221BA76D8400FF2A96 /* 5 creating-and-using-static-glues.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "5 creating-and-using-static-glues.md"; path = "doc-source/5 creating-and-using-static-glues.md"; sourceTree = "<group>"; };
+		4F0E39231BA76D8400FF2A96 /* 6 type-mappings.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "6 type-mappings.md"; path = "doc-source/6 type-mappings.md"; sourceTree = "<group>"; };
+		4F0E39241BA76D8400FF2A96 /* 7 application-objects.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "7 application-objects.md"; path = "doc-source/7 application-objects.md"; sourceTree = "<group>"; };
+		4F0E39251BA76D8400FF2A96 /* 8 object-specifiers.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "8 object-specifiers.md"; path = "doc-source/8 object-specifiers.md"; sourceTree = "<group>"; };
+		4F0E39261BA76D8400FF2A96 /* 9 commands.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "9 commands.md"; path = "doc-source/9 commands.md"; sourceTree = "<group>"; };
+		4F0E39271BA76D8400FF2A96 /* 10 examples.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "10 examples.md"; path = "doc-source/10 examples.md"; sourceTree = "<group>"; };
+		4F0E39281BA76D8400FF2A96 /* 12 optimizing-performance.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "12 optimizing-performance.md"; path = "doc-source/12 optimizing-performance.md"; sourceTree = "<group>"; };
+		4F0E39291BA76D8400FF2A96 /* 13 low-level-apis.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "13 low-level-apis.md"; path = "doc-source/13 low-level-apis.md"; sourceTree = "<group>"; };
+		4F0E392A1BA76D8400FF2A96 /* 14 notes.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "14 notes.md"; path = "doc-source/14 notes.md"; sourceTree = "<group>"; };
 		4F0E392B1BA76D8400FF2A96 /* application_architecture.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = application_architecture.gif; path = "doc-source/application_architecture.gif"; sourceTree = "<group>"; };
 		4F0E392C1BA76D8400FF2A96 /* application_architecture2.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = application_architecture2.gif; path = "doc-source/application_architecture2.gif"; sourceTree = "<group>"; };
 		4F0E392D1BA76D8400FF2A96 /* client_app_to_itunes_event.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = client_app_to_itunes_event.gif; path = "doc-source/client_app_to_itunes_event.gif"; sourceTree = "<group>"; };
@@ -266,12 +266,14 @@
 		4F0E39D11BB00B3300FF2A96 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		4F0E39D31BB0342600FF2A96 /* SAEFormatter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SAEFormatter.swift; sourceTree = "<group>"; };
 		4F0E39D51BB0504D00FF2A96 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		4F0FD40A1DE8D46800F306D3 /* 2 installing-swiftautomation.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = "2 installing-swiftautomation.md"; path = "doc-source/2 installing-swiftautomation.md"; sourceTree = "<group>"; };
+		4F0FD46F1DF5C77E00F306D3 /* installing-swiftautomation.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = "installing-swiftautomation.html"; sourceTree = "<group>"; };
 		4F1A57F01D9AAF5200ACFA51 /* welcome.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = welcome.html; sourceTree = "<group>"; };
 		4F1A57F11D9AAF5C00ACFA51 /* tutorial-introduction.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = "tutorial-introduction.html"; sourceTree = "<group>"; };
 		4F1A57F21D9AAF5C00ACFA51 /* type-mappings.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = "type-mappings.html"; sourceTree = "<group>"; };
 		4F1A57FA1D9E81C300ACFA51 /* MacOSGlues.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = MacOSGlues.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4F1D12401BA3042600875F74 /* SpecifierExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpecifierExtensions.swift; sourceTree = "<group>"; };
-		4F21AEEF1DA6D004009C3605 /* 10 advanced-type-support.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "10 advanced-type-support.md"; path = "doc-source/10 advanced-type-support.md"; sourceTree = "<group>"; };
+		4F21AEEF1DA6D004009C3605 /* 11 advanced-type-support.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "11 advanced-type-support.md"; path = "doc-source/11 advanced-type-support.md"; sourceTree = "<group>"; };
 		4F2645AB1BA4F27700256402 /* AEApplicationGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AEApplicationGlue.swift; sourceTree = "<group>"; };
 		4F35D7901DD4A6B2006A22E8 /* MacOSGlues.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MacOSGlues.h; sourceTree = "<group>"; };
 		4F35D7911DD4A6B2006A22E8 /* AutomatorGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = AutomatorGlue.swift.sdef; sourceTree = "<group>"; };
@@ -338,7 +340,6 @@
 		4FFF5D261D899F0D008ED4F5 /* SwiftAutomation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwiftAutomation.h; sourceTree = "<group>"; };
 		4FFF5D271D899F0D008ED4F5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4FFF5D491D89A26C008ED4F5 /* SwiftGlueTemplate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftGlueTemplate.swift; sourceTree = "<group>"; };
-		4FFF5D631D8A8836008ED4F5 /* MyPlayground.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = MyPlayground.playground; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -394,18 +395,19 @@
 			isa = PBXGroup;
 			children = (
 				4F0E391F1BA76D8400FF2A96 /* 1 welcome.md */,
-				4F0E39211BA76D8400FF2A96 /* 2 tutorial-introduction.md */,
-				4F0E39201BA76D8400FF2A96 /* 3 understanding-apple-events.md */,
-				4F0E39221BA76D8400FF2A96 /* 4 creating-and-using-static-glues.md */,
-				4F0E39231BA76D8400FF2A96 /* 5 type-mappings.md */,
-				4F0E39241BA76D8400FF2A96 /* 6 application-objects.md */,
-				4F0E39251BA76D8400FF2A96 /* 7 object-specifiers.md */,
-				4F0E39261BA76D8400FF2A96 /* 8 commands.md */,
-				4F0E39271BA76D8400FF2A96 /* 9 examples.md */,
-				4F21AEEF1DA6D004009C3605 /* 10 advanced-type-support.md */,
-				4F0E39281BA76D8400FF2A96 /* 11 optimizing-performance.md */,
-				4F0E39291BA76D8400FF2A96 /* 12 low-level-apis.md */,
-				4F0E392A1BA76D8400FF2A96 /* 13 notes.md */,
+				4F0FD40A1DE8D46800F306D3 /* 2 installing-swiftautomation.md */,
+				4F0E39211BA76D8400FF2A96 /* 3 tutorial-introduction.md */,
+				4F0E39201BA76D8400FF2A96 /* 4 understanding-apple-events.md */,
+				4F0E39221BA76D8400FF2A96 /* 5 creating-and-using-static-glues.md */,
+				4F0E39231BA76D8400FF2A96 /* 6 type-mappings.md */,
+				4F0E39241BA76D8400FF2A96 /* 7 application-objects.md */,
+				4F0E39251BA76D8400FF2A96 /* 8 object-specifiers.md */,
+				4F0E39261BA76D8400FF2A96 /* 9 commands.md */,
+				4F0E39271BA76D8400FF2A96 /* 10 examples.md */,
+				4F21AEEF1DA6D004009C3605 /* 11 advanced-type-support.md */,
+				4F0E39281BA76D8400FF2A96 /* 12 optimizing-performance.md */,
+				4F0E39291BA76D8400FF2A96 /* 13 low-level-apis.md */,
+				4F0E392A1BA76D8400FF2A96 /* 14 notes.md */,
 				4F0E392B1BA76D8400FF2A96 /* application_architecture.gif */,
 				4F0E392C1BA76D8400FF2A96 /* application_architecture2.gif */,
 				4F0E392D1BA76D8400FF2A96 /* client_app_to_itunes_event.gif */,
@@ -420,6 +422,7 @@
 			isa = PBXGroup;
 			children = (
 				4F1A57F01D9AAF5200ACFA51 /* welcome.html */,
+				4F0FD46F1DF5C77E00F306D3 /* installing-swiftautomation.html */,
 				4F0E39341BA864A400FF2A96 /* application-objects.html */,
 				4F0E39351BA864A400FF2A96 /* application_architecture.gif */,
 				4F0E39361BA864A400FF2A96 /* application_architecture2.gif */,
@@ -574,7 +577,6 @@
 			children = (
 				4F53812A1BA62541001F24A9 /* README */,
 				4FEFCF1C1B93A31E0013FFC8 /* TODO.txt */,
-				4FFF5D631D8A8836008ED4F5 /* MyPlayground.playground */,
 				4F0E38FF1BA76C8300FF2A96 /* doc-source */,
 				4F0E39311BA864A400FF2A96 /* doc-generated */,
 				4F2645A61BA3F58F00256402 /* bin */,

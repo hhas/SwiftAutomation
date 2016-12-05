@@ -9,43 +9,80 @@
         <div id="wrap">
             <div id="main">
                 <h1>A tutorial introduction</h1>
-                <div class="navbar"><a href="welcome.html">back</a> | <a href="index.html">index</a> | <a href="understanding-apple-events.html">next</a></div>
+                <div class="navbar"><a href="installing-swiftautomation.html">back</a> | <a href="index.html">index</a> | <a href="understanding-apple-events.html">next</a></div>
                 <p>This chapter provides a practical taste of application scripting with Swift and SwiftAutomation. Later chapters cover the technical details of SwiftAutomation usage that are mostly skimmed over here.</p>
 
-<p>The following tutorial uses SwiftAutomation, TextEdit and the command line <code>swift</code> program to perform a simple 'Hello World' exercise.</p>
+<p>The following tutorial uses SwiftAutomation and XXXXXXXXX to perform a simple 'Hello World' exercise in TextEdit. [TO DO: implement simple Swift editor]</p>
 
-<p>[TO DO: because Swift's 'REPL' is worse than useless at displaying Specifier objects (it dumps 100s of lines of Specifier's internal structure instead of just printing its description string) the least awful option for now would be to construct the tutorial in such a way that it could be worked through in a manually executed playground. e.g. Show how to add a <code>make</code> command, then show how to add a command that closes all open documents without saving; this can then be placed at the top of the playground to clear previous windows each time the playground is re-run.]</p>
+<p>[[ TO DO: include screenshots? ]]</p>
 
 <p class="hilitebox">Caution: It is recommended that you do not have any other documents open in TextEdit during this tutorial, as accidental alterations to existing documents are easy to make and may not be undoable.</p>
 
-<h2>Target TextEdit</h2>
+<h2>Create a new Swift "script"</h2>
 
-<p>The first step is to import the Swift glue file for TextEdit:</p>
+<p>Create a new text document containing the following first line, and save it as <code>tutorial.swift</code> :</p>
 
-<pre><code>import SwiftAutomation; import MacOSGlues
+<pre><code>#!/usr/bin/swift -target x86_64-apple-macosx10.12 -F /Library/Frameworks
 </code></pre>
 
-<p>The <code>MacOSGlues.framework</code> contains ready-to-use glues for many of the "AppleScriptable" applications provided by macOS, including Finder, iTunes, and TextEdit. Each glue file defines the Swift classes that enable you to control one particular application using human-readable code. Glues for other applications can be created using SwiftAutomation's <code>aeglue</code> tool; see chapter 4 for details.</p>
+<p>Scripts may be run separately in Terminal (to make a script file executable, run <code>chmod +x <var>NAME</var>.swift</code> first), or directly from your code editor if it supports this.</p>
+
+<h2>Target TextEdit</h2>
+
+<p>The first step is to import the SwiftAutomation framework along with the glue classes that we'll use to control TextEdit:</p>
+
+<pre><code>import SwiftAutomation
+import MacOSGlues
+</code></pre>
+
+<p>The MacOSGlues framework contains ready-to-use glues for many of the "AppleScriptable" applications provided by macOS, including Finder, iTunes, and TextEdit. Each glue file defines all the Swift classes you need to control an application using human-readable property and method names. </p>
 
 <p>Next, create a new <code>Application</code> object for controlling TextEdit:</p>
 
 <pre><code>let textedit = TextEdit()
 </code></pre>
 
-<p>By default, the new <code>Application</code> object will use the bundle identifier of the application from which the glue was created; in this case <code>"com.apple.TextEdit"</code>. Other ways in which applications can be identified include by name (e.g. <code>"TextEdit"</code>), full path (<code>"/Applications/TextEdit.app"</code>), and even remote URL (<code>eppc://my-other-mac.local/TextEdit</code>), but for most tasks the default behavior is sufficient.</p>
+<p>By default, the new <code>Application</code> object will use the bundle identifier of the application from which the glue was created, in this case <code>"com.apple.TextEdit"</code>. Applications may also be targeted by name (e.g. "TextEdit"), full path ("/Applications/TextEdit.app"), process ID, and even remote URL ("eppc://my-other-mac.local/TextEdit"), but for most tasks the default behavior is sufficient.</p>
 
-<p>To test, send TextEdit a standard <code>activate</code> command:</p>
+<p>Now type the following line, then save and run the script:</p>
 
 <pre><code>try textedit.activate()
 </code></pre>
 
-<p>This should make TextEdit the currently active (frontmost) application, automatically launching it if it isn't already running. All application commands throw on failure, so don't forget to type Swift's <code>try</code> keyword before a command or else it won't compile.</p>
+<p>This will make TextEdit the currently active (frontmost) application. (<code>activate</code> is a standard command to which <em>all</em> applications should respond.) If TextEdit isn't already running, SwiftAutomation will automatically launch it before sending it the command. </p>
 
-<p>[TO DO: open TextEdit's SDEF documentation in Script Editor and summarize its contents and organization; alternatively, bundle the MacOSGlues sdefs in AppleScriptToSwift and provide a menu and dictionary viewer for viewing them there]</p>
+<p class="hilitebox">All application commands throw errors upon failure, so don't forget to insert a <code>try</code> keyword before an application command or Swift will refuse to compile it.</p>
 
-<p>[TO DO: note that get/set aren't normally documented in app dictionaries]</p>
+<h2>Get TextEdit's documents</h2>
 
-<h2>Create a new document</h2>
+<p>[TO DO: need a sentence here stating that most 'scriptable' apps have a hierarchical 'object model'. e.g. To refer to TE's document objects:]</p>
+
+<pre><code>textedit.documents
+</code></pre>
+
+<p>[To get a list of currently open TE documents, send TextEdit a <code>get</code> command asking for that reference]</p>
+
+<pre><code>print(try textedit.documents.get())
+</code></pre>
+
+<p>Running the script will produce output that looks something like this (assuming TextEdit opened a new, empty document upon launch):</p>
+
+<pre><code>[TextEdit().documents["Untitled"]]
+</code></pre>
+
+<p>[The result here is a Swift array containing a single <em>object specifier</em>. Think of a specifier as a simple first-class query, not unlike an XQuery path but composed of nested objects instead of a slash-delimited string.]</p>
+
+<p>[We'll do more with <code>get</code> shortly, but first let's see how to create new objects:]</p>
+
+<h2>Create a new TextEdit document</h2>
+
+<p>Before we explore document objects more deeply, let's look at how to create new objects. </p>
+
+<p>In a traditional DOM-style API, you would typically instantiate its <code>Node</code> class, assign the new instance to a temporary variable while you assign its properties, and finally insert it into the <code>var subNodes: Array&lt;Node&gt;</code> property of an existing <code>Node</code> object. However, Apple event IPC deals with <em>remote</em> objects, not local ones, meaning you cannot create or store application objects in your own code as they exist in a completely separate process. Apple events can only manipulate application objects that already exist, and application objects can only exist as part of an existing application object model.</p>
+
+<p>(In fact, even basic OO concepts such as "classes" and "objects" don't really apply to the Apple event world, which tends to reuse familiar terminology for convenience—at the cost of some confusion.)</p>
+
+<p>[need a sentence about changing app state by manipulating object graph, as opposed to more familiar Cocoa approach of instantiating classes and inserting objects into an array]</p>
 
 <p>First, create a new TextEdit document by making a new <code>document</code> object. This is done using the <code>make</code> command, passing it a single named parameter, <code>new:</code>, indicating the type of object to create; in this case <code>TED.document</code>:</p>
 
@@ -80,6 +117,10 @@
 <p>Here we tell TextEdit to create a new document object containing the text "Hello World!". [TO DO: SDEF would help here]</p>
 
 <p>[TO DO: this will work better if the above <code>make</code> command is expanded to include <code>withProperties: [TED.text:"Hello World!"]</code>]. The next task will be to <code>get()</code> that document's text, which makes the point that object specifiers are only used to construct <em>queries</em>; to actually get a value from the application you <em>have</em> to use a command, e.g. <code>get()</code>. (Kinda like the difference between putting together a file path, e.g. "/Users/jsmith/" + "TODO.txt", that describes the location of some data, and passing that path to a <code>read()</code> command to actually obtain the data from that location.) Once getting is covered, the <code>set()</code> example can show how to change that content to something else. In addition, the <code>get()</code> example can explain the shorthand form that allows the command's direct parameter to be used as its subject for conciseness, i.e. <code>textedit.get(doc.text)</code> -> `doc.text.get()]</p>
+
+<p>[TO DO: open TextEdit's SDEF documentation in Script Editor and summarize its contents and organization; alternatively, bundle the MacOSGlues sdefs in AppleScriptToSwift and provide a menu and dictionary viewer for viewing them there]</p>
+
+<p>[TO DO: note that get/set aren't normally documented in app dictionaries]</p>
 
 <h2>Get the document's content</h2>
 
@@ -179,7 +220,7 @@ try textedit.documents.text.get()
 
 <pre><code>#!/usr/bin/swift -target x86_64-apple-macosx10.11 -F /Library/Frameworks</code></pre>
 
-<p>For example, the following Swift 'script' file, when saved to disk and made executable (<code>chmod +x /path/to/script</code>), returns the path to the folder shown in the frontmost Finder window (if any):</p>
+<p>For example, the following Swift 'script' file, when saved to disk and made executable (<code>chmod +x /path/to/script</code>), returns the path to the folder shown in the frontmost Finder window (if any): [TO DO: rephrase as step-by-step exercise]</p>
 
 <pre><code>#!/usr/bin/swift -target x86_64-apple-macosx10.12 -F /Library/Frameworks
 
@@ -217,6 +258,6 @@ do {
 
             </div>
         </div>
-        <div id="footer"><div class="navbar"><a href="welcome.html">back</a> | <a href="index.html">index</a> | <a href="understanding-apple-events.html">next</a></div></div>
+        <div id="footer"><div class="navbar"><a href="installing-swiftautomation.html">back</a> | <a href="index.html">index</a> | <a href="understanding-apple-events.html">next</a></div></div>
     </body>
 </html>
