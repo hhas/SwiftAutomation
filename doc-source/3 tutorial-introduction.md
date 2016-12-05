@@ -25,8 +25,7 @@ The first step is to import the SwiftAutomation framework along with the glue cl
   import SwiftAutomation
   import MacOSGlues
 
-The MacOSGlues framework contains ready-to-use glues for many of the "AppleScriptable" applications provided by macOS, including Finder, iTunes, and TextEdit. Each glue file defines all the Swift classes you need to control an application using human-readable property and method names. 
-
+The MacOSGlues framework contains ready-to-use glues for many of the "AppleScriptable" applications provided by macOS, including Finder, iTunes, and TextEdit. Each glue file defines all the Swift classes you need to control an application using human-readable property and method names.
 
 Next, create a new `Application` object for controlling TextEdit:
 
