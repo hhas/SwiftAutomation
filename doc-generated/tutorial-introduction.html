@@ -12,7 +12,7 @@
                 <div class="navbar"><a href="installing-swiftautomation.html">back</a> | <a href="index.html">index</a> | <a href="understanding-apple-events.html">next</a></div>
                 <p>This chapter provides a practical taste of application scripting with Swift and SwiftAutomation. Later chapters cover the technical details of SwiftAutomation usage that are mostly skimmed over here.</p>
 
-<p>The following tutorial uses SwiftAutomation and XXXXXXXXX to perform a simple 'Hello World' exercise in TextEdit. [TO DO: implement simple Swift editor]</p>
+<p>The following tutorial uses SwiftAutomation and SwiftAutoEdit.app to perform a simple 'Hello World' exercise in TextEdit. [TO DO: need to include download link for getting SwiftAutoEdit]</p>
 
 <p>[[ TO DO: include screenshots? ]]</p>
 
@@ -118,7 +118,7 @@ import MacOSGlues
 
 <p>[TO DO: this will work better if the above <code>make</code> command is expanded to include <code>withProperties: [TED.text:"Hello World!"]</code>]. The next task will be to <code>get()</code> that document's text, which makes the point that object specifiers are only used to construct <em>queries</em>; to actually get a value from the application you <em>have</em> to use a command, e.g. <code>get()</code>. (Kinda like the difference between putting together a file path, e.g. "/Users/jsmith/" + "TODO.txt", that describes the location of some data, and passing that path to a <code>read()</code> command to actually obtain the data from that location.) Once getting is covered, the <code>set()</code> example can show how to change that content to something else. In addition, the <code>get()</code> example can explain the shorthand form that allows the command's direct parameter to be used as its subject for conciseness, i.e. <code>textedit.get(doc.text)</code> -> `doc.text.get()]</p>
 
-<p>[TO DO: open TextEdit's SDEF documentation in Script Editor and summarize its contents and organization; alternatively, bundle the MacOSGlues sdefs in AppleScriptToSwift and provide a menu and dictionary viewer for viewing them there]</p>
+<p>[TO DO: open TextEdit's SDEF documentation in SwiftAutoEdit.app and summarize its contents and organization]</p>
 
 <p>[TO DO: note that get/set aren't normally documented in app dictionaries]</p>
 

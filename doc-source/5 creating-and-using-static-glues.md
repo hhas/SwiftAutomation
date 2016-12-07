@@ -36,7 +36,7 @@ Refer to this documentation when using SwiftAutomation glues in your own code, a
 
 Be aware that only 'keyword' definitions are displayed in Swift syntax; 'type' names are unchanged from their AppleScript representation, as are AppleScript terms and sample code that appear in descriptions. SDEF-based documentation is always written for AppleScript users, so unless the application developer provides external documentation for other programming languages some manual translation is required. Furthermore, most applications' SDEF documentation is far from exhaustive, and frequently lacks both detail and accuracy; for instance, the SDEF format doesn't descript  precisely what types and combinations of parameters are/aren't accepted by each command, while the documented 'types' of properties, parameters, and return values may be incomplete or wrong. Supplementary documentation, example code, AppleScript user forums, educated guesswork, and trial-and-error experimentation may also be required.
 
-The bundled `AppleScriptToSwift.app` command translation tool can also help when the correct AppleScript syntax for the desired command is already known, and all that is needed is some assistance in writing its Swift equivalent.
+The SwiftAutoEdit application includes a File ➝ New ➝ Command Translator menu option that can also help when the correct AppleScript syntax for a command is already known, and all that is needed is some assistance in constructing its Swift equivalent.
 
 
 ## How glues are structured

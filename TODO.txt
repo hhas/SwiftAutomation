@@ -1,11 +1,6 @@
 TO DO:
 
 
-
-- Rename AppleScriptToSwift.app to `SwiftAutomation Assistant.app` and add dictionary viewer.
-
-
-
 - For convenience, generated glues include a convenience initializer containing the bundleID for the target application, allowing user to write [e.g.] `TextEdit()` as shorthand for `TextEdit(bundleIndentifier: "com.apple.TextEdit")`. However, in Swift3/Xcode8, if the glue's application class uses the following convenience initializer, it crashes with EXC_BAD_ACCESS, presumably due to a Swift bug:
 
         public class TextEdit: TEDRoot, Application {
@@ -22,9 +17,6 @@ TO DO:
 
 - Define standard structs for representing color, position, etc.? (And/Or support packing/unpacking Cocoa equivalents, e.g. NSColor?) The default behavior is to pack/unpack as Array<Int>, but type-safe alternatives could also be provided that ensure whatever type of descriptor an app returns (typeAEList/typeQDRectangle) the final result is normalized to the semantic type specified by the user (e.g. SwiftAutomation.RectangleRecord). Also, how practical to support packing/unpacking image types (a known mess), e.g. bridging typeTIFF, typePICT, etc to NSImage?
 
-
-
-- Could a Swift REPL be integrated into the AppleScriptToSwift application to create a general-purpose 'SwiftAutomationExplorer.app'? Such an application would also benefit from a built-in dictionary viewer that can display Swift-style application dictionaries without the user having to manually generate them. A. This is out of scope, but would be appropriate for a separate Script Editor-like Swift editor.
 
 
 

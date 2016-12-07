@@ -2,7 +2,7 @@
 
 This chapter provides a practical taste of application scripting with Swift and SwiftAutomation. Later chapters cover the technical details of SwiftAutomation usage that are mostly skimmed over here.
 
-The following tutorial uses SwiftAutomation and XXXXXXXXX to perform a simple 'Hello World' exercise in TextEdit. [TO DO: implement simple Swift editor]
+The following tutorial uses SwiftAutomation and SwiftAutoEdit.app to perform a simple 'Hello World' exercise in TextEdit. [TO DO: need to include download link for getting SwiftAutoEdit]
 
 [[ TO DO: include screenshots? ]]
 
@@ -104,7 +104,7 @@ Here we tell TextEdit to create a new document object containing the text "Hello
 [TO DO: this will work better if the above `make` command is expanded to include `withProperties: [TED.text:"Hello World!"]`]. The next task will be to `get()` that document's text, which makes the point that object specifiers are only used to construct _queries_; to actually get a value from the application you _have_ to use a command, e.g. `get()`. (Kinda like the difference between putting together a file path, e.g. "/Users/jsmith/" + "TODO.txt", that describes the location of some data, and passing that path to a `read()` command to actually obtain the data from that location.) Once getting is covered, the `set()` example can show how to change that content to something else. In addition, the `get()` example can explain the shorthand form that allows the command's direct parameter to be used as its subject for conciseness, i.e. `textedit.get(doc.text)` -> `doc.text.get()]
 
 
-[TO DO: open TextEdit's SDEF documentation in Script Editor and summarize its contents and organization; alternatively, bundle the MacOSGlues sdefs in AppleScriptToSwift and provide a menu and dictionary viewer for viewing them there]
+[TO DO: open TextEdit's SDEF documentation in SwiftAutoEdit.app and summarize its contents and organization]
 
 [TO DO: note that get/set aren't normally documented in app dictionaries]
 

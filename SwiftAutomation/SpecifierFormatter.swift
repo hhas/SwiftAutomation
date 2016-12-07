@@ -297,7 +297,7 @@ public class SpecifierFormatter {
         if description.considering != defaultConsidering {
             args.append("considering: \(description.considering)")
         }
-        return parentSpecifier + "(" + args.joined(separator: ", ") + ")"
+        return "try \(parentSpecifier)(\(args.joined(separator: ", ")))"
     }
 }
 

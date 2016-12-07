@@ -53,20 +53,12 @@ a Swift glue and accompanying documentation for macOS's Photos application:
 
   /path/to/aeglue -o ~/Desktop Photos
 
-A basic translation tool, AppleScriptToSwift, that converts application commands
-from AppleScript to Swift syntax is also included. To use it, build and run the 
-AppleScriptToSwift target. Type an AppleScript command into the top text pane
-and click the Run button to view the equivalent Swift syntax in the bottom pane.
-(If the 'Send Apple events' checkbox is selected, the command is also sent to
-the target application and its result displayed too.)
-
-Note that `aeglue` and AppleScriptToSwift.app normally retrieve application 
-terminology using `ascrgdte` ('get dynamic terminology') Apple events. Some 
-applications (e.g. Finder) have faulty `ascrgdte` handlers that fail to return
-correct terminology, in which case use the `-s` or 'Use SDEF terminology' 
-options instead. (Be aware that SDEF-based terminology may also contain bugs 
-and omissions, in which case use raw four-char codes or correct generated glue 
-code by hand.)
+Note that `aeglue` normally retrieves application terminology using `ascrgdte`
+('get dynamic terminology') Apple events. Some applications (e.g. Finder) have
+faulty `ascrgdte` handlers that fail to return correct terminology, in which
+case use the `-s` or 'Use SDEF terminology' options instead. (Be aware that
+SDEF-based terminology may also contain bugs and omissions, in which case use
+raw four-char codes or correct generated glue code by hand.)
 
 SwiftAutomation requires macOS 10.11 and Swift 3.0 and Xcode 8.0 or later.
 
@@ -76,12 +68,14 @@ SwiftAutomation requires macOS 10.11 and Swift 3.0 and Xcode 8.0 or later.
 SwiftAutomation's goal is to provide better than 99.9% compatibility across the
 wide range of real-world "AppleScriptable" macOS applications available today.
 
-Unlike macOS's ScriptingBridge (an ORM design crippled by numerous broken and
-missing features and incompatibilities with many "AppleScriptable" applications),
-SwiftAutomation uses the same RPC + Query Builder approach used by the appscript
-library for Python and Ruby—and by AppleScript itself!—
-an design that has proven itself in over 10 years' use, updated, improved, and
-tailored to take full advantage of Swift syntax and static type system.
+Unlike macOS's ScriptingBridge framework (an ORM-style design that suffers from
+many missing/broken features and incompatibilities with many "AppleScriptable"
+applications), SwiftAutomation uses the same RPC + Query Builder approach used
+by the appscript AE bridges for Python and Ruby, not to mention AppleScript
+itself! Appscript has already been tested and proven over a decade of real-world
+production use, and SwiftAutomation updates and improves on that original design
+while tailoring it to take full advantage of Swift's powerful syntax and static
+type systems.
 
 SwiftAutomation is still under development, but even as Apple decide the future
 of Automation across its products, we believe SwiftAutomation could mark a new
@@ -93,9 +87,9 @@ establishing full, modern, advanced Automation capabilities on iOS too.
 
 ## Status
 
-SwiftAutomation is currently alpha status. The framework's implementation is
-all but complete, though it not yet fully tested and its documentation is a
-work in progress. Expect errors and omissions, use at own risk, etc.
+SwiftAutomation is currently approaching beta status. The implementation is
+largely complete though not yet fully tested, and the documentation is a work
+in progress. Expect errors and omissions, use at own risk, etc.
 
 
 ## Known issues
