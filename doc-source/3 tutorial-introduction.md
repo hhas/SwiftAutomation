@@ -2,7 +2,9 @@
 
 This chapter provides a practical taste of application scripting with Swift and SwiftAutomation. Later chapters cover the technical details of SwiftAutomation usage that are mostly skimmed over here.
 
-The following tutorial uses SwiftAutomation and SwiftAutoEdit.app to perform a simple 'Hello World' exercise in TextEdit. [TO DO: need to include download link for getting SwiftAutoEdit]
+The following tutorial uses SwiftAutomation and SwiftAutoEdit.app to perform a simple 'Hello World' exercise in TextEdit.
+
+[Note: SwiftAutoEdit is a work in progress; a ready-built .app will be provided once it is more complete. Until then, the Xcode project can be obtained from https://bitbucket.org/hhas/swiftautoedit; see its README file for instructions on how to build and install it.]
 
 [[ TO DO: include screenshots? ]]
 
@@ -11,14 +13,7 @@ The following tutorial uses SwiftAutomation and SwiftAutoEdit.app to perform a s
 
 ## Create a new Swift "script"
 
-Create a new text document containing the following first line, and save it as `tutorial.swift` :
-
-  #!/usr/bin/swift -target x86_64-apple-macosx10.12 -F /Library/Frameworks
-
-Scripts may be run separately in Terminal (to make a script file executable, run <code>chmod +x <var>NAME</var>.swift</code> first), or directly from your code editor if it supports this.
-
-
-## Target TextEdit
+Create a new Swift document in SwiftAutoEdit (File ➝ New ➝ Script) and save it as `tutorial.swift`.
 
 The first step is to import the SwiftAutomation framework along with the glue classes that we'll use to control TextEdit:
 
@@ -33,37 +28,73 @@ Next, create a new `Application` object for controlling TextEdit:
 
 By default, the new `Application` object will use the bundle identifier of the application from which the glue was created, in this case `"com.apple.TextEdit"`. Applications may also be targeted by name (e.g. "TextEdit"), full path ("/Applications/TextEdit.app"), process ID, and even remote URL ("eppc://my-other-mac.local/TextEdit"), but for most tasks the default behavior is sufficient.
 
-Now type the following line, then save and run the script:
+Now type the following line, then save and run the script (Script ➝ Run, or Command-Return):
 
-  try textedit.activate()
+  try textedit.make(new: TED.document)
 
-This will make TextEdit the currently active (frontmost) application. (`activate` is a standard command to which _all_ applications should respond.) If TextEdit isn't already running, SwiftAutomation will automatically launch it before sending it the command. 
+This will launch TextEdit (if it isn't already running) and create a new "Untitled" document within it. (Note that TextEdit may automatically create a new, empty document when launched, in which case this script will create a second empty document named "Untitled 2".) 
 
 <p class="hilitebox">All application commands throw errors upon failure, so don't forget to insert a <code>try</code> keyword before an application command or Swift will refuse to compile it.</p>
 
 
 ## Get TextEdit's documents
 
-[TO DO: need a sentence here stating that most 'scriptable' apps have a hierarchical 'object model'. e.g. To refer to TE's document objects:]
+Mac applications normally present "scriptable" state as a tree-like data structure called the _Apple Event Object Model_, or "AEOM".
+
+Unlike traditional object-oriented models (e.g. web browser's DOM) which are thin abstractions over the corresponding object in the application's Model layer', AEOM is a much thicker abstraction that presents the application's state as a queryable relational graph. Depending on how a scriptable application is internally implemented, each node, or "object", within that graph may represent a corresponding implementation object or may be a further abstraction over more complex or dynamically calculated application state. For example, TextEdit's `document` and `window` objects map directly to the underlying `NSDocument` and `NSWindow` instances, whereas `characters`, `words`, and `paragraphs` all provide different views onto the same character data within an `NSTextStorage` buffer that make it easy for the user to query and manipulate that text data in a range of useful ways. Chapter 4 provides a detailed discussion of how AEOM queries and relationships work; for now, we'll just talk about objects "containing" other objects, and "referring" to objects.
+
+For instance, to refer to all of the `document` objects currently contained by TextEdit's root `Application` object, you would write:
 
   textedit.documents
 
-[To get a list of currently open TE documents, send TextEdit a `get` command asking for that reference]
+Type the following into your script and run it:
+
+  print(textedit.documents)
+
+The printed result may surprise you:
+
+  ➝ TextEdit().documents
+
+In a traditional DOM, evaluating this literal reference would typically return an array of Document instances. In AEOM, however, executing a literal reference merely returns a SwiftAutomation object _representing_ that reference, as a quick check of its dynamic type reveals:
+
+  print(type(of: textedit.documents))
+  ➝ TEDItems
+
+`TEDItems` is one of the glue classes imported from MacOSGlues that enables you to interact with TextEdit using ordinary Swift property and method names. A `TEDItems` instance decribes a _one-to-many relationship_ between an object and zero or more other objects contained by it; in this case TextEdit's '`Application` object and all of the `document` objects—or _elements_—that it contains.
+
+In order to do useful work with this reference, you have to send it as a _parameter_ to an application _command_. For example, to get a list of current TextEdit documents, pass the `textedit.documents` reference as the direct parameter to TextEdit's `get` command:
+
+  print(try textedit.get(textedit.documents))
+
+This time the result looks much more familiar:
+
+  ➝ [TextEdit().documents["Untitled"], TextEdit().documents["Untitled 2"], ...]
+
+However, don't forget we're communicating between two completely unrelated processes here: the `swift` process running our script and the `TextEdit` process. While simple values such as integers, strings, and arrays may be passed-by-copy between processes, complex internal application state cannot leave the process in which it is defined; therefore what we're actually seeing here is an array of yet more SwiftAutomation objects (this time of class `TEDItem`), each of which describes a _one-to-one relationship_ between TextEdit's `Application` object and one of its `document` objects. 
+
+[ TO DO: while the above document specifiers are represented by an instance of the TextEdit glue's `TEDItem` class, the user can't observe this directly because the returned array's dynamic type is `Array<Any>`]
+
+Don't worry if the AEOM's way of working isn't immediately clear to you: its novel approach to IPC can take some getting used to, especially if you're coming from a traditional object-oriented background, though you'll find it surprisingly logical and elegant once you do. 
+
+Still, while AEOM semantics may be unusual, SwiftAutomation makes the syntax as pleasantly familiar as it can; providing a number of convenient "shorthand" forms for writing object references, or _specifiers_, and commands in a more Swift-like way. For instance, if an application command does not already include a direct parameter, SwiftAutomation automatically uses the reference upon which that command was called, thus:
+
+  print(try textedit.get(textedit.documents))
+
+can be written much more neatly as:
 
   print(try textedit.documents.get())
 
-Running the script will produce output that looks something like this (assuming TextEdit opened a new, empty document upon launch):
 
-  [TextEdit().documents["Untitled"]]
-
-[The result here is a Swift array containing a single _object specifier_. Think of a specifier as a simple first-class query, not unlike an XQuery path but composed of nested objects instead of a slash-delimited string.]
-
-[We'll do more with `get` shortly, but first let's see how to create new objects:]
+[ TO DO: worth introducing simple by-index, by-name specifiers here ]
 
 
 ## Create a new TextEdit document
 
-Before we explore document objects more deeply, let's look at how to create new objects. 
+[[ TO DO: order of material here is wrong: need to discuss document object structure before looking at how to pre-populate its properties in `make` ]]
+
+[[ TO DO: also, some of the following discussion now occurs in new text above, so can be trimmed below ]]
+
+Before we explore TextEdit's object model more deeply, let's look at how to create new objects. 
 
 In a traditional DOM-style API, you would typically instantiate its `Node` class, assign the new instance to a temporary variable while you assign its properties, and finally insert it into the `var subNodes: Array<Node>` property of an existing `Node` object. However, Apple event IPC deals with _remote_ objects, not local ones, meaning you cannot create or store application objects in your own code as they exist in a completely separate process. Apple events can only manipulate application objects that already exist, and application objects can only exist as part of an existing application object model.
 

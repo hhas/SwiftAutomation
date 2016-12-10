@@ -30,7 +30,9 @@ To clone the Xcode project to your own machine:
 
   git clone https://bitbucket.org/hhas/swiftae.git
 
-The project includes a `SwiftAutomation.framework` target for embedded use.
+A basic Swift "script editor" (currently under development) is also available:
+
+  https://bitbucket.org/hhas/swiftautoedit
 
 
 ## Install it

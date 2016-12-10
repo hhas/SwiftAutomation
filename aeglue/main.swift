@@ -7,6 +7,9 @@
 //
 
 
+// TO DO: add `-c` option for converting an existing SDEF (passed as stdin/file) from AS to SA format
+
+
 import Foundation
 //import SwiftAutomation // TO DO: the `aeglue` target currently bakes everything into CLI executable; if/when Swift finally supports dynamic framework linking, use import instead
 

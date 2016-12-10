@@ -5,14 +5,14 @@ While glue files' terminology-based properties and methods are recommended for c
 
 ## Sending standard Apple events
 
-The following commands are defined on all `Application` and `Specifier` classes, including the default `AEApplication`, and should be recognized by all macOS applications:
+The following commands are defined on all `Application` and `Specifier` classes, including the default `AEApplication`, and are recognized by most/all macOS applications:
 
   run()
   reopen()
   launch()
   activate()
   open(Array<URL>) // list of file URLs
-  openLocation(String) // a URL string (http:/mailto:/etc.)
+  openLocation(String) // a URL string (e.g. "http://apple.com")
   print(Array<URL>) // list of file URLs
   quit( [ saving: AE.yes|AE.no|AE.ask ] )
 

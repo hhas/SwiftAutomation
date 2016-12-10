@@ -55,6 +55,26 @@
 		4F4C1A0E1D910BDE004F9083 /* TypeExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F4C1A0D1D910BDE004F9083 /* TypeExtensions.swift */; };
 		4F4C1A0F1D910E41004F9083 /* TypeExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F4C1A0D1D910BDE004F9083 /* TypeExtensions.swift */; };
 		4F4C1A101D910E4B004F9083 /* TypeExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F4C1A0D1D910BDE004F9083 /* TypeExtensions.swift */; };
+		4F63093D1DFC19A90089ADDB /* index.html in Copy Files */ = {isa = PBXBuildFile; fileRef = 4F0E393D1BA864A400FF2A96 /* index.html */; };
+		4F63093E1DFC19A90089ADDB /* welcome.html in Copy Files */ = {isa = PBXBuildFile; fileRef = 4F1A57F01D9AAF5200ACFA51 /* welcome.html */; };
+		4F63093F1DFC19A90089ADDB /* installing-swiftautomation.html in Copy Files */ = {isa = PBXBuildFile; fileRef = 4F0FD46F1DF5C77E00F306D3 /* installing-swiftautomation.html */; };
+		4F6309401DFC19A90089ADDB /* tutorial-introduction.html in Copy Files */ = {isa = PBXBuildFile; fileRef = 4F1A57F11D9AAF5C00ACFA51 /* tutorial-introduction.html */; };
+		4F6309411DFC19A90089ADDB /* understanding-apple-events.html in Copy Files */ = {isa = PBXBuildFile; fileRef = 4F0E39441BA864A400FF2A96 /* understanding-apple-events.html */; };
+		4F6309421DFC19A90089ADDB /* creating-and-using-static-glues.html in Copy Files */ = {isa = PBXBuildFile; fileRef = 4F0E39391BA864A400FF2A96 /* creating-and-using-static-glues.html */; };
+		4F6309431DFC19A90089ADDB /* type-mappings.html in Copy Files */ = {isa = PBXBuildFile; fileRef = 4F1A57F21D9AAF5C00ACFA51 /* type-mappings.html */; };
+		4F6309441DFC19A90089ADDB /* application-objects.html in Copy Files */ = {isa = PBXBuildFile; fileRef = 4F0E39341BA864A400FF2A96 /* application-objects.html */; };
+		4F6309451DFC19A90089ADDB /* object-specifiers.html in Copy Files */ = {isa = PBXBuildFile; fileRef = 4F0E39411BA864A400FF2A96 /* object-specifiers.html */; };
+		4F6309461DFC19A90089ADDB /* commands.html in Copy Files */ = {isa = PBXBuildFile; fileRef = 4F0E39381BA864A400FF2A96 /* commands.html */; };
+		4F6309471DFC19A90089ADDB /* examples.html in Copy Files */ = {isa = PBXBuildFile; fileRef = 4F0E393A1BA864A400FF2A96 /* examples.html */; };
+		4F6309481DFC19A90089ADDB /* optimizing-performance.html in Copy Files */ = {isa = PBXBuildFile; fileRef = 4F0E39421BA864A400FF2A96 /* optimizing-performance.html */; };
+		4F6309491DFC19A90089ADDB /* low-level-apis.html in Copy Files */ = {isa = PBXBuildFile; fileRef = 4F0E393F1BA864A400FF2A96 /* low-level-apis.html */; };
+		4F63094A1DFC19A90089ADDB /* notes.html in Copy Files */ = {isa = PBXBuildFile; fileRef = 4F0E39401BA864A400FF2A96 /* notes.html */; };
+		4F63094B1DFC19A90089ADDB /* application_architecture.gif in Copy Files */ = {isa = PBXBuildFile; fileRef = 4F0E39351BA864A400FF2A96 /* application_architecture.gif */; };
+		4F63094C1DFC19A90089ADDB /* application_architecture2.gif in Copy Files */ = {isa = PBXBuildFile; fileRef = 4F0E39361BA864A400FF2A96 /* application_architecture2.gif */; };
+		4F63094D1DFC19A90089ADDB /* client_app_to_itunes_event.gif in Copy Files */ = {isa = PBXBuildFile; fileRef = 4F0E39371BA864A400FF2A96 /* client_app_to_itunes_event.gif */; };
+		4F63094E1DFC19A90089ADDB /* finder_to_textedit_event.gif in Copy Files */ = {isa = PBXBuildFile; fileRef = 4F0E393B1BA864A400FF2A96 /* finder_to_textedit_event.gif */; };
+		4F63094F1DFC19A90089ADDB /* relationships_example.gif in Copy Files */ = {isa = PBXBuildFile; fileRef = 4F0E39431BA864A400FF2A96 /* relationships_example.gif */; };
+		4F6309501DFC19A90089ADDB /* full.css in Copy Files */ = {isa = PBXBuildFile; fileRef = 4F0E393C1BA864A400FF2A96 /* full.css */; };
 		4F9AFB531D5E9B4100A71890 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F9AFB451D5E99FC00A71890 /* main.swift */; };
 		4FB7D8751D5EA60F00F0DB36 /* AppData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F63C4401B86A335000D74EE /* AppData.swift */; };
 		4FB7D8761D5EA60F00F0DB36 /* Specifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F63C42F1B7CF133000D74EE /* Specifier.swift */; };
@@ -154,6 +174,36 @@
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 1;
+		};
+		4F63093C1DFC19940089ADDB /* Copy Files */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = doc;
+			dstSubfolderSpec = 7;
+			files = (
+				4F63093D1DFC19A90089ADDB /* index.html in Copy Files */,
+				4F63093E1DFC19A90089ADDB /* welcome.html in Copy Files */,
+				4F63093F1DFC19A90089ADDB /* installing-swiftautomation.html in Copy Files */,
+				4F6309401DFC19A90089ADDB /* tutorial-introduction.html in Copy Files */,
+				4F6309411DFC19A90089ADDB /* understanding-apple-events.html in Copy Files */,
+				4F6309421DFC19A90089ADDB /* creating-and-using-static-glues.html in Copy Files */,
+				4F6309431DFC19A90089ADDB /* type-mappings.html in Copy Files */,
+				4F6309441DFC19A90089ADDB /* application-objects.html in Copy Files */,
+				4F6309451DFC19A90089ADDB /* object-specifiers.html in Copy Files */,
+				4F6309461DFC19A90089ADDB /* commands.html in Copy Files */,
+				4F6309471DFC19A90089ADDB /* examples.html in Copy Files */,
+				4F6309481DFC19A90089ADDB /* optimizing-performance.html in Copy Files */,
+				4F6309491DFC19A90089ADDB /* low-level-apis.html in Copy Files */,
+				4F63094A1DFC19A90089ADDB /* notes.html in Copy Files */,
+				4F63094B1DFC19A90089ADDB /* application_architecture.gif in Copy Files */,
+				4F63094C1DFC19A90089ADDB /* application_architecture2.gif in Copy Files */,
+				4F63094D1DFC19A90089ADDB /* client_app_to_itunes_event.gif in Copy Files */,
+				4F63094E1DFC19A90089ADDB /* finder_to_textedit_event.gif in Copy Files */,
+				4F63094F1DFC19A90089ADDB /* relationships_example.gif in Copy Files */,
+				4F6309501DFC19A90089ADDB /* full.css in Copy Files */,
+			);
+			name = "Copy Files";
+			runOnlyForDeploymentPostprocessing = 0;
 		};
 		4F9AFB341D5B58EB00A71890 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
@@ -367,26 +417,26 @@
 		4F0E39311BA864A400FF2A96 /* doc-generated */ = {
 			isa = PBXGroup;
 			children = (
+				4F0E393D1BA864A400FF2A96 /* index.html */,
 				4F1A57F01D9AAF5200ACFA51 /* welcome.html */,
 				4F0FD46F1DF5C77E00F306D3 /* installing-swiftautomation.html */,
+				4F1A57F11D9AAF5C00ACFA51 /* tutorial-introduction.html */,
+				4F0E39441BA864A400FF2A96 /* understanding-apple-events.html */,
+				4F0E39391BA864A400FF2A96 /* creating-and-using-static-glues.html */,
+				4F1A57F21D9AAF5C00ACFA51 /* type-mappings.html */,
 				4F0E39341BA864A400FF2A96 /* application-objects.html */,
+				4F0E39411BA864A400FF2A96 /* object-specifiers.html */,
+				4F0E39381BA864A400FF2A96 /* commands.html */,
+				4F0E393A1BA864A400FF2A96 /* examples.html */,
+				4F0E39421BA864A400FF2A96 /* optimizing-performance.html */,
+				4F0E393F1BA864A400FF2A96 /* low-level-apis.html */,
+				4F0E39401BA864A400FF2A96 /* notes.html */,
 				4F0E39351BA864A400FF2A96 /* application_architecture.gif */,
 				4F0E39361BA864A400FF2A96 /* application_architecture2.gif */,
 				4F0E39371BA864A400FF2A96 /* client_app_to_itunes_event.gif */,
-				4F1A57F11D9AAF5C00ACFA51 /* tutorial-introduction.html */,
-				4F1A57F21D9AAF5C00ACFA51 /* type-mappings.html */,
-				4F0E39381BA864A400FF2A96 /* commands.html */,
-				4F0E39391BA864A400FF2A96 /* creating-and-using-static-glues.html */,
-				4F0E393A1BA864A400FF2A96 /* examples.html */,
 				4F0E393B1BA864A400FF2A96 /* finder_to_textedit_event.gif */,
-				4F0E393C1BA864A400FF2A96 /* full.css */,
-				4F0E393D1BA864A400FF2A96 /* index.html */,
-				4F0E393F1BA864A400FF2A96 /* low-level-apis.html */,
-				4F0E39401BA864A400FF2A96 /* notes.html */,
-				4F0E39411BA864A400FF2A96 /* object-specifiers.html */,
-				4F0E39421BA864A400FF2A96 /* optimizing-performance.html */,
 				4F0E39431BA864A400FF2A96 /* relationships_example.gif */,
-				4F0E39441BA864A400FF2A96 /* understanding-apple-events.html */,
+				4F0E393C1BA864A400FF2A96 /* full.css */,
 			);
 			path = "doc-generated";
 			sourceTree = "<group>";
@@ -635,8 +685,8 @@
 				4FFF5D1F1D899F0D008ED4F5 /* Sources */,
 				4FFF5D201D899F0D008ED4F5 /* Frameworks */,
 				4FFF5D211D899F0D008ED4F5 /* Headers */,
-				4FFF5D221D899F0D008ED4F5 /* Resources */,
 				4FFF5D521D89B5A2008ED4F5 /* CopyFiles */,
+				4F63093C1DFC19940089ADDB /* Copy Files */,
 			);
 			buildRules = (
 			);
@@ -722,13 +772,6 @@
 				4F35D7C61DD4A6B2006A22E8 /* QuickTimePlayerGlue.swift.sdef in Resources */,
 				4F35D7CB1DD4A6B2006A22E8 /* SystemPreferencesGlue.swift.sdef in Resources */,
 				4F35D7CC1DD4A6B2006A22E8 /* TerminalGlue.swift.sdef in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		4FFF5D221D899F0D008ED4F5 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
