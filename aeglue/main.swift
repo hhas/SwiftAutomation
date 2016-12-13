@@ -17,12 +17,13 @@ import Foundation
 
 let optionsWithArguments = Set<Character>("npeo".characters) // this MUST contain all options that also require arguments (used to separate option key from value if not explicitly separated by whitespace, e.g. '-pABC' -> '-p ABC')
 
+// TO DO: only include ANSI styles when writing to console; pull out char seqs into separate constants, and toggle according to stdout type
 
 let helpText = [
     "Generate SwiftAutomation glue classes and SDEF documentation for",
     " controlling an \"AppleScriptable\" application from Swift.",
     "",
-    "\0x1B[1mUSAGE\0x1B[m", // TO DO: only use ANSI control chars if connected to tty
+    "\u{1B}[1mUSAGE\u{1B}[m", // TO DO: only use ANSI control chars if connected to tty
     "",
     "    aeglue [-n CLASSNAME] [-p PREFIX] [-DdrS]",
     "           [-est FORMAT ...] [-o OUTDIR] [APPNAME ...]",
@@ -34,7 +35,7 @@ let helpText = [
     "",
     "On completion, the generated files' paths are written to STDOUT.",
     "",
-    "\0x1B[1mOPTIONS\0x1B[1",
+    "\u{1B}[1mOPTIONS\u{1B}[m",
     "",
     "    -D             Do not import the SwiftAutomation framework.",
     "    -d             Do not generate an SDEF documentation file.",
@@ -55,7 +56,7 @@ let helpText = [
     "    -v             Output the SwiftAutomation framework's version",
     "                       and exit.",
     "",
-    "\0x1B[1mEXAMPLES\0x1B[m",
+    "\u{1B}[1mEXAMPLES\u{1B}[m",
     "",
     "    aeglue iTunes",
     "",
@@ -63,7 +64,7 @@ let helpText = [
     "",
     "    aeglue -p TE TextEdit ~/Desktop",
     "",
-    "\0x1B[1mTYPE SUPPORT\0x1B[m",
+    "\u{1B}[1mTYPE SUPPORT\u{1B}[m",
     
     // TO DO: finish
     // TO DO: the full details would probably be better covered in the documentation's 'Creating glues' chapter, with only the format string structures shown here
@@ -75,12 +76,12 @@ let helpText = [
     "the Apple Event Manager's weak, dynamic types. Each option may",
     "appear any number of times and takes a format string as argument.",
     "",
-    "\0x1B[4mEnumerated types\0x1B[m",
+    "\u{1B}[4mEnumerated types\u{1B}[m",
     "",
     "Enumerated types enable commands whose results can have multiple",
     "types to return those values in a type-safe way.",
     "",
-    "For example, if a command can return a Symbol \0x1B[1mor\0x1B[m a String, include",
+    "For example, if a command can return a Symbol \u{1B}[1mor\u{1B}[m a String, include",
     "the following -e option in the aeglue command:",
     "",
     "    -e Symbol+String",
@@ -105,8 +106,8 @@ let helpText = [
     "",
     "    aeglue -e Symbol+Int+String -p MA 'My App'",
     // TO DO: note that `Symbol` must come before `String`, to avoid type/enum codes being coerced to four-char-code strings (which AEM allows)
-    
-    "\0x1B[4mRecord structs\0x1B[m",
+    "",
+    "\u{1B}[4mRecord structs\u{1B}[m",
     // TO DO: document struct and typealias format strings too
     "",
     "While SwiftAutomation packs and unpacks Apple event records",
@@ -115,8 +116,7 @@ let helpText = [
     "a Swift struct, simplifying property access and improving type ",
     "safety.",
     "",
-    
-    "\0x1B[4mType aliases\0x1B[m",
+    "\u{1B}[4mType aliases\u{1B}[m",
     "",
     "The -t option adds a typealias to the glue file. For example,",
     "to define a typealias for Array<String> named PREFIXStrings:",
