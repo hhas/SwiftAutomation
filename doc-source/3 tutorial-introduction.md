@@ -41,6 +41,8 @@ This will launch TextEdit (if it isn't already running) and create a new "Untitl
 
 Mac applications normally present "scriptable" state as a tree-like data structure called the _Apple Event Object Model_, or "AEOM".
 
+[ TO DO: next para is too long and detailed; it belongs in next chapter. Need one sentence to say it's query-driven, not OO, and move onto the examples which make that point. - could say AEOM is unusual in that its interaction model comes from relational database world rather than traditional OO of DOM, etc (a View-Controller layer that describes a relational graph of real and/or abstract 'objects' presenting a user-friendly view onto data in app's Model layer) ]
+
 Unlike traditional object-oriented models (e.g. web browser's DOM) which are thin abstractions over the corresponding object in the application's Model layer', AEOM is a much thicker abstraction that presents the application's state as a queryable relational graph. Depending on how a scriptable application is internally implemented, each node, or "object", within that graph may represent a corresponding implementation object or may be a further abstraction over more complex or dynamically calculated application state. For example, TextEdit's `document` and `window` objects map directly to the underlying `NSDocument` and `NSWindow` instances, whereas `characters`, `words`, and `paragraphs` all provide different views onto the same character data within an `NSTextStorage` buffer that make it easy for the user to query and manipulate that text data in a range of useful ways. Chapter 4 provides a detailed discussion of how AEOM queries and relationships work; for now, we'll just talk about objects "containing" other objects, and "referring" to objects.
 
 For instance, to refer to all of the `document` objects currently contained by TextEdit's root `Application` object, you would write:
@@ -54,6 +56,8 @@ Type the following into your script and run it:
 The printed result may surprise you:
 
   ➝ TextEdit().documents
+
+[TO DO: following still too long and rambling; need to make the key point: it's a query-driven world - bam! - and move on]
 
 In a traditional DOM, evaluating this literal reference would typically return an array of Document instances. In AEOM, however, executing a literal reference merely returns a SwiftAutomation object _representing_ that reference, as a quick check of its dynamic type reveals:
 

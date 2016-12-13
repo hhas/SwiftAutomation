@@ -15,6 +15,10 @@ import AppKit
 
 // note: using an external formatter class allows different formatters to be swapped in for other languages
 
+// TO DO: when displaying by-range specifier's start and stop, simplify by-index/by-name representations where appropriate, e.g. `TextEdit().documents[TEDCon.documents[1], TEDCon.documents[-2]]` should display as `TextEdit().documents[1, -2]`
+
+
+
 
 /******************************************************************************/
 // Formatter

@@ -30,12 +30,6 @@ TO DO:
 - canonicize most/all Swift method names, e.g. pack(value:) instead of pack(_ value:)?
 
 
-- add option to `aeglue` for exporting manually editable lookup tables as an ApplicationTerminology-compliant Swift class (see `DefaultTerminology` for an example) or JSON file (probably better since `aeglue` needs to read it at run-time), for use when an application's original terminology has defects that can't easily be worked around (the alternative, of course, is to drop down to four-char-codes - equivalent to using raw chevron syntax in AppleScript - but that's a PITA too as one needs to know the correct codes in order to use those APIs).
-
-    Notes: in an ideal world users would just export the problem app's dictionary as an .sdef file, then manually fix and reimport that, but half the reason for having these sorts of trapdoors in the first place is to work around problems caused by flaky crap like SDEFs in the first place. For example, the SDEF format can't represent all possible four-char-codes correctly: non-printing control characters are disallowed in XML, and SDEF format doesn't have a way to escape unprintable 'MacRoman characters', e.g. as '\x00', so FCCs that are valid in AETEs and used by some Carbon apps/osaxen get omitted when converted to SDEF, breaking compatibility with the target app by making those properties/elements/commands/symbols/etc unusable. (AppleScript doesn't have this problem when dealing with local apps as it still uses the old deprecated `OSAGetAppTerminology()` API to fetch their terminology directly in AETE format.)
-
-    Note that this capability is only useful to dynamic languages that don't have static glues; for Swift it's simplest just to hack corrections into the `APPLICATIONGlue.swift` file. (For sharing static glue patches with other users, just use the standard `diff` tools.)
-
 
 - the `isInt64Compatible` flag's' default is `true` on the assumption that most apps will do the right thing upon receiving `typeUInt32`/`typeSInt64`/`typeUInt64` descriptors (i.e. coerce them to whatever type[s] they actually need, e.g. Double), and apps like Excel which only accept `SInt32` and `Double` (which are what AppleScript uses) and fail on anything else are in the minority. If that assumption turns out to be wrong, this flag will need to be made `false` by default (i.e. emulate AppleScript's behavior). Note that this only affects integers beyond ±2**31; integers than can be packed into SInt32 always will be.
 
@@ -71,5 +65,7 @@ TO DO:
 - also find out if macOS's SDEF-to-AETE converter now handles 'unprintable' OSTypes correctly (i.e. uses hex representation)
 
 
-- add `GlueTable.export()` method that exports name-code tables in a generic data format (e.g. JSON) that is trivial to edit and parse back in, allowing dynamic bridge users to work around buggy/broken terminology by manually exporting, patching, and reimporting terms (note: Swift users can just patch the generated .swift glue files directly)
+- add `GlueTable.export()` method that exports name-code tables in a generic data format (e.g. JSON or INI) that is trivial to edit and parse back in, allowing dynamic bridge users to work around buggy/broken terminology by manually exporting, patching, and reimporting terms (note: Swift users can just patch the generated .swift glue files directly).
+
+    Another possibility would be for user just to edit SDEF file then have dynamic bridge read that. Pro: using SDEF format avoids need for different file format. Cons: 1. 90% of sdef data is irrelevant and just takes up space, and 2. plain lookup tables are simpler to edit as they've already eliminated all duplicate definitions, whereas user'd need to edit all duplicates to avoid creating new problems. Though both cons could be ameliorated by an aeglue option that strips the sdef down to contain minimum information (e.g. all properties would appear on application class, and all attributes except name and code would be stripped from tags.
 

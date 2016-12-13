@@ -572,6 +572,8 @@ public func translateScriptingDefinition(_ data: Data, glueSpec: GlueSpec) throw
         }
         for valueType in suite.elements(forName: "value-type") { convertNode(valueType) }
     }
+    // TO DO: add attribute to root node indicating SDEF has been translated to SA syntax (while in theory SAE dictionary viewer could just convert from AS to SA syntax on the fly, that assumes a glue file created using default prefix names, which may or may not be the case)
+    // TO DO: for user's reference, also include name of Application class (e.g. "ITunes") somewhere it will appear in standard dictionary viewer (e.g. as <documentation> element at start of sdef, or appended to description string for `application` class)
     return xml.xmlData(withOptions: (1 << 17 | 1 << 18)) // [XMLNode.Options.nodePrettyPrint,XMLNode.Options.documentIncludeContentTypeDeclaration]
 }
 
