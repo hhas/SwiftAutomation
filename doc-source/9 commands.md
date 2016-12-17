@@ -197,7 +197,7 @@ This "implicit `get`" behavior is built directly into the AppleScript interprete
 
 In contrast, SwiftAutomation has no invisible "magic" behaviors attempting to infer your actual intent: it only ever sends an Apple event when you _explicitly_ instruct it to do so:
 
-<pre><code>let o = TextEdit().documents<strong>.get()</strong>
+<pre><code>let o = try TextEdit().documents<strong>.get()</strong>
 print(o)
 // [TextEdit().documents["Untitled"], TextEdit().documents["Untitled 2"]]</code></pre>
 

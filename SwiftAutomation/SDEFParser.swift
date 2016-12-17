@@ -8,6 +8,10 @@
 
 // note: GlueTable will resolve any conflicts between built-in and app-defined name+code definitions
 
+
+// TO DO: see if rewriting to use NSXMLDocument will take care of XInclude (there doesn't seem to be a convenience API for handling includes in SAX parser, and while adding support for simple includes shouldn't be hard some SDEF includes like to use xpointers as well, just to make the things even more insanely complex than they already are)
+
+
 import Foundation
 import Carbon
 

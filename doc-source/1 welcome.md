@@ -1,5 +1,7 @@
 # Welcome
 
+[TO DO: need to rejig HTML generator so that this page is the front index.html page and the chapter list appears as a sidebar or dropdown menu on each page instead of as a separate index page]
+
 ## What is SwiftAutomation?
 
 SwiftAutomation enables you to control "AppleScriptable" macOS applications using Apple Inc's [Swift programming language](https://swift.org/). SwiftAutomation makes Swift a true alternative to AppleScript for automating your Mac.

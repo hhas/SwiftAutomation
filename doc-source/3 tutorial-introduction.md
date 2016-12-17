@@ -92,6 +92,11 @@ can be written much more neatly as:
 [ TO DO: worth introducing simple by-index, by-name specifiers here ]
 
 
+## Manipulate the document's contents
+
+  try textedit.documents[1].text.set(to: "Hello!")
+
+
 ## Create a new TextEdit document
 
 [[ TO DO: order of material here is wrong: need to discuss document object structure before looking at how to pre-populate its properties in `make` ]]

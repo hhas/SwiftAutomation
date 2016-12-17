@@ -22,11 +22,11 @@ Launch Terminal and type the following into a new window:
 
   cd /Library/Frameworks
 
-Next type the following, including a space at the end:
+Next type the following, with a space after `-s`:
 
   sudo ln -s
     
-then drag `SwiftAutomation.framework` from the Finder window onto Terminal to insert the full path to the framework at the end of the command. On pressing Return, enter an an administrator login to allow the `ln` command to create a symlink in `/Library/Frameworks`. Repeat the process for the `MacOSGlues.framework`.
+then drag `SwiftAutomation.framework` from the Finder window onto Terminal to insert the full path to the framework at the end of the command. On pressing Return, enter an an administrator login to allow the `ln` command to create a symlink in `/Library/Frameworks`. Repeat the process for the `MacOSGlues.framework`. (Do not create Finder aliases as those do not work with command-line tools.)
 
 To confirm this setup works, enter the following Swift "script" into a plain text or code editor of your choice:
 

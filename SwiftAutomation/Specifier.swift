@@ -136,6 +136,8 @@ public protocol SpecifierProtocol { // glue-defined Command extensions, and by O
 
 open class Specifier: Query, SpecifierProtocol {
 
+    var _parentDescKey: OSType { return _keyAEContainer }
+    
     // An object specifier is constructed as a linked list of AERecords of typeObjectSpecifier, terminated by a root descriptor (e.g. a null descriptor represents the root node of the app's Apple event object graph). The topmost node may also be an insertion location specifier, represented by an AERecord of typeInsertionLoc. The abstract Specifier class implements functionality common to both object and insertion specifiers.
     
     private var _parentQuery: Query? // note: object specifiers are lazily unpacked for efficiency, so this is nil if Specifier hasn't been fully unpacked yet (or if class is RootSpecifier, in which case it's unused)
@@ -158,10 +160,9 @@ open class Specifier: Query, SpecifierProtocol {
     
     override func unpackParentSpecifiers() {
         do {
-            guard let descriptor = self._cachedDescriptor else { // note: this should never fail; if it does, it's an implementation bug
-                throw AutomationError(code: 1, message: "Can't unpack parent specifiers as cached AppData and/or AEDesc don't exist.")
+            guard let descriptor = self._cachedDescriptor, let parentDesc = descriptor.forKeyword(self._parentDescKey) else { // note: self._cachedDescriptor should never be nil (if it is, it's an implementation bug), and parentDesc should never be nil (or else cached descriptor is malformed)
+                throw AutomationError(code: 1, message: "Can't unpack parent specifiers due to internal error or malformed descriptor.")
             }
-            let parentDesc = descriptor.forKeyword(_keyAEContainer)!
             self._parentQuery = try appData.unpack(parentDesc) as Specifier
             self._parentQuery!.unpackParentSpecifiers()
         } catch {
@@ -222,6 +223,8 @@ open class InsertionSpecifier: Specifier { // SwiftAutomation_packSelf
     
     // 'insl'
     public let insertionLocation: NSAppleEventDescriptor
+    
+    override var _parentDescKey: OSType { return _keyAEObject }
 
     required public init(insertionLocation: NSAppleEventDescriptor,
                          parentQuery: Query?, appData: AppData, descriptor: NSAppleEventDescriptor?) {
