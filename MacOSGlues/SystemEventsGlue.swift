@@ -29,18 +29,18 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x616e6e6f: "annotation", // "anno"
                                                                      0x2a2a2a2a: "anything", // "****"
                                                                      0x61707065: "appearance", // "appe"
-                                                                     0x61707270: "appearancePreferences", // "aprp"
                                                                      0x6170726f: "appearancePreferencesObject", // "apro"
                                                                      0x616d6e75: "appleMenuFolder", // "amnu"
                                                                      0x64667068: "ApplePhotoFormat", // "dfph"
                                                                      0x64666173: "AppleShareFormat", // "dfas"
-                                                                     0x62756e64: "applicationBundleId", // "bund"
+                                                                     0x63617070: "application", // "capp"
+                                                                     0x62756e64: "applicationBundleID", // "bund"
                                                                      0x61707066: "applicationFile", // "appf"
                                                                      0x70636170: "applicationProcess", // "pcap"
                                                                      0x61707073: "applicationsFolder", // "apps"
                                                                      0x7369676e: "applicationSignature", // "sign"
                                                                      0x61737570: "applicationSupportFolder", // "asup"
-                                                                     0x6170726c: "applicationUrl", // "aprl"
+                                                                     0x6170726c: "applicationURL", // "aprl"
                                                                      0x61707220: "April", // "apr\0x20"
                                                                      0x61726368: "architecture", // "arch"
                                                                      0x61736b20: "ask", // "ask\0x20"
@@ -67,6 +67,7 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x64686263: "blankCD", // "dhbc"
                                                                      0x64686264: "blankDVD", // "dhbd"
                                                                      0x626c7565: "blue", // "blue"
+                                                                     0x626d726b: "bookmarkData", // "bmrk"
                                                                      0x626f6f6c: "boolean", // "bool"
                                                                      0x626f7474: "bottom", // "bott"
                                                                      0x71647274: "boundingRectangle", // "qdrt"
@@ -83,8 +84,8 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x63686278: "checkbox", // "chbx"
                                                                      0x70636c73: "class_", // "pcls"
                                                                      0x636c7363: "Classic", // "clsc"
-                                                                     0x666c6463: "ClassicDomain", // "fldc"
                                                                      0x646f6d63: "ClassicDomainObject", // "domc"
+                                                                     0x68636c62: "closeable", // "hclb"
                                                                      0x6c77636c: "collating", // "lwcl"
                                                                      0x636f6c72: "color", // "colr"
                                                                      0x636c7274: "colorTable", // "clrt"
@@ -95,6 +96,7 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x4b636d64: "commandDown", // "Kcmd"
                                                                      0x636f6e46: "configuration", // "conF"
                                                                      0x636f6e6e: "connected", // "conn"
+                                                                     0x656e756d: "constant", // "enum"
                                                                      0x63746e72: "container", // "ctnr"
                                                                      0x65436e74: "control", // "eCnt"
                                                                      0x4b63746c: "controlDown", // "Kctl"
@@ -106,10 +108,7 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x66637274: "creatorType", // "fcrt"
                                                                      0x63757374: "current", // "cust"
                                                                      0x636e6667: "currentConfiguration", // "cnfg"
-                                                                     0x63757264: "currentDesktop", // "curd"
                                                                      0x6c6f6363: "currentLocation", // "locc"
-                                                                     0x73737663: "currentScreenSaver", // "ssvc"
-                                                                     0x63757275: "currentUser", // "curu"
                                                                      0x64686361: "customApplication", // "dhca"
                                                                      0x64686373: "customScript", // "dhcs"
                                                                      0x74686d65: "darkMode", // "thme"
@@ -138,9 +137,9 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x6469746d: "diskItem", // "ditm"
                                                                      0x646e616d: "displayedName", // "dnam"
                                                                      0x646e614d: "displayName", // "dnaM"
-                                                                     0x64706173: "dockPreferences", // "dpas"
                                                                      0x6470616f: "dockPreferencesObject", // "dpao"
                                                                      0x64737a65: "dockSize", // "dsze"
+                                                                     0x646f6375: "document", // "docu"
                                                                      0x646f6373: "documentsFolder", // "docs"
                                                                      0x646f6d61: "domain", // "doma"
                                                                      0x646f7562: "double", // "doub"
@@ -155,11 +154,10 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x6c776c70: "endingPage", // "lwlp"
                                                                      0x65637473: "entireContents", // "ects"
                                                                      0x656e6d64: "enumerated", // "enmd"
-                                                                     0x656e756d: "enumerator", // "enum"
                                                                      0x45505320: "EPSPicture", // "EPS\0x20"
                                                                      0x6c776568: "errorHandling", // "lweh"
                                                                      0x65787061: "expansion", // "expa"
-                                                                     0x65787465: "extendedFloat", // "exte"
+                                                                     0x65787465: "extendedReal", // "exte"
                                                                      0x6578747a: "extensionsFolder", // "extz"
                                                                      0x66617673: "favoritesFolder", // "favs"
                                                                      0x6661786e: "faxNumber", // "faxn"
@@ -169,13 +167,13 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x66737266: "fileRef", // "fsrf"
                                                                      0x66737320: "fileSpecification", // "fss\0x20"
                                                                      0x61737479: "fileType", // "asty"
-                                                                     0x6675726c: "fileUrl", // "furl"
+                                                                     0x6675726c: "fileURL", // "furl"
                                                                      0x66697864: "fixed", // "fixd"
                                                                      0x66706e74: "fixedPoint", // "fpnt"
                                                                      0x66726374: "fixedRectangle", // "frct"
-                                                                     0x6c64626c: "float128bit", // "ldbl"
                                                                      0x666f6375: "focused", // "focu"
                                                                      0x63666f6c: "folder", // "cfol"
+                                                                     0x666f6163: "folderAction", // "foac"
                                                                      0x66617366: "FolderActionScriptsFolder", // "fasf"
                                                                      0x666f6e74: "fontsFolder", // "font"
                                                                      0x66747473: "fontSmoothing", // "ftts"
@@ -211,6 +209,7 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x69677072: "ignorePrivileges", // "igpr"
                                                                      0x696d6141: "image", // "imaA"
                                                                      0x696e6372: "incrementor", // "incr"
+                                                                     0x70696478: "index", // "pidx"
                                                                      0x64686174: "insertionAction", // "dhat"
                                                                      0x64686970: "insertionPreference", // "dhip"
                                                                      0x6c6f6e67: "integer", // "long"
@@ -227,15 +226,15 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x746f6872: "jumpToHere", // "tohr"
                                                                      0x6e787067: "jumpToNextPage", // "nxpg"
                                                                      0x6a756e20: "June", // "jun\0x20"
-                                                                     0x6b706964: "kernelProcessId", // "kpid"
+                                                                     0x6b706964: "kernelProcessID", // "kpid"
                                                                      0x6b696e64: "kind", // "kind"
+                                                                     0x6c64626c: "largeReal", // "ldbl"
                                                                      0x6c61756e: "launcherItemsFolder", // "laun"
                                                                      0x6c656674: "left", // "left"
                                                                      0x646c6962: "libraryFolder", // "dlib"
                                                                      0x6c697465: "light", // "lite"
                                                                      0x6c697374: "list", // "list"
                                                                      0x6c737464: "listed", // "lstd"
-                                                                     0x666c646c: "localDomain", // "fldl"
                                                                      0x646f6d6c: "localDomainObject", // "doml"
                                                                      0x69737276: "localVolume", // "isrv"
                                                                      0x6c6f6361: "location", // "loca"
@@ -267,10 +266,13 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x6d627269: "menuBarItem", // "mbri"
                                                                      0x6d656e42: "menuButton", // "menB"
                                                                      0x6d656e49: "menuItem", // "menI"
+                                                                     0x69736d6e: "miniaturizable", // "ismn"
+                                                                     0x706d6e64: "miniaturized", // "pmnd"
                                                                      0x64656666: "minimizeEffect", // "deff"
                                                                      0x6d696e57: "minimumValue", // "minW"
                                                                      0x61736d6f: "modificationDate", // "asmo"
                                                                      0x6d64746d: "modificationTime", // "mdtm"
+                                                                     0x696d6f64: "modified", // "imod"
                                                                      0x6d6f6e20: "Monday", // "mon\0x20"
                                                                      0x6d6f7664: "movieData", // "movd"
                                                                      0x6d6f7666: "movieFile", // "movf"
@@ -282,9 +284,7 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x706e616d: "name", // "pnam"
                                                                      0x6578746e: "nameExtension", // "extn"
                                                                      0x6e64696d: "naturalDimensions", // "ndim"
-                                                                     0x666c646e: "networkDomain", // "fldn"
                                                                      0x646f6d6e: "networkDomainObject", // "domn"
-                                                                     0x6e657470: "networkPreferences", // "netp"
                                                                      0x6e65746f: "networkPreferencesObject", // "neto"
                                                                      0x64666e66: "NFSFormat", // "dfnf"
                                                                      0x6e6f2020: "no", // "no\0x20\0x20"
@@ -344,7 +344,6 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x64667174: "QuickTakeFormat", // "dfqt"
                                                                      0x71746664: "QuickTimeData", // "qtfd"
                                                                      0x71746666: "QuickTimeFile", // "qtff"
-                                                                     0x7164656c: "quitDelay", // "qdel"
                                                                      0x72616442: "radioButton", // "radB"
                                                                      0x72677270: "radioGroup", // "rgrp"
                                                                      0x72616e44: "randomOrder", // "ranD"
@@ -360,6 +359,7 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x6c777174: "requestedPrintTime", // "lwqt"
                                                                      0x7077756c: "requirePasswordToUnlock", // "pwul"
                                                                      0x7077776b: "requirePasswordToWake", // "pwwk"
+                                                                     0x7072737a: "resizable", // "prsz"
                                                                      0x74723136: "RGB16Color", // "tr16"
                                                                      0x74723936: "RGB96Color", // "tr96"
                                                                      0x63524742: "RGBColor", // "cRGB"
@@ -375,13 +375,11 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x66697473: "screen", // "fits"
                                                                      0x64707365: "screenEdge", // "dpse"
                                                                      0x73737672: "screenSaver", // "ssvr"
-                                                                     0x73737670: "screenSaverPreferences", // "ssvp"
                                                                      0x7373766f: "screenSaverPreferencesObject", // "ssvo"
                                                                      0x73637074: "script", // "scpt"
                                                                      0x24736372: "scriptingAdditionsFolder", // "$scr"
                                                                      0x7364636c: "scriptingClass", // "sdcl"
                                                                      0x7364636d: "scriptingCommand", // "sdcm"
-                                                                     0x73646566: "scriptingDefinition", // "sdef"
                                                                      0x7364656f: "scriptingDefinitionObject", // "sdeo"
                                                                      0x7364656c: "scriptingElement", // "sdel"
                                                                      0x7364656e: "scriptingEnumeration", // "sden"
@@ -391,13 +389,11 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x73647273: "scriptingResult", // "sdrs"
                                                                      0x7364726f: "scriptingResultObject", // "sdro"
                                                                      0x73647374: "scriptingSuite", // "sdst"
-                                                                     0x73636d6e: "scriptMenuEnabled", // "scmn"
                                                                      0x73637224: "scriptsFolder", // "scr$"
                                                                      0x73637261: "scrollArea", // "scra"
                                                                      0x73637262: "scrollBar", // "scrb"
                                                                      0x73636c62: "scrollBarAction", // "sclb"
                                                                      0x7363766d: "secureVirtualMemory", // "scvm"
-                                                                     0x73656370: "securityPreferences", // "secp"
                                                                      0x7365636f: "securityPreferencesObject", // "seco"
                                                                      0x73656c45: "selected", // "selE"
                                                                      0x73657020: "September", // "sep\0x20"
@@ -408,7 +404,6 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x73686545: "sheet", // "sheE"
                                                                      0x65536674: "shift", // "eSft"
                                                                      0x4b736674: "shiftDown", // "Ksft"
-                                                                     0x73696e67: "shortFloat", // "sing"
                                                                      0x73686f72: "shortInteger", // "shor"
                                                                      0x6366626e: "shortName", // "cfbn"
                                                                      0x61737376: "shortVersion", // "assv"
@@ -419,6 +414,7 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x7074737a: "size", // "ptsz"
                                                                      0x736c6949: "slider", // "sliI"
                                                                      0x706d7373: "slideShow", // "pmss"
+                                                                     0x73696e67: "smallReal", // "sing"
                                                                      0x73636c73: "smoothScrolling", // "scls"
                                                                      0x73706b69: "speakableItemsFolder", // "spki"
                                                                      0x73706564: "speed", // "sped"
@@ -429,7 +425,6 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x6c776670: "startingPage", // "lwfp"
                                                                      0x6f666673: "startTime", // "offs"
                                                                      0x69737464: "startup", // "istd"
-                                                                     0x7364736b: "startupDisk", // "sdsk"
                                                                      0x656d707a: "startupItemsFolder", // "empz"
                                                                      0x73747478: "staticText", // "sttx"
                                                                      0x70737064: "stationery", // "pspd"
@@ -442,7 +437,6 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x73746e6d: "suiteName", // "stnm"
                                                                      0x73756e20: "Sunday", // "sun\0x20"
                                                                      0x73757065: "superclass", // "supe"
-                                                                     0x666c6473: "systemDomain", // "flds"
                                                                      0x646f6d73: "systemDomainObject", // "doms"
                                                                      0x6d616373: "systemFolder", // "macs"
                                                                      0x74616267: "tabGroup", // "tabg"
@@ -461,7 +455,6 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x61707074: "totalPartitionSize", // "appt"
                                                                      0x7472616b: "track", // "trak"
                                                                      0x6d6e5472: "translucentMenuBar", // "mnTr"
-                                                                     0x74727368: "trash", // "trsh"
                                                                      0x74756520: "Tuesday", // "tue\0x20"
                                                                      0x70747970: "type", // "ptyp"
                                                                      0x74797065: "typeClass", // "type"
@@ -469,17 +462,17 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x64667564: "UDFFormat", // "dfud"
                                                                      0x64667566: "UFSFormat", // "dfuf"
                                                                      0x7569656c: "UIElement", // "uiel"
-                                                                     0x7569656e: "UIElementsEnabled", // "uien"
-                                                                     0x75747874: "unicodeText", // "utxt"
+                                                                     0x75747874: "UnicodeText", // "utxt"
                                                                      0x69647578: "unixId", // "idux"
                                                                      0x64662424: "unknownFormat", // "df$$"
+                                                                     0x75636f6d: "unsignedDoubleInteger", // "ucom"
                                                                      0x6d61676e: "unsignedInteger", // "magn"
+                                                                     0x75736872: "unsignedShortInteger", // "ushr"
                                                                      0x75726c20: "URL", // "url\0x20"
                                                                      0x75616363: "user", // "uacc"
-                                                                     0x666c6475: "userDomain", // "fldu"
                                                                      0x646f6d75: "userDomainObject", // "domu"
-                                                                     0x75743136: "utf16Text", // "ut16"
-                                                                     0x75746638: "utf8Text", // "utf8"
+                                                                     0x75743136: "UTF16Text", // "ut16"
+                                                                     0x75746638: "UTF8Text", // "utf8"
                                                                      0x75746924: "utilitiesFolder", // "uti$"
                                                                      0x76616c4c: "value", // "valL"
                                                                      0x76616c69: "valueIndicator", // "vali"
@@ -493,6 +486,7 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x64667764: "WebDAVFormat", // "dfwd"
                                                                      0x77656420: "Wednesday", // "wed\0x20"
                                                                      0x77686974: "whitespace", // "whit"
+                                                                     0x6377696e: "window", // "cwin"
                                                                      0x66636c6f: "windowClosed", // "fclo"
                                                                      0x6673697a: "windowMoved", // "fsiz"
                                                                      0x666f706e: "windowOpened", // "fopn"
@@ -505,6 +499,8 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x786d6c66: "XMLFile", // "xmlf"
                                                                      0x79657320: "yes", // "yes\0x20"
                                                                      0x7a6f6e65: "zone", // "zone"
+                                                                     0x69737a6d: "zoomable", // "iszm"
+                                                                     0x707a756d: "zoomed", // "pzum"
                                                      ],
                                                      propertyNames: [
                                                                      0x69736162: "acceptsHighLevelEvents", // "isab"
@@ -515,7 +511,6 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x61637469: "active", // "acti"
                                                                      0x64616e69: "animate", // "dani"
                                                                      0x61707065: "appearance", // "appe"
-                                                                     0x61707270: "appearancePreferences", // "aprp"
                                                                      0x616d6e75: "appleMenuFolder", // "amnu"
                                                                      0x61707066: "applicationFile", // "appf"
                                                                      0x61707073: "applicationsFolder", // "apps"
@@ -539,11 +534,10 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x626e6964: "bundleIdentifier", // "bnid"
                                                                      0x62757379: "busyStatus", // "busy"
                                                                      0x63617061: "capacity", // "capa"
-                                                                     0x64686173: "CDAndDVDPreferences", // "dhas"
                                                                      0x63696e54: "changeInterval", // "cinT"
                                                                      0x70636c73: "class_", // "pcls"
                                                                      0x636c7363: "Classic", // "clsc"
-                                                                     0x666c6463: "ClassicDomain", // "fldc"
+                                                                     0x68636c62: "closeable", // "hclb"
                                                                      0x6c77636c: "collating", // "lwcl"
                                                                      0x636f6e6e: "connected", // "conn"
                                                                      0x63746e72: "container", // "ctnr"
@@ -554,10 +548,7 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x6d646372: "creationTime", // "mdcr"
                                                                      0x66637274: "creatorType", // "fcrt"
                                                                      0x636e6667: "currentConfiguration", // "cnfg"
-                                                                     0x63757264: "currentDesktop", // "curd"
                                                                      0x6c6f6363: "currentLocation", // "locc"
-                                                                     0x73737663: "currentScreenSaver", // "ssvc"
-                                                                     0x63757275: "currentUser", // "curu"
                                                                      0x64686361: "customApplication", // "dhca"
                                                                      0x64686373: "customScript", // "dhcs"
                                                                      0x74686d65: "darkMode", // "thme"
@@ -574,8 +565,8 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x73646470: "directParameter", // "sddp"
                                                                      0x646e616d: "displayedName", // "dnam"
                                                                      0x646e614d: "displayName", // "dnaM"
-                                                                     0x64706173: "dockPreferences", // "dpas"
                                                                      0x64737a65: "dockSize", // "dsze"
+                                                                     0x646f6375: "document", // "docu"
                                                                      0x646f6373: "documentsFolder", // "docs"
                                                                      0x646f776e: "downloadsFolder", // "down"
                                                                      0x6475706c: "duplex", // "dupl"
@@ -612,13 +603,13 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x68726566: "href", // "href"
                                                                      0x49442020: "id", // "ID\0x20\0x20"
                                                                      0x69677072: "ignorePrivileges", // "igpr"
+                                                                     0x70696478: "index", // "pidx"
                                                                      0x64686174: "insertionAction", // "dhat"
                                                                      0x696e7466: "interface", // "intf"
                                                                      0x6b696e64: "kind", // "kind"
                                                                      0x6c61756e: "launcherItemsFolder", // "laun"
                                                                      0x646c6962: "libraryFolder", // "dlib"
                                                                      0x6c737464: "listed", // "lstd"
-                                                                     0x666c646c: "localDomain", // "fldl"
                                                                      0x69737276: "localVolume", // "isrv"
                                                                      0x61636c6b: "logOutWhenInactive", // "aclk"
                                                                      0x6163746f: "logOutWhenInactiveInterval", // "acto"
@@ -628,10 +619,13 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x646d737a: "magnificationSize", // "dmsz"
                                                                      0x6d736372: "mainScreenOnly", // "mscr"
                                                                      0x6d617856: "maximumValue", // "maxV"
+                                                                     0x69736d6e: "miniaturizable", // "ismn"
+                                                                     0x706d6e64: "miniaturized", // "pmnd"
                                                                      0x64656666: "minimizeEffect", // "deff"
                                                                      0x6d696e57: "minimumValue", // "minW"
                                                                      0x61736d6f: "modificationDate", // "asmo"
                                                                      0x6d64746d: "modificationTime", // "mdtm"
+                                                                     0x696d6f64: "modified", // "imod"
                                                                      0x6d646f63: "moviesFolder", // "mdoc"
                                                                      0x6d747520: "mtu", // "mtu\0x20"
                                                                      0x64686d63: "musicCD", // "dhmc"
@@ -639,8 +633,6 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x706e616d: "name", // "pnam"
                                                                      0x6578746e: "nameExtension", // "extn"
                                                                      0x6e64696d: "naturalDimensions", // "ndim"
-                                                                     0x666c646e: "networkDomain", // "fldn"
-                                                                     0x6e657470: "networkPreferences", // "netp"
                                                                      0x6f70746c: "optional_", // "optl"
                                                                      0x6f726965: "orientation", // "orie"
                                                                      0x706b6766: "packageFolder", // "pkgf"
@@ -668,7 +660,6 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x76657232: "productVersion", // "ver2"
                                                                      0x70414c4c: "properties", // "pALL"
                                                                      0x70756262: "publicFolder", // "pubb"
-                                                                     0x7164656c: "quitDelay", // "qdel"
                                                                      0x72616e44: "randomOrder", // "ranD"
                                                                      0x7261706c: "recentApplicationsLimit", // "rapl"
                                                                      0x7264636c: "recentDocumentsLimit", // "rdcl"
@@ -676,19 +667,16 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x6c777174: "requestedPrintTime", // "lwqt"
                                                                      0x7077756c: "requirePasswordToUnlock", // "pwul"
                                                                      0x7077776b: "requirePasswordToWake", // "pwwk"
+                                                                     0x7072737a: "resizable", // "prsz"
                                                                      0x726f6c65: "role", // "role"
                                                                      0x726f6c64: "roleDescription", // "rold"
                                                                      0x72756e6e: "running", // "runn"
                                                                      0x64707365: "screenEdge", // "dpse"
-                                                                     0x73737670: "screenSaverPreferences", // "ssvp"
                                                                      0x24736372: "scriptingAdditionsFolder", // "$scr"
-                                                                     0x73646566: "scriptingDefinition", // "sdef"
                                                                      0x73647273: "scriptingResult", // "sdrs"
-                                                                     0x73636d6e: "scriptMenuEnabled", // "scmn"
                                                                      0x73637224: "scriptsFolder", // "scr$"
                                                                      0x73636c62: "scrollBarAction", // "sclb"
                                                                      0x7363766d: "secureVirtualMemory", // "scvm"
-                                                                     0x73656370: "securityPreferences", // "secp"
                                                                      0x73656c45: "selected", // "selE"
                                                                      0x73727672: "server", // "srvr"
                                                                      0x7374626c: "settable", // "stbl"
@@ -705,14 +693,12 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x6c776670: "startingPage", // "lwfp"
                                                                      0x6f666673: "startTime", // "offs"
                                                                      0x69737464: "startup", // "istd"
-                                                                     0x7364736b: "startupDisk", // "sdsk"
                                                                      0x656d707a: "startupItemsFolder", // "empz"
                                                                      0x70737064: "stationery", // "pspd"
                                                                      0x69737373: "storedStream", // "isss"
                                                                      0x7362726c: "subrole", // "sbrl"
                                                                      0x73746e6d: "suiteName", // "stnm"
                                                                      0x73757065: "superclass", // "supe"
-                                                                     0x666c6473: "systemDomain", // "flds"
                                                                      0x6d616373: "systemFolder", // "macs"
                                                                      0x74727072: "targetPrinter", // "trpr"
                                                                      0x74656d70: "temporaryItemsFolder", // "temp"
@@ -721,14 +707,11 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x7469746c: "title", // "titl"
                                                                      0x61707074: "totalPartitionSize", // "appt"
                                                                      0x6d6e5472: "translucentMenuBar", // "mnTr"
-                                                                     0x74727368: "trash", // "trsh"
                                                                      0x70747970: "type", // "ptyp"
                                                                      0x74797065: "typeClass", // "type"
                                                                      0x75746964: "typeIdentifier", // "utid"
-                                                                     0x7569656e: "UIElementsEnabled", // "uien"
                                                                      0x69647578: "unixId", // "idux"
                                                                      0x75726c20: "URL", // "url\0x20"
-                                                                     0x666c6475: "userDomain", // "fldu"
                                                                      0x75746924: "utilitiesFolder", // "uti$"
                                                                      0x76616c4c: "value", // "valL"
                                                                      0x76657273: "version", // "vers"
@@ -740,6 +723,8 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x766f6c75: "volume", // "volu"
                                                                      0x666c6f77: "workflowsFolder", // "flow"
                                                                      0x7a6f6e65: "zone", // "zone"
+                                                                     0x69737a6d: "zoomable", // "iszm"
+                                                                     0x707a756d: "zoomed", // "pzum"
                                                      ],
                                                      elementsNames: [
                                                                      0x61637454: "actions", // "actT"
@@ -747,6 +732,7 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x616e6e6f: "annotations", // "anno"
                                                                      0x6170726f: "appearancePreferencesObjects", // "apro"
                                                                      0x70636170: "applicationProcesses", // "pcap"
+                                                                     0x63617070: "applications", // "capp"
                                                                      0x61747472: "attributes", // "attr"
                                                                      0x61756464: "audioDatas", // "audd"
                                                                      0x61756466: "audioFiles", // "audf"
@@ -766,10 +752,12 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x6469746d: "diskItems", // "ditm"
                                                                      0x63646973: "disks", // "cdis"
                                                                      0x6470616f: "dockPreferencesObjects", // "dpao"
+                                                                     0x646f6375: "documents", // "docu"
                                                                      0x646f6d61: "domains", // "doma"
                                                                      0x64726141: "drawers", // "draA"
                                                                      0x63706b67: "filePackages", // "cpkg"
                                                                      0x66696c65: "files", // "file"
+                                                                     0x666f6163: "folderActions", // "foac"
                                                                      0x63666f6c: "folders", // "cfol"
                                                                      0x73677270: "groups", // "sgrp"
                                                                      0x67726f77: "growAreas", // "grow"
@@ -817,6 +805,7 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x73647072: "scriptingProperties", // "sdpr"
                                                                      0x7364726f: "scriptingResultObjects", // "sdro"
                                                                      0x73647374: "scriptingSuites", // "sdst"
+                                                                     0x73637074: "scripts", // "scpt"
                                                                      0x73637261: "scrollAreas", // "scra"
                                                                      0x73637262: "scrollBars", // "scrb"
                                                                      0x7365636f: "securityPreferencesObjects", // "seco"
@@ -837,6 +826,7 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x646f6d75: "userDomainObjects", // "domu"
                                                                      0x75616363: "users", // "uacc"
                                                                      0x76616c69: "valueIndicators", // "vali"
+                                                                     0x6377696e: "windows", // "cwin"
                                                                      0x786d6c61: "XMLAttributes", // "xmla"
                                                                      0x786d6c64: "XMLDatas", // "xmld"
                                                                      0x786d6c65: "XMLElements", // "xmle"
@@ -875,18 +865,18 @@ public class SEVSymbol: SwiftAutomation.Symbol {
         case 0x616e6e6f: return self.annotation // "anno"
         case 0x2a2a2a2a: return self.anything // "****"
         case 0x61707065: return self.appearance // "appe"
-        case 0x61707270: return self.appearancePreferences // "aprp"
         case 0x6170726f: return self.appearancePreferencesObject // "apro"
         case 0x616d6e75: return self.appleMenuFolder // "amnu"
         case 0x64667068: return self.ApplePhotoFormat // "dfph"
         case 0x64666173: return self.AppleShareFormat // "dfas"
-        case 0x62756e64: return self.applicationBundleId // "bund"
+        case 0x63617070: return self.application // "capp"
+        case 0x62756e64: return self.applicationBundleID // "bund"
         case 0x61707066: return self.applicationFile // "appf"
         case 0x70636170: return self.applicationProcess // "pcap"
         case 0x61707073: return self.applicationsFolder // "apps"
         case 0x7369676e: return self.applicationSignature // "sign"
         case 0x61737570: return self.applicationSupportFolder // "asup"
-        case 0x6170726c: return self.applicationUrl // "aprl"
+        case 0x6170726c: return self.applicationURL // "aprl"
         case 0x61707220: return self.April // "apr\0x20"
         case 0x61726368: return self.architecture // "arch"
         case 0x61736b20: return self.ask // "ask\0x20"
@@ -913,6 +903,7 @@ public class SEVSymbol: SwiftAutomation.Symbol {
         case 0x64686263: return self.blankCD // "dhbc"
         case 0x64686264: return self.blankDVD // "dhbd"
         case 0x626c7565: return self.blue // "blue"
+        case 0x626d726b: return self.bookmarkData // "bmrk"
         case 0x626f6f6c: return self.boolean // "bool"
         case 0x626f7474: return self.bottom // "bott"
         case 0x71647274: return self.boundingRectangle // "qdrt"
@@ -929,8 +920,8 @@ public class SEVSymbol: SwiftAutomation.Symbol {
         case 0x63686278: return self.checkbox // "chbx"
         case 0x70636c73: return self.class_ // "pcls"
         case 0x636c7363: return self.Classic // "clsc"
-        case 0x666c6463: return self.ClassicDomain // "fldc"
         case 0x646f6d63: return self.ClassicDomainObject // "domc"
+        case 0x68636c62: return self.closeable // "hclb"
         case 0x6c77636c: return self.collating // "lwcl"
         case 0x636f6c72: return self.color // "colr"
         case 0x636c7274: return self.colorTable // "clrt"
@@ -941,6 +932,7 @@ public class SEVSymbol: SwiftAutomation.Symbol {
         case 0x4b636d64: return self.commandDown // "Kcmd"
         case 0x636f6e46: return self.configuration // "conF"
         case 0x636f6e6e: return self.connected // "conn"
+        case 0x656e756d: return self.constant // "enum"
         case 0x63746e72: return self.container // "ctnr"
         case 0x65436e74: return self.control // "eCnt"
         case 0x4b63746c: return self.controlDown // "Kctl"
@@ -952,10 +944,7 @@ public class SEVSymbol: SwiftAutomation.Symbol {
         case 0x66637274: return self.creatorType // "fcrt"
         case 0x63757374: return self.current // "cust"
         case 0x636e6667: return self.currentConfiguration // "cnfg"
-        case 0x63757264: return self.currentDesktop // "curd"
         case 0x6c6f6363: return self.currentLocation // "locc"
-        case 0x73737663: return self.currentScreenSaver // "ssvc"
-        case 0x63757275: return self.currentUser // "curu"
         case 0x64686361: return self.customApplication // "dhca"
         case 0x64686373: return self.customScript // "dhcs"
         case 0x74686d65: return self.darkMode // "thme"
@@ -984,9 +973,9 @@ public class SEVSymbol: SwiftAutomation.Symbol {
         case 0x6469746d: return self.diskItem // "ditm"
         case 0x646e616d: return self.displayedName // "dnam"
         case 0x646e614d: return self.displayName // "dnaM"
-        case 0x64706173: return self.dockPreferences // "dpas"
         case 0x6470616f: return self.dockPreferencesObject // "dpao"
         case 0x64737a65: return self.dockSize // "dsze"
+        case 0x646f6375: return self.document // "docu"
         case 0x646f6373: return self.documentsFolder // "docs"
         case 0x646f6d61: return self.domain // "doma"
         case 0x646f7562: return self.double // "doub"
@@ -1001,11 +990,10 @@ public class SEVSymbol: SwiftAutomation.Symbol {
         case 0x6c776c70: return self.endingPage // "lwlp"
         case 0x65637473: return self.entireContents // "ects"
         case 0x656e6d64: return self.enumerated // "enmd"
-        case 0x656e756d: return self.enumerator // "enum"
         case 0x45505320: return self.EPSPicture // "EPS\0x20"
         case 0x6c776568: return self.errorHandling // "lweh"
         case 0x65787061: return self.expansion // "expa"
-        case 0x65787465: return self.extendedFloat // "exte"
+        case 0x65787465: return self.extendedReal // "exte"
         case 0x6578747a: return self.extensionsFolder // "extz"
         case 0x66617673: return self.favoritesFolder // "favs"
         case 0x6661786e: return self.faxNumber // "faxn"
@@ -1015,13 +1003,13 @@ public class SEVSymbol: SwiftAutomation.Symbol {
         case 0x66737266: return self.fileRef // "fsrf"
         case 0x66737320: return self.fileSpecification // "fss\0x20"
         case 0x61737479: return self.fileType // "asty"
-        case 0x6675726c: return self.fileUrl // "furl"
+        case 0x6675726c: return self.fileURL // "furl"
         case 0x66697864: return self.fixed // "fixd"
         case 0x66706e74: return self.fixedPoint // "fpnt"
         case 0x66726374: return self.fixedRectangle // "frct"
-        case 0x6c64626c: return self.float128bit // "ldbl"
         case 0x666f6375: return self.focused // "focu"
         case 0x63666f6c: return self.folder // "cfol"
+        case 0x666f6163: return self.folderAction // "foac"
         case 0x66617366: return self.FolderActionScriptsFolder // "fasf"
         case 0x666f6e74: return self.fontsFolder // "font"
         case 0x66747473: return self.fontSmoothing // "ftts"
@@ -1057,6 +1045,7 @@ public class SEVSymbol: SwiftAutomation.Symbol {
         case 0x69677072: return self.ignorePrivileges // "igpr"
         case 0x696d6141: return self.image // "imaA"
         case 0x696e6372: return self.incrementor // "incr"
+        case 0x70696478: return self.index // "pidx"
         case 0x64686174: return self.insertionAction // "dhat"
         case 0x64686970: return self.insertionPreference // "dhip"
         case 0x6c6f6e67: return self.integer // "long"
@@ -1073,15 +1062,15 @@ public class SEVSymbol: SwiftAutomation.Symbol {
         case 0x746f6872: return self.jumpToHere // "tohr"
         case 0x6e787067: return self.jumpToNextPage // "nxpg"
         case 0x6a756e20: return self.June // "jun\0x20"
-        case 0x6b706964: return self.kernelProcessId // "kpid"
+        case 0x6b706964: return self.kernelProcessID // "kpid"
         case 0x6b696e64: return self.kind // "kind"
+        case 0x6c64626c: return self.largeReal // "ldbl"
         case 0x6c61756e: return self.launcherItemsFolder // "laun"
         case 0x6c656674: return self.left // "left"
         case 0x646c6962: return self.libraryFolder // "dlib"
         case 0x6c697465: return self.light // "lite"
         case 0x6c697374: return self.list // "list"
         case 0x6c737464: return self.listed // "lstd"
-        case 0x666c646c: return self.localDomain // "fldl"
         case 0x646f6d6c: return self.localDomainObject // "doml"
         case 0x69737276: return self.localVolume // "isrv"
         case 0x6c6f6361: return self.location // "loca"
@@ -1113,10 +1102,13 @@ public class SEVSymbol: SwiftAutomation.Symbol {
         case 0x6d627269: return self.menuBarItem // "mbri"
         case 0x6d656e42: return self.menuButton // "menB"
         case 0x6d656e49: return self.menuItem // "menI"
+        case 0x69736d6e: return self.miniaturizable // "ismn"
+        case 0x706d6e64: return self.miniaturized // "pmnd"
         case 0x64656666: return self.minimizeEffect // "deff"
         case 0x6d696e57: return self.minimumValue // "minW"
         case 0x61736d6f: return self.modificationDate // "asmo"
         case 0x6d64746d: return self.modificationTime // "mdtm"
+        case 0x696d6f64: return self.modified // "imod"
         case 0x6d6f6e20: return self.Monday // "mon\0x20"
         case 0x6d6f7664: return self.movieData // "movd"
         case 0x6d6f7666: return self.movieFile // "movf"
@@ -1128,9 +1120,7 @@ public class SEVSymbol: SwiftAutomation.Symbol {
         case 0x706e616d: return self.name // "pnam"
         case 0x6578746e: return self.nameExtension // "extn"
         case 0x6e64696d: return self.naturalDimensions // "ndim"
-        case 0x666c646e: return self.networkDomain // "fldn"
         case 0x646f6d6e: return self.networkDomainObject // "domn"
-        case 0x6e657470: return self.networkPreferences // "netp"
         case 0x6e65746f: return self.networkPreferencesObject // "neto"
         case 0x64666e66: return self.NFSFormat // "dfnf"
         case 0x6e6f2020: return self.no // "no\0x20\0x20"
@@ -1190,7 +1180,6 @@ public class SEVSymbol: SwiftAutomation.Symbol {
         case 0x64667174: return self.QuickTakeFormat // "dfqt"
         case 0x71746664: return self.QuickTimeData // "qtfd"
         case 0x71746666: return self.QuickTimeFile // "qtff"
-        case 0x7164656c: return self.quitDelay // "qdel"
         case 0x72616442: return self.radioButton // "radB"
         case 0x72677270: return self.radioGroup // "rgrp"
         case 0x72616e44: return self.randomOrder // "ranD"
@@ -1206,6 +1195,7 @@ public class SEVSymbol: SwiftAutomation.Symbol {
         case 0x6c777174: return self.requestedPrintTime // "lwqt"
         case 0x7077756c: return self.requirePasswordToUnlock // "pwul"
         case 0x7077776b: return self.requirePasswordToWake // "pwwk"
+        case 0x7072737a: return self.resizable // "prsz"
         case 0x74723136: return self.RGB16Color // "tr16"
         case 0x74723936: return self.RGB96Color // "tr96"
         case 0x63524742: return self.RGBColor // "cRGB"
@@ -1221,13 +1211,11 @@ public class SEVSymbol: SwiftAutomation.Symbol {
         case 0x66697473: return self.screen // "fits"
         case 0x64707365: return self.screenEdge // "dpse"
         case 0x73737672: return self.screenSaver // "ssvr"
-        case 0x73737670: return self.screenSaverPreferences // "ssvp"
         case 0x7373766f: return self.screenSaverPreferencesObject // "ssvo"
         case 0x73637074: return self.script // "scpt"
         case 0x24736372: return self.scriptingAdditionsFolder // "$scr"
         case 0x7364636c: return self.scriptingClass // "sdcl"
         case 0x7364636d: return self.scriptingCommand // "sdcm"
-        case 0x73646566: return self.scriptingDefinition // "sdef"
         case 0x7364656f: return self.scriptingDefinitionObject // "sdeo"
         case 0x7364656c: return self.scriptingElement // "sdel"
         case 0x7364656e: return self.scriptingEnumeration // "sden"
@@ -1237,13 +1225,11 @@ public class SEVSymbol: SwiftAutomation.Symbol {
         case 0x73647273: return self.scriptingResult // "sdrs"
         case 0x7364726f: return self.scriptingResultObject // "sdro"
         case 0x73647374: return self.scriptingSuite // "sdst"
-        case 0x73636d6e: return self.scriptMenuEnabled // "scmn"
         case 0x73637224: return self.scriptsFolder // "scr$"
         case 0x73637261: return self.scrollArea // "scra"
         case 0x73637262: return self.scrollBar // "scrb"
         case 0x73636c62: return self.scrollBarAction // "sclb"
         case 0x7363766d: return self.secureVirtualMemory // "scvm"
-        case 0x73656370: return self.securityPreferences // "secp"
         case 0x7365636f: return self.securityPreferencesObject // "seco"
         case 0x73656c45: return self.selected // "selE"
         case 0x73657020: return self.September // "sep\0x20"
@@ -1254,7 +1240,6 @@ public class SEVSymbol: SwiftAutomation.Symbol {
         case 0x73686545: return self.sheet // "sheE"
         case 0x65536674: return self.shift // "eSft"
         case 0x4b736674: return self.shiftDown // "Ksft"
-        case 0x73696e67: return self.shortFloat // "sing"
         case 0x73686f72: return self.shortInteger // "shor"
         case 0x6366626e: return self.shortName // "cfbn"
         case 0x61737376: return self.shortVersion // "assv"
@@ -1265,6 +1250,7 @@ public class SEVSymbol: SwiftAutomation.Symbol {
         case 0x7074737a: return self.size // "ptsz"
         case 0x736c6949: return self.slider // "sliI"
         case 0x706d7373: return self.slideShow // "pmss"
+        case 0x73696e67: return self.smallReal // "sing"
         case 0x73636c73: return self.smoothScrolling // "scls"
         case 0x73706b69: return self.speakableItemsFolder // "spki"
         case 0x73706564: return self.speed // "sped"
@@ -1275,7 +1261,6 @@ public class SEVSymbol: SwiftAutomation.Symbol {
         case 0x6c776670: return self.startingPage // "lwfp"
         case 0x6f666673: return self.startTime // "offs"
         case 0x69737464: return self.startup // "istd"
-        case 0x7364736b: return self.startupDisk // "sdsk"
         case 0x656d707a: return self.startupItemsFolder // "empz"
         case 0x73747478: return self.staticText // "sttx"
         case 0x70737064: return self.stationery // "pspd"
@@ -1288,7 +1273,6 @@ public class SEVSymbol: SwiftAutomation.Symbol {
         case 0x73746e6d: return self.suiteName // "stnm"
         case 0x73756e20: return self.Sunday // "sun\0x20"
         case 0x73757065: return self.superclass // "supe"
-        case 0x666c6473: return self.systemDomain // "flds"
         case 0x646f6d73: return self.systemDomainObject // "doms"
         case 0x6d616373: return self.systemFolder // "macs"
         case 0x74616267: return self.tabGroup // "tabg"
@@ -1307,7 +1291,6 @@ public class SEVSymbol: SwiftAutomation.Symbol {
         case 0x61707074: return self.totalPartitionSize // "appt"
         case 0x7472616b: return self.track // "trak"
         case 0x6d6e5472: return self.translucentMenuBar // "mnTr"
-        case 0x74727368: return self.trash // "trsh"
         case 0x74756520: return self.Tuesday // "tue\0x20"
         case 0x70747970: return self.type // "ptyp"
         case 0x74797065: return self.typeClass // "type"
@@ -1315,17 +1298,17 @@ public class SEVSymbol: SwiftAutomation.Symbol {
         case 0x64667564: return self.UDFFormat // "dfud"
         case 0x64667566: return self.UFSFormat // "dfuf"
         case 0x7569656c: return self.UIElement // "uiel"
-        case 0x7569656e: return self.UIElementsEnabled // "uien"
-        case 0x75747874: return self.unicodeText // "utxt"
+        case 0x75747874: return self.UnicodeText // "utxt"
         case 0x69647578: return self.unixId // "idux"
         case 0x64662424: return self.unknownFormat // "df$$"
+        case 0x75636f6d: return self.unsignedDoubleInteger // "ucom"
         case 0x6d61676e: return self.unsignedInteger // "magn"
+        case 0x75736872: return self.unsignedShortInteger // "ushr"
         case 0x75726c20: return self.URL // "url\0x20"
         case 0x75616363: return self.user // "uacc"
-        case 0x666c6475: return self.userDomain // "fldu"
         case 0x646f6d75: return self.userDomainObject // "domu"
-        case 0x75743136: return self.utf16Text // "ut16"
-        case 0x75746638: return self.utf8Text // "utf8"
+        case 0x75743136: return self.UTF16Text // "ut16"
+        case 0x75746638: return self.UTF8Text // "utf8"
         case 0x75746924: return self.utilitiesFolder // "uti$"
         case 0x76616c4c: return self.value // "valL"
         case 0x76616c69: return self.valueIndicator // "vali"
@@ -1339,6 +1322,7 @@ public class SEVSymbol: SwiftAutomation.Symbol {
         case 0x64667764: return self.WebDAVFormat // "dfwd"
         case 0x77656420: return self.Wednesday // "wed\0x20"
         case 0x77686974: return self.whitespace // "whit"
+        case 0x6377696e: return self.window // "cwin"
         case 0x66636c6f: return self.windowClosed // "fclo"
         case 0x6673697a: return self.windowMoved // "fsiz"
         case 0x666f706e: return self.windowOpened // "fopn"
@@ -1351,6 +1335,8 @@ public class SEVSymbol: SwiftAutomation.Symbol {
         case 0x786d6c66: return self.XMLFile // "xmlf"
         case 0x79657320: return self.yes // "yes\0x20"
         case 0x7a6f6e65: return self.zone // "zone"
+        case 0x69737a6d: return self.zoomable // "iszm"
+        case 0x707a756d: return self.zoomed // "pzum"
         default: return super.symbol(code: code, type: type, descriptor: descriptor) as! SEVSymbol
         }
     }
@@ -1368,16 +1354,16 @@ public class SEVSymbol: SwiftAutomation.Symbol {
     public static let annotation = SEVSymbol(name: "annotation", code: 0x616e6e6f, type: typeType) // "anno"
     public static let anything = SEVSymbol(name: "anything", code: 0x2a2a2a2a, type: typeType) // "****"
     public static let appearance = SEVSymbol(name: "appearance", code: 0x61707065, type: typeType) // "appe"
-    public static let appearancePreferences = SEVSymbol(name: "appearancePreferences", code: 0x61707270, type: typeType) // "aprp"
     public static let appearancePreferencesObject = SEVSymbol(name: "appearancePreferencesObject", code: 0x6170726f, type: typeType) // "apro"
     public static let appleMenuFolder = SEVSymbol(name: "appleMenuFolder", code: 0x616d6e75, type: typeType) // "amnu"
-    public static let applicationBundleId = SEVSymbol(name: "applicationBundleId", code: 0x62756e64, type: typeType) // "bund"
+    public static let application = SEVSymbol(name: "application", code: 0x63617070, type: typeType) // "capp"
+    public static let applicationBundleID = SEVSymbol(name: "applicationBundleID", code: 0x62756e64, type: typeType) // "bund"
     public static let applicationFile = SEVSymbol(name: "applicationFile", code: 0x61707066, type: typeType) // "appf"
     public static let applicationProcess = SEVSymbol(name: "applicationProcess", code: 0x70636170, type: typeType) // "pcap"
     public static let applicationsFolder = SEVSymbol(name: "applicationsFolder", code: 0x61707073, type: typeType) // "apps"
     public static let applicationSignature = SEVSymbol(name: "applicationSignature", code: 0x7369676e, type: typeType) // "sign"
     public static let applicationSupportFolder = SEVSymbol(name: "applicationSupportFolder", code: 0x61737570, type: typeType) // "asup"
-    public static let applicationUrl = SEVSymbol(name: "applicationUrl", code: 0x6170726c, type: typeType) // "aprl"
+    public static let applicationURL = SEVSymbol(name: "applicationURL", code: 0x6170726c, type: typeType) // "aprl"
     public static let April = SEVSymbol(name: "April", code: 0x61707220, type: typeType) // "apr\0x20"
     public static let architecture = SEVSymbol(name: "architecture", code: 0x61726368, type: typeType) // "arch"
     public static let attribute = SEVSymbol(name: "attribute", code: 0x61747472, type: typeType) // "attr"
@@ -1398,6 +1384,7 @@ public class SEVSymbol: SwiftAutomation.Symbol {
     public static let blankBD = SEVSymbol(name: "blankBD", code: 0x64686262, type: typeType) // "dhbb"
     public static let blankCD = SEVSymbol(name: "blankCD", code: 0x64686263, type: typeType) // "dhbc"
     public static let blankDVD = SEVSymbol(name: "blankDVD", code: 0x64686264, type: typeType) // "dhbd"
+    public static let bookmarkData = SEVSymbol(name: "bookmarkData", code: 0x626d726b, type: typeType) // "bmrk"
     public static let boolean = SEVSymbol(name: "boolean", code: 0x626f6f6c, type: typeType) // "bool"
     public static let boundingRectangle = SEVSymbol(name: "boundingRectangle", code: 0x71647274, type: typeType) // "qdrt"
     public static let bounds = SEVSymbol(name: "bounds", code: 0x70626e64, type: typeType) // "pbnd"
@@ -1407,14 +1394,13 @@ public class SEVSymbol: SwiftAutomation.Symbol {
     public static let busyStatus = SEVSymbol(name: "busyStatus", code: 0x62757379, type: typeType) // "busy"
     public static let button = SEVSymbol(name: "button", code: 0x62757454, type: typeType) // "butT"
     public static let capacity = SEVSymbol(name: "capacity", code: 0x63617061, type: typeType) // "capa"
-    public static let CDAndDVDPreferences = SEVSymbol(name: "CDAndDVDPreferences", code: 0x64686173, type: typeType) // "dhas"
     public static let CDAndDVDPreferencesObject = SEVSymbol(name: "CDAndDVDPreferencesObject", code: 0x6468616f, type: typeType) // "dhao"
     public static let changeInterval = SEVSymbol(name: "changeInterval", code: 0x63696e54, type: typeType) // "cinT"
     public static let checkbox = SEVSymbol(name: "checkbox", code: 0x63686278, type: typeType) // "chbx"
     public static let class_ = SEVSymbol(name: "class_", code: 0x70636c73, type: typeType) // "pcls"
     public static let Classic = SEVSymbol(name: "Classic", code: 0x636c7363, type: typeType) // "clsc"
-    public static let ClassicDomain = SEVSymbol(name: "ClassicDomain", code: 0x666c6463, type: typeType) // "fldc"
     public static let ClassicDomainObject = SEVSymbol(name: "ClassicDomainObject", code: 0x646f6d63, type: typeType) // "domc"
+    public static let closeable = SEVSymbol(name: "closeable", code: 0x68636c62, type: typeType) // "hclb"
     public static let collating = SEVSymbol(name: "collating", code: 0x6c77636c, type: typeType) // "lwcl"
     public static let color = SEVSymbol(name: "color", code: 0x636f6c72, type: typeType) // "colr"
     public static let colorTable = SEVSymbol(name: "colorTable", code: 0x636c7274, type: typeType) // "clrt"
@@ -1423,6 +1409,7 @@ public class SEVSymbol: SwiftAutomation.Symbol {
     public static let comboBox = SEVSymbol(name: "comboBox", code: 0x636f6d42, type: typeType) // "comB"
     public static let configuration = SEVSymbol(name: "configuration", code: 0x636f6e46, type: typeType) // "conF"
     public static let connected = SEVSymbol(name: "connected", code: 0x636f6e6e, type: typeType) // "conn"
+    public static let constant = SEVSymbol(name: "constant", code: 0x656e756d, type: typeType) // "enum"
     public static let container = SEVSymbol(name: "container", code: 0x63746e72, type: typeType) // "ctnr"
     public static let controlPanelsFolder = SEVSymbol(name: "controlPanelsFolder", code: 0x6374726c, type: typeType) // "ctrl"
     public static let controlStripModulesFolder = SEVSymbol(name: "controlStripModulesFolder", code: 0x73646576, type: typeType) // "sdev"
@@ -1431,10 +1418,7 @@ public class SEVSymbol: SwiftAutomation.Symbol {
     public static let creationTime = SEVSymbol(name: "creationTime", code: 0x6d646372, type: typeType) // "mdcr"
     public static let creatorType = SEVSymbol(name: "creatorType", code: 0x66637274, type: typeType) // "fcrt"
     public static let currentConfiguration = SEVSymbol(name: "currentConfiguration", code: 0x636e6667, type: typeType) // "cnfg"
-    public static let currentDesktop = SEVSymbol(name: "currentDesktop", code: 0x63757264, type: typeType) // "curd"
     public static let currentLocation = SEVSymbol(name: "currentLocation", code: 0x6c6f6363, type: typeType) // "locc"
-    public static let currentScreenSaver = SEVSymbol(name: "currentScreenSaver", code: 0x73737663, type: typeType) // "ssvc"
-    public static let currentUser = SEVSymbol(name: "currentUser", code: 0x63757275, type: typeType) // "curu"
     public static let customApplication = SEVSymbol(name: "customApplication", code: 0x64686361, type: typeType) // "dhca"
     public static let customScript = SEVSymbol(name: "customScript", code: 0x64686373, type: typeType) // "dhcs"
     public static let darkMode = SEVSymbol(name: "darkMode", code: 0x74686d65, type: typeType) // "thme"
@@ -1461,9 +1445,9 @@ public class SEVSymbol: SwiftAutomation.Symbol {
     public static let diskItem = SEVSymbol(name: "diskItem", code: 0x6469746d, type: typeType) // "ditm"
     public static let displayedName = SEVSymbol(name: "displayedName", code: 0x646e616d, type: typeType) // "dnam"
     public static let displayName = SEVSymbol(name: "displayName", code: 0x646e614d, type: typeType) // "dnaM"
-    public static let dockPreferences = SEVSymbol(name: "dockPreferences", code: 0x64706173, type: typeType) // "dpas"
     public static let dockPreferencesObject = SEVSymbol(name: "dockPreferencesObject", code: 0x6470616f, type: typeType) // "dpao"
     public static let dockSize = SEVSymbol(name: "dockSize", code: 0x64737a65, type: typeType) // "dsze"
+    public static let document = SEVSymbol(name: "document", code: 0x646f6375, type: typeType) // "docu"
     public static let documentsFolder = SEVSymbol(name: "documentsFolder", code: 0x646f6373, type: typeType) // "docs"
     public static let domain = SEVSymbol(name: "domain", code: 0x646f6d61, type: typeType) // "doma"
     public static let doubleInteger = SEVSymbol(name: "doubleInteger", code: 0x636f6d70, type: typeType) // "comp"
@@ -1477,10 +1461,9 @@ public class SEVSymbol: SwiftAutomation.Symbol {
     public static let endingPage = SEVSymbol(name: "endingPage", code: 0x6c776c70, type: typeType) // "lwlp"
     public static let entireContents = SEVSymbol(name: "entireContents", code: 0x65637473, type: typeType) // "ects"
     public static let enumerated = SEVSymbol(name: "enumerated", code: 0x656e6d64, type: typeType) // "enmd"
-    public static let enumerator = SEVSymbol(name: "enumerator", code: 0x656e756d, type: typeType) // "enum"
     public static let EPSPicture = SEVSymbol(name: "EPSPicture", code: 0x45505320, type: typeType) // "EPS\0x20"
     public static let errorHandling = SEVSymbol(name: "errorHandling", code: 0x6c776568, type: typeType) // "lweh"
-    public static let extendedFloat = SEVSymbol(name: "extendedFloat", code: 0x65787465, type: typeType) // "exte"
+    public static let extendedReal = SEVSymbol(name: "extendedReal", code: 0x65787465, type: typeType) // "exte"
     public static let extensionsFolder = SEVSymbol(name: "extensionsFolder", code: 0x6578747a, type: typeType) // "extz"
     public static let favoritesFolder = SEVSymbol(name: "favoritesFolder", code: 0x66617673, type: typeType) // "favs"
     public static let faxNumber = SEVSymbol(name: "faxNumber", code: 0x6661786e, type: typeType) // "faxn"
@@ -1490,14 +1473,13 @@ public class SEVSymbol: SwiftAutomation.Symbol {
     public static let fileRef = SEVSymbol(name: "fileRef", code: 0x66737266, type: typeType) // "fsrf"
     public static let fileSpecification = SEVSymbol(name: "fileSpecification", code: 0x66737320, type: typeType) // "fss\0x20"
     public static let fileType = SEVSymbol(name: "fileType", code: 0x61737479, type: typeType) // "asty"
-    public static let fileUrl = SEVSymbol(name: "fileUrl", code: 0x6675726c, type: typeType) // "furl"
+    public static let fileURL = SEVSymbol(name: "fileURL", code: 0x6675726c, type: typeType) // "furl"
     public static let fixed = SEVSymbol(name: "fixed", code: 0x66697864, type: typeType) // "fixd"
     public static let fixedPoint = SEVSymbol(name: "fixedPoint", code: 0x66706e74, type: typeType) // "fpnt"
     public static let fixedRectangle = SEVSymbol(name: "fixedRectangle", code: 0x66726374, type: typeType) // "frct"
-    public static let float = SEVSymbol(name: "float", code: 0x646f7562, type: typeType) // "doub"
-    public static let float128bit = SEVSymbol(name: "float128bit", code: 0x6c64626c, type: typeType) // "ldbl"
     public static let focused = SEVSymbol(name: "focused", code: 0x666f6375, type: typeType) // "focu"
     public static let folder = SEVSymbol(name: "folder", code: 0x63666f6c, type: typeType) // "cfol"
+    public static let folderAction = SEVSymbol(name: "folderAction", code: 0x666f6163, type: typeType) // "foac"
     public static let FolderActionScriptsFolder = SEVSymbol(name: "FolderActionScriptsFolder", code: 0x66617366, type: typeType) // "fasf"
     public static let fontsFolder = SEVSymbol(name: "fontsFolder", code: 0x666f6e74, type: typeType) // "font"
     public static let fontSmoothing = SEVSymbol(name: "fontSmoothing", code: 0x66747473, type: typeType) // "ftts"
@@ -1525,6 +1507,7 @@ public class SEVSymbol: SwiftAutomation.Symbol {
     public static let ignorePrivileges = SEVSymbol(name: "ignorePrivileges", code: 0x69677072, type: typeType) // "igpr"
     public static let image = SEVSymbol(name: "image", code: 0x696d6141, type: typeType) // "imaA"
     public static let incrementor = SEVSymbol(name: "incrementor", code: 0x696e6372, type: typeType) // "incr"
+    public static let index = SEVSymbol(name: "index", code: 0x70696478, type: typeType) // "pidx"
     public static let insertionAction = SEVSymbol(name: "insertionAction", code: 0x64686174, type: typeType) // "dhat"
     public static let insertionPreference = SEVSymbol(name: "insertionPreference", code: 0x64686970, type: typeType) // "dhip"
     public static let integer = SEVSymbol(name: "integer", code: 0x6c6f6e67, type: typeType) // "long"
@@ -1536,13 +1519,13 @@ public class SEVSymbol: SwiftAutomation.Symbol {
     public static let JPEGPicture = SEVSymbol(name: "JPEGPicture", code: 0x4a504547, type: typeType) // "JPEG"
     public static let July = SEVSymbol(name: "July", code: 0x6a756c20, type: typeType) // "jul\0x20"
     public static let June = SEVSymbol(name: "June", code: 0x6a756e20, type: typeType) // "jun\0x20"
-    public static let kernelProcessId = SEVSymbol(name: "kernelProcessId", code: 0x6b706964, type: typeType) // "kpid"
+    public static let kernelProcessID = SEVSymbol(name: "kernelProcessID", code: 0x6b706964, type: typeType) // "kpid"
     public static let kind = SEVSymbol(name: "kind", code: 0x6b696e64, type: typeType) // "kind"
+    public static let largeReal = SEVSymbol(name: "largeReal", code: 0x6c64626c, type: typeType) // "ldbl"
     public static let launcherItemsFolder = SEVSymbol(name: "launcherItemsFolder", code: 0x6c61756e, type: typeType) // "laun"
     public static let libraryFolder = SEVSymbol(name: "libraryFolder", code: 0x646c6962, type: typeType) // "dlib"
     public static let list = SEVSymbol(name: "list", code: 0x6c697374, type: typeType) // "list"
     public static let listed = SEVSymbol(name: "listed", code: 0x6c737464, type: typeType) // "lstd"
-    public static let localDomain = SEVSymbol(name: "localDomain", code: 0x666c646c, type: typeType) // "fldl"
     public static let localDomainObject = SEVSymbol(name: "localDomainObject", code: 0x646f6d6c, type: typeType) // "doml"
     public static let localVolume = SEVSymbol(name: "localVolume", code: 0x69737276, type: typeType) // "isrv"
     public static let location = SEVSymbol(name: "location", code: 0x6c6f6361, type: typeType) // "loca"
@@ -1571,10 +1554,13 @@ public class SEVSymbol: SwiftAutomation.Symbol {
     public static let menuBarItem = SEVSymbol(name: "menuBarItem", code: 0x6d627269, type: typeType) // "mbri"
     public static let menuButton = SEVSymbol(name: "menuButton", code: 0x6d656e42, type: typeType) // "menB"
     public static let menuItem = SEVSymbol(name: "menuItem", code: 0x6d656e49, type: typeType) // "menI"
+    public static let miniaturizable = SEVSymbol(name: "miniaturizable", code: 0x69736d6e, type: typeType) // "ismn"
+    public static let miniaturized = SEVSymbol(name: "miniaturized", code: 0x706d6e64, type: typeType) // "pmnd"
     public static let minimizeEffect = SEVSymbol(name: "minimizeEffect", code: 0x64656666, type: typeType) // "deff"
     public static let minimumValue = SEVSymbol(name: "minimumValue", code: 0x6d696e57, type: typeType) // "minW"
     public static let modificationDate = SEVSymbol(name: "modificationDate", code: 0x61736d6f, type: typeType) // "asmo"
     public static let modificationTime = SEVSymbol(name: "modificationTime", code: 0x6d64746d, type: typeType) // "mdtm"
+    public static let modified = SEVSymbol(name: "modified", code: 0x696d6f64, type: typeType) // "imod"
     public static let Monday = SEVSymbol(name: "Monday", code: 0x6d6f6e20, type: typeType) // "mon\0x20"
     public static let movieData = SEVSymbol(name: "movieData", code: 0x6d6f7664, type: typeType) // "movd"
     public static let movieFile = SEVSymbol(name: "movieFile", code: 0x6d6f7666, type: typeType) // "movf"
@@ -1585,9 +1571,7 @@ public class SEVSymbol: SwiftAutomation.Symbol {
     public static let name = SEVSymbol(name: "name", code: 0x706e616d, type: typeType) // "pnam"
     public static let nameExtension = SEVSymbol(name: "nameExtension", code: 0x6578746e, type: typeType) // "extn"
     public static let naturalDimensions = SEVSymbol(name: "naturalDimensions", code: 0x6e64696d, type: typeType) // "ndim"
-    public static let networkDomain = SEVSymbol(name: "networkDomain", code: 0x666c646e, type: typeType) // "fldn"
     public static let networkDomainObject = SEVSymbol(name: "networkDomainObject", code: 0x646f6d6e, type: typeType) // "domn"
-    public static let networkPreferences = SEVSymbol(name: "networkPreferences", code: 0x6e657470, type: typeType) // "netp"
     public static let networkPreferencesObject = SEVSymbol(name: "networkPreferencesObject", code: 0x6e65746f, type: typeType) // "neto"
     public static let November = SEVSymbol(name: "November", code: 0x6e6f7620, type: typeType) // "nov\0x20"
     public static let null = SEVSymbol(name: "null", code: 0x6e756c6c, type: typeType) // "null"
@@ -1634,10 +1618,10 @@ public class SEVSymbol: SwiftAutomation.Symbol {
     public static let publicFolder = SEVSymbol(name: "publicFolder", code: 0x70756262, type: typeType) // "pubb"
     public static let QuickTimeData = SEVSymbol(name: "QuickTimeData", code: 0x71746664, type: typeType) // "qtfd"
     public static let QuickTimeFile = SEVSymbol(name: "QuickTimeFile", code: 0x71746666, type: typeType) // "qtff"
-    public static let quitDelay = SEVSymbol(name: "quitDelay", code: 0x7164656c, type: typeType) // "qdel"
     public static let radioButton = SEVSymbol(name: "radioButton", code: 0x72616442, type: typeType) // "radB"
     public static let radioGroup = SEVSymbol(name: "radioGroup", code: 0x72677270, type: typeType) // "rgrp"
     public static let randomOrder = SEVSymbol(name: "randomOrder", code: 0x72616e44, type: typeType) // "ranD"
+    public static let real = SEVSymbol(name: "real", code: 0x646f7562, type: typeType) // "doub"
     public static let recentApplicationsLimit = SEVSymbol(name: "recentApplicationsLimit", code: 0x7261706c, type: typeType) // "rapl"
     public static let recentDocumentsLimit = SEVSymbol(name: "recentDocumentsLimit", code: 0x7264636c, type: typeType) // "rdcl"
     public static let recentServersLimit = SEVSymbol(name: "recentServersLimit", code: 0x7273766c, type: typeType) // "rsvl"
@@ -1647,6 +1631,7 @@ public class SEVSymbol: SwiftAutomation.Symbol {
     public static let requestedPrintTime = SEVSymbol(name: "requestedPrintTime", code: 0x6c777174, type: typeType) // "lwqt"
     public static let requirePasswordToUnlock = SEVSymbol(name: "requirePasswordToUnlock", code: 0x7077756c, type: typeType) // "pwul"
     public static let requirePasswordToWake = SEVSymbol(name: "requirePasswordToWake", code: 0x7077776b, type: typeType) // "pwwk"
+    public static let resizable = SEVSymbol(name: "resizable", code: 0x7072737a, type: typeType) // "prsz"
     public static let RGB16Color = SEVSymbol(name: "RGB16Color", code: 0x74723136, type: typeType) // "tr16"
     public static let RGB96Color = SEVSymbol(name: "RGB96Color", code: 0x74723936, type: typeType) // "tr96"
     public static let RGBColor = SEVSymbol(name: "RGBColor", code: 0x63524742, type: typeType) // "cRGB"
@@ -1658,13 +1643,11 @@ public class SEVSymbol: SwiftAutomation.Symbol {
     public static let Saturday = SEVSymbol(name: "Saturday", code: 0x73617420, type: typeType) // "sat\0x20"
     public static let screenEdge = SEVSymbol(name: "screenEdge", code: 0x64707365, type: typeType) // "dpse"
     public static let screenSaver = SEVSymbol(name: "screenSaver", code: 0x73737672, type: typeType) // "ssvr"
-    public static let screenSaverPreferences = SEVSymbol(name: "screenSaverPreferences", code: 0x73737670, type: typeType) // "ssvp"
     public static let screenSaverPreferencesObject = SEVSymbol(name: "screenSaverPreferencesObject", code: 0x7373766f, type: typeType) // "ssvo"
     public static let script = SEVSymbol(name: "script", code: 0x73637074, type: typeType) // "scpt"
     public static let scriptingAdditionsFolder = SEVSymbol(name: "scriptingAdditionsFolder", code: 0x24736372, type: typeType) // "$scr"
     public static let scriptingClass = SEVSymbol(name: "scriptingClass", code: 0x7364636c, type: typeType) // "sdcl"
     public static let scriptingCommand = SEVSymbol(name: "scriptingCommand", code: 0x7364636d, type: typeType) // "sdcm"
-    public static let scriptingDefinition = SEVSymbol(name: "scriptingDefinition", code: 0x73646566, type: typeType) // "sdef"
     public static let scriptingDefinitionObject = SEVSymbol(name: "scriptingDefinitionObject", code: 0x7364656f, type: typeType) // "sdeo"
     public static let scriptingElement = SEVSymbol(name: "scriptingElement", code: 0x7364656c, type: typeType) // "sdel"
     public static let scriptingEnumeration = SEVSymbol(name: "scriptingEnumeration", code: 0x7364656e, type: typeType) // "sden"
@@ -1674,13 +1657,11 @@ public class SEVSymbol: SwiftAutomation.Symbol {
     public static let scriptingResult = SEVSymbol(name: "scriptingResult", code: 0x73647273, type: typeType) // "sdrs"
     public static let scriptingResultObject = SEVSymbol(name: "scriptingResultObject", code: 0x7364726f, type: typeType) // "sdro"
     public static let scriptingSuite = SEVSymbol(name: "scriptingSuite", code: 0x73647374, type: typeType) // "sdst"
-    public static let scriptMenuEnabled = SEVSymbol(name: "scriptMenuEnabled", code: 0x73636d6e, type: typeType) // "scmn"
     public static let scriptsFolder = SEVSymbol(name: "scriptsFolder", code: 0x73637224, type: typeType) // "scr$"
     public static let scrollArea = SEVSymbol(name: "scrollArea", code: 0x73637261, type: typeType) // "scra"
     public static let scrollBar = SEVSymbol(name: "scrollBar", code: 0x73637262, type: typeType) // "scrb"
     public static let scrollBarAction = SEVSymbol(name: "scrollBarAction", code: 0x73636c62, type: typeType) // "sclb"
     public static let secureVirtualMemory = SEVSymbol(name: "secureVirtualMemory", code: 0x7363766d, type: typeType) // "scvm"
-    public static let securityPreferences = SEVSymbol(name: "securityPreferences", code: 0x73656370, type: typeType) // "secp"
     public static let securityPreferencesObject = SEVSymbol(name: "securityPreferencesObject", code: 0x7365636f, type: typeType) // "seco"
     public static let selected = SEVSymbol(name: "selected", code: 0x73656c45, type: typeType) // "selE"
     public static let September = SEVSymbol(name: "September", code: 0x73657020, type: typeType) // "sep\0x20"
@@ -1689,7 +1670,6 @@ public class SEVSymbol: SwiftAutomation.Symbol {
     public static let settable = SEVSymbol(name: "settable", code: 0x7374626c, type: typeType) // "stbl"
     public static let sharedDocumentsFolder = SEVSymbol(name: "sharedDocumentsFolder", code: 0x73646174, type: typeType) // "sdat"
     public static let sheet = SEVSymbol(name: "sheet", code: 0x73686545, type: typeType) // "sheE"
-    public static let shortFloat = SEVSymbol(name: "shortFloat", code: 0x73696e67, type: typeType) // "sing"
     public static let shortInteger = SEVSymbol(name: "shortInteger", code: 0x73686f72, type: typeType) // "shor"
     public static let shortName = SEVSymbol(name: "shortName", code: 0x6366626e, type: typeType) // "cfbn"
     public static let shortVersion = SEVSymbol(name: "shortVersion", code: 0x61737376, type: typeType) // "assv"
@@ -1698,6 +1678,7 @@ public class SEVSymbol: SwiftAutomation.Symbol {
     public static let sitesFolder = SEVSymbol(name: "sitesFolder", code: 0x73697465, type: typeType) // "site"
     public static let size = SEVSymbol(name: "size", code: 0x7074737a, type: typeType) // "ptsz"
     public static let slider = SEVSymbol(name: "slider", code: 0x736c6949, type: typeType) // "sliI"
+    public static let smallReal = SEVSymbol(name: "smallReal", code: 0x73696e67, type: typeType) // "sing"
     public static let smoothScrolling = SEVSymbol(name: "smoothScrolling", code: 0x73636c73, type: typeType) // "scls"
     public static let speakableItemsFolder = SEVSymbol(name: "speakableItemsFolder", code: 0x73706b69, type: typeType) // "spki"
     public static let speed = SEVSymbol(name: "speed", code: 0x73706564, type: typeType) // "sped"
@@ -1706,7 +1687,6 @@ public class SEVSymbol: SwiftAutomation.Symbol {
     public static let startingPage = SEVSymbol(name: "startingPage", code: 0x6c776670, type: typeType) // "lwfp"
     public static let startTime = SEVSymbol(name: "startTime", code: 0x6f666673, type: typeType) // "offs"
     public static let startup = SEVSymbol(name: "startup", code: 0x69737464, type: typeType) // "istd"
-    public static let startupDisk = SEVSymbol(name: "startupDisk", code: 0x7364736b, type: typeType) // "sdsk"
     public static let startupItemsFolder = SEVSymbol(name: "startupItemsFolder", code: 0x656d707a, type: typeType) // "empz"
     public static let staticText = SEVSymbol(name: "staticText", code: 0x73747478, type: typeType) // "sttx"
     public static let stationery = SEVSymbol(name: "stationery", code: 0x70737064, type: typeType) // "pspd"
@@ -1718,7 +1698,6 @@ public class SEVSymbol: SwiftAutomation.Symbol {
     public static let suiteName = SEVSymbol(name: "suiteName", code: 0x73746e6d, type: typeType) // "stnm"
     public static let Sunday = SEVSymbol(name: "Sunday", code: 0x73756e20, type: typeType) // "sun\0x20"
     public static let superclass = SEVSymbol(name: "superclass", code: 0x73757065, type: typeType) // "supe"
-    public static let systemDomain = SEVSymbol(name: "systemDomain", code: 0x666c6473, type: typeType) // "flds"
     public static let systemDomainObject = SEVSymbol(name: "systemDomainObject", code: 0x646f6d73, type: typeType) // "doms"
     public static let systemFolder = SEVSymbol(name: "systemFolder", code: 0x6d616373, type: typeType) // "macs"
     public static let tabGroup = SEVSymbol(name: "tabGroup", code: 0x74616267, type: typeType) // "tabg"
@@ -1736,22 +1715,21 @@ public class SEVSymbol: SwiftAutomation.Symbol {
     public static let totalPartitionSize = SEVSymbol(name: "totalPartitionSize", code: 0x61707074, type: typeType) // "appt"
     public static let track = SEVSymbol(name: "track", code: 0x7472616b, type: typeType) // "trak"
     public static let translucentMenuBar = SEVSymbol(name: "translucentMenuBar", code: 0x6d6e5472, type: typeType) // "mnTr"
-    public static let trash = SEVSymbol(name: "trash", code: 0x74727368, type: typeType) // "trsh"
     public static let Tuesday = SEVSymbol(name: "Tuesday", code: 0x74756520, type: typeType) // "tue\0x20"
     public static let type = SEVSymbol(name: "type", code: 0x70747970, type: typeType) // "ptyp"
     public static let typeClass = SEVSymbol(name: "typeClass", code: 0x74797065, type: typeType) // "type"
     public static let typeIdentifier = SEVSymbol(name: "typeIdentifier", code: 0x75746964, type: typeType) // "utid"
     public static let UIElement = SEVSymbol(name: "UIElement", code: 0x7569656c, type: typeType) // "uiel"
-    public static let UIElementsEnabled = SEVSymbol(name: "UIElementsEnabled", code: 0x7569656e, type: typeType) // "uien"
-    public static let unicodeText = SEVSymbol(name: "unicodeText", code: 0x75747874, type: typeType) // "utxt"
+    public static let UnicodeText = SEVSymbol(name: "UnicodeText", code: 0x75747874, type: typeType) // "utxt"
     public static let unixId = SEVSymbol(name: "unixId", code: 0x69647578, type: typeType) // "idux"
+    public static let unsignedDoubleInteger = SEVSymbol(name: "unsignedDoubleInteger", code: 0x75636f6d, type: typeType) // "ucom"
     public static let unsignedInteger = SEVSymbol(name: "unsignedInteger", code: 0x6d61676e, type: typeType) // "magn"
+    public static let unsignedShortInteger = SEVSymbol(name: "unsignedShortInteger", code: 0x75736872, type: typeType) // "ushr"
     public static let URL = SEVSymbol(name: "URL", code: 0x75726c20, type: typeType) // "url\0x20"
     public static let user = SEVSymbol(name: "user", code: 0x75616363, type: typeType) // "uacc"
-    public static let userDomain = SEVSymbol(name: "userDomain", code: 0x666c6475, type: typeType) // "fldu"
     public static let userDomainObject = SEVSymbol(name: "userDomainObject", code: 0x646f6d75, type: typeType) // "domu"
-    public static let utf16Text = SEVSymbol(name: "utf16Text", code: 0x75743136, type: typeType) // "ut16"
-    public static let utf8Text = SEVSymbol(name: "utf8Text", code: 0x75746638, type: typeType) // "utf8"
+    public static let UTF16Text = SEVSymbol(name: "UTF16Text", code: 0x75743136, type: typeType) // "ut16"
+    public static let UTF8Text = SEVSymbol(name: "UTF8Text", code: 0x75746638, type: typeType) // "utf8"
     public static let utilitiesFolder = SEVSymbol(name: "utilitiesFolder", code: 0x75746924, type: typeType) // "uti$"
     public static let value = SEVSymbol(name: "value", code: 0x76616c4c, type: typeType) // "valL"
     public static let valueIndicator = SEVSymbol(name: "valueIndicator", code: 0x76616c69, type: typeType) // "vali"
@@ -1763,6 +1741,7 @@ public class SEVSymbol: SwiftAutomation.Symbol {
     public static let visualCharacteristic = SEVSymbol(name: "visualCharacteristic", code: 0x76697375, type: typeType) // "visu"
     public static let volume = SEVSymbol(name: "volume", code: 0x766f6c75, type: typeType) // "volu"
     public static let Wednesday = SEVSymbol(name: "Wednesday", code: 0x77656420, type: typeType) // "wed\0x20"
+    public static let window = SEVSymbol(name: "window", code: 0x6377696e, type: typeType) // "cwin"
     public static let workflowsFolder = SEVSymbol(name: "workflowsFolder", code: 0x666c6f77, type: typeType) // "flow"
     public static let writingCode = SEVSymbol(name: "writingCode", code: 0x70736374, type: typeType) // "psct"
     public static let XMLAttribute = SEVSymbol(name: "XMLAttribute", code: 0x786d6c61, type: typeType) // "xmla"
@@ -1770,6 +1749,8 @@ public class SEVSymbol: SwiftAutomation.Symbol {
     public static let XMLElement = SEVSymbol(name: "XMLElement", code: 0x786d6c65, type: typeType) // "xmle"
     public static let XMLFile = SEVSymbol(name: "XMLFile", code: 0x786d6c66, type: typeType) // "xmlf"
     public static let zone = SEVSymbol(name: "zone", code: 0x7a6f6e65, type: typeType) // "zone"
+    public static let zoomable = SEVSymbol(name: "zoomable", code: 0x69737a6d, type: typeType) // "iszm"
+    public static let zoomed = SEVSymbol(name: "zoomed", code: 0x707a756d, type: typeType) // "pzum"
 
     // Enumerators
     public static let ApplePhotoFormat = SEVSymbol(name: "ApplePhotoFormat", code: 0x64667068, type: typeEnumerated) // "dfph"
@@ -1833,7 +1814,7 @@ public class SEVSymbol: SwiftAutomation.Symbol {
     public static let shiftDown = SEVSymbol(name: "shiftDown", code: 0x4b736674, type: typeEnumerated) // "Ksft"
     public static let silver = SEVSymbol(name: "silver", code: 0x736c7672, type: typeEnumerated) // "slvr"
     public static let slideShow = SEVSymbol(name: "slideShow", code: 0x706d7373, type: typeEnumerated) // "pmss"
-    public static let standard = SEVSymbol(name: "standard", code: 0x73746e64, type: typeEnumerated) // "stnd"
+    public static let standard = SEVSymbol(name: "standard", code: 0x6c777374, type: typeEnumerated) // "lwst"
     public static let strong = SEVSymbol(name: "strong", code: 0x73747267, type: typeEnumerated) // "strg"
     public static let text = SEVSymbol(name: "text", code: 0x63747874, type: typeEnumerated) // "ctxt"
     public static let UDFFormat = SEVSymbol(name: "UDFFormat", code: 0x64667564, type: typeEnumerated) // "dfud"
@@ -1979,6 +1960,30 @@ extension SEVCommand {
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
+    @discardableResult public func close(_ directParameter: Any = SwiftAutomation.NoParameter,
+            saving: Any = SwiftAutomation.NoParameter,
+            savingIn: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
+        return try self.appData.sendAppleEvent(name: "close", eventClass: 0x636f7265, eventID: 0x636c6f73, // "core"/"clos"
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
+                    ("saving", 0x7361766f, saving), // "savo"
+                    ("savingIn", 0x6b66696c, savingIn), // "kfil"
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
+                withTimeout: withTimeout, considering: considering)
+    }
+    public func close<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            saving: Any = SwiftAutomation.NoParameter,
+            savingIn: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent(name: "close", eventClass: 0x636f7265, eventID: 0x636c6f73, // "core"/"clos"
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
+                    ("saving", 0x7361766f, saving), // "savo"
+                    ("savingIn", 0x6b66696c, savingIn), // "kfil"
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
+                withTimeout: withTimeout, considering: considering)
+    }
     @discardableResult public func confirm(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
@@ -2008,6 +2013,26 @@ extension SEVCommand {
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "connect", eventClass: 0x6e65747a, eventID: 0x636f6e6e, // "netz"/"conn"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
+                withTimeout: withTimeout, considering: considering)
+    }
+    @discardableResult public func count(_ directParameter: Any = SwiftAutomation.NoParameter,
+            each: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
+        return try self.appData.sendAppleEvent(name: "count", eventClass: 0x636f7265, eventID: 0x636e7465, // "core"/"cnte"
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
+                    ("each", 0x6b6f636c, each), // "kocl"
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
+                withTimeout: withTimeout, considering: considering)
+    }
+    public func count<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            each: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent(name: "count", eventClass: 0x636f7265, eventID: 0x636e7465, // "core"/"cnte"
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
+                    ("each", 0x6b6f636c, each), // "kocl"
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
@@ -2103,6 +2128,30 @@ extension SEVCommand {
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
+    @discardableResult public func duplicate(_ directParameter: Any = SwiftAutomation.NoParameter,
+            to: Any = SwiftAutomation.NoParameter,
+            withProperties: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
+        return try self.appData.sendAppleEvent(name: "duplicate", eventClass: 0x636f7265, eventID: 0x636c6f6e, // "core"/"clon"
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
+                    ("to", 0x696e7368, to), // "insh"
+                    ("withProperties", 0x70726474, withProperties), // "prdt"
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
+                withTimeout: withTimeout, considering: considering)
+    }
+    public func duplicate<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            to: Any = SwiftAutomation.NoParameter,
+            withProperties: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent(name: "duplicate", eventClass: 0x636f7265, eventID: 0x636c6f6e, // "core"/"clon"
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
+                    ("to", 0x696e7368, to), // "insh"
+                    ("withProperties", 0x70726474, withProperties), // "prdt"
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
+                withTimeout: withTimeout, considering: considering)
+    }
     @discardableResult public func editActionOf(_ directParameter: Any = SwiftAutomation.NoParameter,
             usingActionName: Any = SwiftAutomation.NoParameter,
             usingActionNumber: Any = SwiftAutomation.NoParameter,
@@ -2127,6 +2176,26 @@ extension SEVCommand {
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
+    @discardableResult public func enable(_ directParameter: Any = SwiftAutomation.NoParameter,
+            processNewChanges: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
+        return try self.appData.sendAppleEvent(name: "enable", eventClass: 0x6661636f, eventID: 0x656e626c, // "faco"/"enbl"
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
+                    ("processNewChanges", 0x70726e63, processNewChanges), // "prnc"
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
+                withTimeout: withTimeout, considering: considering)
+    }
+    public func enable<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            processNewChanges: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent(name: "enable", eventClass: 0x6661636f, eventID: 0x656e626c, // "faco"/"enbl"
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
+                    ("processNewChanges", 0x70726e63, processNewChanges), // "prnc"
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
+                withTimeout: withTimeout, considering: considering)
+    }
     @discardableResult public func endTransaction(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
@@ -2139,6 +2208,22 @@ extension SEVCommand {
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "endTransaction", eventClass: 0x6d697363, eventID: 0x656e6474, // "misc"/"endt"
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
+                withTimeout: withTimeout, considering: considering)
+    }
+    @discardableResult public func exists(_ directParameter: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
+        return try self.appData.sendAppleEvent(name: "exists", eventClass: 0x636f7265, eventID: 0x646f6578, // "core"/"doex"
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
+                withTimeout: withTimeout, considering: considering)
+    }
+    public func exists<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent(name: "exists", eventClass: 0x636f7265, eventID: 0x646f6578, // "core"/"doex"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -2263,6 +2348,38 @@ extension SEVCommand {
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
+    @discardableResult public func make(_ directParameter: Any = SwiftAutomation.NoParameter,
+            new: Any = SwiftAutomation.NoParameter,
+            at: Any = SwiftAutomation.NoParameter,
+            withData: Any = SwiftAutomation.NoParameter,
+            withProperties: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
+        return try self.appData.sendAppleEvent(name: "make", eventClass: 0x636f7265, eventID: 0x6372656c, // "core"/"crel"
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
+                    ("new", 0x6b6f636c, new), // "kocl"
+                    ("at", 0x696e7368, at), // "insh"
+                    ("withData", 0x64617461, withData), // "data"
+                    ("withProperties", 0x70726474, withProperties), // "prdt"
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
+                withTimeout: withTimeout, considering: considering)
+    }
+    public func make<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            new: Any = SwiftAutomation.NoParameter,
+            at: Any = SwiftAutomation.NoParameter,
+            withData: Any = SwiftAutomation.NoParameter,
+            withProperties: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent(name: "make", eventClass: 0x636f7265, eventID: 0x6372656c, // "core"/"crel"
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
+                    ("new", 0x6b6f636c, new), // "kocl"
+                    ("at", 0x696e7368, at), // "insh"
+                    ("withData", 0x64617461, withData), // "data"
+                    ("withProperties", 0x70726474, withProperties), // "prdt"
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
+                withTimeout: withTimeout, considering: considering)
+    }
     @discardableResult public func move(_ directParameter: Any = SwiftAutomation.NoParameter,
             to: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
@@ -2352,18 +2469,26 @@ extension SEVCommand {
                 withTimeout: withTimeout, considering: considering)
     }
     @discardableResult public func print(_ directParameter: Any = SwiftAutomation.NoParameter,
+            withProperties: Any = SwiftAutomation.NoParameter,
+            printDialog: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "print", eventClass: 0x61657674, eventID: 0x70646f63, // "aevt"/"pdoc"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
+                    ("withProperties", 0x70726474, withProperties), // "prdt"
+                    ("printDialog", 0x70646c67, printDialog), // "pdlg"
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     public func print<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            withProperties: Any = SwiftAutomation.NoParameter,
+            printDialog: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "print", eventClass: 0x61657674, eventID: 0x70646f63, // "aevt"/"pdoc"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
+                    ("withProperties", 0x70726474, withProperties), // "prdt"
+                    ("printDialog", 0x70646c67, printDialog), // "pdlg"
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
@@ -2460,6 +2585,30 @@ extension SEVCommand {
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "run", eventClass: 0x61657674, eventID: 0x6f617070, // "aevt"/"oapp"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
+                withTimeout: withTimeout, considering: considering)
+    }
+    @discardableResult public func save(_ directParameter: Any = SwiftAutomation.NoParameter,
+            in_: Any = SwiftAutomation.NoParameter,
+            as_: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
+        return try self.appData.sendAppleEvent(name: "save", eventClass: 0x636f7265, eventID: 0x73617665, // "core"/"save"
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
+                    ("in_", 0x6b66696c, in_), // "kfil"
+                    ("as_", 0x666c7470, as_), // "fltp"
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
+                withTimeout: withTimeout, considering: considering)
+    }
+    public func save<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            in_: Any = SwiftAutomation.NoParameter,
+            as_: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent(name: "save", eventClass: 0x636f7265, eventID: 0x73617665, // "core"/"save"
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
+                    ("in_", 0x6b66696c, in_), // "kfil"
+                    ("as_", 0x666c7470, as_), // "fltp"
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
@@ -2583,7 +2732,6 @@ extension SEVObject {
     public var active: SEVItem {return self.property(0x61637469) as! SEVItem} // "acti"
     public var animate: SEVItem {return self.property(0x64616e69) as! SEVItem} // "dani"
     public var appearance: SEVItem {return self.property(0x61707065) as! SEVItem} // "appe"
-    public var appearancePreferences: SEVItem {return self.property(0x61707270) as! SEVItem} // "aprp"
     public var appleMenuFolder: SEVItem {return self.property(0x616d6e75) as! SEVItem} // "amnu"
     public var applicationFile: SEVItem {return self.property(0x61707066) as! SEVItem} // "appf"
     public var applicationsFolder: SEVItem {return self.property(0x61707073) as! SEVItem} // "apps"
@@ -2607,11 +2755,10 @@ extension SEVObject {
     public var bundleIdentifier: SEVItem {return self.property(0x626e6964) as! SEVItem} // "bnid"
     public var busyStatus: SEVItem {return self.property(0x62757379) as! SEVItem} // "busy"
     public var capacity: SEVItem {return self.property(0x63617061) as! SEVItem} // "capa"
-    public var CDAndDVDPreferences: SEVItem {return self.property(0x64686173) as! SEVItem} // "dhas"
     public var changeInterval: SEVItem {return self.property(0x63696e54) as! SEVItem} // "cinT"
     public var class_: SEVItem {return self.property(0x70636c73) as! SEVItem} // "pcls"
     public var Classic: SEVItem {return self.property(0x636c7363) as! SEVItem} // "clsc"
-    public var ClassicDomain: SEVItem {return self.property(0x666c6463) as! SEVItem} // "fldc"
+    public var closeable: SEVItem {return self.property(0x68636c62) as! SEVItem} // "hclb"
     public var collating: SEVItem {return self.property(0x6c77636c) as! SEVItem} // "lwcl"
     public var connected: SEVItem {return self.property(0x636f6e6e) as! SEVItem} // "conn"
     public var container: SEVItem {return self.property(0x63746e72) as! SEVItem} // "ctnr"
@@ -2622,10 +2769,7 @@ extension SEVObject {
     public var creationTime: SEVItem {return self.property(0x6d646372) as! SEVItem} // "mdcr"
     public var creatorType: SEVItem {return self.property(0x66637274) as! SEVItem} // "fcrt"
     public var currentConfiguration: SEVItem {return self.property(0x636e6667) as! SEVItem} // "cnfg"
-    public var currentDesktop: SEVItem {return self.property(0x63757264) as! SEVItem} // "curd"
     public var currentLocation: SEVItem {return self.property(0x6c6f6363) as! SEVItem} // "locc"
-    public var currentScreenSaver: SEVItem {return self.property(0x73737663) as! SEVItem} // "ssvc"
-    public var currentUser: SEVItem {return self.property(0x63757275) as! SEVItem} // "curu"
     public var customApplication: SEVItem {return self.property(0x64686361) as! SEVItem} // "dhca"
     public var customScript: SEVItem {return self.property(0x64686373) as! SEVItem} // "dhcs"
     public var darkMode: SEVItem {return self.property(0x74686d65) as! SEVItem} // "thme"
@@ -2642,8 +2786,8 @@ extension SEVObject {
     public var directParameter: SEVItem {return self.property(0x73646470) as! SEVItem} // "sddp"
     public var displayedName: SEVItem {return self.property(0x646e616d) as! SEVItem} // "dnam"
     public var displayName: SEVItem {return self.property(0x646e614d) as! SEVItem} // "dnaM"
-    public var dockPreferences: SEVItem {return self.property(0x64706173) as! SEVItem} // "dpas"
     public var dockSize: SEVItem {return self.property(0x64737a65) as! SEVItem} // "dsze"
+    public var document: SEVItem {return self.property(0x646f6375) as! SEVItem} // "docu"
     public var documentsFolder: SEVItem {return self.property(0x646f6373) as! SEVItem} // "docs"
     public var downloadsFolder: SEVItem {return self.property(0x646f776e) as! SEVItem} // "down"
     public var duplex: SEVItem {return self.property(0x6475706c) as! SEVItem} // "dupl"
@@ -2680,13 +2824,13 @@ extension SEVObject {
     public var href: SEVItem {return self.property(0x68726566) as! SEVItem} // "href"
     public var id: SEVItem {return self.property(0x49442020) as! SEVItem} // "ID\0x20\0x20"
     public var ignorePrivileges: SEVItem {return self.property(0x69677072) as! SEVItem} // "igpr"
+    public var index: SEVItem {return self.property(0x70696478) as! SEVItem} // "pidx"
     public var insertionAction: SEVItem {return self.property(0x64686174) as! SEVItem} // "dhat"
     public var interface: SEVItem {return self.property(0x696e7466) as! SEVItem} // "intf"
     public var kind: SEVItem {return self.property(0x6b696e64) as! SEVItem} // "kind"
     public var launcherItemsFolder: SEVItem {return self.property(0x6c61756e) as! SEVItem} // "laun"
     public var libraryFolder: SEVItem {return self.property(0x646c6962) as! SEVItem} // "dlib"
     public var listed: SEVItem {return self.property(0x6c737464) as! SEVItem} // "lstd"
-    public var localDomain: SEVItem {return self.property(0x666c646c) as! SEVItem} // "fldl"
     public var localVolume: SEVItem {return self.property(0x69737276) as! SEVItem} // "isrv"
     public var logOutWhenInactive: SEVItem {return self.property(0x61636c6b) as! SEVItem} // "aclk"
     public var logOutWhenInactiveInterval: SEVItem {return self.property(0x6163746f) as! SEVItem} // "acto"
@@ -2696,10 +2840,13 @@ extension SEVObject {
     public var magnificationSize: SEVItem {return self.property(0x646d737a) as! SEVItem} // "dmsz"
     public var mainScreenOnly: SEVItem {return self.property(0x6d736372) as! SEVItem} // "mscr"
     public var maximumValue: SEVItem {return self.property(0x6d617856) as! SEVItem} // "maxV"
+    public var miniaturizable: SEVItem {return self.property(0x69736d6e) as! SEVItem} // "ismn"
+    public var miniaturized: SEVItem {return self.property(0x706d6e64) as! SEVItem} // "pmnd"
     public var minimizeEffect: SEVItem {return self.property(0x64656666) as! SEVItem} // "deff"
     public var minimumValue: SEVItem {return self.property(0x6d696e57) as! SEVItem} // "minW"
     public var modificationDate: SEVItem {return self.property(0x61736d6f) as! SEVItem} // "asmo"
     public var modificationTime: SEVItem {return self.property(0x6d64746d) as! SEVItem} // "mdtm"
+    public var modified: SEVItem {return self.property(0x696d6f64) as! SEVItem} // "imod"
     public var moviesFolder: SEVItem {return self.property(0x6d646f63) as! SEVItem} // "mdoc"
     public var mtu: SEVItem {return self.property(0x6d747520) as! SEVItem} // "mtu\0x20"
     public var musicCD: SEVItem {return self.property(0x64686d63) as! SEVItem} // "dhmc"
@@ -2707,8 +2854,6 @@ extension SEVObject {
     public var name: SEVItem {return self.property(0x706e616d) as! SEVItem} // "pnam"
     public var nameExtension: SEVItem {return self.property(0x6578746e) as! SEVItem} // "extn"
     public var naturalDimensions: SEVItem {return self.property(0x6e64696d) as! SEVItem} // "ndim"
-    public var networkDomain: SEVItem {return self.property(0x666c646e) as! SEVItem} // "fldn"
-    public var networkPreferences: SEVItem {return self.property(0x6e657470) as! SEVItem} // "netp"
     public var optional_: SEVItem {return self.property(0x6f70746c) as! SEVItem} // "optl"
     public var orientation: SEVItem {return self.property(0x6f726965) as! SEVItem} // "orie"
     public var packageFolder: SEVItem {return self.property(0x706b6766) as! SEVItem} // "pkgf"
@@ -2736,7 +2881,6 @@ extension SEVObject {
     public var productVersion: SEVItem {return self.property(0x76657232) as! SEVItem} // "ver2"
     public var properties: SEVItem {return self.property(0x70414c4c) as! SEVItem} // "pALL"
     public var publicFolder: SEVItem {return self.property(0x70756262) as! SEVItem} // "pubb"
-    public var quitDelay: SEVItem {return self.property(0x7164656c) as! SEVItem} // "qdel"
     public var randomOrder: SEVItem {return self.property(0x72616e44) as! SEVItem} // "ranD"
     public var recentApplicationsLimit: SEVItem {return self.property(0x7261706c) as! SEVItem} // "rapl"
     public var recentDocumentsLimit: SEVItem {return self.property(0x7264636c) as! SEVItem} // "rdcl"
@@ -2744,19 +2888,16 @@ extension SEVObject {
     public var requestedPrintTime: SEVItem {return self.property(0x6c777174) as! SEVItem} // "lwqt"
     public var requirePasswordToUnlock: SEVItem {return self.property(0x7077756c) as! SEVItem} // "pwul"
     public var requirePasswordToWake: SEVItem {return self.property(0x7077776b) as! SEVItem} // "pwwk"
+    public var resizable: SEVItem {return self.property(0x7072737a) as! SEVItem} // "prsz"
     public var role: SEVItem {return self.property(0x726f6c65) as! SEVItem} // "role"
     public var roleDescription: SEVItem {return self.property(0x726f6c64) as! SEVItem} // "rold"
     public var running: SEVItem {return self.property(0x72756e6e) as! SEVItem} // "runn"
     public var screenEdge: SEVItem {return self.property(0x64707365) as! SEVItem} // "dpse"
-    public var screenSaverPreferences: SEVItem {return self.property(0x73737670) as! SEVItem} // "ssvp"
     public var scriptingAdditionsFolder: SEVItem {return self.property(0x24736372) as! SEVItem} // "$scr"
-    public var scriptingDefinition: SEVItem {return self.property(0x73646566) as! SEVItem} // "sdef"
     public var scriptingResult: SEVItem {return self.property(0x73647273) as! SEVItem} // "sdrs"
-    public var scriptMenuEnabled: SEVItem {return self.property(0x73636d6e) as! SEVItem} // "scmn"
     public var scriptsFolder: SEVItem {return self.property(0x73637224) as! SEVItem} // "scr$"
     public var scrollBarAction: SEVItem {return self.property(0x73636c62) as! SEVItem} // "sclb"
     public var secureVirtualMemory: SEVItem {return self.property(0x7363766d) as! SEVItem} // "scvm"
-    public var securityPreferences: SEVItem {return self.property(0x73656370) as! SEVItem} // "secp"
     public var selected: SEVItem {return self.property(0x73656c45) as! SEVItem} // "selE"
     public var server: SEVItem {return self.property(0x73727672) as! SEVItem} // "srvr"
     public var settable: SEVItem {return self.property(0x7374626c) as! SEVItem} // "stbl"
@@ -2773,14 +2914,12 @@ extension SEVObject {
     public var startingPage: SEVItem {return self.property(0x6c776670) as! SEVItem} // "lwfp"
     public var startTime: SEVItem {return self.property(0x6f666673) as! SEVItem} // "offs"
     public var startup: SEVItem {return self.property(0x69737464) as! SEVItem} // "istd"
-    public var startupDisk: SEVItem {return self.property(0x7364736b) as! SEVItem} // "sdsk"
     public var startupItemsFolder: SEVItem {return self.property(0x656d707a) as! SEVItem} // "empz"
     public var stationery: SEVItem {return self.property(0x70737064) as! SEVItem} // "pspd"
     public var storedStream: SEVItem {return self.property(0x69737373) as! SEVItem} // "isss"
     public var subrole: SEVItem {return self.property(0x7362726c) as! SEVItem} // "sbrl"
     public var suiteName: SEVItem {return self.property(0x73746e6d) as! SEVItem} // "stnm"
     public var superclass: SEVItem {return self.property(0x73757065) as! SEVItem} // "supe"
-    public var systemDomain: SEVItem {return self.property(0x666c6473) as! SEVItem} // "flds"
     public var systemFolder: SEVItem {return self.property(0x6d616373) as! SEVItem} // "macs"
     public var targetPrinter: SEVItem {return self.property(0x74727072) as! SEVItem} // "trpr"
     public var temporaryItemsFolder: SEVItem {return self.property(0x74656d70) as! SEVItem} // "temp"
@@ -2788,14 +2927,11 @@ extension SEVObject {
     public var title: SEVItem {return self.property(0x7469746c) as! SEVItem} // "titl"
     public var totalPartitionSize: SEVItem {return self.property(0x61707074) as! SEVItem} // "appt"
     public var translucentMenuBar: SEVItem {return self.property(0x6d6e5472) as! SEVItem} // "mnTr"
-    public var trash: SEVItem {return self.property(0x74727368) as! SEVItem} // "trsh"
     public var type: SEVItem {return self.property(0x70747970) as! SEVItem} // "ptyp"
     public var typeClass: SEVItem {return self.property(0x74797065) as! SEVItem} // "type"
     public var typeIdentifier: SEVItem {return self.property(0x75746964) as! SEVItem} // "utid"
-    public var UIElementsEnabled: SEVItem {return self.property(0x7569656e) as! SEVItem} // "uien"
     public var unixId: SEVItem {return self.property(0x69647578) as! SEVItem} // "idux"
     public var URL: SEVItem {return self.property(0x75726c20) as! SEVItem} // "url\0x20"
-    public var userDomain: SEVItem {return self.property(0x666c6475) as! SEVItem} // "fldu"
     public var utilitiesFolder: SEVItem {return self.property(0x75746924) as! SEVItem} // "uti$"
     public var value: SEVItem {return self.property(0x76616c4c) as! SEVItem} // "valL"
     public var version: SEVItem {return self.property(0x76657273) as! SEVItem} // "vers"
@@ -2807,6 +2943,8 @@ extension SEVObject {
     public var volume: SEVItem {return self.property(0x766f6c75) as! SEVItem} // "volu"
     public var workflowsFolder: SEVItem {return self.property(0x666c6f77) as! SEVItem} // "flow"
     public var zone: SEVItem {return self.property(0x7a6f6e65) as! SEVItem} // "zone"
+    public var zoomable: SEVItem {return self.property(0x69737a6d) as! SEVItem} // "iszm"
+    public var zoomed: SEVItem {return self.property(0x707a756d) as! SEVItem} // "pzum"
 
     // Elements
     public var actions: SEVItems {return self.elements(0x61637454) as! SEVItems} // "actT"
@@ -2814,6 +2952,7 @@ extension SEVObject {
     public var annotations: SEVItems {return self.elements(0x616e6e6f) as! SEVItems} // "anno"
     public var appearancePreferencesObjects: SEVItems {return self.elements(0x6170726f) as! SEVItems} // "apro"
     public var applicationProcesses: SEVItems {return self.elements(0x70636170) as! SEVItems} // "pcap"
+    public var applications: SEVItems {return self.elements(0x63617070) as! SEVItems} // "capp"
     public var attributes: SEVItems {return self.elements(0x61747472) as! SEVItems} // "attr"
     public var audioDatas: SEVItems {return self.elements(0x61756464) as! SEVItems} // "audd"
     public var audioFiles: SEVItems {return self.elements(0x61756466) as! SEVItems} // "audf"
@@ -2833,10 +2972,12 @@ extension SEVObject {
     public var diskItems: SEVItems {return self.elements(0x6469746d) as! SEVItems} // "ditm"
     public var disks: SEVItems {return self.elements(0x63646973) as! SEVItems} // "cdis"
     public var dockPreferencesObjects: SEVItems {return self.elements(0x6470616f) as! SEVItems} // "dpao"
+    public var documents: SEVItems {return self.elements(0x646f6375) as! SEVItems} // "docu"
     public var domains: SEVItems {return self.elements(0x646f6d61) as! SEVItems} // "doma"
     public var drawers: SEVItems {return self.elements(0x64726141) as! SEVItems} // "draA"
     public var filePackages: SEVItems {return self.elements(0x63706b67) as! SEVItems} // "cpkg"
     public var files: SEVItems {return self.elements(0x66696c65) as! SEVItems} // "file"
+    public var folderActions: SEVItems {return self.elements(0x666f6163) as! SEVItems} // "foac"
     public var folders: SEVItems {return self.elements(0x63666f6c) as! SEVItems} // "cfol"
     public var groups: SEVItems {return self.elements(0x73677270) as! SEVItems} // "sgrp"
     public var growAreas: SEVItems {return self.elements(0x67726f77) as! SEVItems} // "grow"
@@ -2884,6 +3025,7 @@ extension SEVObject {
     public var scriptingProperties: SEVItems {return self.elements(0x73647072) as! SEVItems} // "sdpr"
     public var scriptingResultObjects: SEVItems {return self.elements(0x7364726f) as! SEVItems} // "sdro"
     public var scriptingSuites: SEVItems {return self.elements(0x73647374) as! SEVItems} // "sdst"
+    public var scripts: SEVItems {return self.elements(0x73637074) as! SEVItems} // "scpt"
     public var scrollAreas: SEVItems {return self.elements(0x73637261) as! SEVItems} // "scra"
     public var scrollBars: SEVItems {return self.elements(0x73637262) as! SEVItems} // "scrb"
     public var securityPreferencesObjects: SEVItems {return self.elements(0x7365636f) as! SEVItems} // "seco"
@@ -2905,6 +3047,7 @@ extension SEVObject {
     public var userDomainObjects: SEVItems {return self.elements(0x646f6d75) as! SEVItems} // "domu"
     public var users: SEVItems {return self.elements(0x75616363) as! SEVItems} // "uacc"
     public var valueIndicators: SEVItems {return self.elements(0x76616c69) as! SEVItems} // "vali"
+    public var windows: SEVItems {return self.elements(0x6377696e) as! SEVItems} // "cwin"
     public var XMLAttributes: SEVItems {return self.elements(0x786d6c61) as! SEVItems} // "xmla"
     public var XMLDatas: SEVItems {return self.elements(0x786d6c64) as! SEVItems} // "xmld"
     public var XMLElements: SEVItems {return self.elements(0x786d6c65) as! SEVItems} // "xmle"

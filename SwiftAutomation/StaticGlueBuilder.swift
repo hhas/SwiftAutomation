@@ -8,17 +8,14 @@
 
 // TO DO: this code is pretty messy; tidy up later (e.g. divide ad-hoc parsing code into lexer + LL(1) parser)
 
-// TO DO: glue file needs to include `import SwiftAutomation` AND fully qualify all references to its types, classes, and constants by default; also implement an 'omitImport' option that omits them for all-in-one static builds
-
 // TO DO: skip any non-significant spaces in format string (currently spaces aren't allowed in format string)
 
 // TO DO: format strings should allow module and nested type names, e.g. 'Foo.Bar'
 
-// TO DO: rename `PREFIXObject` to `PREFIXSpecifier` (the one catch with this is that there's already a `Specifier` class in SwiftAutomation, which means it'll always have a PREFIX added regardless of which was actually intended; OTOH, user can always just use `Query` if they need a one-size-fits-all type - the only thing `Specifier` adds is the low-level `sendAppleEvent()` methods; everything else is added by InsertionSpecifier and ObjectSpecifier subclasses.)
+// TO DO: SDEF converter needs to convert type names (simplest is probably to build dictionary of all original and converted names on first pass, then do second pass using that dictionary to map type names); Q. what about built-in types? (DefaultTerminology should now use same names as AS, simplifying re-mapping to their Swift equivalents; OTOH, not sure how much benefit that really adds - plus there's a lot of ambiguity with `text` due to its overloaded meaning)
 
 
 import Foundation
-
 
 
 /******************************************************************************/
@@ -529,29 +526,29 @@ public func renderStaticGlueTemplate(glueSpec: GlueSpec, typeSupportSpec: TypeSu
 }
 
 
+/******************************************************************************/
 // generate quick-n-dirty user documentation by reformatting command, class, property, etc. names in SDEF XML
 
 public func translateScriptingDefinition(_ data: Data, glueSpec: GlueSpec) throws -> Data {
     func convertNode(_ node: XMLElement, _ attributeName: String = "name", symbolPrefix: String = "") {
-        if let attribute = node.attribute(forName: attributeName) {
-            if let value = attribute.stringValue {
-                attribute.stringValue = symbolPrefix + glueSpec.keywordConverter.convertSpecifierName(value)
-            }
+        if let attribute = node.attribute(forName: attributeName), let value = attribute.stringValue {
+            attribute.stringValue = symbolPrefix + glueSpec.keywordConverter.convertSpecifierName(value)
         }
     }
-    let xml = try XMLDocument(data: data, options: 0)
+    let xml = try XMLDocument(data: data, options: (1 << 16)) // XMLNode.Options.documentXInclude
     guard let root = xml.rootElement() else {
         throw TerminologyError("Malformed SDEF resource: missing root.")
     }
+    // add attributes to root node indicating SDEF has been translated to SA syntax, including name of Application class (e.g. "ITunes")
+    root.setAttributesWith(["classNamePrefix": glueSpec.classNamePrefix, "applicationClassName": glueSpec.applicationClassName,
+                            "frameworkName": glueSpec.frameworkName, "frameworkVersion": glueSpec.frameworkVersion])
     for suite in root.elements(forName: "suite") {
         for key in ["command", "event"] {
             for command in suite.elements(forName: key) {
                 convertNode(command)
                 for parameter in command.elements(forName: "parameter") {
-                    if let attribute = parameter.attribute(forName: "name") {
-                        if let value = attribute.stringValue {
-                            attribute.stringValue = glueSpec.keywordConverter.convertParameterName(value)+":"
-                        }
+                    if let attribute = parameter.attribute(forName: "name"), let value = attribute.stringValue {
+                        attribute.stringValue = glueSpec.keywordConverter.convertParameterName(value)+":"
                     }
                 }
             }
@@ -560,6 +557,7 @@ public func translateScriptingDefinition(_ data: Data, glueSpec: GlueSpec) throw
             for klass in suite.elements(forName: key) {
                 convertNode(klass)
                 convertNode(klass, "plural")
+                convertNode(klass, "inherits")
                 for node in klass.elements(forName: "element") { convertNode(node, "type") }
                 for node in klass.elements(forName: "property") { convertNode(node) }
                 for node in klass.elements(forName: "contents") { convertNode(node) }
@@ -572,9 +570,7 @@ public func translateScriptingDefinition(_ data: Data, glueSpec: GlueSpec) throw
         }
         for valueType in suite.elements(forName: "value-type") { convertNode(valueType) }
     }
-    // TO DO: add attribute to root node indicating SDEF has been translated to SA syntax (while in theory SAE dictionary viewer could just convert from AS to SA syntax on the fly, that assumes a glue file created using default prefix names, which may or may not be the case)
-    // TO DO: for user's reference, also include name of Application class (e.g. "ITunes") somewhere it will appear in standard dictionary viewer (e.g. as <documentation> element at start of sdef, or appended to description string for `application` class)
-    return xml.xmlData(withOptions: (1 << 17 | 1 << 18)) // [XMLNode.Options.nodePrettyPrint,XMLNode.Options.documentIncludeContentTypeDeclaration]
+    return xml.xmlData(withOptions: (1 << 18)) // XMLNode.Options.documentIncludeContentTypeDeclaration
 }
 
 
