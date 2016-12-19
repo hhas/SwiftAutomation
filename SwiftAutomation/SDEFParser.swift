@@ -84,22 +84,40 @@ public class SDEFParser: ApplicationTerminology {
         return (name, eventClass, eventID)
     }
     
+    //
+    
+    private func parse(typeOfElement element: XMLElement) throws -> (String, OSType) { // class, record-type, value-type
+        let (name, code) = try self.parse(keywordElement: element)
+        self.types.append(KeywordTerm(name: self.keywordConverter.convertSpecifierName(name), kind: .elementOrType, code: code))
+        return (name, code)
+    }
+    
+    private func parse(propertiesOfElement element: XMLElement) throws { // class, class-extension, record-value
+        for element in element.elements(forName: "property") {
+            let (name, code) = try self.parse(keywordElement: element)
+            self.properties.append(KeywordTerm(name: self.keywordConverter.convertSpecifierName(name), kind: .property, code: code))
+        }
+    }
+    
     // parse a class/enumerator/command/etc element of a dictionary suite
     
     func parse(definition node: XMLNode) throws {
         if let element = node as? XMLElement, let tagName = element.name {
             switch tagName {
-            case "class", "record-type", "value-type":
-                let (name, code) = try self.parse(keywordElement: element)
-                self.types.append(KeywordTerm(name: self.keywordConverter.convertSpecifierName(name), kind: .elementOrType, code: code))
-                if tagName == "class" { // use plural class name as elements name (if not given, append "s" to singular name) // TO DO: check SIG/SDEF spec, as appending 's' doesn't work so well for names already ending in 's' (e.g. 'print settings')
-                    let plural = element.attribute(forName: "plural")?.stringValue ?? ""
-                    self.elements.append(KeywordTerm(name: self.keywordConverter.convertSpecifierName(plural == "" ? "\(name)s" : plural), kind: .elementOrType, code: code))
-                }
-                for element in element.elements(forName: "property") {
-                    let (name, code) = try self.parse(keywordElement: element)
-                    self.properties.append(KeywordTerm(name: self.keywordConverter.convertSpecifierName(name), kind: .property, code: code))
-                }
+            case "class":
+                let (name, code) = try parse(typeOfElement: element)
+                try parse(propertiesOfElement: element)
+                // use plural class name as elements name (if not given, append "s" to singular name)
+                // (note: record and value types also define plurals, but we only use plurals for element names and elements should always be classes, so we ignore those)
+                let plural = element.attribute(forName: "plural")?.stringValue ?? "\(name)s" // note: the spec says to append 's' to name when plural attribute isn't given; in practice, appending 's' doesn't work so well for names already ending in 's' (e.g. 'print settings'), but that's the SDEF's problem
+                self.elements.append(KeywordTerm(name: self.keywordConverter.convertSpecifierName(plural), kind: .elementOrType, code: code))
+            case "class-extension":
+                try parse(propertiesOfElement: element)
+            case "record-type":
+                let _ = try parse(typeOfElement: element)
+                try parse(propertiesOfElement: element)
+            case "value-type":
+                let _ = try parse(typeOfElement: element)
             case "enumeration":
                 for element in element.elements(forName: "enumerator") {
                     let (name, code) = try self.parse(keywordElement: element)

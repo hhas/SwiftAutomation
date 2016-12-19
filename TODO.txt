@@ -1,8 +1,19 @@
 TO DO:
 
+- there is a serious bug when comparing Any result to MissingValue:
 
-- SDEFs containing XIncludes need those refs to be resolved when parsing (e.g. generating Contacts glue with -S currently omits most standard suite commands)
+        print(try Finder().home.name.get() == MissingValue) // returns true!!! (should be false as result is a String value)
 
+- another problem will be when using `==` on a result that may be a specifier, since == constructs a test clause; going to have to give these overloads more thought; at worst, switch to `eq`, `ne`, `lt`, etc, or custom operators which won't clash with builtins
+
+
+- one problem with overriding `==` for use in test clauses is that swiftc is rather dopey about resolving ambiguous overloads; dunno if there's any way to tell it to ignore this override if LHS is not explicitly ObjectSpecifier, e.g.:
+
+    print(("" as Any) == ("" as Any))
+
+    error: cannot convert value of type 'Any' to expected argument type 'ObjectSpecifier'
+    print(("" as Any) == ("" as Any))
+           ~~~^~~~~~
 
 
 - For convenience, generated glues include a convenience initializer containing the bundleID for the target application, allowing user to write [e.g.] `TextEdit()` as shorthand for `TextEdit(bundleIndentifier: "com.apple.TextEdit")`. However, in Swift3/Xcode8, if the glue's application class uses the following convenience initializer, it crashes with EXC_BAD_ACCESS, presumably due to a Swift bug:
