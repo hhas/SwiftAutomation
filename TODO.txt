@@ -16,6 +16,31 @@ TO DO:
            ~~~^~~~~~
 
 
+- amusing translation error:
+
+        tell application "Keynote"
+          --get font of object text of every text item of master slides of document 1
+          set font of object text of (every text item whose object text's font starts with "IowanOldStyle-") of master slides of document 1 to "Century Schoolbook"
+        end tell
+
+    gives:
+
+        try Keynote(name: "/Applications/Keynote.app").customRoot(Error -1700: Can't unpack malformed descriptor:
+
+        <NSAppleEventDescriptor: 'obj '{ 'form':'test', 'want':'shtx', 'from':'obj '{ 'form':'indx', 'want':'KnMs', 'seld':'abso'($206C6C61$), 'from':'obj '{ 'form':'indx', 'want':'docu', 'seld':1, 'from':null() } }, 'seld':'cmpd'{ 'relo':'bgwt', 'obj1':'obj '{ 'form':'prop', 'want':'prop', 'seld':'font', 'from':'obj '{ 'form':'prop', 'want':'prop', 'seld':'pDTx', 'from':'exmn'($$) } }, 'obj2':'utxt'("IowanOldStyle-") } }>
+
+        Can't unpack object specifier's selector data. Can't unpack malformed descriptor:
+
+        <NSAppleEventDescriptor: 'cmpd'{ 'relo':'bgwt', 'obj1':'obj '{ 'form':'prop', 'want':'prop', 'seld':'font', 'from':'obj '{ 'form':'prop', 'want':'prop', 'seld':'pDTx', 'from':'exmn'($$) } }, 'obj2':'utxt'("IowanOldStyle-") }>
+
+        Can't unpack comparison test: malformed descriptor.).objectText.font.set(to: "Century Schoolbook")
+
+    1. SpecifierFormatter.formatValue() needs to check for Error, and show opaque description string (e.g. "«malformed-descriptor»")
+
+    2. The above is due to a bug in the unpack code rather than a malformed AEDesc, so need to track down and fix that as well.
+
+
+
 - For convenience, generated glues include a convenience initializer containing the bundleID for the target application, allowing user to write [e.g.] `TextEdit()` as shorthand for `TextEdit(bundleIndentifier: "com.apple.TextEdit")`. However, in Swift3/Xcode8, if the glue's application class uses the following convenience initializer, it crashes with EXC_BAD_ACCESS, presumably due to a Swift bug:
 
         public class TextEdit: TEDRoot, Application {
