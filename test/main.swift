@@ -4,7 +4,7 @@
 //
 //  tests // TO DO: move ad-hoc tests to separate target; replace this with examples of use
 //
-//
+//  TO DO: test `all` selector works correctly (should convert property specifier to all-elements specifier, return all-elements specifier as-is, and report send-time error if called on anything else)
 //
 
 import AppKit
@@ -40,29 +40,26 @@ do {
     
     let itunes = ITunes()
     let state: ITU = try itunes.playerState.get()
-    print(state)
+    print("itunes.playerState.get() -> \(state)")
 //    try ITunes().play()
     
     
+//    print("// Specifier.description: \(TEDApp.documents[1].text)")
+//    print("// Specifier.description: \(te.documents[1].text)")
     
-    print("// \(TEDApp.documents[1].text)")
-    print("// \(te.documents[1].text)")
-/*
+    
     // send `open` and `get` AEs using raw four-char codes
     //let result = try te.sendAppleEvent(kCoreEventClass, kAEOpenDocuments, [keyDirectObject:NSURL.fileURLWithPath("/Users/has/todos.txt")])
     //print(result)
 
     
-    // make new document with properties {text: "Hello World!"}
-    
-    let teDocRef: TEDItem = try te.make(new: TED.document, withProperties: [TED.text: "Hello World!"])
-        
-    print(teDocRef) // TO DO: resulting specifier shows a 'TEDApp' root but needs to show 'TextEdit()' root; see TODO in SpecifierFormatter
-    
-    // get text of teDocRef
-    
-    print(try teDocRef.text.get())
+    print("TEST: make new document with properties {text: \"Hello World!\"}")
+    let teDoc: TEDItem = try te.make(new: TED.document, withProperties: [TED.text: "Hello World!"])
+    print("=> \(teDoc)")
+    print("TEST: get text of teDoc")
+    print(try teDoc.text.get())
 
+/*
     
     // get name of document 1
     
@@ -99,19 +96,20 @@ do {
     print("=> \(result6)")
     
     
-    // get every file of folder "Documents" of home whose name extension is "txt"
+    // get every file of folder "Documents" of home whose name extension is "txt" and modification date > date "01:30 Jan 1, 2001 UTC"
     let date = Date(timeIntervalSinceReferenceDate:5400) // 1:30am on 1 Jan 2001 (UTC)
     print("\nTEST: Finder().home.folders[\"Documents\"].files[FINIts.nameExtension == \"txt\" && FINIts.modificationDate > DATE].name.get()")
     let q = Finder().home.folders["Documents"].files[FINIts.nameExtension == "txt" && FINIts.modificationDate > date].name
     print("// \(q)")
     let result4a = try q.get()
     print("=> \(result4a)")
+    */
     
     print("\nTEST: Finder().home.folders[\"Documents\"].files[FINIts.nameExtension == \"txt\"].properties.get()")
     let result4c = try Finder().home.folders["Documents"].files[FINIts.nameExtension == "txt"].properties.get() as [[FINSymbol:Any]]
     print("=> \(result4c)")
     
-    
+    /*
     print("\nTEST: TextEdit().documents.properties.get() as [TEDDocumentRecord]")
     let result4d = try TextEdit().documents.properties.get() as [TEDDocumentRecord]
     print("=> \(result4d)")
@@ -124,10 +122,17 @@ do {
     
 //    try te.documents.close(saving: TED.no) // close every document saving no
     
-    //
-//    try teDocRef.close(saving: TED.no)
+    //struct X {}; try teDoc.text.set(to: X())
     
-
+    //
+    try teDoc.close(saving: TED.no)
+    
+    
+    print("\nTEST: get files 1 thru 3 of home")
+    let r = try Finder().home.files[1, 3].get() as [Int]//[FINItem]
+    print("=> \(r)")
+    
+    
 } catch {
     print("ERROR: \(error)")
 }

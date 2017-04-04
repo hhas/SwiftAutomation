@@ -4,13 +4,9 @@
 //
 //
 
-// TO DO: this is dog-slow on InDesign (4-5sec), probably due to extra NSData layer (pure Python AETE parser does it in 0.25sec)
+// TO DO: check endianness in read data methods
 
 import Foundation
-
-
-// kAEInheritedProperties isn't defined in OpenScripting.h for some reason
-let SwiftAutomation_kAEInheritedProperties = try! FourCharCode("c@#^")
 
 
 /**********************************************************************/
@@ -18,11 +14,11 @@ let SwiftAutomation_kAEInheritedProperties = try! FourCharCode("c@#^")
 
 public class AETEParser: ApplicationTerminology {
     
-    public private(set) var types: KeywordTerms = []
-    public private(set) var enumerators: KeywordTerms = []
-    public private(set) var properties: KeywordTerms = []
-    public private(set) var elements: KeywordTerms = []
-    public var commands: CommandTerms { return Array(self.commandsDict.values) }
+    public private(set) var types: [KeywordTerm] = []
+    public private(set) var enumerators: [KeywordTerm] = []
+    public private(set) var properties: [KeywordTerm] = []
+    public private(set) var elements: [KeywordTerm] = []
+    public var commands: [CommandTerm] { return Array(self.commandsDict.values) }
     
     private var commandsDict = [String:CommandTerm]()
     private let keywordConverter: KeywordConverterProtocol
@@ -32,17 +28,17 @@ public class AETEParser: ApplicationTerminology {
     private var foundClassCodes           = Set<OSType>()
     private var foundElementCodes         = Set<OSType>()
     
-    private var aeteData: NSData! // was char*
+    private var aeteData = NSData() // was char*
     private var cursor: Int = 0 // was unsigned long
     
     
-    public init(keywordConverter: KeywordConverterProtocol = gSwiftAEKeywordConverter) {
+    public init(keywordConverter: KeywordConverterProtocol = defaultSwiftKeywordConverter) {
         self.keywordConverter = keywordConverter
     }
     
     public func parse(_ descriptor: NSAppleEventDescriptor) throws { // accepts AETE/AEUT or AEList of AETE/AEUTs
         switch descriptor.descriptorType {
-        case SwiftAutomation_typeAETE, SwiftAutomation_typeAEUT:
+        case _typeAETE, _typeAEUT:
             self.aeteData = descriptor.data as NSData
             self.cursor = 6 // skip version, language, script integers
             let n = self.short()
@@ -69,7 +65,7 @@ public class AETEParser: ApplicationTerminology {
             } catch {
                 throw TerminologyError("An error occurred while parsing AETE. \(error)")
             }
-        case typeAEList:
+        case _typeAEList:
             for i in 1..<(descriptor.numberOfItems+1) {
                 try self.parse(descriptor.atIndex(i)!)
             }
@@ -86,23 +82,23 @@ public class AETEParser: ApplicationTerminology {
     
     // internal callbacks
     
-    // read data methods // TO DO: AEB implementation was simple and lightweight (C pointer arithmetic) - how does this compare? how would ManagedBuffer compare?
+    // read data methods
     
-    func short() -> UInt16 { // unsigned short (2 bytes)
+    @inline(__always) func short() -> UInt16 { // unsigned short (2 bytes)
         var value: UInt16 = 0
         self.aeteData.getBytes(&value, range: NSMakeRange(self.cursor,MemoryLayout<UInt16>.size))
         self.cursor += MemoryLayout<UInt16>.size
         return value
     }
     
-    func code() -> OSType { // (4 bytes)
+    @inline(__always) func code() -> OSType { // (4 bytes)
         var value: OSType = 0
         self.aeteData.getBytes(&value, range: NSMakeRange(self.cursor,MemoryLayout<OSType>.size))
         self.cursor += MemoryLayout<OSType>.size
         return value
     }
     
-    func string() -> String {
+    @inline(__always) func string() -> String {
         var length: UInt8 = 0 // Pascal string = 1-byte length (unsigned char) followed by 0-255 MacRoman chars
         self.aeteData.getBytes(&length, range: NSMakeRange(self.cursor,MemoryLayout<UInt8>.size))
         self.cursor += MemoryLayout<UInt8>.size
@@ -114,18 +110,18 @@ public class AETEParser: ApplicationTerminology {
     
     // skip unneeded aete data
     
-    func skipShort() {
+    @inline(__always) func skipShort() {
         self.cursor += MemoryLayout<UInt16>.size
     }
-    func skipCode() {
+    @inline(__always) func skipCode() {
         self.cursor += MemoryLayout<OSType>.size
     }
-    func skipString() {
+    @inline(__always) func skipString() {
         var len: UInt8 = 0
         self.aeteData.getBytes(&len, range: NSMakeRange(self.cursor,MemoryLayout<UInt8>.size))
         self.cursor += MemoryLayout<UInt8>.size + Int(len)
     }
-    func alignCursor() { // realign aete data cursor on even byte after reading strings
+    @inline(__always) func alignCursor() { // realign aete data cursor on even byte after reading strings
         if self.cursor % 2 != 0 {
             self.cursor += 1
         }
@@ -133,7 +129,7 @@ public class AETEParser: ApplicationTerminology {
     
     // perform a bounds check on aete data cursor to protect against malformed aete data
     
-    func checkCursor() throws {
+    @inline(__always) func checkCursor() throws {
         if cursor > self.aeteData.length {
             throw TerminologyError("The AETE ended prematurely: (self.aeteData.length) bytes expected, (self.cursor) bytes read.")
         }
@@ -202,7 +198,7 @@ public class AETEParser: ApplicationTerminology {
             self.skipString()   // description
             self.alignCursor()
             let flags = self.short()
-            if propertyCode != SwiftAutomation_kAEInheritedProperties { // it's a normal property definition, not a superclass  definition
+            if propertyCode != _kAEInheritedProperties { // it's a normal property definition, not a superclass  definition
                 let propertyDef = KeywordTerm(name: propertyName, kind: .property, code: propertyCode)
                 if (flags % 2 != 0) { // class name is plural
                     isPlural = true
@@ -293,10 +289,10 @@ public class AETEParser: ApplicationTerminology {
 
 
 
-extension AEApplication { // TO DO: extend AppData first, with convenience methods on AEApplication?
+extension AEApplication { // extends the built-in Application object with convenience method for getting its AETE resource
 
     public func getAETE() throws -> NSAppleEventDescriptor {
-        return try self.sendAppleEvent(SwiftAutomation_kASAppleScriptSuite, SwiftAutomation_kGetAETE, [keyDirectObject:0]) as NSAppleEventDescriptor
+        return try self.sendAppleEvent(_kASAppleScriptSuite, _kGetAETE, [keyDirectObject:0]) as NSAppleEventDescriptor
     }
 }
 

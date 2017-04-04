@@ -1,0 +1,71 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+        <title>SwiftAutomation | Installing SwiftAutomation</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <style type="text/css" media="all"><!--@import url(full.css);--></style>
+    </head>
+    <body>
+        <div id="wrap">
+            <div id="main">
+                <h1>Installing SwiftAutomation</h1>
+                <div class="navbar"><a href="welcome.html">back</a> | <a href="index.html">index</a> | <a href="tutorial-introduction.html">next</a></div>
+                <p>[[ TO DO: include screenshots? ]]</p>
+
+<h2>Get SwiftAutomation</h2>
+
+<p>Run the following command in Terminal to clone the <a href="https://bitbucket.org/hhas/swiftae">SwiftAutomation repository</a> to your Mac:</p>
+
+<pre><code>git clone https://bitbucket.org/hhas/swiftae.git
+</code></pre>
+
+<p>Minimum requirements: macOS 10.11 and Xcode 8.1/Swift 3.0.1.</p>
+
+<h2>Installing for Swift "scripting"</h2>
+
+<p>Open the SwiftAE project in Xcode. Select the Product ➞ Scheme ➞ Release menu option followed by Product ➞ Build to build the following three products: <code>SwiftAutomation.framework</code>, <code>aeglue</code> (this is automatically embedded in the framework), and <code>MacOSGlues.framework</code>.</p>
+
+<p>To reveal the folder containing the built products, scroll down to "Products" in the Xcode project window's Project Navigator list, right-click the "SwiftAutomation.framework" entry (its name should now be black, not red), and select Show in Finder from the contextual menu.</p>
+
+<p>Launch Terminal and type the following into a new window:</p>
+
+<pre><code>cd /Library/Frameworks
+</code></pre>
+
+<p>Next type the following, including a space at the end:</p>
+
+<pre><code>sudo ln -s
+</code></pre>
+
+<p>then drag <code>SwiftAutomation.framework</code> from the Finder window onto Terminal to insert the full path to the framework at the end of the command. On pressing Return, enter an an administrator login to allow the <code>ln</code> command to create a symlink in <code>/Library/Frameworks</code>. Repeat the process for the <code>MacOSGlues.framework</code>.</p>
+
+<p>To confirm this setup works, enter the following Swift "script" into a plain text or code editor of your choice:</p>
+
+<pre><code>#!/usr/bin/swift -target x86_64-apple-macosx10.12 -F /Library/Frameworks
+
+import SwiftAutomation
+import MacOSGlues
+
+print(try Finder().home.name.get()) // output your home folder's name
+</code></pre>
+
+<p>Save it as <code>automate.swift</code> in your home folder, type <code>cd ~/ &amp;&amp; chmod +x test.swift</code> in Terminal to make it executable, then run it as follows:</p>
+
+<pre><code>./automate.swift
+</code></pre>
+
+<p>All going well, the script should compile and run in well under a second, and print the name of your home folder to <code>stdout</code>. Success!</p>
+
+<p>(All not going well, Swift will log an error message describing why it failed. If you cannot troubleshoot it yourself, please get in touch.)</p>
+
+<p class="hilitebox">Remember to rebuild SwiftAE's Release products whenever a new version of Xcode/Swift is installed: until Swift provides a stable ABI, the compiled SwiftAutomation and MacOSGlues frameworks can only be used by scripts compiled with the exact same version of Swift as they were.</p>
+
+<h2>Embedding in GUI apps</h2>
+
+<p>Because Swift does not yet provide a stable ABI, it is not possible for a GUI application built by one version of the Swift compiler to link to a framework built by another. Instead, a Swift-based application project must compile all of its Swift framework dependencies and embed those frameworks within its .app bundle as part of its build process. Technical Note TN2435 <a href="https://developer.apple.com/library/content/technotes/tn2435/_index.html">Embedding Frameworks In An App</a> explains how to embed a third-party Xcode framework project such as SwiftAE inside your own Xcode project.</p>
+
+            </div>
+        </div>
+        <div id="footer"><div class="navbar"><a href="welcome.html">back</a> | <a href="index.html">index</a> | <a href="tutorial-introduction.html">next</a></div></div>
+    </body>
+</html>

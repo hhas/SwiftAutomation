@@ -12,15 +12,9 @@
                 <div class="navbar"><a href="application-objects.html">back</a> | <a href="index.html">index</a> | <a href="commands.html">next</a></div>
                 <h2>How object specifiers work</h2>
 
-<p>[TO DO: document class hierarchy as used in glues]</p>
+<p>As explained in chapter 3, a property contains either a simple value describing an object attribute (<code>name</code>, <code>class</code>, <code>creationDate</code>, etc.) or an object specifier representing a one-to-one relationship between objects (e.g. <code>home</code>, <code>currentTrack</code>), while elements represent a one-to-many relationship between objects (<code>documents</code>, <code>folders</code>, <code>fileTracks</code>, etc). [TO DO: document class hierarchy as used in glues; note that PREFIXItem identifies a single property or element while PREFIXItems identifies zero or more elements, and summarize the selectors]</p>
 
-<p>[TO DO: finish (note that this is a bit of a rehash of ch.2; might be simpler just to refer users back to that)]</p>
-
-<p>A property contains either a simple value describing an object attribute (<code>name</code>, <code>class</code>, <code>creationDate</code>, etc.) or an object specifier representing a one-to-one relationship between objects (e.g. <code>home</code>, <code>currentTrack</code>).</p>
-
-<p>Elements represent a one-to-many relationship between objects (<code>documents</code>, <code>folders</code>, <code>fileTracks</code>, etc). </p>
-
-<p>[TO DO: note that both appear as read-only properties on glue-defined ObjectSpecifier+RootSpecifier subclasses; users don't instantiate Specifier classes directly but instead construct via chained property/method calls from glue's Application class or untargeted <code>RootSpecifier</code> constants (<var>PREFIX</var>App, <var>PREFIX</var>Con, <var>PREFIX</var>Its)]</p>
+<p>[TO DO: note that all properties and elements appear as read-only properties on glue-defined ObjectSpecifier and RootSpecifier subclasses; users don't instantiate Specifier classes directly but instead construct via chained property/method calls from glue's Application class or untargeted <code>RootSpecifier</code> constants (<var>PREFIX</var>App, <var>PREFIX</var>Con, <var>PREFIX</var>Its)]</p>
 
 <p>characters/words/paragraphs of documents by index/relative-position/range/filter</p>
 
@@ -34,23 +28,19 @@
 
 <pre><code>var PROPERTY: <var>PREFIX</var>Item</code> {get}</pre>
 
+<p>Examples:</p>
+
+<pre><code>textedit.<strong>version</strong>
+textedit.documents[1].<strong>text</strong>
+finder.<strong>home</strong>.files.<strong>name</strong></code></pre>
+
 <p>Syntax:</p>
 
 <pre><code>specifier<strong>.</strong><var>property</var></code></pre>
 
-<p>Examples:</p>
-
-<pre><code>textedit.<strong>name</strong>
-textedit.documents[1].<strong>text</strong>
-finder.<strong>home</strong>.files.<strong>name</strong></code></pre>
-
 <h3>All elements</h3>
 
 <pre><code>var ELEMENTS: <var>PREFIX</var>Items {get}</code></pre>
-
-<p>Syntax:</p>
-
-<pre><code>specifier<strong>.</strong><var>elements</var></code></pre>
 
 <p>Examples:</p>
 
@@ -58,70 +48,74 @@ finder.<strong>home</strong>.files.<strong>name</strong></code></pre>
 textedit.<strong>documents</strong>
 textedit.<strong>documents</strong>.<strong>paragraphs</strong>.<strong>words</strong></code></pre>
 
+<p>Syntax:</p>
+
+<pre><code>specifier<strong>.</strong><var>elements</var></code></pre>
+
 <h3>Element by index</h3>
 
 <pre><code>subscript(index: Any) -> <var>PREFIX</var>Item</code></pre>
 
+<p>Examples:</p>
+
+<pre><code>textedit.<strong>documents[1]</strong>
+finder.home.<strong>folders[-2]</strong>.<strong>files[1]</strong></code></pre>
+
 <p>Syntax:</p>
 
-<pre><code>elements<strong>[</strong><var>selector</var><strong>]</strong>
+<pre><code>elements<strong>[<var>selector</var>]</strong>
 
     <var>selector</var> : Int | Any -- the object's index (1-indexed), or other identifying value [1]</code></pre>
 
-<p>[1] While element indexes are normally integers, some applications may also accept other types (e.g. Finder's file/folder/disk specifiers also accept alias values). The only exceptions are <code>String</code> and <code>&lt;var&gt;PREFIX&lt;/var&gt;Specifier</code>, which are used to construct by-name and by-test specifiers respectively.</p>
+<p>[1] While element indexes are normally integers, some applications may also accept other types (e.g. Finder's file/folder/disk specifiers also accept alias values). The only exceptions are <code>String</code> and <code><var>PREFIX</var>Specifier</code>, which are used to construct by-name and by-test specifiers respectively.</p>
 
-<p class="hilitebox">Be aware that index-based object specifiers always use _one-indexing_ (i.e. the first item is 1, the second is 2, etc.), not zero-indexing as in Swift (where the first item is 0, the second is 1, etc.).</p>
-
-<p>Examples:</p>
-
-<p>[TO DO: this and subsequent examples should appear as complete code, as above, with relevant portions emphasized]</p>
-
-<pre><code>words[3]
-items[-1]
-</code></pre>
+<p class="hilitebox">Be aware that index-based object specifiers always use <em>one-indexing</em> (i.e. the first item is 1, the second is 2, etc.), not zero-indexing as in Swift (where the first item is 0, the second is 1, etc.).</p>
 
 <h3>Element by name</h3>
 
 <pre><code>subscript(index: String) -> <var>PREFIX</var>Item
-func named(name: Any) -> <var>PREFIX</var>Item</code></pre>
+func named(_ name: Any) -> <var>PREFIX</var>Item</code></pre>
+
+<p>Examples:</p>
+
+<pre><code>textedit.<strong>documents["Untitled"]</strong>
+finder.home.<strong>folders["Documents"]</strong>.<strong>files["ReadMe.txt"]</strong></code></pre>
 
 <p>Specifies the first element with the given name. (The subscript syntax is preferred; the <code>named</code> method would only need used if a non-string value was required.)</p>
 
 <p>Syntax:</p>
 
-<pre><code>elements<strong>[</strong><var>selector</var><strong>]</strong>
+<pre><code>elements<strong>[<var>selector</var>]</strong>
         <var>selector</var> : String -- the object's name (as defined in its 'name' property)</code></pre>
 
 <p class="hilitebox">Applications usually treat object names as case-insensitive. Where multiple element have the same name, a by-name specifier only identifies the first element found with that name. (To identify <em>all</em> elements with a particular name, use a by-test specifier instead.)</p>
 
-<p>Examples:</p>
-
-<pre><code>disks["Macintosh HD"]
-files["index.html"]
-</code></pre>
+<p>[TO DO: update once a final decision is made on whether or not to include <code>named()</code> method]</p>
 
 <h3>Element by ID</h3>
 
-<pre><code>func ID(elementID:Any) -&gt; &lt;var&gt;PREFIX&lt;/var&gt;Item
-</code></pre>
-
-<p>Syntax:</p>
-
-<pre><code>elements<strong>.ID(</strong><var>selector</var><strong>)</strong>
-        <var>selector</var> : Any -- the object's id (as defined in its 'id' property)</code></pre>
+<pre><code>func ID(_ elementID: Any) -> <var>PREFIX</var>Item</code></pre>
 
 <p>Examples:</p>
 
-<pre><code>windows.ID(4321)
-</code></pre>
+<pre><code>textedit.<strong>windows.ID(4321)</strong></code></pre>
+
+<p>Syntax:</p>
+
+<pre><code>elements<strong>.ID(<var>selector</var>)</strong>
+        <var>selector</var> : Any -- the object's id (as defined in its 'id' property)</code></pre>
 
 <h3>Element by absolute position</h3>
 
-<pre><code>var first: &lt;var&gt;PREFIX&lt;/var&gt;Item {get}
-var middle: &lt;var&gt;PREFIX&lt;/var&gt;Item {get}
-var last: &lt;var&gt;PREFIX&lt;/var&gt;Item {get}
-var any: &lt;var&gt;PREFIX&lt;/var&gt;Item {get}
-</code></pre>
+<pre><code>var first: <var>PREFIX</var>Item {get}
+var middle: <var>PREFIX</var>Item {get}
+var last: <var>PREFIX</var>Item {get}
+var any: <var>PREFIX</var>Item {get}</code></pre>
+
+<p>Examples:</p>
+
+<pre><code>textedit.<strong>documents.first</strong>.text.<strong>paragraphs.last</strong>
+finder.desktop.<strong>files.any</strong></code></pre>
 
 <p>Syntax:</p>
 
@@ -130,18 +124,15 @@ elements<strong>.middle</strong> -- middle element
 elements<strong>.last</strong> -- last element
 elements<strong>.any</strong> -- random element</code></pre>
 
-<p>Examples:</p>
-
-<pre><code>documents.first
-paragraphs.last
-files.any
-</code></pre>
-
 <h3>Element by relative position</h3>
 
-<pre><code>func previous(elementClass: Symbol? = nil) -&gt; &lt;var&gt;PREFIX&lt;/var&gt;Item
-func next(elementClass: Symbol? = nil) -&gt; &lt;var&gt;PREFIX&lt;/var&gt;Item
-</code></pre>
+<pre><code>func previous(_ elementClass: Symbol? = nil) -> <var>PREFIX</var>Item
+func next(_ elementClass: Symbol? = nil) -> <var>PREFIX</var>Item</code></pre>
+
+<p>Examples:</p>
+
+<pre><code>textedit.documents[1].characters[3].<strong>next()</strong>
+textedit.documents[1].paragraphs[-1].<strong>previous(TED.word)</strong></code></pre>
 
 <p>Syntax:</p>
 
@@ -152,28 +143,31 @@ element.<strong>previous(<var>elementClass</var>)</strong>
 element.<strong>next(<var>elementClass</var>)</strong>
 
         <var>elementClass</var> : Symbol -- the name of the previous/next element's class;
-                                            if omitted, the current element's class is used</code></pre>
-
-<p>Examples:</p>
-
-<pre><code>words[3].next() // word 4
-paragraphs[-1].previous(TED.character) // the last character before the last paragraph
-</code></pre>
+                                 if omitted, the current element's class is used</code></pre>
 
 <h3>Elements by range</h3>
 
-<pre><code>subscript(from: Any, to: Any) -&gt; &lt;var&gt;PREFIX&lt;/var&gt;Items
-</code></pre>
+<pre><code>subscript(from: Any, to: Any) -> <var>PREFIX</var>Items</code></pre>
+
+<p>Examples:</p>
+
+<pre><code>textedit.<strong>documents[1, 3]</strong>
+finder.home.<strong>folders["Documents", "Movies"]</strong>
+texeditplus.documents[1].<strong>text[TEPCon.characters[5], TEPCon.words[-2]]</strong></code></pre>
+
+<p>Caution:</p>
+
+<p>By-range specifiers must be constructed as <code>elements[<var>start</var>,<var>end</var>]</code>, <em>not</em> <code>elements[<var>start</var>...<var>end</var>]</code>, as <code>Range&lt;T&gt;</code> types are not supported. </p>
 
 <p>Syntax:</p>
 
-<pre><code>elements<strong>[</strong><var>start</var><strong>,</strong> <var>end</var><strong>]</strong>
+<pre><code>elements<strong>[<var>start</var>, <var>end</var>]</strong>
         <var>start</var> : Int | String | <var>PREFIX</var>Item -- start of range
         <var>end</var> : Int | String | <var>PREFIX</var>Item -- end of range</code></pre>
 
 <p>Range references select all elements between and including two object specifiers indicating the start and end of the range. The start and end specifiers are normally declared relative to the container of the elements being selected. </p>
 
-<p>These sub-specifiers are constructed using the glue's' <code>&lt;var&gt;PREFIX&lt;/var&gt;Con</code> constant, e.g. <code>TEDCon</code>, as their root. For example, to indicate the third paragraph relative to the currrent container object:</p>
+<p>These sub-specifiers are constructed using the glue's <code><var>PREFIX</var>Con</code> constant, e.g. <code>TEDCon</code>, as their root. For example, to indicate the third paragraph relative to the currrent container object:</p>
 
 <pre><code>TEDCon.paragraphs[3]
 </code></pre>
@@ -193,17 +187,18 @@ paragraphs[-1].previous(TED.character) // the last character before the last par
 <pre><code>words[TEPCon.characters[5], TEPCon.paragraphs[-2]]
 </code></pre>
 
-<p>Examples:</p>
-
-<pre><code>documents[1, 3]
-folders["Documents", "Movies"]
-text[TEPCon.characters[5], TEPCon.words[-2]]
-</code></pre>
-
 <h3>Elements by test</h3>
 
-<pre><code>subscript(test: TestClause) -&gt; &lt;var&gt;PREFIX&lt;/var&gt;Items
-</code></pre>
+<pre><code>subscript(test: TestClause) -> <var>PREFIX</var>Items</code></pre>
+
+<p>Examples:</p>
+
+<pre><code>textedit.<strong>documents[TEDIts.path == MissingValue]</strong>
+
+finder.desktop.<strong>files[FINIts.nameExtension.isIn(["txt", "rtf"]) 
+                     && FINIts.modificationDate > (Date()-60*60*24*7)]</strong></code></pre>
+
+<p>Syntax:</p>
 
 <p>A specifier to each element that satisfies one or more conditions specified by a test specifier:</p>
 
@@ -215,11 +210,10 @@ text[TEPCon.characters[5], TEPCon.words[-2]]
 <ul>
 <li><p>A test specifier relative to each element being tested. This specifier must be constructed using the glue's '<var>PREFIX</var>Its' root, e.g. <code>TEDIts</code>. Its-based references support all valid reference forms, allowing you to construct references to its properties and elements. For example:</p>
 
-<pre><code>TEDIts
+<p>TEDIts
 TEDIts.size
-TEDIts.words.first
-</code></pre></li>
-<li><p>One or more conditional/containment tests, implemented as operators/methods on the specifier being tested. The left-hand operand/receiver must be a <code>&lt;var&gt;PREFIX&lt;/var&gt;Specifier</code> instance; the other operand/argument can be anything.</p>
+TEDIts.words.first</p></li>
+<li><p>One or more conditional/containment tests, implemented as operators/methods on the specifier being tested. The left-hand operand/receiver must be a <code><var>PREFIX</var>Specifier</code> instance. The right-hand operand/argument can be any value; its type is always <code>Any</code>.</p>
 
 <p>Syntax:</p>
 
@@ -253,27 +247,31 @@ let query = textedit.documents[1].words[test]
 
 <pre><code><var>test</var> <strong>&amp;&amp;</strong> <var>test</var>
 <var>test</var> <strong>||</strong> <var>test</var>
-<strong>!</strong><var>test</var></code></pre></li>
-</ul>
+<strong>!</strong><var>test</var></code></pre>
 
 <p>Examples:</p>
 
-<pre><code>  !(TEDIts.contains("?"))
+<pre><code>!(TEDIts.contains("?"))
 
-  FINIts.size &gt; 1024 &amp;&amp; FINIts.size &lt; 10240
+FINIts.size &gt; 1024 &amp;&amp; FINIts.size &lt; 10240
 
-  TEDIts.words[1].beginsWith("A") || TEDIts.words[1].contains("ce") || TEDIts.words[2] == "foo"
-</code></pre>
+TEDIts.words[1].beginsWith("A") || TEDIts.words[1].contains("ce") || TEDIts.words[2] == "foo"
+</code></pre></li>
+</ul>
 
 <h3>Element insertion location</h3>
 
 <p>Insertion locations can be specified at the beginning or end of all elements, or before or after a specified element or element range.</p>
 
-<pre><code>var beginning: &lt;var&gt;PREFIX&lt;/var&gt;Specifier
-var end: &lt;var&gt;PREFIX&lt;/var&gt;Specifier
-var before: &lt;var&gt;PREFIX&lt;/var&gt;Specifier
-var after: &lt;var&gt;PREFIX&lt;/var&gt;Specifier
-</code></pre>
+<pre><code>var beginning: <var>PREFIX</var>Specifier
+var end: <var>PREFIX</var>Specifier
+var before: <var>PREFIX</var>Specifier
+var after: <var>PREFIX</var>Specifier</code></pre>
+
+<p>Examples:</p>
+
+<pre><code>textedit.documents.<strong>end</strong>
+textdit.documents[1].paragraphs[-1].<strong>before</strong></code></pre>
 
 <p>Syntax:</p>
 
@@ -281,12 +279,6 @@ var after: &lt;var&gt;PREFIX&lt;/var&gt;Specifier
 elements<strong>.end</strong>
 element<strong>.before</strong>
 element<strong>.after</strong></code></pre>
-
-<p>Examples:</p>
-
-<pre><code>documents.end
-paragraphs.last.before
-</code></pre>
 
             </div>
         </div>

@@ -6,21 +6,16 @@
 //
 //
 
-// TO DO: how difficult would it be to auto-generate enum/struct/typealias type definitions from an app's AETE/SDEF? (bearing in mind that AETE/SDEF-supplied type info is frequently vague, ambiguous, incomplete, and/or wrong, so a manual option will always be required as well); this basically falls into same camp as how to auto-generate struct-based record definitions as a more static-friendly alternative to AppData's standard AERecordDesc<->[Symbol:Any] mapping; may be worth exploring later (and will need a manual format string option as well, e.g. "STRUCTNAME=PROPERTY1:TYPE1+PROPERTY2:TYPE2+..."). 
-//
-// ANSWER: it'd be doable, but practically useless. Incomplete/incorrect type info is commoner than muck in app dictionaries - even the `path` property of Standard Suite's `document` class is wrong, declaring its type as `text` when it's really `text or missing value`; furthermore, because most Cocoa apps use `text` for both cText and typeUnicodeText, it's impossible to know which of these a given property actually holds. (Note: this also buggers up dictionary viewers and AEOM browsers by making it impossible to distinguish a property that represents an object attribute from a property that represents a one-to-one relationship with another object. Meantime, if the `text` property was declared correctly as a reference, getting document's properties as a record struct would break because the app automatically resolves the request to return text, not a reference.) 
-//
-// In other words, generating correct glue classes is impossible without additional manual correction; if Apple's own devs can't get this information right in CocoaScripting's standard terminology and CocoaScripting lets them away with it too, what chance have Cocoa app developers of getting their app-specific terms correct; never mind Carbon apps which don't care about or use crappy AETE (or SDEF) type info at all? 
-//
-// FWIW, if a pure-Swift AEOM handler framework ever gets built, it could address all these issues by radically simplifying and comprehensively prescribing the AEOM spec, then generate a formal IDL from the implementation which could be used to generate a robust glue (not to mention much more detailed user documentation, free test suites, and reliable implementation). Until then, the only value in auto-generating these definitions (as format strings only, not as Swift code) would be to give users a starting point from which to make their own corrections; and under the circumstances it'd simpler for them just to write minimal format strings for the bits of records they'll actually use, or just use the standard [Symbol:Any] dictionaries and do their own checking/casting of property values as needed. (Though if SwiftAutomation ever catches on then app developers might consider creating and distributing ready-to-use glue modules themselves, saving users the hassle of generating their own, at which point more powerful tools might be of some advantage).
+// TO DO: this code is pretty messy; tidy up later (e.g. divide ad-hoc parsing code into lexer + LL(1) parser)
 
-// TO DO: parseEnumeratedTypeDefinition needs special-case handling for "Missing" (basically, pull it out of the typeNames list and set a flag that adds `case missing` to the enum) [note: don't need special support for "Optional", but probably should report it as an error just to remind users to typealias it themselves; ditto for "Array", "Dictionary", "Set" as generics aren't [yet] supported directly]
+// TO DO: skip any non-significant spaces in format string (currently spaces aren't allowed in format string)
 
-// TO DO: this code is pretty messy; tidy up later
+// TO DO: format strings should allow module and nested type names, e.g. 'Foo.Bar'
+
+// TO DO: SDEF converter needs to convert type names (simplest is probably to build dictionary of all original and converted names on first pass, then do second pass using that dictionary to map type names); Q. what about built-in types? (DefaultTerminology should now use same names as AS, simplifying re-mapping to their Swift equivalents; OTOH, not sure how much benefit that really adds - plus there's a lot of ambiguity with `text` due to its overloaded meaning)
 
 
 import Foundation
-
 
 
 /******************************************************************************/
@@ -28,7 +23,7 @@ import Foundation
 
 // glue renderer consumes the following data structures
 
-public typealias EnumeratedTypeDefinition = (name: String, cases: [(name: String, type: String)]) // TO DO: add `mayBeMissing: Bool`? alternatively, just map "MissingValue" to case missing(MissingValueType), and include an `init(_ value: MissingValueType=MissingValue)` in enum, thereby avoiding the need to parse and format "MissingValue" as special case (TO DO: for consistency, the `MayBeMissing<T>` enum should probably have the same structure - currently it uses `case missing` without the MissingValue argument; alternatively, could ditch `MayBeMissing<T>` altogether and just require users to specify all of the enums they'll need - basically convenience [in the common case] vs consistency [we wouldn't need to code-generate enums at all if T could be a vararg. but that's not going to happen without a decent macro system])
+public typealias EnumeratedTypeDefinition = (name: String, cases: [(name: String, type: String)])
 
 public typealias RecordStructDefinition = (name: String, className: String, properties: [(name: String, code: OSType, type: String)])
 
@@ -36,7 +31,7 @@ public typealias TypeAliasDefinition = (name: String, type: String)
 
 
 // the following names are reserved by glue generator
-let ReservedGlueTypeNames: Set<String> = ["symbol", "object", "insertion", "item", "items", "root", "record"] // enum/typealias/struct format string parsers will automatically prefix these names with classNamePrefix // TO DO: should probably be on glueSpec.keywordConverter
+let ReservedGlueTypeNames: Set<String> = ["symbol", "object", "insertion", "item", "items", "root", "record"] // enum/typealias/struct format string parsers will automatically prefix these names with classNamePrefix // TO DO: not sure if 'record' should be included
 
 func isReservedGlueTypeName(_ string: String) -> Bool {
     return ReservedGlueTypeNames.contains(string.lowercased())
@@ -45,7 +40,7 @@ func isReservedGlueTypeName(_ string: String) -> Bool {
 
 
 
-class SyntaxError: SwiftAutomationError {
+public class SyntaxError: AutomationError {
     
     init(_ message: String) {
         super.init(code: 1, message: message)
@@ -72,6 +67,18 @@ let kBindChar = Character("=")
 let kConcatChar = Character("+")
 
 
+func lowercasedFirstCharacter(_ string: String) -> String {
+    var chars = string.characters
+    let c = String(chars.popFirst()!).lowercased()
+    return c + String(chars)
+}
+
+func sentenceCased(_ string: String) -> String {
+    var chars = string.characters
+    let c = chars.popFirst()!
+    return String(c).uppercased() + String(chars).lowercased()
+}
+
 // TO DO: skipSpace(_ chars: inout String.CharacterView)
 
 func advanceOne(_ chars: inout String.CharacterView, character c: Character, after: String) throws {
@@ -84,23 +91,23 @@ func parseIdentifier(_ chars: inout String.CharacterView) throws -> String {
     // reads a C-identifier, checking it isn't a Swift keyword
     var foundChars = String.CharacterView()
     let c = chars.popFirst()
-    if c == nil || !kLegalFirstChars.contains(c!) { throw SyntaxError(found: c, butExpected: "an identifier") }
+    if c == nil || !legalFirstChars.contains(c!) { throw SyntaxError(found: c, butExpected: "an identifier") }
     foundChars.append(c!)
     while let c = chars.first {
-        if !kLegalOtherChars.contains(c) { break }
+        if !legalOtherChars.contains(c) { break }
         foundChars.append(chars.popFirst()!)
     }
     let name = String(foundChars)
-    if kSwiftKeywords.contains(name) {
+    if reservedSwiftKeywords.contains(name) {
         throw SyntaxError("Expected an identifier but found reserved keyword '\(name)' instead.")
     }
     return name
 }
 
-func parseType(_ chars: inout String.CharacterView, classNamePrefix: String) throws -> String {
+func parseType(_ chars: inout String.CharacterView, classNamePrefix: String, name: String? = nil) throws -> String {
     // reads a C-identifier optionally followed by <TYPE[,TYPE,...]> generic parameters, as used on right side of typealias and struct property definitions; characters are consumed from chars parameter until the name is fully read, then the name is returned as String
     // if the name is one of the base names used by SwiftAutomation (Symbol, Object, etc), a class name prefix is automatically added; this allows the same format string to be reused for multiple glues
-    var name = try parseIdentifier(&chars)
+    var name = try name ?? parseIdentifier(&chars)
     if isReservedGlueTypeName(name) { name = classNamePrefix + name }
     if chars.first == kOpenChar {
         name += String(chars.popFirst()!)
@@ -122,12 +129,14 @@ func parseType(_ chars: inout String.CharacterView, classNamePrefix: String) thr
 func parseProperty(_ chars: inout String.CharacterView, classNamePrefix: String) throws -> (String, String) {
     // parse "NAME:TYPE" pair
     let propertyName = try parseIdentifier(&chars)
+    // `class` property is a special case that's used to store the AERecord's descriptorType
+    if ["class", "class_"].contains(propertyName.lowercased()) { throw SyntaxError("Invalid record property name: \(propertyName)") }
     try advanceOne(&chars, character: kPairChar, after: propertyName)
     return (propertyName, try parseType(&chars, classNamePrefix: classNamePrefix))
 }
 
 
-// typealias format string parser
+// typealias format string parser "ALIASNAME=TYPE"
 
 public func parseTypeAliasDefinition(_ string: String, classNamePrefix: String) throws -> TypeAliasDefinition {
     // TO DO: don't bother splitting; just define a skipChar() function that consumes one char and errors if it's not the char expected
@@ -143,42 +152,57 @@ public func parseTypeAliasDefinition(_ string: String, classNamePrefix: String) 
 }
 
 
-// enum type format string parser "[TYPENAME=]TYPE1+TYPE2+..."
+// enum type format string parser "[ENUMNAME=][CASENAME1:]TYPE1+[CASENAME2:]TYPE2+..."
 
 func parseEnumeratedTypeDefinition(_ string: String, classNamePrefix: String) throws -> EnumeratedTypeDefinition {
     // an enumerated (aka sum/union) type definition is written as a simple format string: "[TYPENAME=]TYPE1+TYPE2+..."
     // note that class name prefixes are added automatically to both "TYPENAME" and (as needed) "TYPEn", allowing a format string to be used over multiple glues, e.g. "URL+Item" -> `enum FINURLOrItem { case URL; case FINItem; ...}`, or "FileObject=URL+Item" -> `enum FINFileObject { case URL; case FINItem; ...}`
-    
-    // TO DO: allow this to take generic types on RHS on condition that an enumName is specified (since autogenerating names for Array/Dictionary/Set/Optional generic types is a bit too complicated)
-    
-    // TO DO: also needs to support 'MissingValue' as a special case, e.g. 'Int+String+MissingValue' would include a `case missing`, similar to MayBeMissing<T> enum but flattened out (since MayBeMissing)
-    
     let parts = string.characters.split(maxSplits:1, whereSeparator: {$0=="="})
-    let typeNames = try parts.last!.split(whereSeparator: {$0=="+"}).map {
-        (chars: String.CharacterView) throws -> (String, String, String) in
-        let typeName = String(chars)
-        try validateCIdentifier(typeName)
-        var caseName = typeName.lowercased()
-        if !UPPERCHAR.contains(typeName[typeName.startIndex]) { caseName = "_\(caseName)" }
-        if kSwiftKeywords.contains(caseName) { caseName += "_" }
-        return (caseName, (isReservedGlueTypeName(typeName) ? (classNamePrefix + typeName) : typeName), typeName)
-    }
-    if typeNames.count < 2 { throw SyntaxError("Not a valid enumerated type definition: '\(string)'") }
-    var enumName: String
-    if parts.count == 2 {
-        enumName = String(parts[0])
+    var enumName: String = parts.count == 2 ? String(parts[0]) : ""
+    var enumNameParts = [String]()
+    var chars = parts.last!
+    var cases = [(name: String, type: String)]()
+    var nc: Character?
+    repeat {
+        var caseName: String
+        var typeName = try parseIdentifier(&chars)
+        if chars.first == kPairChar { // "CASENAME:TYPENAME" (a clean lexer + LL(1) parser design would've looked ahead for ":" _before_ parsing the previous token as either identifier or type, but just kludging it for now)
+            caseName = typeName
+            try advanceOne(&chars, character: ":", after: caseName)
+            typeName = try parseType(&chars, classNamePrefix: classNamePrefix) // read actual type name
+        } else { // else auto-generate case name from type name
+            caseName = lowercasedFirstCharacter(typeName) // e.g. `SomeType` -> `someType`
+            typeName = try parseType(&chars, classNamePrefix: classNamePrefix, name: typeName) // read rest of type name
+            if typeName.hasSuffix(String(kCloseChar)) { // e.g. "foo<x>" is invalid
+                throw SyntaxError("Can't generate case name from parameterized type name: \(typeName)")
+            }
+        }
+        if typeName == "MissingValue" { // for convenience, the format string may also include `MissingValue`, in which case a `.missing(_)` case is also included in the enum; this avoids the need for an extra level of MayBeMissing<> boxing
+            cases.insert((name: "missing", type: "MissingValueType"), at: 0) // (ignore any property name caller might have given)
+            enumNameParts.append(typeName)
+        } else {
+            if caseName == "missing" { throw SyntaxError("Invalid case name: \(typeName)") }
+            if typeName == caseName { caseName = "_\(caseName)" } // caution: type names _should_ start with uppercase char and case name with lower, but check to be sure and disambiguate if necessary
+            if reservedSwiftKeywords.contains(caseName) { caseName += "_" }
+            cases.append((name: caseName, type: (isReservedGlueTypeName(typeName) ? (classNamePrefix + typeName) : typeName)))
+            if enumName.isEmpty {
+                var name = typeName
+                if name.hasPrefix(classNamePrefix) { name.removeSubrange(classNamePrefix.startIndex...classNamePrefix.endIndex) }
+                enumNameParts.append(name)
+            }
+        }
+        nc = chars.popFirst()
+    } while nc == kConcatChar
+    if cases.count < 2 { throw SyntaxError("Not a valid enumerated type definition: '\(string)'") }
+    if !chars.isEmpty { throw SyntaxError("Expected end of text but found \(String(chars)).") }
+    if enumName.isEmpty {
+        enumName = enumNameParts.joined(separator: "Or")
+        if reservedSwiftKeywords.contains(enumName) { enumName += "_" }
+    } else {
         try validateCIdentifier(enumName)
-    } else { // auto-generate from typeNames
-        enumName = typeNames.map {
-            (_, _, name: String) -> String in
-            var chars = name.characters
-            let c = chars.popFirst()!
-            return String(c).uppercased() + String(chars).lowercased()
-            }.joined(separator: "Or")
-        if kSwiftKeywords.contains(enumName) { enumName += "_" }
     }
     if isReservedGlueTypeName(enumName) { throw SyntaxError("Invalid enum name: \(enumName)") }
-    return (classNamePrefix + enumName, typeNames.map { (caseName, typeName, _) in return (caseName, typeName) })
+    return (classNamePrefix + enumName, cases)
 }
 
 
@@ -201,7 +225,7 @@ func parseRecordStructDefinition(_ string: String, classNamePrefix: String,
     }
     try advanceOne(&chars, character: kBindChar, after: "struct name")
     var nc: Character?
-    repeat { // TO DO: skip any non-significant spaces in format string (currently spaces aren't allowed in format string)
+    repeat {
         let (propertyName, typeName) = try parseProperty(&chars, classNamePrefix: classNamePrefix)
         guard let propertyCode = typesByName[propertyName]?.typeCodeValue else {
             throw SyntaxError("Unknown property name: \(propertyName)")
@@ -217,7 +241,6 @@ func parseRecordStructDefinition(_ string: String, classNamePrefix: String,
 /******************************************************************************/
 // Type support glue specification
 
-// TO DO: refactor parse methods for better code reuse
 
 public class TypeSupportSpec { // converts custom format strings into enum/struct/typealias type descriptions for use in glue renderer; TO DO: define protocol, allowing type descriptions to be constructed in other ways (e.g. by optimistic parsing of AETE/SDEF's schlonky type data)
     
@@ -234,8 +257,13 @@ public class TypeSupportSpec { // converts custom format strings into enum/struc
     //
     
     public func enumeratedTypeDefinitions(classNamePrefix: String) throws -> [EnumeratedTypeDefinition] {
+        do {
         return try self.enumeratedTypeFormats.map {
             try parseEnumeratedTypeDefinition($0, classNamePrefix: classNamePrefix)
+        }
+        }catch {
+         print(error)
+            throw error
         }
     }
     
@@ -279,7 +307,7 @@ public class GlueSpec {
     public let typeSupportSpec: TypeSupportSpec?
     
     // create GlueSpec for specified application (applicationURL is typically a file:// URL, or nil to create default glue)
-    public init(applicationURL: URL?, keywordConverter: KeywordConverterProtocol = gSwiftAEKeywordConverter,
+    public init(applicationURL: URL?, keywordConverter: KeywordConverterProtocol = defaultSwiftKeywordConverter,
                 classNamePrefix: String? = nil, applicationClassName: String? = nil, useSDEF: Bool = false,
                 typeSupportSpec: TypeSupportSpec? = nil) {
         self.applicationURL = applicationURL
@@ -324,7 +352,7 @@ public class GlueSpec {
 
 
 public class StaticGlueTemplate {
-    // Note: this is not a general-purpose templating engine. In particular, «+NAME»...«-NAME» blocks have leaky scope,
+    // Caution: this is not a general-purpose template engine. In particular, «+NAME»...«-NAME» blocks have leaky scope,
     // so replacing «FOO» tags in the top-level scope will replace all «FOO» tags within «+NAME»...«-NAME» blocks too.
     // This makes it easy to (e.g.) replace all «PREFIX» tags throughout the template, but also means nested tags must
     // use different names when unrelated to each other (e.g. «COMMAND_NAME» vs (parameter) «NAME») so that replacing
@@ -335,7 +363,7 @@ public class StaticGlueTemplate {
     public var string: String { return self._template.copy() as! String }
     
     
-    public init(string: String = SwiftAEGlueTemplate) {
+    public init(string: String = SwiftGlueTemplate) {
         self._template = NSMutableString(string: string)
     }
     
@@ -347,14 +375,11 @@ public class StaticGlueTemplate {
     private func iterate<T>(block name: String, newContents: [T], emptyContent: String = "",
                             separator: String = "", renderer: (StaticGlueTemplate, T) -> ()) {
         let tagLength = ("«+\(name)»" as NSString).length
-        while true {
+        while true { // match each «+NAME»...«-NAME» block and render its contents
             let range = self._template.range(of: "(?s)«\\+\(name)».*?«-\(name)»",
                                              options: .regularExpression, range: NSMakeRange(0, self._template.length))
-            if range.length == 0 {
-                return
-            }
+            if range.length == 0 { return } // no more matches
             let subString = self._template.substring(with: NSMakeRange(range.location+tagLength,range.length-tagLength*2))
-            self._template.deleteCharacters(in: range)
             var result = [String]()
             if newContents.count > 0 {
                 for newContent in newContents {
@@ -363,7 +388,7 @@ public class StaticGlueTemplate {
             }else {
                 result = [emptyContent] // e.g. empty dictionary literals require ':'
             }
-            self._template.insert(result.joined(separator: separator), at: range.location)
+            self._template.replaceCharacters(in: range, with: result.joined(separator: separator))
         }
     }
     
@@ -415,6 +440,8 @@ public class StaticGlueTemplate {
                     $0.insertString("CASE_TYPE", $1.type)
                 }
             }
+            subtemplate.insertString("ENUM_NO_VALUE",
+                 (definition.cases[0].name == "missing" ? "return .missing(MissingValue)" : "throw AutomationError(code: -1708)"))
         }
     }
     
@@ -455,12 +482,14 @@ public class StaticGlueTemplate {
 /******************************************************************************/
 // glue renderer
 
-public func renderStaticGlueTemplate(glueSpec: GlueSpec, typeSupportSpec: TypeSupportSpec? = nil,
-                                     extraTags: [String:String] = [:], templateString: String = SwiftAEGlueTemplate) throws -> String {
-    // note: SwiftAEGlueTemplate requires additional values for extraTags: ["AEGLUE_COMMAND": shellCommand,"GLUE_NAME": glueFileName]
+public func renderStaticGlueTemplate(glueSpec: GlueSpec, typeSupportSpec: TypeSupportSpec? = nil, importFramework: Bool = true,
+                                     extraTags: [String:String] = [:], templateString: String = SwiftGlueTemplate) throws -> String {
+    // note: SwiftGlueTemplate requires additional values for extraTags: ["AEGLUE_COMMAND": shellCommand,"GLUE_NAME": glueFileName]
     let glueTable = try glueSpec.buildGlueTable()
     let template = StaticGlueTemplate(string: templateString)
     template.insertString("PREFIX", glueSpec.classNamePrefix)
+    template.insertString("IMPORT_SWIFTAE", importFramework ? "import SwiftAutomation" : "")
+    template.insertString("SWIFTAE", importFramework ? "SwiftAutomation." : "")
     template.insertString("APPLICATION_CLASS_NAME", glueSpec.applicationClassName)
     template.insertString("FRAMEWORK_NAME", glueSpec.frameworkName)
     template.insertString("FRAMEWORK_VERSION", glueSpec.frameworkVersion)
@@ -497,29 +526,29 @@ public func renderStaticGlueTemplate(glueSpec: GlueSpec, typeSupportSpec: TypeSu
 }
 
 
+/******************************************************************************/
 // generate quick-n-dirty user documentation by reformatting command, class, property, etc. names in SDEF XML
 
 public func translateScriptingDefinition(_ data: Data, glueSpec: GlueSpec) throws -> Data {
     func convertNode(_ node: XMLElement, _ attributeName: String = "name", symbolPrefix: String = "") {
-        if let attribute = node.attribute(forName: attributeName) {
-            if let value = attribute.stringValue {
-                attribute.stringValue = symbolPrefix + glueSpec.keywordConverter.convertSpecifierName(value)
-            }
+        if let attribute = node.attribute(forName: attributeName), let value = attribute.stringValue {
+            attribute.stringValue = symbolPrefix + glueSpec.keywordConverter.convertSpecifierName(value)
         }
     }
-    let xml = try XMLDocument(data: data, options: 0)
+    let xml = try XMLDocument(data: data, options: (1 << 16)) // XMLNode.Options.documentXInclude
     guard let root = xml.rootElement() else {
         throw TerminologyError("Malformed SDEF resource: missing root.")
     }
+    // add attributes to root node indicating SDEF has been translated to SA syntax, including name of Application class (e.g. "ITunes")
+    root.setAttributesWith(["classNamePrefix": glueSpec.classNamePrefix, "applicationClassName": glueSpec.applicationClassName,
+                            "frameworkName": glueSpec.frameworkName, "frameworkVersion": glueSpec.frameworkVersion])
     for suite in root.elements(forName: "suite") {
         for key in ["command", "event"] {
             for command in suite.elements(forName: key) {
                 convertNode(command)
                 for parameter in command.elements(forName: "parameter") {
-                    if let attribute = parameter.attribute(forName: "name") {
-                        if let value = attribute.stringValue {
-                            attribute.stringValue = glueSpec.keywordConverter.convertParameterName(value)+":" // TO DO: formatting of param names should ideally be parameterized for reusability; maybe add `formatCommandName`, `formatParamName`, `formatEnum`, etc. methods to keywordConverter, and call those instead of `convert...`?
-                        }
+                    if let attribute = parameter.attribute(forName: "name"), let value = attribute.stringValue {
+                        attribute.stringValue = glueSpec.keywordConverter.convertParameterName(value)+":"
                     }
                 }
             }
@@ -528,6 +557,7 @@ public func translateScriptingDefinition(_ data: Data, glueSpec: GlueSpec) throw
             for klass in suite.elements(forName: key) {
                 convertNode(klass)
                 convertNode(klass, "plural")
+                convertNode(klass, "inherits")
                 for node in klass.elements(forName: "element") { convertNode(node, "type") }
                 for node in klass.elements(forName: "property") { convertNode(node) }
                 for node in klass.elements(forName: "contents") { convertNode(node) }
@@ -536,11 +566,11 @@ public func translateScriptingDefinition(_ data: Data, glueSpec: GlueSpec) throw
         }
         let symbolPrefix = "\(glueSpec.classNamePrefix)."
         for enumeration in suite.elements(forName: "enumeration") {
-            for enumerator in enumeration.elements(forName: "enumerator") { convertNode(enumerator, symbolPrefix: symbolPrefix) } // TO DO: as above, enum formatting should ideally be parameterized
+            for enumerator in enumeration.elements(forName: "enumerator") { convertNode(enumerator, symbolPrefix: symbolPrefix) }
         }
         for valueType in suite.elements(forName: "value-type") { convertNode(valueType) }
     }
-    return xml.xmlData(withOptions: (1 << 17 | 1 << 18)) // [XMLNode.Options.nodePrettyPrint,XMLNode.Options.documentIncludeContentTypeDeclaration]
+    return xml.xmlData(withOptions: (1 << 18)) // XMLNode.Options.documentIncludeContentTypeDeclaration
 }
 
 

@@ -1,0 +1,247 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+        <title>SwiftAutomation | Apple event type mappings</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <style type="text/css" media="all"><!--@import url(full.css);--></style>
+    </head>
+    <body>
+        <div id="wrap">
+            <div id="main">
+                <h1>Apple event type mappings</h1>
+                <div class="navbar"><a href="creating-and-using-static-glues.html">back</a> | <a href="index.html">index</a> | <a href="application-objects.html">next</a></div>
+                <h2>Overview</h2>
+
+<p>The <code>NSAppleEventDescriptor</code> Foundation class provides a low-level wrapper around the Carbon Apple Event Manager APIs for building and sending Apple events, and for encapsulating the parameter and result data to be included in those events. <code>NSAppleEventDescriptor</code> defines a <code>descriptorType</code> property containing an <code>OSType</code> (a.k.a. "four-char code") that describes the type of value it holds (e.g. <code>'utxt'</code> = <code>typeUnicodeText</code> = UTF16-encoded text), and a <code>data</code> property containing the value's data serialized as an <code>NSData</code> instance.</p>
+
+<p>Apple event data types include:</p>
+
+<ul>
+<li><p>common scalar types such as booleans, integers, doubles, strings, dates and file URLs</p></li>
+<li><p>ordered lists</p></li>
+<li><p>records (struct-like key-value lists where each key is an <code>OSType</code>)</p></li>
+<li><p>object specifiers, used to construct <em>first-class queries</em> (also known as <em>references</em> in AppleScript), that identify objects within an application.</p></li>
+</ul>
+
+<p><code>NSAppleEventDescriptor</code> includes methods for converting common Apple event data types to and from their Foundation equivalents (e.g. <code>typeUnicodeText</code> ⟷ <code>NSString</code>). SwiftAutomation extends and improves on these basic mappings as follows:</p>
+
+<table width="100%" summary="AE-Foundation type mappings">
+<thead>
+
+<tr><th>AppleScript type</th><th>Descriptor type</th>
+    <th>Symbol name</th><th>Swift</th></tr>
+
+</thead>
+<tbody>
+
+<tr><td><code>boolean</code></td><td><code>typeBoolean</code></td>
+    <td><code>AE.boolean</code></td><td><code>Bool</code></tr>
+
+<tr><td><code>integer</code></td><td><code>typeSInt32</code></td>
+    <td><code>AE.integer</code></td><td><code>Int</code></td></tr>
+
+<tr><td><code>real</code></td><td><code>typeIEEE64BitFloatingPoint</code></td>
+    <td><code>AE.real</code></td><td><code>Double</code></td></tr>
+
+<tr><td><code>text</code> [1]</td><td><code>typeUnicodeText</code></td>
+    <td><code>AE.UnicodeText</code></td><td><code>String</code></td></tr>
+
+<tr><td><code>list</code></td><td><code>typeAEList</code></td>
+    <td><code>AE.list</code></td><td><code>Array</code></td></tr>
+
+<tr><td><code>record</code></td><td><code>typeAERecord</code></td>
+    <td><code>AE.record</code></td><td><code>Dictionary</code></td></tr>
+
+<tr><td><code>date</code></td><td><code>typeLongDateTime</code></td>
+    <td><code>AE.date</code></td><td><code>Date</code></td></tr>
+
+<tr><td><code>alias</code></td><td><code>typeAlias</code></td>
+    <td><code>AE.alias</code></td><td><code>URL</code> [2]</td></tr>
+
+<tr><td><code>«class bmrk»</code></td><td><code>typeBookmarkData</code></td>
+    <td><code>AE.bookmarkData</code></td><td><code>URL</code> [2]</td></tr>
+
+<tr><td><code>«class furl»</code></td><td><code>typeFileURL</code></td>
+    <td><code>AE.fileURL</code></td><td><code>URL</code> [2]</td></tr>
+
+<tr><td>N/A [3]</td><td><code>typeNull</code></td>
+    <td><code>AE.null</code></td><td><code><var>PREFIX</var>App</code></td></tr>
+
+<tr><td><code>reference</code></td><td><code>typeObjectSpecifier</code></td>
+    <td><code>AE.reference</code></td><td><code><var>PREFIX</var>Item</code>/<var>PREFIX</var>Items</code> [4]</td></tr>
+
+<tr><td><code>location reference</code></td><td><code>typeInsertionLoc</code></td>
+    <td><code>AE.locationReference</code></td><td><code><var>PREFIX</var>Insertion</code></code> [4]</td></tr>
+
+<tr><td><code>class</code></td><td><code>typeType</code></td>
+    <td><code>AE.typeClass</code></td><td><code><var>PREFIX</var>Symbol</code> [5]</td></tr>
+
+<tr><td><code>constant</code></td><td><code>typeEnumerated</code></td>
+    <td><code>AE.constant</code></td><td><var>PREFIX</var>Symbol</code> [5]</td></tr>
+
+<tr><td><code>property</code></td><td><code>typeProperty</code></td>
+    <td><code>AE.property</code></td><td><var>PREFIX</var>Symbol</code> [5]</td></tr>
+
+</tbody>
+</table>
+
+<p>[1] While AppleScript treats <code>string</code>, <code>text</code>, and <code>Unicode text</code> keywords as synonyms for <code>typeUnicodeText</code>, the Apple Event Manager still  considers them to be different types (<code>typeChar</code>, <code>cText</code>, <code>typeUnicodeText</code>). When specifying a command's <code>requestedType:</code> always use <code><var>PREFIX</var>Symbol.unicodeText</code> (or just <code>AE.unicodeText</code>) as this is the standard UTF-16 representation that all current macOS apps should support.</p>
+
+<p>[2] <code>typeBookmarkData</code>, <code>typeAlias</code>, <code>typeFSRef</code>, and <code>typeFileURL</code> descriptors are all unpacked Swift <code>URL</code> structs. <code>URL</code> structs are always packed as <code>typeFileURL</code> descriptors. (Be aware that Swift's <code>URL</code> structs only hold path information, so any alias/bookmark data identifying the original file system object is lost.)</p>
+
+<p>[3] While the <code>typeNull</code> descriptor is used to represent the root application object in an object specifier, this root object is not visible within AppleScript which prefers to display the object specifier's target (e.g. <code>application "NAME"</code>, <code>«script»</code>) instead. AppleScript does define a <code>null</code> keyword, but this is never used.</p>
+
+<p>[4] Each application glue file defines its own <code>Item</code>, <code>Items</code>, and <code>Insertion</code> subclasses for that particular application, prefixing them with a three-letter code by default; for example, the TextEdit glue defines <code>TEDItem</code>, <code>TEDItems</code>, and <code>TEDInsertion</code> classes. The <code>Item</code> and <code>Items</code> classes are equivalent to AppleScript's <code>reference</code> data type, except that they distinguish between object specifiers that identify a single property/element and object specifiers that identify multiple elements, whereas AppleScript does not.</p>
+
+<p>[5] Each application glue file defines its own <code>Symbol</code> subclass for that particular application, prefixing it with a three-letter code by default. For example, the TextEdit glue defines a <code>TEDSymbol</code> class, with a shorthand <code>TED</code> typealias for convenience. </p>
+
+<h2>Mapping notes</h2>
+
+<p>While AE-Swift type conversions generally work quite seamlessly, it is sometimes useful to know some of the details involved, particularly when troubleshooting code that deals with older or buggy applications. The following sections provide additional information.</p>
+
+<h3>Missing Value</h3>
+
+<p>AppleScript's <code>missing value</code> symbol serves a similar purpose to Swift's <code>nil</code>, acting as a placeholder where a value is expected but none is available. On the Apple event side, it is represented as a descriptor of <code>typeType</code> with the code value <code>cMissingValue</code> (<code>'msng'</code>). SwiftAutomation provides a choice of mappings when unpacking a <code>missing value</code> descriptor as a Swift value:</p>
+
+<ul>
+<li><p><code>SwiftAutomation.MissingValue</code> is used when a command's return type is <code>Any</code>. Unlike generic <code>nil</code> values, <code>MissingValue</code> is a unique value of concrete type <code>MissingValueType</code> so can be compared for equality without having to cast to a specific type first. For example:</p>
+
+<pre><code>let path = try TextEdit().documents[1].path() // returns Any
+if path != MissingValue { ... }
+</code></pre></li>
+<li><p><code>Optional&lt;T&gt;.none</code> is used when a command's return type is declared as <code>Optional&lt;T&gt;</code>. For example:</p>
+
+<pre><code>let path = try TextEdit().documents[1].path() as String?
+if let realPath = path { ... }
+</code></pre></li>
+</ul>
+
+<p>Both <code>MissingValue</code> and <code>nil</code> values are packed as <code>cMissingValue</code> descriptors when used in a specifier or command:</p>
+
+<pre><code>// find everyone without a birthday
+try Contacts().people[CONIts.birthDate == MissingValue].get() as [CONItem]
+
+let date: Date? = nil
+try Contacts().people[CONIts.birthDate == date].get() as [CONItem]
+
+
+// clear all nicknames!
+try Contacts().people.nickname(set: MissingValue)
+
+let name: String? = nil
+try Contacts().people.nickname(set: name)
+</code></pre>
+
+<p>Remember though that <code>nil</code> is generic so can only be used when its exact type is <em>already known</em>; e.g. the following code will give a compiler error "nil is not compatible with expected argument type 'Any'":</p>
+
+<pre><code>try Contacts().people.nickname(set: nil) // this won't compile
+</code></pre>
+
+<p>[TO DO: what about documenting <code>MayBeMissing&lt;T&gt;</code> and/or the <code>.missing(MissingValueType)</code> case in custom enums created via aeglue's <code>-e</code> option? there's an argument for removing those features to simplify the API, in which case <code>MissingValue</code> will <em>only</em> be returned when return type is <code>Any</code>]</p>
+
+<h3>Boolean</h3>
+
+<p>SwiftAutomation normally maps <code>typeBoolean</code> descriptors to and from Swift's <code>Bool</code> type. </p>
+
+<p>SwiftAutomation can also unpack descriptors of <code>typeTrue</code> and <code>typeFalse</code>, although these are not normally returned by applications.</p>
+
+<h3>Numbers</h3>
+
+<p>SwiftAutomation supports Swift's standard integer and floating-point types: <code>Int</code> and <code>UInt</code>, including their 8/16/32/64-bit sized variants (<code>Int8</code>, etc), <code>Float</code>, and <code>Double</code>, with <code>Int</code> and <code>Double</code> as the preferred formats. </p>
+
+<p>The Apple Event Manager defines a similar range of descriptor types with different widths and formats, though most applications use <code>typeSInt32</code> (32-bit signed integer) and <code>typeIEEE64BitFloatingPoint</code> (<code>Double</code>) as standard.</p>
+
+<p>Well-designed applications should accept any numeric descriptor type (coercing it when necessary), though to maximize compatibility across all application SwiftAutomation always packs Swift integers as <code>typeSInt32</code> if possible; only switching to <code>typeSInt64</code>/<code>typeUInt32</code>/<code>typeUInt64</code> (or <code>typeIEEE64BitFloatingPoint</code> if the <code>isInt64Compatible</code> option is false) for values that cannot fit into <code>typeSInt32</code>.</p>
+
+<p>If an <code>NSNumber</code> instance is supplied as a command parameter, SwiftAutomation will pack it as <code>typeBoolean</code> <em>if</em> it can determine it represents a Boolean value, otherwise it will pack it as an integer or floating-point number according to its <code>objCType</code> property. (The <code>NSNumber</code> class cluster privately represents Boolean values as bridged <code>CFBoolean</code> (<code>__NSCFBoolean</code>) instances; however, its public <code>objCType</code> API does not distinguish between these and <code>char</code> values so SwiftAutomation cannot guarantee it will detect the correct type. If in doubt, cast the <code>NSNumber</code> to <code>Bool</code>/<code>Int</code>/<code>Double</code> first to ensure it packs as a specific type.)</p>
+
+<h3>Strings</h3>
+
+<p>When packing and unpacking <code>String</code> values, SwiftAutomation uses the <code>NSAppleEventDescriptor</code> class's <code>+descriptorWithString:</code> and <code>-stringValue</code> methods, both of which use descriptors of <code>typeUnicodeText</code>, coercing other types as needed.</p>
+
+<p>Note that while the CoreServices framework's <code>AEDataModel.h</code> header states that <code>typeUnicodeText</code> is deprecated in favor <code>typeUTF8Text</code> and <code>typeUTF16ExternalRepresentation</code>, it remains in widespread use; therefore SwiftAutomation continues to use <code>typeUnicodeText</code> to ensure the broadest compatibility with existing scriptable applications.</p>
+
+<p>Some older Carbon applications might return text values as descriptors of <code>typeChar</code>, <code>typeIntlText</code>, or <code>typeStyledText</code>. These types are long-deprecated and their use strongly discouraged in macOS. SwiftAutomation will coerce these descriptors to <code>typeUnicodeText</code> before unpacking them, or throw an <code>UnpackError</code> if the coercion fails.</p>
+
+<h3>File system references</h3>
+
+<p>// TO DO: SwiftAutomation currently uses Swift's URL struct, which doesn't provide the extra descriptor caching or explicit coercion methods (it also currently doesn't distinguish between path-style URLs and bookmark-style URLs, and treats everything as typeFileURL, which might cause problems on any older, poorly designed Carbon apps that explicitly typecheck their params as typeAlias instead of coercing them to that type as they're supposed to)</p>
+
+<p>The Apple Event Manager defines a number of modern (<code>typeFileURL</code>, <code>typeBookmarkData</code>), legacy (<code>typeAlias</code>), and deprecated (<code>typeFSRef</code>, <code>typeFSS</code>) descriptor types for identifying file system objects. (Object specifiers of form <code>{want:file,from:null,form:name,seld:"HFS:PATH:STRING"}</code> are also recognized by most applications, though not recommended.) Fortunately, the Apple Event Manager also implements a number of coercion handlers for coercing between these types, so when interacting with most applications you should not need to know or care exactly which of these types are used: the application should coerce supplied values to whichever type(s) it requires.</p>
+
+<p>SwiftAutomation packs <code>URL</code> instances containing <code>file://</code> URLs as descriptors of <code>typeFileURL</code>, which the majority of applications should accept. Non-file URLs are not supported and will result in a <code>PackError</code> being thrown. Occasionally, an older Carbon application may not accept file URL descriptor, in which case it may be necessary to convert the <code>URL</code> to a different form before passing it to the application command. For example, if an application <em>requires</em> an alias descriptor, then pre-pack the <code>URL</code> as a <code>typeAlias</code> descriptor as follows:</p>
+
+<pre><code>let myFile = URL(fileURLWithPath: "/Users/jsmith/MyFile.txt")
+
+let myFileDesc = NSAppleEventDescriptor(fileURL: myFile).coerce(toDescriptorType: typeAlias) [TO DO: not sure this works on recent OS versions]
+</code></pre>
+
+<p>Similarly, some older Carbon applications may occasionally use colon-delimited HFS path strings even though macOS has long since deprecated these in favor of standard POSIX paths. SwiftAutomation includes the following compatibility functions for converting to and from HFS path strings where unavoidable:</p>
+
+<pre><code>HFSPath(fromFileURL: URL) -&gt; String
+fileURL(fromHFSPath: String) -&gt; URL
+</code></pre>
+
+<p>For example:</p>
+
+<pre><code>let myFile = URL(fileURLWithPath: "/Users/jsmith/MyFile.txt")
+
+let myHFSPath = HFSPath(fromFileURL: myFile)
+// "Macintosh HD:Users:jsmith:MyFile.txt"
+</code></pre>
+
+<p>However, be aware that non-existent paths may not convert correctly, and that HFS paths, unlike POSIX paths, cannot distinguish between two mounted volumes which both have the same name (one of the reasons HFS was deprecated).</p>
+
+<h3>Records</h3>
+
+<p>The <code>typeAERecord</code> AE type is a struct-like data structure containing zero or more properties. SwiftAutomation represents AE records as <code>Dictionary&lt;Symbol,Any&gt;</code> instances. The keys in this dictionary are normally instances of <code>Symbol</code> or glue-defined subclass representing SwiftAutomation-style property names, e.g. <code>TEDSymbol.text</code>. Dictionary keys may also be <code>Symbol</code> instances created with raw four-char codes (if no equivalent human-readable terminology exists), e.g. <code>Symbol(code: "docu")</code> or <code>String</code> instances representing "user-defined" keys (an AppleScript-ism, rarely used by applications).</p>
+
+<p>If a dictionary includes a <code>Symbol.class_</code> (or <code>Symbol(code:"pcls")</code>) key whose value is also a <code>Symbol</code>, SwiftAutomation will pack the other items into an AE record coerced to that value's' type. [TO DO: add example for clarity] Similarly, when unpacking an record-based descriptor that isn't <code>typeAERecord</code>, <code>typeObjectSpecifier</code> or other known type, SwiftAutomation will unpack it as an <code>Dictionary</code> instance with an additional <code>Symbol.class_</code> key and <code>Symbol</code> value to indicate the descriptor's type.</p>
+
+<p>AERecords may also be packed and unpacked as glue-defined record structs if preferred; see the section on creating and using custom record structs in <a href="advanced-type-support.html">Chapter 10</a>.</p>
+
+<h3>Types and enumerators</h3>
+
+<p>SwiftAutomation represents both standard Apple event type names and application-defined class, property, and enumerator names as instances of the glue's <code>Symbol</code> subclass. For example, a standard TextEdit glue defines a <code>TEDSymbol</code> subclass, typealiased as <code>TED</code> for convenience:</p>
+
+<pre><code>// Standard Apple event data types
+TED.boolean
+TED.UnicodeText
+TED.list
+...
+
+// Application-defined class names
+TED.document
+TED.window
+TED.disk
+...
+
+// Application-defined property names
+TED.class_
+TED.name
+TED.color
+...
+
+// Application-defined enumerators
+TED.yes
+TED.no
+TED.ask
+...
+</code></pre>
+
+<p>Descriptors of <code>typeType</code>, <code>typeEnumerated</code>, and <code>typeProperty</code> are unpacked as <code>Symbol</code> subclass instances, using raw four-char codes instead of names when the corresponding terminology is not available, e.g.:</p>
+
+<pre><code>TEDSymbol(code: "ABCD", type: "type")
+</code></pre>
+
+<p>Be aware that symbol names for standard data types are derived from AppleScript, not Swift, terminology. Thus the symbolic name for the <code>typeIEEE64BitFloatingPoint</code> descriptor type, which maps to AppleScript's <code>real</code> type and Swift's <code>Double</code> type, is <code>AE.real</code> (or <code><var>PREFIX</var>.real</code>), not <code>AE.double</code>. This avoids potential conflicts and ensures consistency with standard and custom terminology used by application dictionaries.</p>
+
+<h3>Other types</h3>
+
+<p>The Apple Event Manager defines many other AE types whose names and codes are defined by SwiftAutomation for completeness. A few of these types are of occasional interest to users, the rest can simply be ignored. In most cases, values of these types will be represented by <code>NSAppleEventDescriptor</code> instances as SwiftAutomation doesn't automatically convert them.</p>
+
+            </div>
+        </div>
+        <div id="footer"><div class="navbar"><a href="creating-and-using-static-glues.html">back</a> | <a href="index.html">index</a> | <a href="application-objects.html">next</a></div></div>
+    </body>
+</html>

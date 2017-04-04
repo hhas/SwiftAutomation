@@ -15,6 +15,10 @@ import AppKit
 
 // note: using an external formatter class allows different formatters to be swapped in for other languages
 
+// TO DO: when displaying by-range specifier's start and stop, simplify by-index/by-name representations where appropriate, e.g. `TextEdit().documents[TEDCon.documents[1], TEDCon.documents[-2]]` should display as `TextEdit().documents[1, -2]`
+
+
+
 
 /******************************************************************************/
 // Formatter
@@ -134,8 +138,8 @@ public class SpecifierFormatter {
     }
     
     func formatInsertionSpecifier(_ specifier: InsertionSpecifier) -> String {
-        if let name = [kAEBeginning: "beginning",
-                       kAEEnd: "end", kAEBefore: "before", kAEAfter: "after"][specifier.insertionLocation.enumCodeValue] {
+        if let name = [_kAEBeginning: "beginning", _kAEEnd: "end",
+                       _kAEBefore: "before", _kAEAfter: "after"][specifier.insertionLocation.enumCodeValue] {
             return "\(self.format(specifier.parentQuery)).\(name)"
         }
         return "<\(type(of: specifier))(kpos:\(specifier.insertionLocation),kobj:\(self.format(specifier.parentQuery)))>"
@@ -145,18 +149,18 @@ public class SpecifierFormatter {
         let form = specifier.selectorForm.enumCodeValue
         var result = self.format(specifier.parentQuery)
         switch form {
-        case SwiftAutomation_formPropertyID:
+        case _formPropertyID:
             // kludge, seld is either desc or symbol, depending on whether constructed or unpacked; TO DO: eliminate?
-            if let desc = specifier.selectorData as? NSAppleEventDescriptor, let propertyDesc = desc.coerce(toDescriptorType: typeType) {
+            if let desc = specifier.selectorData as? NSAppleEventDescriptor, let propertyDesc = desc.coerce(toDescriptorType: _typeType) {
                 return result + formatPropertyVar(propertyDesc.typeCodeValue)
             } else if let symbol = specifier.selectorData as? Symbol {
                 return result + formatPropertyVar(symbol.code)
             } // else malformed desc
-        case SwiftAutomation_formUserPropertyID:
+        case _formUserPropertyID:
             return "\(result).userProperty(\(self.formatValue(specifier.selectorData)))"
-        case SwiftAutomation_formRelativePosition: // specifier.previous/next(SYMBOL)
+        case _formRelativePosition: // specifier.previous/next(SYMBOL)
             if let seld = specifier.selectorData as? NSAppleEventDescriptor, // ObjectSpecifier.unpackSelf does not unpack ordinals
-                    let name = [SwiftAutomation_kAEPrevious: "previous", SwiftAutomation_kAENext: "next"][seld.enumCodeValue],
+                    let name = [_kAEPrevious: "previous", _kAENext: "next"][seld.enumCodeValue],
                     let parent = specifier.parentQuery as? ObjectSpecifier {
                 if specifier.wantType.typeCodeValue == parent.wantType.typeCodeValue {
                     return "\(result).\(name)()" // use shorthand form for neatness
@@ -167,27 +171,27 @@ public class SpecifierFormatter {
             }
         default:
             result += formatElementsVar(specifier.wantType.typeCodeValue)
-            if let desc = specifier.selectorData as? NSAppleEventDescriptor, desc.typeCodeValue == SwiftAutomation_kAEAll { // TO DO: check this is right (replaced `where` with `,`)
+            if let desc = specifier.selectorData as? NSAppleEventDescriptor, desc.typeCodeValue == _kAEAll { // TO DO: check this is right (replaced `where` with `,`)
                 return result
             }
             switch form {
-            case SwiftAutomation_formAbsolutePosition: // specifier[IDX] or specifier.first/middle/last/any
+            case _formAbsolutePosition: // specifier[IDX] or specifier.first/middle/last/any
                 if let desc = specifier.selectorData as? NSAppleEventDescriptor, // ObjectSpecifier.unpackSelf does not unpack ordinals
-                        let ordinal = [SwiftAutomation_kAEFirst: "first", SwiftAutomation_kAEMiddle: "middle", SwiftAutomation_kAELast: "last", SwiftAutomation_kAEAny: "any"][desc.enumCodeValue] {
+                        let ordinal = [_kAEFirst: "first", _kAEMiddle: "middle", _kAELast: "last", _kAEAny: "any"][desc.enumCodeValue] {
                     return "\(result).\(ordinal)"
                 } else {
                     return "\(result)[\(self.formatValue(specifier.selectorData))]"
                 }
-            case SwiftAutomation_formName: // specifier[NAME] or specifier.named(NAME)
+            case _formName: // specifier[NAME] or specifier.named(NAME)
                 return specifier.selectorData is Int ? "\(result).named(\(self.formatValue(specifier.selectorData)))"
                                                      : "\(result)[\(self.formatValue(specifier.selectorData))]"
-            case SwiftAutomation_formUniqueID: // specifier.ID(UID)
+            case _formUniqueID: // specifier.ID(UID)
                 return "\(result).ID(\(self.format(specifier.selectorData)))"
-            case SwiftAutomation_formRange: // specifier[FROM,TO]
+            case _formRange: // specifier[FROM,TO]
                 if let seld = specifier.selectorData as? RangeSelector {
                     return "\(result)[\(self.format(seld.start)), \(self.format(seld.stop))]" // TO DO: app-based specifiers should use untargeted 'App' root; con-based specifiers should be reduced to minimal representation if their wantType == specifier.wantType
                 }
-            case SwiftAutomation_formTest: // specifier[TEST]
+            case _formTest: // specifier[TEST]
                 return "\(result)[\(self.format(specifier.selectorData))]"
             default:
                 break
@@ -196,14 +200,16 @@ public class SpecifierFormatter {
         return "<\(type(of: specifier))(want:\(specifier.wantType),form:\(specifier.selectorForm),seld:\(self.formatValue(specifier.selectorData)),from:\(self.format(specifier.parentQuery)))>"
     }
     
+    private let _comparisonOperators = [_kAELessThan: "<", _kAELessThanEquals: "<=", _kAEEquals: "==",
+                                        _kAENotEquals: "!=", kAEGreaterThan: ">", _kAEGreaterThanEquals: ">="]
+    private let _logicalOperators = [_kAEBeginsWith: "beginsWith", _kAEEndsWith: "endsWith", _kAEContains: "contains", _kAEIsIn: "isIn"]
+    
     func formatComparisonTest(_ specifier: ComparisonTest) -> String {
         let operand1 = self.formatValue(specifier.operand1), operand2 = self.formatValue(specifier.operand2)
         let opcode = specifier.operatorType.enumCodeValue
-        if let name = [kAELessThan: "<", kAELessThanEquals: "<=", kAEEquals: "==",
-                       kSAENotEquals: "!=", kAEGreaterThan: ">", kAEGreaterThanEquals: ">="][opcode] {
+        if let name = self._comparisonOperators[opcode] {
             return "\(operand1) \(name) \(operand2)"
-        } else if let name = [kAEBeginsWith: "beginsWith", kAEEndsWith: "endsWith",
-                              kAEContains: "contains", kSAEIsIn: "isIn"][opcode] {
+        } else if let name = self._logicalOperators[opcode] {
             return "\(operand1).\(name)(\(operand2))"
         }
         return "<\(type(of: specifier))(relo:\(specifier.operatorType),obj1:\(self.formatValue(operand1)),obj2:\(self.formatValue(operand2)))>"
@@ -212,11 +218,11 @@ public class SpecifierFormatter {
     func formatLogicalTest(_ specifier: LogicalTest) -> String {
         let operands = specifier.operands.map({self.formatValue($0)})
         let opcode = specifier.operatorType.enumCodeValue
-        if let name = [SwiftAutomation_kAEAND: "&&", SwiftAutomation_kAEOR: "||"][opcode] {
+        if let name = [_kAEAND: "&&", _kAEOR: "||"][opcode] {
             if operands.count > 1 {
                 return operands.joined(separator: " \(name) ")
             }
-        } else if opcode == SwiftAutomation_kAENOT && operands.count == 1 {
+        } else if opcode == _kAENOT && operands.count == 1 {
             return "!(\(operands[0]))"
         }
         return "<\(type(of: specifier))(logc:\(specifier.operatorType),term:\(self.formatValue(operands)))>"
@@ -232,7 +238,7 @@ public class SpecifierFormatter {
         case let obj as NSDictionary: // HACK; see also AppData.pack()
             return "[" + obj.map({"\(self.formatValue($0)): \(self.formatValue($1))"}).joined(separator: ", ") + "]"
         case let obj as String:
-            return quoteString(obj)
+            return obj.debugDescription
         case let obj as Date:
             return "Date(timeIntervalSinceReferenceDate:\(obj.timeIntervalSinceReferenceDate)) /*\(obj.description)*/"
         case let obj as URL:
@@ -253,16 +259,55 @@ public class SpecifierFormatter {
             return "\(value)" // SwiftAutomation objects (specifiers, symbols) are self-formatting; any other value will use its own default description (which may or may not be the same as its literal representation, but that's Swift's problem, not ours)
         }
     }
-}
-
-
-func quoteString(_ string: String) -> String {
-    let tmp = NSMutableString(string: string)
-    for (from, to) in [("\\", "\\\\"), ("\"", "\\\""), ("\r", "\\r"), ("\n", "\\n"), ("\t", "\\t")] {
-        tmp.replaceOccurrences(of: from, with: to, options: .literal, range: NSMakeRange(0, tmp.length))
+    
+    public func formatCommand(_ description: CommandDescription, applicationObject: RootSpecifier? = nil) -> String {
+        var parentSpecifier = applicationObject != nil ? String(describing: applicationObject!) : "\(self.applicationClassName)()"
+        var args: [String] = []
+        switch description.signature {
+        case .named(let name, let directParameter, let keywordParameters, let requestedType):
+            if description.subject != nil && parameterExists(directParameter) {
+                parentSpecifier = self.format(description.subject!)
+                args.append(self.format(directParameter))
+                //} else if eventClass == _kAECoreSuite && eventID == _kAECreateElement { // TO DO: format make command as special case (for convenience, sendAppleEvent should allow user to call `make` directly on a specifier, in which case the specifier is used as its `at` parameter if not already given)
+            } else if description.subject == nil && parameterExists(directParameter) {
+                parentSpecifier = self.format(directParameter)
+            } else if description.subject != nil && !parameterExists(directParameter) {
+                parentSpecifier = self.format(description.subject!)
+            }
+            parentSpecifier += ".\(name)"
+            for (key, value) in keywordParameters { args.append("\(key): \(self.format(value))") }
+            if let symbol = requestedType { args.append("requestedType: \(symbol)") }
+        case .codes(let eventClass, let eventID, let parameters):
+            if let subject = description.subject {
+                parentSpecifier = self.format(subject)
+            }
+            parentSpecifier += ".sendAppleEvent"
+            args.append("\(formatFourCharCodeString(eventClass)), \(formatFourCharCodeString(eventID))")
+            if parameters.count > 0 {
+                let params = parameters.map({ "\(formatFourCharCodeString($0)): \(self.format($1)))" }).joined(separator: ", ")
+                args.append("[\(params)]")
+            }
+        }
+        // TO DO: AE's representation of AESendMessage args (waitReply and withTimeout) is unreliable; may be best to ignore these entirely
+        /*
+         if !eventDescription.waitReply {
+         args.append("waitReply: false")
+         }
+         //sendOptions: NSAppleEventSendOptions? = nil
+         if eventDescription.withTimeout != defaultTimeout {
+         args.append("withTimeout: \(eventDescription.withTimeout)") // TO DO: if -2, use NoTimeout constant (except 10.11 hasn't defined one yet, and is still buggy in any case)
+         }
+         */
+        if description.considering != defaultConsidering {
+            args.append("considering: \(description.considering)")
+        }
+        return "try \(parentSpecifier)(\(args.joined(separator: ", ")))"
     }
-    return "\"\(tmp)\""
 }
+
+
+/******************************************************************************/
+
 
 // convert an OSType to its String literal representation, e.g. 'docu' -> "\"docu\""
 func formatFourCharCodeString(_ code: OSType) -> String {

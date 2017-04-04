@@ -7,6 +7,12 @@
     
         sudo easy_install markdown2
 
+Notes:
+
+* Use 2-space indent for <pre><code>...</code></pre> blocks and paragraphs within an <li>...</li> block.
+
+* Use 2-space indent for code lines within a code block statement. Use 4-space indent for soft-wrapped code lines.
+
 """
 
 import os, os.path, re, shutil, sys

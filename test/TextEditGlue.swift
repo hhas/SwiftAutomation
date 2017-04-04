@@ -1,45 +1,35 @@
 //
 //  TextEditGlue.swift
-//  TextEdit.app 1.11
+//  TextEdit.app 1.12
 //  SwiftAutomation.framework 0.1.0
-//  `aeglue -e 'Symbol+Int+String' -t 'Strings=Array<String>' -t 'Fub=Dictionary<Symbol,Optional<Item>>' -s 'Document:document=name:String+modified:Bool+path:Optional<String>' -p TED 'TextEdit.app'`
+//  `aeglue -s 'Document:document=name:String+modified:Bool+path:Optional<String>+text:String' -D 'TextEdit.app'`
 //
 
 
 import Foundation
-import SwiftAutomation
 
-
-/******************************************************************************/
-// Untargeted AppData instance used in App, Con, Its roots; also used by Application constructors to create their own targeted AppData instances
-
-private let gUntargetedAppData = AppData(glueClasses: GlueClasses(insertionSpecifierType: TEDInsertion.self,
-                                                                  objectSpecifierType: TEDItem.self,
-                                                                  multiObjectSpecifierType: TEDItems.self,
-                                                                  rootSpecifierType: TEDRoot.self,
-                                                                  applicationType: TextEdit.self,
-                                                                  symbolType: TEDSymbol.self,
-                                                                  formatter: gSpecifierFormatter))
 
 
 /******************************************************************************/
-// Specifier formatter
+// Create an untargeted AppData instance for use in App, Con, Its roots,
+// and in Application initializers to create targeted AppData instances.
 
-private let gSpecifierFormatter = SpecifierFormatter(applicationClassName: "TextEdit",
+private let _specifierFormatter = SpecifierFormatter(applicationClassName: "TextEdit",
                                                      classNamePrefix: "TED",
                                                      typeNames: [
                                                                      0x616c6973: "alias", // "alis"
                                                                      0x2a2a2a2a: "anything", // "****"
                                                                      0x63617070: "application", // "capp"
-                                                                     0x62756e64: "applicationBundleId", // "bund"
+                                                                     0x62756e64: "applicationBundleID", // "bund"
                                                                      0x7369676e: "applicationSignature", // "sign"
-                                                                     0x6170726c: "applicationUrl", // "aprl"
+                                                                     0x6170726c: "applicationURL", // "aprl"
                                                                      0x61707220: "April", // "apr\0x20"
                                                                      0x61736b20: "ask", // "ask\0x20"
                                                                      0x61747473: "attachment", // "atts"
                                                                      0x63617472: "attributeRun", // "catr"
                                                                      0x61756720: "August", // "aug\0x20"
                                                                      0x62657374: "best", // "best"
+                                                                     0x626d726b: "bookmarkData", // "bmrk"
                                                                      0x626f6f6c: "boolean", // "bool"
                                                                      0x71647274: "boundingRectangle", // "qdrt"
                                                                      0x70626e64: "bounds", // "pbnd"
@@ -50,6 +40,7 @@ private let gSpecifierFormatter = SpecifierFormatter(applicationClassName: "Text
                                                                      0x6c77636c: "collating", // "lwcl"
                                                                      0x636f6c72: "color", // "colr"
                                                                      0x636c7274: "colorTable", // "clrt"
+                                                                     0x656e756d: "constant", // "enum"
                                                                      0x6c776370: "copies", // "lwcp"
                                                                      0x74646173: "dashStyle", // "tdas"
                                                                      0x74647461: "data", // "tdta"
@@ -62,22 +53,19 @@ private let gSpecifierFormatter = SpecifierFormatter(applicationClassName: "Text
                                                                      0x636f6d70: "doubleInteger", // "comp"
                                                                      0x656e6373: "encodedString", // "encs"
                                                                      0x6c776c70: "endingPage", // "lwlp"
-                                                                     0x656e756d: "enumerator", // "enum"
                                                                      0x45505320: "EPSPicture", // "EPS\0x20"
                                                                      0x6c776568: "errorHandling", // "lweh"
                                                                      0x65787061: "expansion", // "expa"
-                                                                     0x65787465: "extendedFloat", // "exte"
+                                                                     0x65787465: "extendedReal", // "exte"
                                                                      0x6661786e: "faxNumber", // "faxn"
                                                                      0x66656220: "February", // "feb\0x20"
                                                                      0x6174666e: "fileName", // "atfn"
                                                                      0x66737266: "fileRef", // "fsrf"
                                                                      0x66737320: "fileSpecification", // "fss\0x20"
-                                                                     0x6675726c: "fileUrl", // "furl"
+                                                                     0x6675726c: "fileURL", // "furl"
                                                                      0x66697864: "fixed", // "fixd"
                                                                      0x66706e74: "fixedPoint", // "fpnt"
                                                                      0x66726374: "fixedRectangle", // "frct"
-                                                                     0x646f7562: "float", // "doub"
-                                                                     0x6c64626c: "float128bit", // "ldbl"
                                                                      0x6973666c: "floating", // "isfl"
                                                                      0x666f6e74: "font", // "font"
                                                                      0x66726920: "Friday", // "fri\0x20"
@@ -95,7 +83,8 @@ private let gSpecifierFormatter = SpecifierFormatter(applicationClassName: "Text
                                                                      0x4a504547: "JPEGPicture", // "JPEG"
                                                                      0x6a756c20: "July", // "jul\0x20"
                                                                      0x6a756e20: "June", // "jun\0x20"
-                                                                     0x6b706964: "kernelProcessId", // "kpid"
+                                                                     0x6b706964: "kernelProcessID", // "kpid"
+                                                                     0x6c64626c: "largeReal", // "ldbl"
                                                                      0x6c697374: "list", // "list"
                                                                      0x696e736c: "locationReference", // "insl"
                                                                      0x6c667864: "longFixed", // "lfxd"
@@ -131,6 +120,7 @@ private let gSpecifierFormatter = SpecifierFormatter(applicationClassName: "Text
                                                                      0x70414c4c: "properties", // "pALL"
                                                                      0x70726f70: "property_", // "prop"
                                                                      0x70756e63: "punctuation", // "punc"
+                                                                     0x646f7562: "real", // "doub"
                                                                      0x7265636f: "record", // "reco"
                                                                      0x6f626a20: "reference", // "obj\0x20"
                                                                      0x6c777174: "requestedPrintTime", // "lwqt"
@@ -142,9 +132,9 @@ private let gSpecifierFormatter = SpecifierFormatter(applicationClassName: "Text
                                                                      0x73617420: "Saturday", // "sat\0x20"
                                                                      0x73637074: "script", // "scpt"
                                                                      0x73657020: "September", // "sep\0x20"
-                                                                     0x73696e67: "shortFloat", // "sing"
                                                                      0x73686f72: "shortInteger", // "shor"
                                                                      0x7074737a: "size", // "ptsz"
+                                                                     0x73696e67: "smallReal", // "sing"
                                                                      0x6c777374: "standard", // "lwst"
                                                                      0x6c776670: "startingPage", // "lwfp"
                                                                      0x54455854: "string", // "TEXT"
@@ -159,10 +149,12 @@ private let gSpecifierFormatter = SpecifierFormatter(applicationClassName: "Text
                                                                      0x70746974: "titled", // "ptit"
                                                                      0x74756520: "Tuesday", // "tue\0x20"
                                                                      0x74797065: "typeClass", // "type"
-                                                                     0x75747874: "unicodeText", // "utxt"
+                                                                     0x75747874: "UnicodeText", // "utxt"
+                                                                     0x75636f6d: "unsignedDoubleInteger", // "ucom"
                                                                      0x6d61676e: "unsignedInteger", // "magn"
-                                                                     0x75743136: "utf16Text", // "ut16"
-                                                                     0x75746638: "utf8Text", // "utf8"
+                                                                     0x75736872: "unsignedShortInteger", // "ushr"
+                                                                     0x75743136: "UTF16Text", // "ut16"
+                                                                     0x75746638: "UTF8Text", // "utf8"
                                                                      0x76657273: "version", // "vers"
                                                                      0x70766973: "visible", // "pvis"
                                                                      0x77656420: "Wednesday", // "wed\0x20"
@@ -227,6 +219,16 @@ private let gSpecifierFormatter = SpecifierFormatter(applicationClassName: "Text
                                                                      0x63776f72: "words", // "cwor"
                                                      ])
 
+private let _glueClasses = GlueClasses(insertionSpecifierType: TEDInsertion.self,
+                                       objectSpecifierType: TEDItem.self,
+                                       multiObjectSpecifierType: TEDItems.self,
+                                       rootSpecifierType: TEDRoot.self,
+                                       applicationType: TextEdit.self,
+                                       symbolType: TEDSymbol.self,
+                                       formatter: _specifierFormatter)
+
+private let _untargetedAppData = AppData(glueClasses: _glueClasses)
+
 
 /******************************************************************************/
 // Symbol subclass defines static type/enum/property constants based on TextEdit.app terminology
@@ -240,15 +242,16 @@ public class TEDSymbol: Symbol {
         case 0x616c6973: return self.alias // "alis"
         case 0x2a2a2a2a: return self.anything // "****"
         case 0x63617070: return self.application // "capp"
-        case 0x62756e64: return self.applicationBundleId // "bund"
+        case 0x62756e64: return self.applicationBundleID // "bund"
         case 0x7369676e: return self.applicationSignature // "sign"
-        case 0x6170726c: return self.applicationUrl // "aprl"
+        case 0x6170726c: return self.applicationURL // "aprl"
         case 0x61707220: return self.April // "apr\0x20"
         case 0x61736b20: return self.ask // "ask\0x20"
         case 0x61747473: return self.attachment // "atts"
         case 0x63617472: return self.attributeRun // "catr"
         case 0x61756720: return self.August // "aug\0x20"
         case 0x62657374: return self.best // "best"
+        case 0x626d726b: return self.bookmarkData // "bmrk"
         case 0x626f6f6c: return self.boolean // "bool"
         case 0x71647274: return self.boundingRectangle // "qdrt"
         case 0x70626e64: return self.bounds // "pbnd"
@@ -259,6 +262,7 @@ public class TEDSymbol: Symbol {
         case 0x6c77636c: return self.collating // "lwcl"
         case 0x636f6c72: return self.color // "colr"
         case 0x636c7274: return self.colorTable // "clrt"
+        case 0x656e756d: return self.constant // "enum"
         case 0x6c776370: return self.copies // "lwcp"
         case 0x74646173: return self.dashStyle // "tdas"
         case 0x74647461: return self.data // "tdta"
@@ -271,22 +275,19 @@ public class TEDSymbol: Symbol {
         case 0x636f6d70: return self.doubleInteger // "comp"
         case 0x656e6373: return self.encodedString // "encs"
         case 0x6c776c70: return self.endingPage // "lwlp"
-        case 0x656e756d: return self.enumerator // "enum"
         case 0x45505320: return self.EPSPicture // "EPS\0x20"
         case 0x6c776568: return self.errorHandling // "lweh"
         case 0x65787061: return self.expansion // "expa"
-        case 0x65787465: return self.extendedFloat // "exte"
+        case 0x65787465: return self.extendedReal // "exte"
         case 0x6661786e: return self.faxNumber // "faxn"
         case 0x66656220: return self.February // "feb\0x20"
         case 0x6174666e: return self.fileName // "atfn"
         case 0x66737266: return self.fileRef // "fsrf"
         case 0x66737320: return self.fileSpecification // "fss\0x20"
-        case 0x6675726c: return self.fileUrl // "furl"
+        case 0x6675726c: return self.fileURL // "furl"
         case 0x66697864: return self.fixed // "fixd"
         case 0x66706e74: return self.fixedPoint // "fpnt"
         case 0x66726374: return self.fixedRectangle // "frct"
-        case 0x646f7562: return self.float // "doub"
-        case 0x6c64626c: return self.float128bit // "ldbl"
         case 0x6973666c: return self.floating // "isfl"
         case 0x666f6e74: return self.font // "font"
         case 0x66726920: return self.Friday // "fri\0x20"
@@ -304,7 +305,8 @@ public class TEDSymbol: Symbol {
         case 0x4a504547: return self.JPEGPicture // "JPEG"
         case 0x6a756c20: return self.July // "jul\0x20"
         case 0x6a756e20: return self.June // "jun\0x20"
-        case 0x6b706964: return self.kernelProcessId // "kpid"
+        case 0x6b706964: return self.kernelProcessID // "kpid"
+        case 0x6c64626c: return self.largeReal // "ldbl"
         case 0x6c697374: return self.list // "list"
         case 0x696e736c: return self.locationReference // "insl"
         case 0x6c667864: return self.longFixed // "lfxd"
@@ -340,6 +342,7 @@ public class TEDSymbol: Symbol {
         case 0x70414c4c: return self.properties // "pALL"
         case 0x70726f70: return self.property_ // "prop"
         case 0x70756e63: return self.punctuation // "punc"
+        case 0x646f7562: return self.real // "doub"
         case 0x7265636f: return self.record // "reco"
         case 0x6f626a20: return self.reference // "obj\0x20"
         case 0x6c777174: return self.requestedPrintTime // "lwqt"
@@ -351,9 +354,9 @@ public class TEDSymbol: Symbol {
         case 0x73617420: return self.Saturday // "sat\0x20"
         case 0x73637074: return self.script // "scpt"
         case 0x73657020: return self.September // "sep\0x20"
-        case 0x73696e67: return self.shortFloat // "sing"
         case 0x73686f72: return self.shortInteger // "shor"
         case 0x7074737a: return self.size // "ptsz"
+        case 0x73696e67: return self.smallReal // "sing"
         case 0x6c777374: return self.standard // "lwst"
         case 0x6c776670: return self.startingPage // "lwfp"
         case 0x54455854: return self.string // "TEXT"
@@ -368,10 +371,12 @@ public class TEDSymbol: Symbol {
         case 0x70746974: return self.titled // "ptit"
         case 0x74756520: return self.Tuesday // "tue\0x20"
         case 0x74797065: return self.typeClass // "type"
-        case 0x75747874: return self.unicodeText // "utxt"
+        case 0x75747874: return self.UnicodeText // "utxt"
+        case 0x75636f6d: return self.unsignedDoubleInteger // "ucom"
         case 0x6d61676e: return self.unsignedInteger // "magn"
-        case 0x75743136: return self.utf16Text // "ut16"
-        case 0x75746638: return self.utf8Text // "utf8"
+        case 0x75736872: return self.unsignedShortInteger // "ushr"
+        case 0x75743136: return self.UTF16Text // "ut16"
+        case 0x75746638: return self.UTF8Text // "utf8"
         case 0x76657273: return self.version // "vers"
         case 0x70766973: return self.visible // "pvis"
         case 0x77656420: return self.Wednesday // "wed\0x20"
@@ -390,14 +395,15 @@ public class TEDSymbol: Symbol {
     public static let alias = TEDSymbol(name: "alias", code: 0x616c6973, type: typeType) // "alis"
     public static let anything = TEDSymbol(name: "anything", code: 0x2a2a2a2a, type: typeType) // "****"
     public static let application = TEDSymbol(name: "application", code: 0x63617070, type: typeType) // "capp"
-    public static let applicationBundleId = TEDSymbol(name: "applicationBundleId", code: 0x62756e64, type: typeType) // "bund"
+    public static let applicationBundleID = TEDSymbol(name: "applicationBundleID", code: 0x62756e64, type: typeType) // "bund"
     public static let applicationSignature = TEDSymbol(name: "applicationSignature", code: 0x7369676e, type: typeType) // "sign"
-    public static let applicationUrl = TEDSymbol(name: "applicationUrl", code: 0x6170726c, type: typeType) // "aprl"
+    public static let applicationURL = TEDSymbol(name: "applicationURL", code: 0x6170726c, type: typeType) // "aprl"
     public static let April = TEDSymbol(name: "April", code: 0x61707220, type: typeType) // "apr\0x20"
     public static let attachment = TEDSymbol(name: "attachment", code: 0x61747473, type: typeType) // "atts"
     public static let attributeRun = TEDSymbol(name: "attributeRun", code: 0x63617472, type: typeType) // "catr"
     public static let August = TEDSymbol(name: "August", code: 0x61756720, type: typeType) // "aug\0x20"
     public static let best = TEDSymbol(name: "best", code: 0x62657374, type: typeType) // "best"
+    public static let bookmarkData = TEDSymbol(name: "bookmarkData", code: 0x626d726b, type: typeType) // "bmrk"
     public static let boolean = TEDSymbol(name: "boolean", code: 0x626f6f6c, type: typeType) // "bool"
     public static let boundingRectangle = TEDSymbol(name: "boundingRectangle", code: 0x71647274, type: typeType) // "qdrt"
     public static let bounds = TEDSymbol(name: "bounds", code: 0x70626e64, type: typeType) // "pbnd"
@@ -407,6 +413,7 @@ public class TEDSymbol: Symbol {
     public static let collating = TEDSymbol(name: "collating", code: 0x6c77636c, type: typeType) // "lwcl"
     public static let color = TEDSymbol(name: "color", code: 0x636f6c72, type: typeType) // "colr"
     public static let colorTable = TEDSymbol(name: "colorTable", code: 0x636c7274, type: typeType) // "clrt"
+    public static let constant = TEDSymbol(name: "constant", code: 0x656e756d, type: typeType) // "enum"
     public static let copies = TEDSymbol(name: "copies", code: 0x6c776370, type: typeType) // "lwcp"
     public static let dashStyle = TEDSymbol(name: "dashStyle", code: 0x74646173, type: typeType) // "tdas"
     public static let data = TEDSymbol(name: "data", code: 0x74647461, type: typeType) // "tdta"
@@ -417,21 +424,18 @@ public class TEDSymbol: Symbol {
     public static let doubleInteger = TEDSymbol(name: "doubleInteger", code: 0x636f6d70, type: typeType) // "comp"
     public static let encodedString = TEDSymbol(name: "encodedString", code: 0x656e6373, type: typeType) // "encs"
     public static let endingPage = TEDSymbol(name: "endingPage", code: 0x6c776c70, type: typeType) // "lwlp"
-    public static let enumerator = TEDSymbol(name: "enumerator", code: 0x656e756d, type: typeType) // "enum"
     public static let EPSPicture = TEDSymbol(name: "EPSPicture", code: 0x45505320, type: typeType) // "EPS\0x20"
     public static let errorHandling = TEDSymbol(name: "errorHandling", code: 0x6c776568, type: typeType) // "lweh"
-    public static let extendedFloat = TEDSymbol(name: "extendedFloat", code: 0x65787465, type: typeType) // "exte"
+    public static let extendedReal = TEDSymbol(name: "extendedReal", code: 0x65787465, type: typeType) // "exte"
     public static let faxNumber = TEDSymbol(name: "faxNumber", code: 0x6661786e, type: typeType) // "faxn"
     public static let February = TEDSymbol(name: "February", code: 0x66656220, type: typeType) // "feb\0x20"
     public static let fileName = TEDSymbol(name: "fileName", code: 0x6174666e, type: typeType) // "atfn"
     public static let fileRef = TEDSymbol(name: "fileRef", code: 0x66737266, type: typeType) // "fsrf"
     public static let fileSpecification = TEDSymbol(name: "fileSpecification", code: 0x66737320, type: typeType) // "fss\0x20"
-    public static let fileUrl = TEDSymbol(name: "fileUrl", code: 0x6675726c, type: typeType) // "furl"
+    public static let fileURL = TEDSymbol(name: "fileURL", code: 0x6675726c, type: typeType) // "furl"
     public static let fixed = TEDSymbol(name: "fixed", code: 0x66697864, type: typeType) // "fixd"
     public static let fixedPoint = TEDSymbol(name: "fixedPoint", code: 0x66706e74, type: typeType) // "fpnt"
     public static let fixedRectangle = TEDSymbol(name: "fixedRectangle", code: 0x66726374, type: typeType) // "frct"
-    public static let float = TEDSymbol(name: "float", code: 0x646f7562, type: typeType) // "doub"
-    public static let float128bit = TEDSymbol(name: "float128bit", code: 0x6c64626c, type: typeType) // "ldbl"
     public static let floating = TEDSymbol(name: "floating", code: 0x6973666c, type: typeType) // "isfl"
     public static let font = TEDSymbol(name: "font", code: 0x666f6e74, type: typeType) // "font"
     public static let Friday = TEDSymbol(name: "Friday", code: 0x66726920, type: typeType) // "fri\0x20"
@@ -448,7 +452,8 @@ public class TEDSymbol: Symbol {
     public static let JPEGPicture = TEDSymbol(name: "JPEGPicture", code: 0x4a504547, type: typeType) // "JPEG"
     public static let July = TEDSymbol(name: "July", code: 0x6a756c20, type: typeType) // "jul\0x20"
     public static let June = TEDSymbol(name: "June", code: 0x6a756e20, type: typeType) // "jun\0x20"
-    public static let kernelProcessId = TEDSymbol(name: "kernelProcessId", code: 0x6b706964, type: typeType) // "kpid"
+    public static let kernelProcessID = TEDSymbol(name: "kernelProcessID", code: 0x6b706964, type: typeType) // "kpid"
+    public static let largeReal = TEDSymbol(name: "largeReal", code: 0x6c64626c, type: typeType) // "ldbl"
     public static let list = TEDSymbol(name: "list", code: 0x6c697374, type: typeType) // "list"
     public static let locationReference = TEDSymbol(name: "locationReference", code: 0x696e736c, type: typeType) // "insl"
     public static let longFixed = TEDSymbol(name: "longFixed", code: 0x6c667864, type: typeType) // "lfxd"
@@ -481,6 +486,7 @@ public class TEDSymbol: Symbol {
     public static let processSerialNumber = TEDSymbol(name: "processSerialNumber", code: 0x70736e20, type: typeType) // "psn\0x20"
     public static let properties = TEDSymbol(name: "properties", code: 0x70414c4c, type: typeType) // "pALL"
     public static let property_ = TEDSymbol(name: "property_", code: 0x70726f70, type: typeType) // "prop"
+    public static let real = TEDSymbol(name: "real", code: 0x646f7562, type: typeType) // "doub"
     public static let record = TEDSymbol(name: "record", code: 0x7265636f, type: typeType) // "reco"
     public static let reference = TEDSymbol(name: "reference", code: 0x6f626a20, type: typeType) // "obj\0x20"
     public static let requestedPrintTime = TEDSymbol(name: "requestedPrintTime", code: 0x6c777174, type: typeType) // "lwqt"
@@ -492,9 +498,9 @@ public class TEDSymbol: Symbol {
     public static let Saturday = TEDSymbol(name: "Saturday", code: 0x73617420, type: typeType) // "sat\0x20"
     public static let script = TEDSymbol(name: "script", code: 0x73637074, type: typeType) // "scpt"
     public static let September = TEDSymbol(name: "September", code: 0x73657020, type: typeType) // "sep\0x20"
-    public static let shortFloat = TEDSymbol(name: "shortFloat", code: 0x73696e67, type: typeType) // "sing"
     public static let shortInteger = TEDSymbol(name: "shortInteger", code: 0x73686f72, type: typeType) // "shor"
     public static let size = TEDSymbol(name: "size", code: 0x7074737a, type: typeType) // "ptsz"
+    public static let smallReal = TEDSymbol(name: "smallReal", code: 0x73696e67, type: typeType) // "sing"
     public static let startingPage = TEDSymbol(name: "startingPage", code: 0x6c776670, type: typeType) // "lwfp"
     public static let string = TEDSymbol(name: "string", code: 0x54455854, type: typeType) // "TEXT"
     public static let styledClipboardText = TEDSymbol(name: "styledClipboardText", code: 0x7374796c, type: typeType) // "styl"
@@ -508,10 +514,12 @@ public class TEDSymbol: Symbol {
     public static let titled = TEDSymbol(name: "titled", code: 0x70746974, type: typeType) // "ptit"
     public static let Tuesday = TEDSymbol(name: "Tuesday", code: 0x74756520, type: typeType) // "tue\0x20"
     public static let typeClass = TEDSymbol(name: "typeClass", code: 0x74797065, type: typeType) // "type"
-    public static let unicodeText = TEDSymbol(name: "unicodeText", code: 0x75747874, type: typeType) // "utxt"
+    public static let UnicodeText = TEDSymbol(name: "UnicodeText", code: 0x75747874, type: typeType) // "utxt"
+    public static let unsignedDoubleInteger = TEDSymbol(name: "unsignedDoubleInteger", code: 0x75636f6d, type: typeType) // "ucom"
     public static let unsignedInteger = TEDSymbol(name: "unsignedInteger", code: 0x6d61676e, type: typeType) // "magn"
-    public static let utf16Text = TEDSymbol(name: "utf16Text", code: 0x75743136, type: typeType) // "ut16"
-    public static let utf8Text = TEDSymbol(name: "utf8Text", code: 0x75746638, type: typeType) // "utf8"
+    public static let unsignedShortInteger = TEDSymbol(name: "unsignedShortInteger", code: 0x75736872, type: typeType) // "ushr"
+    public static let UTF16Text = TEDSymbol(name: "UTF16Text", code: 0x75743136, type: typeType) // "ut16"
+    public static let UTF8Text = TEDSymbol(name: "UTF8Text", code: 0x75746638, type: typeType) // "utf8"
     public static let version = TEDSymbol(name: "version", code: 0x76657273, type: typeType) // "vers"
     public static let visible = TEDSymbol(name: "visible", code: 0x70766973, type: typeType) // "pvis"
     public static let Wednesday = TEDSymbol(name: "Wednesday", code: 0x77656420, type: typeType) // "wed\0x20"
@@ -539,7 +547,6 @@ public class TEDSymbol: Symbol {
 public typealias TED = TEDSymbol // allows symbols to be written as (e.g.) TED.name instead of TEDSymbol.name
 
 
-
 /******************************************************************************/
 // Specifier extensions; these add command methods and property/elements getters based on TextEdit.app terminology
 
@@ -549,135 +556,135 @@ public protocol TEDCommand: SpecifierProtocol {} // provides AE dispatch methods
 
 extension TEDCommand {
     @discardableResult public func activate(_ directParameter: Any = NoParameter,
-            resultType: Symbol? = nil, waitReply: Bool = true,
+            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "activate", eventClass: 0x6d697363, eventID: 0x61637476, // "misc"/"actv"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     public func activate<T>(_ directParameter: Any = NoParameter,
-            resultType: Symbol? = nil, waitReply: Bool = true,
+            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "activate", eventClass: 0x6d697363, eventID: 0x61637476, // "misc"/"actv"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     @discardableResult public func close(_ directParameter: Any = NoParameter,
             saving: Any = NoParameter,
             savingIn: Any = NoParameter,
-            resultType: Symbol? = nil, waitReply: Bool = true,
+            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "close", eventClass: 0x636f7265, eventID: 0x636c6f73, // "core"/"clos"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("saving", 0x7361766f, saving), // "savo"
                     ("savingIn", 0x6b66696c, savingIn), // "kfil"
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     public func close<T>(_ directParameter: Any = NoParameter,
             saving: Any = NoParameter,
             savingIn: Any = NoParameter,
-            resultType: Symbol? = nil, waitReply: Bool = true,
+            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "close", eventClass: 0x636f7265, eventID: 0x636c6f73, // "core"/"clos"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("saving", 0x7361766f, saving), // "savo"
                     ("savingIn", 0x6b66696c, savingIn), // "kfil"
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     @discardableResult public func count(_ directParameter: Any = NoParameter,
             each: Any = NoParameter,
-            resultType: Symbol? = nil, waitReply: Bool = true,
+            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "count", eventClass: 0x636f7265, eventID: 0x636e7465, // "core"/"cnte"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("each", 0x6b6f636c, each), // "kocl"
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     public func count<T>(_ directParameter: Any = NoParameter,
             each: Any = NoParameter,
-            resultType: Symbol? = nil, waitReply: Bool = true,
+            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "count", eventClass: 0x636f7265, eventID: 0x636e7465, // "core"/"cnte"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("each", 0x6b6f636c, each), // "kocl"
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     @discardableResult public func delete(_ directParameter: Any = NoParameter,
-            resultType: Symbol? = nil, waitReply: Bool = true,
+            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "delete", eventClass: 0x636f7265, eventID: 0x64656c6f, // "core"/"delo"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     public func delete<T>(_ directParameter: Any = NoParameter,
-            resultType: Symbol? = nil, waitReply: Bool = true,
+            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "delete", eventClass: 0x636f7265, eventID: 0x64656c6f, // "core"/"delo"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     @discardableResult public func duplicate(_ directParameter: Any = NoParameter,
             to: Any = NoParameter,
             withProperties: Any = NoParameter,
-            resultType: Symbol? = nil, waitReply: Bool = true,
+            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "duplicate", eventClass: 0x636f7265, eventID: 0x636c6f6e, // "core"/"clon"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("to", 0x696e7368, to), // "insh"
                     ("withProperties", 0x70726474, withProperties), // "prdt"
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     public func duplicate<T>(_ directParameter: Any = NoParameter,
             to: Any = NoParameter,
             withProperties: Any = NoParameter,
-            resultType: Symbol? = nil, waitReply: Bool = true,
+            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "duplicate", eventClass: 0x636f7265, eventID: 0x636c6f6e, // "core"/"clon"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("to", 0x696e7368, to), // "insh"
                     ("withProperties", 0x70726474, withProperties), // "prdt"
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     @discardableResult public func exists(_ directParameter: Any = NoParameter,
-            resultType: Symbol? = nil, waitReply: Bool = true,
+            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "exists", eventClass: 0x636f7265, eventID: 0x646f6578, // "core"/"doex"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     public func exists<T>(_ directParameter: Any = NoParameter,
-            resultType: Symbol? = nil, waitReply: Bool = true,
+            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "exists", eventClass: 0x636f7265, eventID: 0x646f6578, // "core"/"doex"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     @discardableResult public func get(_ directParameter: Any = NoParameter,
-            resultType: Symbol? = nil, waitReply: Bool = true,
+            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "get", eventClass: 0x636f7265, eventID: 0x67657464, // "core"/"getd"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     public func get<T>(_ directParameter: Any = NoParameter,
-            resultType: Symbol? = nil, waitReply: Bool = true,
+            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "get", eventClass: 0x636f7265, eventID: 0x67657464, // "core"/"getd"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     @discardableResult public func make(_ directParameter: Any = NoParameter,
@@ -685,7 +692,7 @@ extension TEDCommand {
             at: Any = NoParameter,
             withData: Any = NoParameter,
             withProperties: Any = NoParameter,
-            resultType: Symbol? = nil, waitReply: Bool = true,
+            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "make", eventClass: 0x636f7265, eventID: 0x6372656c, // "core"/"crel"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
@@ -693,7 +700,7 @@ extension TEDCommand {
                     ("at", 0x696e7368, at), // "insh"
                     ("withData", 0x64617461, withData), // "data"
                     ("withProperties", 0x70726474, withProperties), // "prdt"
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     public func make<T>(_ directParameter: Any = NoParameter,
@@ -701,7 +708,7 @@ extension TEDCommand {
             at: Any = NoParameter,
             withData: Any = NoParameter,
             withProperties: Any = NoParameter,
-            resultType: Symbol? = nil, waitReply: Bool = true,
+            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "make", eventClass: 0x636f7265, eventID: 0x6372656c, // "core"/"crel"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
@@ -709,183 +716,183 @@ extension TEDCommand {
                     ("at", 0x696e7368, at), // "insh"
                     ("withData", 0x64617461, withData), // "data"
                     ("withProperties", 0x70726474, withProperties), // "prdt"
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     @discardableResult public func move(_ directParameter: Any = NoParameter,
             to: Any = NoParameter,
-            resultType: Symbol? = nil, waitReply: Bool = true,
+            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "move", eventClass: 0x636f7265, eventID: 0x6d6f7665, // "core"/"move"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("to", 0x696e7368, to), // "insh"
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     public func move<T>(_ directParameter: Any = NoParameter,
             to: Any = NoParameter,
-            resultType: Symbol? = nil, waitReply: Bool = true,
+            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "move", eventClass: 0x636f7265, eventID: 0x6d6f7665, // "core"/"move"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("to", 0x696e7368, to), // "insh"
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     @discardableResult public func open(_ directParameter: Any = NoParameter,
-            resultType: Symbol? = nil, waitReply: Bool = true,
+            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "open", eventClass: 0x61657674, eventID: 0x6f646f63, // "aevt"/"odoc"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     public func open<T>(_ directParameter: Any = NoParameter,
-            resultType: Symbol? = nil, waitReply: Bool = true,
+            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "open", eventClass: 0x61657674, eventID: 0x6f646f63, // "aevt"/"odoc"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     @discardableResult public func openLocation(_ directParameter: Any = NoParameter,
             window: Any = NoParameter,
-            resultType: Symbol? = nil, waitReply: Bool = true,
+            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "openLocation", eventClass: 0x4755524c, eventID: 0x4755524c, // "GURL"/"GURL"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("window", 0x57494e44, window), // "WIND"
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     public func openLocation<T>(_ directParameter: Any = NoParameter,
             window: Any = NoParameter,
-            resultType: Symbol? = nil, waitReply: Bool = true,
+            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "openLocation", eventClass: 0x4755524c, eventID: 0x4755524c, // "GURL"/"GURL"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("window", 0x57494e44, window), // "WIND"
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     @discardableResult public func print(_ directParameter: Any = NoParameter,
             printDialog: Any = NoParameter,
             withProperties: Any = NoParameter,
-            resultType: Symbol? = nil, waitReply: Bool = true,
+            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "print", eventClass: 0x61657674, eventID: 0x70646f63, // "aevt"/"pdoc"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("printDialog", 0x70646c67, printDialog), // "pdlg"
                     ("withProperties", 0x70726474, withProperties), // "prdt"
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     public func print<T>(_ directParameter: Any = NoParameter,
             printDialog: Any = NoParameter,
             withProperties: Any = NoParameter,
-            resultType: Symbol? = nil, waitReply: Bool = true,
+            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "print", eventClass: 0x61657674, eventID: 0x70646f63, // "aevt"/"pdoc"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("printDialog", 0x70646c67, printDialog), // "pdlg"
                     ("withProperties", 0x70726474, withProperties), // "prdt"
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     @discardableResult public func quit(_ directParameter: Any = NoParameter,
             saving: Any = NoParameter,
-            resultType: Symbol? = nil, waitReply: Bool = true,
+            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "quit", eventClass: 0x61657674, eventID: 0x71756974, // "aevt"/"quit"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("saving", 0x7361766f, saving), // "savo"
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     public func quit<T>(_ directParameter: Any = NoParameter,
             saving: Any = NoParameter,
-            resultType: Symbol? = nil, waitReply: Bool = true,
+            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "quit", eventClass: 0x61657674, eventID: 0x71756974, // "aevt"/"quit"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("saving", 0x7361766f, saving), // "savo"
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     @discardableResult public func reopen(_ directParameter: Any = NoParameter,
-            resultType: Symbol? = nil, waitReply: Bool = true,
+            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "reopen", eventClass: 0x61657674, eventID: 0x72617070, // "aevt"/"rapp"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     public func reopen<T>(_ directParameter: Any = NoParameter,
-            resultType: Symbol? = nil, waitReply: Bool = true,
+            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "reopen", eventClass: 0x61657674, eventID: 0x72617070, // "aevt"/"rapp"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     @discardableResult public func run(_ directParameter: Any = NoParameter,
-            resultType: Symbol? = nil, waitReply: Bool = true,
+            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "run", eventClass: 0x61657674, eventID: 0x6f617070, // "aevt"/"oapp"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     public func run<T>(_ directParameter: Any = NoParameter,
-            resultType: Symbol? = nil, waitReply: Bool = true,
+            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "run", eventClass: 0x61657674, eventID: 0x6f617070, // "aevt"/"oapp"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     @discardableResult public func save(_ directParameter: Any = NoParameter,
             as_: Any = NoParameter,
             in_: Any = NoParameter,
-            resultType: Symbol? = nil, waitReply: Bool = true,
+            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "save", eventClass: 0x636f7265, eventID: 0x73617665, // "core"/"save"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("as_", 0x666c7470, as_), // "fltp"
                     ("in_", 0x6b66696c, in_), // "kfil"
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     public func save<T>(_ directParameter: Any = NoParameter,
             as_: Any = NoParameter,
             in_: Any = NoParameter,
-            resultType: Symbol? = nil, waitReply: Bool = true,
+            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "save", eventClass: 0x636f7265, eventID: 0x73617665, // "core"/"save"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("as_", 0x666c7470, as_), // "fltp"
                     ("in_", 0x6b66696c, in_), // "kfil"
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     @discardableResult public func set(_ directParameter: Any = NoParameter,
             to: Any = NoParameter,
-            resultType: Symbol? = nil, waitReply: Bool = true,
+            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "set", eventClass: 0x636f7265, eventID: 0x73657464, // "core"/"setd"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("to", 0x64617461, to), // "data"
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     public func set<T>(_ directParameter: Any = NoParameter,
             to: Any = NoParameter,
-            resultType: Symbol? = nil, waitReply: Bool = true,
+            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "set", eventClass: 0x636f7265, eventID: 0x73657464, // "core"/"setd"
                 parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                     ("to", 0x64617461, to), // "data"
-                ], requestedType: resultType, waitReply: waitReply, sendOptions: nil,
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
 }
@@ -955,28 +962,26 @@ extension TEDObject {
 public class TEDInsertion: InsertionSpecifier, TEDCommand {}
 
 
-// by index/name/id/previous/next
-// first/middle/last/any
+// property/by-index/by-name/by-id/previous/next/first/middle/last/any
 public class TEDItem: ObjectSpecifier, TEDObject {
     public typealias InsertionSpecifierType = TEDInsertion
     public typealias ObjectSpecifierType = TEDItem
     public typealias MultipleObjectSpecifierType = TEDItems
 }
 
-// by range/test
-// all
-public class TEDItems: TEDItem, ElementsSpecifierExtension {}
+// by-range/by-test/all
+public class TEDItems: TEDItem, MultipleObjectSpecifierExtension {}
 
 // App/Con/Its
 public class TEDRoot: RootSpecifier, TEDObject, RootSpecifierExtension {
     public typealias InsertionSpecifierType = TEDInsertion
     public typealias ObjectSpecifierType = TEDItem
     public typealias MultipleObjectSpecifierType = TEDItems
-    public override class var untargetedAppData: AppData { return gUntargetedAppData }
+    public override class var untargetedAppData: AppData { return _untargetedAppData }
 }
 
-// application
-public class TextEdit: TEDRoot, ApplicationExtension {
+// Application
+public class TextEdit: TEDRoot, Application {
     public convenience init(launchOptions: LaunchOptions = DefaultLaunchOptions, relaunchMode: RelaunchMode = DefaultRelaunchMode) {
         self.init(rootObject: AppRootDesc, appData: type(of:self).untargetedAppData.targetedCopy(
                   .bundleIdentifier("com.apple.TextEdit", true), launchOptions: launchOptions, relaunchMode: relaunchMode))
@@ -985,9 +990,9 @@ public class TextEdit: TEDRoot, ApplicationExtension {
 
 // App/Con/Its root objects used to construct untargeted specifiers; these can be used to construct specifiers for use in commands, though cannot send commands themselves
 
-public let TEDApp = gUntargetedAppData.app as! TEDRoot
-public let TEDCon = gUntargetedAppData.con as! TEDRoot
-public let TEDIts = gUntargetedAppData.its as! TEDRoot
+public let TEDApp = _untargetedAppData.app as! TEDRoot
+public let TEDCon = _untargetedAppData.con as! TEDRoot
+public let TEDIts = _untargetedAppData.its as! TEDRoot
 
 
 /******************************************************************************/
@@ -996,34 +1001,7 @@ public let TEDIts = gUntargetedAppData.its as! TEDRoot
 public typealias TEDRecord = [TEDSymbol:Any] // default Swift type for AERecordDescs
 
 
-public typealias TEDStrings = Array<String>
-public typealias TEDFub = Dictionary<TEDSymbol, Optional<TEDItem>>
 
-
-public enum TEDSymbolOrIntOrString: SelfPacking, SelfUnpacking {
-    case symbol(TEDSymbol)
-    case int(Int)
-    case string(String)
-    
-    public init(_ value: TEDSymbol) { self = .symbol(value) }
-    public init(_ value: Int) { self = .int(value) }
-    public init(_ value: String) { self = .string(value) }
-    
-    public func SwiftAutomation_packSelf(_ appData: AppData) throws -> NSAppleEventDescriptor {
-        switch self {
-        case .symbol(let value): return try appData.pack(value)
-        case .int(let value): return try appData.pack(value)
-        case .string(let value): return try appData.pack(value)
-        }
-    }
-    public static func SwiftAutomation_unpackSelf(_ desc: NSAppleEventDescriptor, appData: AppData) throws -> TEDSymbolOrIntOrString {
-        do { return .symbol(try appData.unpack(desc) as TEDSymbol) } catch {}
-        do { return .int(try appData.unpack(desc) as Int) } catch {}
-        do { return .string(try appData.unpack(desc) as String) } catch {}
-        throw UnpackError(appData: appData, descriptor: desc, type: TEDSymbolOrIntOrString.self,
-                          message: "Can't coerce descriptor to Swift type: \(TEDSymbolOrIntOrString.self)")
-    }
-}
 
 
 
@@ -1033,6 +1011,7 @@ public struct TEDDocumentRecord: SelfPacking, SelfUnpacking {
     public var name: String
     public var modified: Bool
     public var path: Optional<String>
+    public var text: String
 
     private static func SwiftAutomation_unpackProperty<T>(_ recordDesc: NSAppleEventDescriptor,
                                                           appData: AppData, name: String, code: OSType) throws -> T {
@@ -1048,9 +1027,10 @@ public struct TEDDocumentRecord: SelfPacking, SelfUnpacking {
 
     public func SwiftAutomation_packSelf(_ appData: AppData) throws -> NSAppleEventDescriptor {
         let desc = NSAppleEventDescriptor.record().coerce(toDescriptorType: self.class_.code)!
-        desc.setParam(try appData.pack(self.name), forKeyword: 0x706e616d)
-        desc.setParam(try appData.pack(self.modified), forKeyword: 0x696d6f64)
-        desc.setParam(try appData.pack(self.path), forKeyword: 0x70707468)
+        desc.setParam(try appData.pack(self.name as Any), forKeyword: 0x706e616d)
+        desc.setParam(try appData.pack(self.modified as Any), forKeyword: 0x696d6f64)
+        desc.setParam(try appData.pack(self.path as Any), forKeyword: 0x70707468)
+        desc.setParam(try appData.pack(self.text as Any), forKeyword: 0x63747874)
         return desc
     }
     public static func SwiftAutomation_unpackSelf(_ desc: NSAppleEventDescriptor, appData: AppData) throws -> TEDDocumentRecord {
@@ -1060,8 +1040,10 @@ public struct TEDDocumentRecord: SelfPacking, SelfUnpacking {
         return TEDDocumentRecord(
             name: try self.SwiftAutomation_unpackProperty(desc, appData: appData, name: "name", code: 0x706e616d),
             modified: try self.SwiftAutomation_unpackProperty(desc, appData: appData, name: "modified", code: 0x696d6f64),
-            path: try self.SwiftAutomation_unpackProperty(desc, appData: appData, name: "path", code: 0x70707468)
+            path: try self.SwiftAutomation_unpackProperty(desc, appData: appData, name: "path", code: 0x70707468),
+            text: try self.SwiftAutomation_unpackProperty(desc, appData: appData, name: "text", code: 0x63747874)
         )
     }
+    public static func SwiftAutomation_noValue() throws -> TEDDocumentRecord { throw AutomationError(code: -1708) }
 }
 

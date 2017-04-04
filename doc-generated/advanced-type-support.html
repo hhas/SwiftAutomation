@@ -1,0 +1,148 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+        <title>SwiftAutomation | Improving type system integration</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <style type="text/css" media="all"><!--@import url(full.css);--></style>
+    </head>
+    <body>
+        <div id="wrap">
+            <div id="main">
+                <h1>Improving type system integration</h1>
+                <div class="navbar"><a href="examples.html">back</a> | <a href="index.html">index</a> | <a href="optimizing-performance.html">next</a></div>
+                <p>The <code>aeglue</code> tool's <code>-e</code>, <code>-s</code>, and <code>-t</code> options can be used to insert custom Swift enums, structs, and typealiases in the generated glue files for improved integration between Swift's strong, static type system and the Apple Event Manager's weak, dynamic types. Each option may appear any number of times and takes a format string as argument.</p>
+
+<h2>Type aliases</h2>
+
+<p>For convenience, all glue files define the following typealias as standard as dictionary type to which Apple event records are mapped by default:</p>
+
+<pre><code>typealias <var>PREFIX</var>Record = [<var>PREFIX</var>Record:Any]</code></pre>
+
+<p>The <code>aeglue</code>'s <code>-t</code> option can be used to add more typealiases to the glue file if needed. For example, to define a typealias for <code>Array&lt;String&gt;</code> named <code>PREFIXStrings</code>:</p>
+
+<pre><code>-t 'Strings=Array&lt;String&gt;'
+</code></pre>
+
+<p>The <code>-t</code> option's format string has the following structure:</p>
+
+<pre><code>'ALIASNAME=TYPE'
+</code></pre>
+
+<p>The glue's <code>PREFIX</code> is added automatically to <code>ALIASNAME</code>, and to any reserved type names that appear within <code>TYPE</code>. For example, the following command:</p>
+
+<pre><code>aeglue -t 'Strings=Array&lt;String&gt;' TextEdit
+</code></pre>
+
+<p>adds the following typealias to a TextEdit glue:</p>
+
+<pre><code>typealias TEDStrings = Array&lt;String&gt;
+</code></pre>
+
+<h2>Enumerated types</h2>
+
+<p>Unlike the AppleScript language, which has untyped variables to which any type of value can be assigned at any time, Swift requires all variables' types to be known at compile-time (<code>Int</code>, <code>String</code>, <code>Optional&lt;Int&gt;</code>, <code>Array&lt;String&gt;</code>, <code>SomeClass</code>, etc). This presents a challenge when sending application commands that return more than one type of value; for example:</p>
+
+<pre><code>  let path = try TextEdit().documents[1].path.get() as Any
+</code></pre>
+
+<p>may return either a <code>String</code> (e.g. <code>"/Users/jsmith/ReadMe.txt"</code>) or a <code>MissingValue</code> constant, depending on whether or not the document has been saved to disk. Furthermore, the Swift compiler won't allow you to manipulate that value until <code>path</code> is cast to a specific type (e.g. <code>String</code>). The type-safe solution to this problem is to define an enumerated type (a.k.a. tagged union, or sum type) where each case holds a different type of value. For example, SwiftAutomation's built-in <code>MayBeMissing&lt;T&gt;</code> enum can hold either a value of type <code>T</code> or a <code>MissingValue</code> constant, thus:</p>
+
+<pre><code>  let path = try TextEdit().documents[1].path.get() as MayBeMissing&lt;String&gt;
+</code></pre>
+
+<p>ensures that the command's result is always a <code>String</code> value or <code>MissingValue</code>, and subsequent code can easily use a <code>switch</code> statement to determine which and extract the value for further use.</p>
+
+<p>The <code>aeglue</code> tool's <code>-e</code> option makes it easy to include enumerations for other combinations of return types within a generated glue file. For example, if an application command you wish to use is known to return either a <code>Symbol</code> or a <code>String</code> value, add the following <code>-e</code> option to the <code>aeglue</code> command:</p>
+
+<pre><code>-e Symbol+String
+</code></pre>
+
+<p>The -e option must have the following format (square brackets indicate optional information):</p>
+
+<pre><code>-e '[ENUMNAME=][CASE1:]TYPE1+[CASE1:]TYPE2+...'
+</code></pre>
+
+<p><code>ENUMNAME</code> is the name to be given to the enumerated type, e.g. <code>-e MyType=Symbol+String</code>will create an enum named <code><var>PREFIX</var>MyType</code>. (Do not include the glue's <code>PREFIX</code> in <code>ENUMNAME</code> as one will be added automatically.)</p>
+
+<p>If <code>ENUMNAME</code> is omitted, a default name is automatically generated, e.g. <code>-e Symbol+String</code> will create an enum named <code><var>PREFIX</var>SymbolOrString</code>.</p>
+
+<p><code>TYPEn</code> is the name of an existing Swift type, for example, <code>String</code> or a standard SwiftAutomation type: <code>Symbol</code>, <code>Object</code>, <code>Insertion</code>, <code>Item</code>, or <code>Items</code> (the glue <code>PREFIX</code> will be added automatically). <code>MissingValue</code> may also be used, in which case a <code>missing</code> case is added so that the enumeration can also contain a <code>MissingValue</code> constant (see the <code>Missing Value</code> section in <a href="type-mappings.html">Chapter 5</a> for details).</p>
+
+<p><code>CASEn</code> is the name of the case to which values of that type are assigned. If <code>TYPE</code> is parameterized, a suitable <code>CASE</code> name must be given, e.g. <code>strings:Array&lt;String&gt;</code>. Otherwise the <code>CASE</code> name can be omitted, in which case a default name is automatically generated; e.g. if <code>TYPE</code> is <code>Int</code> then the default <code>CASE</code> name will be <code>int</code>.</p>
+
+<p>Thus, the following command:</p>
+
+<pre><code>aeglue -e 'Color=Symbol+values:Array&lt;Int&gt;' 'System Events.app'
+</code></pre>
+
+<p>will generate a glue file for System Events containing an <code>SEVColor</code> enum that accepts either a symbol (<code>SEV.blue</code>, <code>SEV.gold</code>, etc) or an integer array representing an RGB color value (e.g. <code>[0, 65535, 65535]</code>):</p>
+
+<pre><code>enum SEVColor {
+  case symbol(SEVSymbol)
+  case values(Array&lt;Int&gt;)
+}
+</code></pre>
+
+<p>which can then be used as follows:</p>
+
+<pre><code>let color = try SystemEvent().appearancePreferences.highlightColor.get() as SEVColor
+switch color {
+case .symbol(let colorName):
+  ...
+case .values(let rgbValues):
+  ...
+}
+</code></pre>
+
+<p>The order in which the enumerated types are declared is significant. SwiftAutomation will attempt to coerce an Apple event descriptor to each type in turn, returning a result as soon as it succeeds, or throwing an error if all coercions failed. The Apple Event Manager defines a variety of single- and bi-directional coercions: for instance, all values can coerce to a list (e.g. <code>3.14</code> ➝ <code>[3.14]</code>), any number can coerce to a string (e.g. <code>3.14</code> ➝ <code>"3.14"</code>) but only numeric strings may coerce to a number (e.g. <code>"3.14"</code> ➝ <code>3.14</code>, but <code>"forty-two"</code> will fail); while symbol types will coerce to four-char-code strings (e.g. <code>TED.document</code> ➝ <code>"docu"</code>), but not vice-versa (and either way is probably not what you intended). For best results, order the types from most specific coercion to least, e.g. <code>Symbol+String</code>, not <code>String+Symbol</code> (which would always return a string).</p>
+
+<h2>Record structs</h2>
+
+<p>While SwiftAutomation packs and unpacks Apple event records  as <code>Dictionary&lt;PREFIXSymbol:Any&gt;</code> values as standard, it is also possible to map part or all of a specific record structures to a Swift struct, simplifying member access and improving type safety. While it is not practical to generate these record structs automatically due to the incomplete and often inaccurate nature of application AETE/SDEF resources, <code>aeglue</code> does allow individual record structs to be manually defined, in whole or in part, using its <code>-s</code> option. For example, consider the following TextEdit command:</p>
+
+<pre><code>try TextEdit.documents[1].properties.get()
+// [TED.class_: TED.document, TED.name: "Untitled", TED.modified: false, TED.path: MissingValue, TED.text: ""]
+</code></pre>
+
+<p>By default, SwiftAutomation unpacks Apple event records as Swift dictionary values of type <code>Dictionary&lt;<var>PREFIX</var>Symbol,Any&gt;</code>. To map the TextEdit document's properties record to a Swift struct named <code>TEDDocumentRecord</code> instead, first add the following <code>-s</code> option to the <code>aeglue</code> command:</p>
+
+<pre><code>-s 'Document:document=name:String+modified:Bool+path:MayBeMissing&lt;String&gt;+text:String'
+</code></pre>
+
+<p>The <code>-s</code> option must have the following format:</p>
+
+<pre><code>-s 'STRUCTNAME[:CLASS]=NAME1:TYPE1+NAME2:TYPE2+...'
+</code></pre>
+
+<p><code>STRUCTNAME</code> is the name to be given to the record struct, e.g. <code>Document</code> ➝ <code>TEDDocumentRecord</code> (the <code><var>PREFIX</var></code> prefix and <code>Record</code> suffix are added automatically). <code>CLASS</code> is the record's terminology-defined 'class' name as it appears in the glue's SDEF documentation, e.g. <code>document</code>; if omitted, <code>record</code> is used.</p>
+
+<p><code>NAMEn</code> is the name of a property to appear on the struct, and <code>TYPEn</code> is the property's type; e.g. <code>name:String</code> describes a property named <code>name</code> which holds a value of type <code>String</code>. All record properties are declared as <code>var</code>, except for the special <code>class_</code> property.</p>
+
+<p>The above format string, when applied to a TextEdit dictionary, defines a struct with the following name and properties:</p>
+
+<pre><code>struct TEDDocumentRecord {
+  let class_ = TED.document
+  var name: String
+  var modified: Bool
+  var path: MayBeMissing&lt;String&gt;
+  var text: String
+}
+</code></pre>
+
+<p>To unpack a TextEdit document's properties record as a <code>TEDDocumentRecord</code> struct:</p>
+
+<pre><code>try TextEdit.documents[1].properties.get() as TEDDocumentRecord
+// TEDDocumentRecord(class_:TED.document, name: "Untitled", modified: false, path: MissingValue, text: "")
+</code></pre>
+
+<h2>MayBeMissing versus Optional</h2>
+
+<p>[TO DO: finish this section once a final decision is made on whether or not to keep <code>MayBeMissing&lt;T&gt;</code> and the special <code>.missing(MissingValue)</code> case in <code>aeglue</code>-generated enums.]</p>
+
+<p>[Note that AEM's <code>missing value</code> symbol is roughly analogous to Swift's <code>nil</code>; however, advantage of <code>MissingValue</code> over <code>nil</code> is that it's concrete, not generic, so can be used, compared for equality, etc. even when variable's static type is <code>Any</code>. OTOH, <code>Optional</code> is idiomatic Swift, so will always be the preferred form used in typed code. SwiftAutomation accepts both when used as command parameters; when command's return type is <code>Any</code>, <code>missing value</code> descriptor is unpacked as <code>MissingValue</code>; when return type is <code>Optional&lt;T&gt;</code>, it's unpacked as <code>Optional&lt;T&gt;.none</code> instead. <code>MayBeMissing&lt;T&gt;</code> unpacks it as <code>MayBeMissing&lt;T&gt;.missing(MissingValue)</code>; custom enums that include <code>MissingValue</code> in their <code>-e</code> format string unpack it as ENUMNAME.missing(MissingValue).]</p>
+
+            </div>
+        </div>
+        <div id="footer"><div class="navbar"><a href="examples.html">back</a> | <a href="index.html">index</a> | <a href="optimizing-performance.html">next</a></div></div>
+    </body>
+</html>

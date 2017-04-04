@@ -7,43 +7,96 @@ import Foundation
 import AppKit
 
 
-// TO DO: what about converting URLs to typeAlias and other filesystem-related descriptor types? e.g. `aliasDescriptor(fromFileURL:URL)` (or take an optional enum of `.alias|.FSRef|etc.`) (In theory, applications should always accept typeFileURL and coerce it to whatever type they actually need themselves; in practice, not-so-well-designed Carbon apps may require one specific type - e.g. typeAlias - and refuse to accept any other, in which case it's the client's problem to give it what it needs. Again, nasty, but probably better to include smelly utility functions than leave users to deal with arcane NSAppleEventDescriptor calls.)
+/******************************************************************************/
+// KLUDGE: NSWorkspace provides a good method for launching apps by file URL, and a crap one for launching by bundle ID - unfortunately, only the latter can be used in sandboxed apps. This extension adds a launchApplication(withBundleIdentifier:options:configuration:)throws->NSRunningApplication method that has a good API and the least compromised behavior, insulating TargetApplication code from the crappiness that hides within. If/when Apple adds a real, robust version of this method to NSWorkspace <rdar://29159280>, this extension can (and should) go away.
+
+
+extension NSWorkspace { 
+    
+    // caution: the configuration parameter is ignored in sandboxed apps; this is unavoidable
+    func launchApplication(withBundleIdentifier bundleID: String, options: NSWorkspaceLaunchOptions = [],
+                           configuration: [String : Any]) throws -> NSRunningApplication {
+        // if one or more processes with the given bundle ID is already running, return the first one found
+        let foundProcesses = NSRunningApplication.runningApplications(withBundleIdentifier: bundleID)
+        if foundProcesses.count > 0 {
+            return foundProcesses[0]
+        }
+        // first try to get the app's file URL, as this lets us use the better launchApplication(at:options:configuration:) method…
+        if let url = NSWorkspace.shared().urlForApplication(withBundleIdentifier: bundleID) {
+            do {
+                return try NSWorkspace.shared().launchApplication(at: url, options: options, configuration: configuration)
+            } catch {} // for now, we're not sure if urlForApplication(withBundleIdentifier:) will always return nil if blocked by sandbox; if it returns garbage URL instead then hopefully that'll cause launchApplication(at:...) to throw
+        }
+        // …else fall back to the inferior launchApplication(withBundleIdentifier:options:additionalEventParamDescriptor:launchIdentifier:)
+        var options = options
+        options.remove(.async)
+        if NSWorkspace.shared().launchApplication(withBundleIdentifier: bundleID, options: options,
+                                                  additionalEventParamDescriptor: nil, launchIdentifier: nil) {
+            // TO DO: confirm that launchApplication() never returns before process is available (otherwise the following will need to be in a loop that blocks until it is available or the loop times out)
+            let foundProcesses = NSRunningApplication.runningApplications(withBundleIdentifier: bundleID)
+            if foundProcesses.count > 0 {
+                return foundProcesses[0]
+            }
+        }
+        throw NSError(domain: NSCocoaErrorDomain, code: 1, userInfo:
+                      [NSLocalizedDescriptionKey: "Can't find/launch application \(bundleID.debugDescription)"]) // TO DO: what error to report here, since launchApplication(withBundleIdentifier:options:additionalEventParamDescriptor:launchIdentifier:) doesn't provide any error info itself?
+    }
+}
+
+
+/******************************************************************************/
+// logging
+
+
+struct StderrStream: TextOutputStream {
+    public mutating func write(_ string: String) { fputs(string, stderr) }
+}
+var errStream = StderrStream()
 
 
 /******************************************************************************/
 // convert between 4-character strings and OSTypes (use these instead of calling UTGetOSTypeFromString/UTCopyStringFromOSType directly)
 
-func FourCharCodeUnsafe(_ string: String) -> OSType { // note: silently returns 0 if string is invalid; where practical, use throwing version below // TO DO: pretty sure the safe version can always be used: the non-throwing property() and elements() methods just need to trap the error and store it in the returned specifier (as its selector data), and it will be re-thrown when the specifier is used in an application command method (which can throw).
-    return UTGetOSTypeFromString(string as CFString)
-}
+// TO DO: any value in making the following functions public?
 
-func FourCharCode(_ string: String) throws -> OSType { // note: use this instead of FourCharCode to get better error reporting
+func fourCharCode(_ string: String) throws -> OSType {
+    // convert four-character string containing MacOSRoman characters to OSType
+    // (this is safer than using UTGetOSTypeFromString, which silently fails if string is malformed)
     guard let data = string.data(using: String.Encoding.macOSRoman) else {
-        throw SwiftAutomationError(code: 1, message: "Invalid four-char code (bad encoding): \(quoteString(string))") // TO DO: what error?
+        throw AutomationError(code: 1, message: "Invalid four-char code (bad encoding): \(string.debugDescription)")
     }
     if (data.count != 4) {
-        throw SwiftAutomationError(code: 1, message: "Invalid four-char code (wrong length): \(quoteString(string))")
+        throw AutomationError(code: 1, message: "Invalid four-char code (wrong length): \(string.debugDescription)")
     }
     var tmp: UInt32 = 0
     (data as NSData).getBytes(&tmp, length: 4)
     return CFSwapInt32HostToBig(tmp)
 }
 
-func FourCharCodeString(_ code: OSType) -> String {
+func fourCharCode(_ code: OSType) -> String {
+    // convert an OSType to four-character string containing MacOSRoman characters
     return UTCreateStringForOSType(code).takeRetainedValue() as String
+}
+
+func eightCharCode(_ eventClass: OSType, _ eventID: OSType) -> UInt64 {
+    // used to construct keys for GlueTable.commandsByCode dictionary
+    return UInt64(eventClass) << 32 | UInt64(eventID)
 }
 
 
 // misc AEDesc packing functions
 
-func FourCharCodeDescriptor(_ type: OSType, _ data: OSType) -> NSAppleEventDescriptor { // TO DO: rename `descriptor(forSymbolType:value:)`
-    var data = data
-    return NSAppleEventDescriptor(descriptorType: type, bytes: &data, length: MemoryLayout<OSType>.size)!
-}
-
-func UInt32Descriptor(_ data: UInt32) -> NSAppleEventDescriptor { // rename `descriptor`
-    var data = data // note: Swift's ObjC bridge appears to ignore the `const` on the `-[NSAppleEventDescriptor initWithDescriptorType:bytes:length:]` method's 'bytes' parameter, so need to rebind to `var` as workaround
-    return NSAppleEventDescriptor(descriptorType: SwiftAutomation_typeUInt32, bytes: &data, length: MemoryLayout<UInt32>.size)!
+extension NSAppleEventDescriptor { // TO DO: how safe/advisable is extending system-defined classes?
+    
+    convenience init(type: OSType, code: OSType) {
+        var data = code
+        self.init(descriptorType: type, bytes: &data, length: MemoryLayout<OSType>.size)!
+    }
+    
+    convenience init(uint32 data: UInt32) {
+        var data = data
+        self.init(descriptorType: _typeUInt32, bytes: &data, length: MemoryLayout<UInt32>.size)!
+    }
 }
 
 
@@ -52,7 +105,7 @@ let symbolDescriptorTypes: Set<DescType> = [typeType, typeEnumerated, typeProper
 
 
 /******************************************************************************/
-// consids/ignores options defined in ASRegistry.h (it's crappy design and a complete mess, and most apps don't even support it, but what we're stuck with)
+// consids/ignores options are defined in ASRegistry.h (they're a crappy design and a complete mess, and most apps completely ignore them, but we support them anyway in order to ensure feature parity with AS)
 
 public enum Considerations {
     case `case`
@@ -61,7 +114,7 @@ public enum Considerations {
     case hyphens
     case expansion
     case punctuation
-    //  case Replies // TO DO: check if this is ever supplied by AS; if it is, might be an idea to add it; if not, delete
+//  case replies // TO DO: check if this is ever supplied by AS; if it is, might be an idea to add it; if not, delete
     case numericStrings
 }
 
@@ -110,13 +163,13 @@ private let ProcessNotFoundErrorNumbers: Set<Int> = [procNotFound, connectionInv
 
 private let LaunchEventSucceededErrorNumbers: Set<Int> = [Int(noErr), errAEEventNotHandled]
 
-private let LaunchEvent = NSAppleEventDescriptor(eventClass: SwiftAutomation_kASAppleScriptSuite, eventID: SwiftAutomation_kASLaunchEvent,
-                                                 targetDescriptor: NSAppleEventDescriptor.null(), returnID: AEReturnID(kAutoGenerateReturnID),
-                                                 transactionID: AETransactionID(kAnyTransactionID))
+private let LaunchEvent = NSAppleEventDescriptor(eventClass: _kASAppleScriptSuite, eventID: _kASLaunchEvent,
+                                                 targetDescriptor: NSAppleEventDescriptor.null(), returnID: _kAutoGenerateReturnID,
+                                                 transactionID: _kAnyTransactionID)
 
 // Application initializers pass application-identifying information to AppData initializer as enum according to which initializer was called
 
-public enum TargetApplication {
+public enum TargetApplication: CustomReflectable {
     case current
     case name(String) // application's name (.app suffix is optional) or full path
     case url(URL) // "file" or "eppc" URL
@@ -126,6 +179,15 @@ public enum TargetApplication {
     case none // used in untargeted AppData instances; sendAppleEvent() will raise ConnectionError if called
     
     // TO DO: implement `description` property and use it in all error messages raised here?
+    
+    public var description: String {
+        return String(describing: self)
+    }
+    
+    public var customMirror: Mirror {
+        let children: [Mirror.Child] = [(label: nil, value: self)]
+        return Mirror(self, children: children, displayStyle: Mirror.DisplayStyle.`enum`, ancestorRepresentation: .suppressed)
+    }
     
     // support functions
     
@@ -148,9 +210,9 @@ public enum TargetApplication {
     
     private func sendLaunchEvent(processDescriptor: NSAppleEventDescriptor) -> Int {
         do {
-            let event = NSAppleEventDescriptor(eventClass: SwiftAutomation_kASAppleScriptSuite, eventID: SwiftAutomation_kASLaunchEvent,
-                                               targetDescriptor: processDescriptor, returnID: AEReturnID(kAutoGenerateReturnID),
-                                               transactionID: AETransactionID(kAnyTransactionID))
+            let event = NSAppleEventDescriptor(eventClass: _kASAppleScriptSuite, eventID: _kASLaunchEvent,
+                                               targetDescriptor: processDescriptor, returnID: _kAutoGenerateReturnID,
+                                               transactionID: _kAnyTransactionID)
             let reply = try event.sendEvent(options: .waitForReply, timeout: 30)
             return Int(reply.paramDescriptor(forKeyword: keyErrorNumber)?.int32Value ?? 0) // application error (errAEEventNotHandled is normal)
         } catch {
@@ -218,27 +280,33 @@ public enum TargetApplication {
                                                    configuration: [NSWorkspaceLaunchConfigurationAppleEvent: LaunchEvent])
     }
     
-    // launch this application (equivalent to AppleScript's `launch` command)
+    // launch this application (equivalent to AppleScript's `launch` command; an obscure corner case that AS users need to fall back onto when sending an event to a Script Editor applet that isn't saved as 'stay open', so only handles the first event it receives then quits when done) // TO DO: is it worth keeping this for 'quirk-for-quirk' compatibility's sake, or just ditch it and tell users to use `NSWorkspace.launchApplication(at:options:configuration:)` with an `NSWorkspaceLaunchConfigurationAppleEvent` if they really need to pass a non-standard first event?
 
-    public func launch() throws { // called by ApplicationExtension.launch()
+    public func launch() throws { // called by Application.launch()
         // note: in principle an app _could_ implement an AE handler for this event that returns a value, but it probably isn't a good idea to do so (the event is called 'ascr'/'noop' for a reason), so even if a running process does return something (instead of throwing the expected errAEEventNotHandled) we just ignore it for sanity's sake (the flipside being that if the app _isn't_ already running then NSWorkspace.launchApplication() will launch it and pass the 'noop' descriptor as the first Apple event to handle, but doesn't return a result for that event, so to return a result at any other time would be inconsistent)
         if self.isRunning {
             let errorNumber = self.sendLaunchEvent(processDescriptor: try self.descriptor()!)
             if !LaunchEventSucceededErrorNumbers.contains(errorNumber) {
-                throw SwiftAutomationError(code: errorNumber, message: "Can't launch application.")
+                throw AutomationError(code: errorNumber, message: "Can't launch application.")
             }
         } else {
             switch self {
             case .name(let name):
-                if let url = fileURLForLocalApplication(name) { try self.launch(url: url) }
-            case .url(let url):
-                if url.isFileURL { try self.launch(url: url) }
+                if let url = fileURLForLocalApplication(name) {
+                    try self.launch(url: url)
+                    return
+                }
+            case .url(let url) where url.isFileURL:
+                try self.launch(url: url)
+                return
             case .bundleIdentifier(let bundleID, _):
-                NSWorkspace.shared().launchApplication(withBundleIdentifier: bundleID, options: [.withoutActivation],
-                                                       additionalEventParamDescriptor: LaunchEvent, launchIdentifier: nil)
+                if let url = NSWorkspace.shared().urlForApplication(withBundleIdentifier: bundleID) {
+                    try self.launch(url: url)
+                    return
+                }
             default:
                 ()
-            }
+            } // fall through on failure
             throw ConnectionError(target: self, message: "Can't launch application.")
         }
     }
@@ -267,11 +335,13 @@ public enum TargetApplication {
             } else {
                 throw ConnectionError(target: self, message: "Invalid URL scheme (not file/eppc): \(url)")
             }
-        case .bundleIdentifier(let bundleIdentifier, _):
-            if let url = NSWorkspace.shared().urlForApplication(withBundleIdentifier: bundleIdentifier) {
-                return try self.processDescriptorForLocalApplication(url: url, launchOptions: launchOptions)
-            } else {
-                throw ConnectionError(target: self, message: "Application not found: \(bundleIdentifier)")
+        case .bundleIdentifier(let bundleID, _):
+            do {
+                let runningProcess = try NSWorkspace.shared().launchApplication(withBundleIdentifier: bundleID,
+                                                                                options: launchOptions, configuration: [:])
+                return NSAppleEventDescriptor(processIdentifier: runningProcess.processIdentifier)
+            } catch {
+                throw ConnectionError(target: self, message: "Can't find/launch application: \(bundleID)", cause: error)
             }
         case .processIdentifier(let pid):
             return NSAppleEventDescriptor(processIdentifier: pid)

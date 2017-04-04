@@ -9,19 +9,96 @@
 /* Begin PBXBuildFile section */
 		4F0E39681BAA98A900FF2A96 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39671BAA98A900FF2A96 /* main.swift */; };
 		4F0E39841BAB743800FF2A96 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F63C4331B7CF1C4000D74EE /* Foundation.framework */; };
-		4F0E39A11BAF7A7400FF2A96 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4F0E39A01BAF7A7400FF2A96 /* Assets.xcassets */; };
-		4F0E39A41BAF7A7400FF2A96 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4F0E39A21BAF7A7400FF2A96 /* MainMenu.xib */; };
-		4F0E39A91BAF7ADC00FF2A96 /* OSAKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F0E394A1BA8719400FF2A96 /* OSAKit.framework */; };
-		4F0E39BD1BAF7B7600FF2A96 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F63C4331B7CF1C4000D74EE /* Foundation.framework */; };
-		4F0E39BE1BAF7B7C00FF2A96 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F63C4351B7CF1C8000D74EE /* AppKit.framework */; };
-		4F0E39CC1BB008A400FF2A96 /* SAELanguageInstance.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39CB1BB008A400FF2A96 /* SAELanguageInstance.m */; };
-		4F0E39CF1BB008B400FF2A96 /* SAEEventSniffer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39CE1BB008B400FF2A96 /* SAEEventSniffer.m */; };
-		4F0E39D21BB00B3300FF2A96 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39D11BB00B3300FF2A96 /* AppDelegate.m */; };
-		4F0E39D41BB0342600FF2A96 /* SAEFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39D31BB0342600FF2A96 /* SAEFormatter.swift */; };
-		4F0E39D61BB0504D00FF2A96 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39D51BB0504D00FF2A96 /* main.m */; };
+		4F1A58141D9EA09B00ACFA51 /* SwiftAutomation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4FFF5D241D899F0D008ED4F5 /* SwiftAutomation.framework */; };
+		4F1A58151D9EA09B00ACFA51 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F63C4331B7CF1C4000D74EE /* Foundation.framework */; };
+		4F1ABE091E0752DA008BA807 /* SystemInformationGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F1ABDD71E0752DA008BA807 /* SystemInformationGlue.swift.sdef */; };
+		4F1ABE0A1E0752DA008BA807 /* TerminalGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1ABDD81E0752DA008BA807 /* TerminalGlue.swift */; };
+		4F1ABE0B1E0752DA008BA807 /* TerminalGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F1ABDD91E0752DA008BA807 /* TerminalGlue.swift.sdef */; };
+		4F1ABE0C1E0752DA008BA807 /* SystemInformationGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1ABDDA1E0752DA008BA807 /* SystemInformationGlue.swift */; };
+		4F1ABE0D1E0752DA008BA807 /* ScriptEditorGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1ABDDB1E0752DA008BA807 /* ScriptEditorGlue.swift */; };
+		4F1ABE0E1E0752DA008BA807 /* ScriptEditorGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F1ABDDC1E0752DA008BA807 /* ScriptEditorGlue.swift.sdef */; };
+		4F1ABE0F1E0752DA008BA807 /* BluetoothFileExchangeGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1ABDDD1E0752DA008BA807 /* BluetoothFileExchangeGlue.swift */; };
+		4F1ABE101E0752DA008BA807 /* BluetoothFileExchangeGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F1ABDDE1E0752DA008BA807 /* BluetoothFileExchangeGlue.swift.sdef */; };
+		4F1ABE111E0752DA008BA807 /* GrabGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1ABDDF1E0752DA008BA807 /* GrabGlue.swift */; };
+		4F1ABE121E0752DA008BA807 /* GrabGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F1ABDE01E0752DA008BA807 /* GrabGlue.swift.sdef */; };
+		4F1ABE131E0752DA008BA807 /* ITunesGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1ABDE11E0752DA008BA807 /* ITunesGlue.swift */; };
+		4F1ABE141E0752DA008BA807 /* ITunesGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F1ABDE21E0752DA008BA807 /* ITunesGlue.swift.sdef */; };
+		4F1ABE151E0752DA008BA807 /* TextEditGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1ABDE31E0752DA008BA807 /* TextEditGlue.swift */; };
+		4F1ABE161E0752DA008BA807 /* TextEditGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F1ABDE41E0752DA008BA807 /* TextEditGlue.swift.sdef */; };
+		4F1ABE171E0752DA008BA807 /* XcodeGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1ABDE51E0752DA008BA807 /* XcodeGlue.swift */; };
+		4F1ABE181E0752DA008BA807 /* XcodeGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F1ABDE61E0752DA008BA807 /* XcodeGlue.swift.sdef */; };
+		4F1ABE191E0752DA008BA807 /* MessagesGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1ABDE71E0752DA008BA807 /* MessagesGlue.swift */; };
+		4F1ABE1A1E0752DA008BA807 /* MessagesGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F1ABDE81E0752DA008BA807 /* MessagesGlue.swift.sdef */; };
+		4F1ABE1B1E0752DA008BA807 /* NotesGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1ABDE91E0752DA008BA807 /* NotesGlue.swift */; };
+		4F1ABE1C1E0752DA008BA807 /* NotesGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F1ABDEA1E0752DA008BA807 /* NotesGlue.swift.sdef */; };
+		4F1ABE1D1E0752DA008BA807 /* PhotosGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1ABDEB1E0752DA008BA807 /* PhotosGlue.swift */; };
+		4F1ABE1E1E0752DA008BA807 /* PhotosGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F1ABDEC1E0752DA008BA807 /* PhotosGlue.swift.sdef */; };
+		4F1ABE1F1E0752DA008BA807 /* QuickTimePlayerGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1ABDED1E0752DA008BA807 /* QuickTimePlayerGlue.swift */; };
+		4F1ABE201E0752DA008BA807 /* QuickTimePlayerGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F1ABDEE1E0752DA008BA807 /* QuickTimePlayerGlue.swift.sdef */; };
+		4F1ABE211E0752DA008BA807 /* RemindersGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1ABDEF1E0752DA008BA807 /* RemindersGlue.swift */; };
+		4F1ABE221E0752DA008BA807 /* RemindersGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F1ABDF01E0752DA008BA807 /* RemindersGlue.swift.sdef */; };
+		4F1ABE231E0752DA008BA807 /* SafariGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1ABDF11E0752DA008BA807 /* SafariGlue.swift */; };
+		4F1ABE241E0752DA008BA807 /* SafariGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F1ABDF21E0752DA008BA807 /* SafariGlue.swift.sdef */; };
+		4F1ABE251E0752DA008BA807 /* SystemPreferencesGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1ABDF31E0752DA008BA807 /* SystemPreferencesGlue.swift */; };
+		4F1ABE261E0752DA008BA807 /* SystemPreferencesGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F1ABDF41E0752DA008BA807 /* SystemPreferencesGlue.swift.sdef */; };
+		4F1ABE271E0752DA008BA807 /* AutomatorGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F1ABDF51E0752DA008BA807 /* AutomatorGlue.swift.sdef */; };
+		4F1ABE281E0752DA008BA807 /* CalendarGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1ABDF61E0752DA008BA807 /* CalendarGlue.swift */; };
+		4F1ABE291E0752DA008BA807 /* CalendarGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F1ABDF71E0752DA008BA807 /* CalendarGlue.swift.sdef */; };
+		4F1ABE2A1E0752DA008BA807 /* ContactsGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1ABDF81E0752DA008BA807 /* ContactsGlue.swift */; };
+		4F1ABE2B1E0752DA008BA807 /* ContactsGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F1ABDF91E0752DA008BA807 /* ContactsGlue.swift.sdef */; };
+		4F1ABE2C1E0752DA008BA807 /* DVDPlayerGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1ABDFA1E0752DA008BA807 /* DVDPlayerGlue.swift */; };
+		4F1ABE2D1E0752DA008BA807 /* DVDPlayerGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F1ABDFB1E0752DA008BA807 /* DVDPlayerGlue.swift.sdef */; };
+		4F1ABE2E1E0752DA008BA807 /* FontBookGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1ABDFC1E0752DA008BA807 /* FontBookGlue.swift */; };
+		4F1ABE2F1E0752DA008BA807 /* FontBookGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F1ABDFD1E0752DA008BA807 /* FontBookGlue.swift.sdef */; };
+		4F1ABE301E0752DA008BA807 /* GarageBandGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1ABDFE1E0752DA008BA807 /* GarageBandGlue.swift */; };
+		4F1ABE311E0752DA008BA807 /* GarageBandGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F1ABDFF1E0752DA008BA807 /* GarageBandGlue.swift.sdef */; };
+		4F1ABE321E0752DA008BA807 /* MailGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1ABE001E0752DA008BA807 /* MailGlue.swift */; };
+		4F1ABE331E0752DA008BA807 /* MailGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F1ABE011E0752DA008BA807 /* MailGlue.swift.sdef */; };
+		4F1ABE341E0752DA008BA807 /* AutomatorGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1ABE021E0752DA008BA807 /* AutomatorGlue.swift */; };
+		4F1ABE351E0752DA008BA807 /* FinderGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1ABE031E0752DA008BA807 /* FinderGlue.swift */; };
+		4F1ABE361E0752DA008BA807 /* SystemEventsGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1ABE041E0752DA008BA807 /* SystemEventsGlue.swift */; };
+		4F1ABE371E0752DA008BA807 /* SystemEventsGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F1ABE051E0752DA008BA807 /* SystemEventsGlue.swift.sdef */; };
+		4F1ABE381E0752DA008BA807 /* FinderGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F1ABE061E0752DA008BA807 /* FinderGlue.swift.sdef */; };
+		4F1ABE391E0752DA008BA807 /* MacOSGlues.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F1ABE071E0752DA008BA807 /* MacOSGlues.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4F1ABE431E075464008BA807 /* VoiceOverGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1ABE3B1E075464008BA807 /* VoiceOverGlue.swift */; };
+		4F1ABE441E075464008BA807 /* VoiceOverGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F1ABE3C1E075464008BA807 /* VoiceOverGlue.swift.sdef */; };
+		4F1ABE451E075464008BA807 /* HelpViewerGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1ABE3D1E075464008BA807 /* HelpViewerGlue.swift */; };
+		4F1ABE461E075464008BA807 /* HelpViewerGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F1ABE3E1E075464008BA807 /* HelpViewerGlue.swift.sdef */; };
+		4F1ABE471E075464008BA807 /* ImageEventsGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1ABE3F1E075464008BA807 /* ImageEventsGlue.swift */; };
+		4F1ABE481E075464008BA807 /* ImageEventsGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F1ABE401E075464008BA807 /* ImageEventsGlue.swift.sdef */; };
+		4F1ABE491E075464008BA807 /* AppleScriptUtilityGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1ABE411E075464008BA807 /* AppleScriptUtilityGlue.swift */; };
+		4F1ABE4A1E075464008BA807 /* AppleScriptUtilityGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F1ABE421E075464008BA807 /* AppleScriptUtilityGlue.swift.sdef */; };
+		4F1ABE511E075B02008BA807 /* NumbersGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1ABE4B1E075B02008BA807 /* NumbersGlue.swift */; };
+		4F1ABE521E075B02008BA807 /* NumbersGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F1ABE4C1E075B02008BA807 /* NumbersGlue.swift.sdef */; };
+		4F1ABE531E075B02008BA807 /* PagesGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1ABE4D1E075B02008BA807 /* PagesGlue.swift */; };
+		4F1ABE541E075B02008BA807 /* PagesGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F1ABE4E1E075B02008BA807 /* PagesGlue.swift.sdef */; };
+		4F1ABE551E075B02008BA807 /* KeynoteGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1ABE4F1E075B02008BA807 /* KeynoteGlue.swift */; };
+		4F1ABE561E075B02008BA807 /* KeynoteGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F1ABE501E075B02008BA807 /* KeynoteGlue.swift.sdef */; };
+		4F1ABE5B1E081D98008BA807 /* DatabaseEventsGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1ABE591E081D98008BA807 /* DatabaseEventsGlue.swift */; };
+		4F1ABE5C1E081D98008BA807 /* DatabaseEventsGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F1ABE5A1E081D98008BA807 /* DatabaseEventsGlue.swift.sdef */; };
 		4F4C1A0E1D910BDE004F9083 /* TypeExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F4C1A0D1D910BDE004F9083 /* TypeExtensions.swift */; };
 		4F4C1A0F1D910E41004F9083 /* TypeExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F4C1A0D1D910BDE004F9083 /* TypeExtensions.swift */; };
 		4F4C1A101D910E4B004F9083 /* TypeExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F4C1A0D1D910BDE004F9083 /* TypeExtensions.swift */; };
+		4F63093D1DFC19A90089ADDB /* index.html in Copy Files */ = {isa = PBXBuildFile; fileRef = 4F0E393D1BA864A400FF2A96 /* index.html */; };
+		4F63093E1DFC19A90089ADDB /* welcome.html in Copy Files */ = {isa = PBXBuildFile; fileRef = 4F1A57F01D9AAF5200ACFA51 /* welcome.html */; };
+		4F63093F1DFC19A90089ADDB /* installing-swiftautomation.html in Copy Files */ = {isa = PBXBuildFile; fileRef = 4F0FD46F1DF5C77E00F306D3 /* installing-swiftautomation.html */; };
+		4F6309401DFC19A90089ADDB /* tutorial-introduction.html in Copy Files */ = {isa = PBXBuildFile; fileRef = 4F1A57F11D9AAF5C00ACFA51 /* tutorial-introduction.html */; };
+		4F6309411DFC19A90089ADDB /* understanding-apple-events.html in Copy Files */ = {isa = PBXBuildFile; fileRef = 4F0E39441BA864A400FF2A96 /* understanding-apple-events.html */; };
+		4F6309421DFC19A90089ADDB /* creating-and-using-static-glues.html in Copy Files */ = {isa = PBXBuildFile; fileRef = 4F0E39391BA864A400FF2A96 /* creating-and-using-static-glues.html */; };
+		4F6309431DFC19A90089ADDB /* type-mappings.html in Copy Files */ = {isa = PBXBuildFile; fileRef = 4F1A57F21D9AAF5C00ACFA51 /* type-mappings.html */; };
+		4F6309441DFC19A90089ADDB /* application-objects.html in Copy Files */ = {isa = PBXBuildFile; fileRef = 4F0E39341BA864A400FF2A96 /* application-objects.html */; };
+		4F6309451DFC19A90089ADDB /* object-specifiers.html in Copy Files */ = {isa = PBXBuildFile; fileRef = 4F0E39411BA864A400FF2A96 /* object-specifiers.html */; };
+		4F6309461DFC19A90089ADDB /* commands.html in Copy Files */ = {isa = PBXBuildFile; fileRef = 4F0E39381BA864A400FF2A96 /* commands.html */; };
+		4F6309471DFC19A90089ADDB /* examples.html in Copy Files */ = {isa = PBXBuildFile; fileRef = 4F0E393A1BA864A400FF2A96 /* examples.html */; };
+		4F6309481DFC19A90089ADDB /* optimizing-performance.html in Copy Files */ = {isa = PBXBuildFile; fileRef = 4F0E39421BA864A400FF2A96 /* optimizing-performance.html */; };
+		4F6309491DFC19A90089ADDB /* low-level-apis.html in Copy Files */ = {isa = PBXBuildFile; fileRef = 4F0E393F1BA864A400FF2A96 /* low-level-apis.html */; };
+		4F63094A1DFC19A90089ADDB /* notes.html in Copy Files */ = {isa = PBXBuildFile; fileRef = 4F0E39401BA864A400FF2A96 /* notes.html */; };
+		4F63094B1DFC19A90089ADDB /* application_architecture.gif in Copy Files */ = {isa = PBXBuildFile; fileRef = 4F0E39351BA864A400FF2A96 /* application_architecture.gif */; };
+		4F63094C1DFC19A90089ADDB /* application_architecture2.gif in Copy Files */ = {isa = PBXBuildFile; fileRef = 4F0E39361BA864A400FF2A96 /* application_architecture2.gif */; };
+		4F63094D1DFC19A90089ADDB /* client_app_to_itunes_event.gif in Copy Files */ = {isa = PBXBuildFile; fileRef = 4F0E39371BA864A400FF2A96 /* client_app_to_itunes_event.gif */; };
+		4F63094E1DFC19A90089ADDB /* finder_to_textedit_event.gif in Copy Files */ = {isa = PBXBuildFile; fileRef = 4F0E393B1BA864A400FF2A96 /* finder_to_textedit_event.gif */; };
+		4F63094F1DFC19A90089ADDB /* relationships_example.gif in Copy Files */ = {isa = PBXBuildFile; fileRef = 4F0E39431BA864A400FF2A96 /* relationships_example.gif */; };
+		4F6309501DFC19A90089ADDB /* full.css in Copy Files */ = {isa = PBXBuildFile; fileRef = 4F0E393C1BA864A400FF2A96 /* full.css */; };
 		4F9AFB531D5E9B4100A71890 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F9AFB451D5E99FC00A71890 /* main.swift */; };
 		4FB7D8751D5EA60F00F0DB36 /* AppData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F63C4401B86A335000D74EE /* AppData.swift */; };
 		4FB7D8761D5EA60F00F0DB36 /* Specifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F63C42F1B7CF133000D74EE /* Specifier.swift */; };
@@ -61,8 +138,6 @@
 		4FDB20451D8ABA2E008AB470 /* ITunesGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FDB20421D8ABA2E008AB470 /* ITunesGlue.swift */; };
 		4FDB20461D8ABA2E008AB470 /* TextEditGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FDB20431D8ABA2E008AB470 /* TextEditGlue.swift */; };
 		4FFF5D281D899F0D008ED4F5 /* SwiftAutomation.h in Headers */ = {isa = PBXBuildFile; fileRef = 4FFF5D261D899F0D008ED4F5 /* SwiftAutomation.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		4FFF5D2B1D899F0D008ED4F5 /* SwiftAutomation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4FFF5D241D899F0D008ED4F5 /* SwiftAutomation.framework */; };
-		4FFF5D2C1D899F0D008ED4F5 /* SwiftAutomation.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 4FFF5D241D899F0D008ED4F5 /* SwiftAutomation.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		4FFF5D311D899F29008ED4F5 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F63C4271B7CF06E000D74EE /* main.swift */; };
 		4FFF5D321D899F29008ED4F5 /* AppData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F63C4401B86A335000D74EE /* AppData.swift */; };
 		4FFF5D331D899F29008ED4F5 /* Specifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F63C42F1B7CF133000D74EE /* Specifier.swift */; };
@@ -81,9 +156,9 @@
 		4FFF5D401D899F29008ED4F5 /* AppleEventFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39951BADD58500FF2A96 /* AppleEventFormatter.swift */; };
 		4FFF5D411D899F29008ED4F5 /* StaticGlueBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E396D1BAA9BA700FF2A96 /* StaticGlueBuilder.swift */; };
 		4FFF5D421D899F29008ED4F5 /* AEApplicationGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F2645AB1BA4F27700256402 /* AEApplicationGlue.swift */; };
-		4FFF5D4B1D89B4EF008ED4F5 /* SwiftAEGlueTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FFF5D491D89A26C008ED4F5 /* SwiftAEGlueTemplate.swift */; };
-		4FFF5D4F1D89B552008ED4F5 /* SwiftAEGlueTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FFF5D491D89A26C008ED4F5 /* SwiftAEGlueTemplate.swift */; };
-		4FFF5D511D89B572008ED4F5 /* SwiftAEGlueTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FFF5D491D89A26C008ED4F5 /* SwiftAEGlueTemplate.swift */; };
+		4FFF5D4B1D89B4EF008ED4F5 /* SwiftGlueTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FFF5D491D89A26C008ED4F5 /* SwiftGlueTemplate.swift */; };
+		4FFF5D4F1D89B552008ED4F5 /* SwiftGlueTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FFF5D491D89A26C008ED4F5 /* SwiftGlueTemplate.swift */; };
+		4FFF5D511D89B572008ED4F5 /* SwiftGlueTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FFF5D491D89A26C008ED4F5 /* SwiftGlueTemplate.swift */; };
 		4FFF5D531D89B616008ED4F5 /* aeglue in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4F0E39651BAA98A900FF2A96 /* aeglue */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		4FFF5D541D89B6C4008ED4F5 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F63C4351B7CF1C8000D74EE /* AppKit.framework */; };
 		4FFF5D551D89B6C4008ED4F5 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F63C4371B7CF1E0000D74EE /* Carbon.framework */; };
@@ -91,14 +166,14 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		4F4C1A241D943D52004F9083 /* PBXContainerItemProxy */ = {
+		4F1A580E1D9E9FF700ACFA51 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 4F63C41C1B7CF06E000D74EE /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 4FFF5D231D899F0D008ED4F5;
 			remoteInfo = SwiftAutomation;
 		};
-		4FFF5D291D899F0D008ED4F5 /* PBXContainerItemProxy */ = {
+		4F4C1A241D943D52004F9083 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 4F63C41C1B7CF06E000D74EE /* Project object */;
 			proxyType = 1;
@@ -124,6 +199,36 @@
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
+		4F63093C1DFC19940089ADDB /* Copy Files */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = doc;
+			dstSubfolderSpec = 7;
+			files = (
+				4F63093D1DFC19A90089ADDB /* index.html in Copy Files */,
+				4F63093E1DFC19A90089ADDB /* welcome.html in Copy Files */,
+				4F63093F1DFC19A90089ADDB /* installing-swiftautomation.html in Copy Files */,
+				4F6309401DFC19A90089ADDB /* tutorial-introduction.html in Copy Files */,
+				4F6309411DFC19A90089ADDB /* understanding-apple-events.html in Copy Files */,
+				4F6309421DFC19A90089ADDB /* creating-and-using-static-glues.html in Copy Files */,
+				4F6309431DFC19A90089ADDB /* type-mappings.html in Copy Files */,
+				4F6309441DFC19A90089ADDB /* application-objects.html in Copy Files */,
+				4F6309451DFC19A90089ADDB /* object-specifiers.html in Copy Files */,
+				4F6309461DFC19A90089ADDB /* commands.html in Copy Files */,
+				4F6309471DFC19A90089ADDB /* examples.html in Copy Files */,
+				4F6309481DFC19A90089ADDB /* optimizing-performance.html in Copy Files */,
+				4F6309491DFC19A90089ADDB /* low-level-apis.html in Copy Files */,
+				4F63094A1DFC19A90089ADDB /* notes.html in Copy Files */,
+				4F63094B1DFC19A90089ADDB /* application_architecture.gif in Copy Files */,
+				4F63094C1DFC19A90089ADDB /* application_architecture2.gif in Copy Files */,
+				4F63094D1DFC19A90089ADDB /* client_app_to_itunes_event.gif in Copy Files */,
+				4F63094E1DFC19A90089ADDB /* finder_to_textedit_event.gif in Copy Files */,
+				4F63094F1DFC19A90089ADDB /* relationships_example.gif in Copy Files */,
+				4F6309501DFC19A90089ADDB /* full.css in Copy Files */,
+			);
+			name = "Copy Files";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		4F9AFB341D5B58EB00A71890 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -132,17 +237,6 @@
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 1;
-		};
-		4FFF5D301D899F0D008ED4F5 /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				4FFF5D2C1D899F0D008ED4F5 /* SwiftAutomation.framework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		4FFF5D521D89B5A2008ED4F5 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
@@ -158,26 +252,24 @@
 
 /* Begin PBXFileReference section */
 		4F0E39001BA76CB600FF2A96 /* mkdoc */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = mkdoc; sourceTree = "<group>"; };
-		4F0E391F1BA76D8400FF2A96 /* 1 introduction.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "1 introduction.md"; path = "doc-source/1 introduction.md"; sourceTree = "<group>"; };
-		4F0E39201BA76D8400FF2A96 /* 3 understanding-apple-events.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "3 understanding-apple-events.md"; path = "doc-source/3 understanding-apple-events.md"; sourceTree = "<group>"; };
-		4F0E39211BA76D8400FF2A96 /* 2 a-quick-tutorial.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "2 a-quick-tutorial.md"; path = "doc-source/2 a-quick-tutorial.md"; sourceTree = "<group>"; };
-		4F0E39221BA76D8400FF2A96 /* 4 creating-and-using-static-glues.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "4 creating-and-using-static-glues.md"; path = "doc-source/4 creating-and-using-static-glues.md"; sourceTree = "<group>"; };
-		4F0E39231BA76D8400FF2A96 /* 5 ae-type-mappings.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "5 ae-type-mappings.md"; path = "doc-source/5 ae-type-mappings.md"; sourceTree = "<group>"; };
-		4F0E39241BA76D8400FF2A96 /* 6 application-objects.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "6 application-objects.md"; path = "doc-source/6 application-objects.md"; sourceTree = "<group>"; };
-		4F0E39251BA76D8400FF2A96 /* 7 object-specifiers.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "7 object-specifiers.md"; path = "doc-source/7 object-specifiers.md"; sourceTree = "<group>"; };
-		4F0E39261BA76D8400FF2A96 /* 8 commands.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "8 commands.md"; path = "doc-source/8 commands.md"; sourceTree = "<group>"; };
-		4F0E39271BA76D8400FF2A96 /* 9 examples.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "9 examples.md"; path = "doc-source/9 examples.md"; sourceTree = "<group>"; };
-		4F0E39281BA76D8400FF2A96 /* 10 optimizing-performance.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "10 optimizing-performance.md"; path = "doc-source/10 optimizing-performance.md"; sourceTree = "<group>"; };
-		4F0E39291BA76D8400FF2A96 /* 11 low-level-apis.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "11 low-level-apis.md"; path = "doc-source/11 low-level-apis.md"; sourceTree = "<group>"; };
-		4F0E392A1BA76D8400FF2A96 /* 12 notes.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "12 notes.md"; path = "doc-source/12 notes.md"; sourceTree = "<group>"; };
+		4F0E391F1BA76D8400FF2A96 /* 1 welcome.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "1 welcome.md"; path = "doc-source/1 welcome.md"; sourceTree = "<group>"; };
+		4F0E39201BA76D8400FF2A96 /* 4 understanding-apple-events.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "4 understanding-apple-events.md"; path = "doc-source/4 understanding-apple-events.md"; sourceTree = "<group>"; };
+		4F0E39211BA76D8400FF2A96 /* 3 tutorial-introduction.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "3 tutorial-introduction.md"; path = "doc-source/3 tutorial-introduction.md"; sourceTree = "<group>"; };
+		4F0E39221BA76D8400FF2A96 /* 5 creating-and-using-static-glues.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "5 creating-and-using-static-glues.md"; path = "doc-source/5 creating-and-using-static-glues.md"; sourceTree = "<group>"; };
+		4F0E39231BA76D8400FF2A96 /* 6 type-mappings.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "6 type-mappings.md"; path = "doc-source/6 type-mappings.md"; sourceTree = "<group>"; };
+		4F0E39241BA76D8400FF2A96 /* 7 application-objects.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "7 application-objects.md"; path = "doc-source/7 application-objects.md"; sourceTree = "<group>"; };
+		4F0E39251BA76D8400FF2A96 /* 8 object-specifiers.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "8 object-specifiers.md"; path = "doc-source/8 object-specifiers.md"; sourceTree = "<group>"; };
+		4F0E39261BA76D8400FF2A96 /* 9 commands.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "9 commands.md"; path = "doc-source/9 commands.md"; sourceTree = "<group>"; };
+		4F0E39271BA76D8400FF2A96 /* 10 examples.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "10 examples.md"; path = "doc-source/10 examples.md"; sourceTree = "<group>"; };
+		4F0E39281BA76D8400FF2A96 /* 12 optimizing-performance.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "12 optimizing-performance.md"; path = "doc-source/12 optimizing-performance.md"; sourceTree = "<group>"; };
+		4F0E39291BA76D8400FF2A96 /* 13 low-level-apis.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "13 low-level-apis.md"; path = "doc-source/13 low-level-apis.md"; sourceTree = "<group>"; };
+		4F0E392A1BA76D8400FF2A96 /* 14 notes.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "14 notes.md"; path = "doc-source/14 notes.md"; sourceTree = "<group>"; };
 		4F0E392B1BA76D8400FF2A96 /* application_architecture.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = application_architecture.gif; path = "doc-source/application_architecture.gif"; sourceTree = "<group>"; };
 		4F0E392C1BA76D8400FF2A96 /* application_architecture2.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = application_architecture2.gif; path = "doc-source/application_architecture2.gif"; sourceTree = "<group>"; };
 		4F0E392D1BA76D8400FF2A96 /* client_app_to_itunes_event.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = client_app_to_itunes_event.gif; path = "doc-source/client_app_to_itunes_event.gif"; sourceTree = "<group>"; };
 		4F0E392E1BA76D8400FF2A96 /* finder_to_textedit_event.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = finder_to_textedit_event.gif; path = "doc-source/finder_to_textedit_event.gif"; sourceTree = "<group>"; };
 		4F0E392F1BA76D8400FF2A96 /* full.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; name = full.css; path = "doc-source/full.css"; sourceTree = "<group>"; };
 		4F0E39301BA76D8400FF2A96 /* relationships_example.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = relationships_example.gif; path = "doc-source/relationships_example.gif"; sourceTree = "<group>"; };
-		4F0E39321BA864A400FF2A96 /* a-quick-tutorial.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = "a-quick-tutorial.html"; sourceTree = "<group>"; };
-		4F0E39331BA864A400FF2A96 /* ae-type-mappings.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = "ae-type-mappings.html"; sourceTree = "<group>"; };
 		4F0E39341BA864A400FF2A96 /* application-objects.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = "application-objects.html"; sourceTree = "<group>"; };
 		4F0E39351BA864A400FF2A96 /* application_architecture.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = application_architecture.gif; sourceTree = "<group>"; };
 		4F0E39361BA864A400FF2A96 /* application_architecture2.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = application_architecture2.gif; sourceTree = "<group>"; };
@@ -188,7 +280,6 @@
 		4F0E393B1BA864A400FF2A96 /* finder_to_textedit_event.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = finder_to_textedit_event.gif; sourceTree = "<group>"; };
 		4F0E393C1BA864A400FF2A96 /* full.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = full.css; sourceTree = "<group>"; };
 		4F0E393D1BA864A400FF2A96 /* index.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = index.html; sourceTree = "<group>"; };
-		4F0E393E1BA864A400FF2A96 /* introduction.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = introduction.html; sourceTree = "<group>"; };
 		4F0E393F1BA864A400FF2A96 /* low-level-apis.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = "low-level-apis.html"; sourceTree = "<group>"; };
 		4F0E39401BA864A400FF2A96 /* notes.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = notes.html; sourceTree = "<group>"; };
 		4F0E39411BA864A400FF2A96 /* object-specifiers.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = "object-specifiers.html"; sourceTree = "<group>"; };
@@ -206,20 +297,80 @@
 		4F0E39671BAA98A900FF2A96 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		4F0E396D1BAA9BA700FF2A96 /* StaticGlueBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StaticGlueBuilder.swift; sourceTree = "<group>"; };
 		4F0E39951BADD58500FF2A96 /* AppleEventFormatter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppleEventFormatter.swift; sourceTree = "<group>"; };
-		4F0E399C1BAF7A7400FF2A96 /* AppleScriptToSwift.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AppleScriptToSwift.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		4F0E39A01BAF7A7400FF2A96 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		4F0E39A31BAF7A7400FF2A96 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
-		4F0E39A51BAF7A7400FF2A96 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		4F0E39C91BB008A400FF2A96 /* AppleScriptToSwift-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "AppleScriptToSwift-Bridging-Header.h"; sourceTree = "<group>"; };
-		4F0E39CA1BB008A400FF2A96 /* SAELanguageInstance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SAELanguageInstance.h; sourceTree = "<group>"; };
-		4F0E39CB1BB008A400FF2A96 /* SAELanguageInstance.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SAELanguageInstance.m; sourceTree = "<group>"; };
-		4F0E39CD1BB008B400FF2A96 /* SAEEventSniffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SAEEventSniffer.h; sourceTree = "<group>"; };
-		4F0E39CE1BB008B400FF2A96 /* SAEEventSniffer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SAEEventSniffer.m; sourceTree = "<group>"; };
-		4F0E39D01BB00B3300FF2A96 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
-		4F0E39D11BB00B3300FF2A96 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		4F0E39D31BB0342600FF2A96 /* SAEFormatter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SAEFormatter.swift; sourceTree = "<group>"; };
-		4F0E39D51BB0504D00FF2A96 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		4F0FD40A1DE8D46800F306D3 /* 2 installing-swiftautomation.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = "2 installing-swiftautomation.md"; path = "doc-source/2 installing-swiftautomation.md"; sourceTree = "<group>"; };
+		4F0FD46F1DF5C77E00F306D3 /* installing-swiftautomation.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = "installing-swiftautomation.html"; sourceTree = "<group>"; };
+		4F1A57F01D9AAF5200ACFA51 /* welcome.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = welcome.html; sourceTree = "<group>"; };
+		4F1A57F11D9AAF5C00ACFA51 /* tutorial-introduction.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = "tutorial-introduction.html"; sourceTree = "<group>"; };
+		4F1A57F21D9AAF5C00ACFA51 /* type-mappings.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = "type-mappings.html"; sourceTree = "<group>"; };
+		4F1A57FA1D9E81C300ACFA51 /* MacOSGlues.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = MacOSGlues.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		4F1ABDD71E0752DA008BA807 /* SystemInformationGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = SystemInformationGlue.swift.sdef; sourceTree = "<group>"; };
+		4F1ABDD81E0752DA008BA807 /* TerminalGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TerminalGlue.swift; sourceTree = "<group>"; };
+		4F1ABDD91E0752DA008BA807 /* TerminalGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = TerminalGlue.swift.sdef; sourceTree = "<group>"; };
+		4F1ABDDA1E0752DA008BA807 /* SystemInformationGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SystemInformationGlue.swift; sourceTree = "<group>"; };
+		4F1ABDDB1E0752DA008BA807 /* ScriptEditorGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScriptEditorGlue.swift; sourceTree = "<group>"; };
+		4F1ABDDC1E0752DA008BA807 /* ScriptEditorGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = ScriptEditorGlue.swift.sdef; sourceTree = "<group>"; };
+		4F1ABDDD1E0752DA008BA807 /* BluetoothFileExchangeGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BluetoothFileExchangeGlue.swift; sourceTree = "<group>"; };
+		4F1ABDDE1E0752DA008BA807 /* BluetoothFileExchangeGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = BluetoothFileExchangeGlue.swift.sdef; sourceTree = "<group>"; };
+		4F1ABDDF1E0752DA008BA807 /* GrabGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GrabGlue.swift; sourceTree = "<group>"; };
+		4F1ABDE01E0752DA008BA807 /* GrabGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = GrabGlue.swift.sdef; sourceTree = "<group>"; };
+		4F1ABDE11E0752DA008BA807 /* ITunesGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ITunesGlue.swift; sourceTree = "<group>"; };
+		4F1ABDE21E0752DA008BA807 /* ITunesGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = ITunesGlue.swift.sdef; sourceTree = "<group>"; };
+		4F1ABDE31E0752DA008BA807 /* TextEditGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextEditGlue.swift; sourceTree = "<group>"; };
+		4F1ABDE41E0752DA008BA807 /* TextEditGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = TextEditGlue.swift.sdef; sourceTree = "<group>"; };
+		4F1ABDE51E0752DA008BA807 /* XcodeGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XcodeGlue.swift; sourceTree = "<group>"; };
+		4F1ABDE61E0752DA008BA807 /* XcodeGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = XcodeGlue.swift.sdef; sourceTree = "<group>"; };
+		4F1ABDE71E0752DA008BA807 /* MessagesGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessagesGlue.swift; sourceTree = "<group>"; };
+		4F1ABDE81E0752DA008BA807 /* MessagesGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = MessagesGlue.swift.sdef; sourceTree = "<group>"; };
+		4F1ABDE91E0752DA008BA807 /* NotesGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotesGlue.swift; sourceTree = "<group>"; };
+		4F1ABDEA1E0752DA008BA807 /* NotesGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = NotesGlue.swift.sdef; sourceTree = "<group>"; };
+		4F1ABDEB1E0752DA008BA807 /* PhotosGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotosGlue.swift; sourceTree = "<group>"; };
+		4F1ABDEC1E0752DA008BA807 /* PhotosGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = PhotosGlue.swift.sdef; sourceTree = "<group>"; };
+		4F1ABDED1E0752DA008BA807 /* QuickTimePlayerGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QuickTimePlayerGlue.swift; sourceTree = "<group>"; };
+		4F1ABDEE1E0752DA008BA807 /* QuickTimePlayerGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = QuickTimePlayerGlue.swift.sdef; sourceTree = "<group>"; };
+		4F1ABDEF1E0752DA008BA807 /* RemindersGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemindersGlue.swift; sourceTree = "<group>"; };
+		4F1ABDF01E0752DA008BA807 /* RemindersGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = RemindersGlue.swift.sdef; sourceTree = "<group>"; };
+		4F1ABDF11E0752DA008BA807 /* SafariGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SafariGlue.swift; sourceTree = "<group>"; };
+		4F1ABDF21E0752DA008BA807 /* SafariGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = SafariGlue.swift.sdef; sourceTree = "<group>"; };
+		4F1ABDF31E0752DA008BA807 /* SystemPreferencesGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SystemPreferencesGlue.swift; sourceTree = "<group>"; };
+		4F1ABDF41E0752DA008BA807 /* SystemPreferencesGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = SystemPreferencesGlue.swift.sdef; sourceTree = "<group>"; };
+		4F1ABDF51E0752DA008BA807 /* AutomatorGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = AutomatorGlue.swift.sdef; sourceTree = "<group>"; };
+		4F1ABDF61E0752DA008BA807 /* CalendarGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CalendarGlue.swift; sourceTree = "<group>"; };
+		4F1ABDF71E0752DA008BA807 /* CalendarGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = CalendarGlue.swift.sdef; sourceTree = "<group>"; };
+		4F1ABDF81E0752DA008BA807 /* ContactsGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactsGlue.swift; sourceTree = "<group>"; };
+		4F1ABDF91E0752DA008BA807 /* ContactsGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = ContactsGlue.swift.sdef; sourceTree = "<group>"; };
+		4F1ABDFA1E0752DA008BA807 /* DVDPlayerGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DVDPlayerGlue.swift; sourceTree = "<group>"; };
+		4F1ABDFB1E0752DA008BA807 /* DVDPlayerGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = DVDPlayerGlue.swift.sdef; sourceTree = "<group>"; };
+		4F1ABDFC1E0752DA008BA807 /* FontBookGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FontBookGlue.swift; sourceTree = "<group>"; };
+		4F1ABDFD1E0752DA008BA807 /* FontBookGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = FontBookGlue.swift.sdef; sourceTree = "<group>"; };
+		4F1ABDFE1E0752DA008BA807 /* GarageBandGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GarageBandGlue.swift; sourceTree = "<group>"; };
+		4F1ABDFF1E0752DA008BA807 /* GarageBandGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = GarageBandGlue.swift.sdef; sourceTree = "<group>"; };
+		4F1ABE001E0752DA008BA807 /* MailGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MailGlue.swift; sourceTree = "<group>"; };
+		4F1ABE011E0752DA008BA807 /* MailGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = MailGlue.swift.sdef; sourceTree = "<group>"; };
+		4F1ABE021E0752DA008BA807 /* AutomatorGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AutomatorGlue.swift; sourceTree = "<group>"; };
+		4F1ABE031E0752DA008BA807 /* FinderGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FinderGlue.swift; sourceTree = "<group>"; };
+		4F1ABE041E0752DA008BA807 /* SystemEventsGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SystemEventsGlue.swift; sourceTree = "<group>"; };
+		4F1ABE051E0752DA008BA807 /* SystemEventsGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = SystemEventsGlue.swift.sdef; sourceTree = "<group>"; };
+		4F1ABE061E0752DA008BA807 /* FinderGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = FinderGlue.swift.sdef; sourceTree = "<group>"; };
+		4F1ABE071E0752DA008BA807 /* MacOSGlues.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MacOSGlues.h; sourceTree = "<group>"; };
+		4F1ABE081E0752DA008BA807 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		4F1ABE3B1E075464008BA807 /* VoiceOverGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VoiceOverGlue.swift; sourceTree = "<group>"; };
+		4F1ABE3C1E075464008BA807 /* VoiceOverGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = VoiceOverGlue.swift.sdef; sourceTree = "<group>"; };
+		4F1ABE3D1E075464008BA807 /* HelpViewerGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HelpViewerGlue.swift; sourceTree = "<group>"; };
+		4F1ABE3E1E075464008BA807 /* HelpViewerGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = HelpViewerGlue.swift.sdef; sourceTree = "<group>"; };
+		4F1ABE3F1E075464008BA807 /* ImageEventsGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageEventsGlue.swift; sourceTree = "<group>"; };
+		4F1ABE401E075464008BA807 /* ImageEventsGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = ImageEventsGlue.swift.sdef; sourceTree = "<group>"; };
+		4F1ABE411E075464008BA807 /* AppleScriptUtilityGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppleScriptUtilityGlue.swift; sourceTree = "<group>"; };
+		4F1ABE421E075464008BA807 /* AppleScriptUtilityGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = AppleScriptUtilityGlue.swift.sdef; sourceTree = "<group>"; };
+		4F1ABE4B1E075B02008BA807 /* NumbersGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NumbersGlue.swift; sourceTree = "<group>"; };
+		4F1ABE4C1E075B02008BA807 /* NumbersGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = NumbersGlue.swift.sdef; sourceTree = "<group>"; };
+		4F1ABE4D1E075B02008BA807 /* PagesGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PagesGlue.swift; sourceTree = "<group>"; };
+		4F1ABE4E1E075B02008BA807 /* PagesGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = PagesGlue.swift.sdef; sourceTree = "<group>"; };
+		4F1ABE4F1E075B02008BA807 /* KeynoteGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeynoteGlue.swift; sourceTree = "<group>"; };
+		4F1ABE501E075B02008BA807 /* KeynoteGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = KeynoteGlue.swift.sdef; sourceTree = "<group>"; };
+		4F1ABE591E081D98008BA807 /* DatabaseEventsGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatabaseEventsGlue.swift; sourceTree = "<group>"; };
+		4F1ABE5A1E081D98008BA807 /* DatabaseEventsGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = DatabaseEventsGlue.swift.sdef; sourceTree = "<group>"; };
 		4F1D12401BA3042600875F74 /* SpecifierExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpecifierExtensions.swift; sourceTree = "<group>"; };
+		4F21AEEF1DA6D004009C3605 /* 11 advanced-type-support.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "11 advanced-type-support.md"; path = "doc-source/11 advanced-type-support.md"; sourceTree = "<group>"; };
 		4F2645AB1BA4F27700256402 /* AEApplicationGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AEApplicationGlue.swift; sourceTree = "<group>"; };
 		4F4C1A0D1D910BDE004F9083 /* TypeExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TypeExtensions.swift; sourceTree = "<group>"; };
 		4F53812A1BA62541001F24A9 /* README */ = {isa = PBXFileReference; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
@@ -243,8 +394,7 @@
 		4FFF5D241D899F0D008ED4F5 /* SwiftAutomation.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftAutomation.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4FFF5D261D899F0D008ED4F5 /* SwiftAutomation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwiftAutomation.h; sourceTree = "<group>"; };
 		4FFF5D271D899F0D008ED4F5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		4FFF5D491D89A26C008ED4F5 /* SwiftAEGlueTemplate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftAEGlueTemplate.swift; sourceTree = "<group>"; };
-		4FFF5D631D8A8836008ED4F5 /* MyPlayground.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = MyPlayground.playground; sourceTree = "<group>"; };
+		4FFF5D491D89A26C008ED4F5 /* SwiftGlueTemplate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftGlueTemplate.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -256,14 +406,12 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		4F0E39991BAF7A7400FF2A96 /* Frameworks */ = {
+		4F1A57F61D9E81C300ACFA51 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4F0E39BE1BAF7B7C00FF2A96 /* AppKit.framework in Frameworks */,
-				4F0E39BD1BAF7B7600FF2A96 /* Foundation.framework in Frameworks */,
-				4F0E39A91BAF7ADC00FF2A96 /* OSAKit.framework in Frameworks */,
-				4FFF5D2B1D899F0D008ED4F5 /* SwiftAutomation.framework in Frameworks */,
+				4F1A58141D9EA09B00ACFA51 /* SwiftAutomation.framework in Frameworks */,
+				4F1A58151D9EA09B00ACFA51 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -290,24 +438,26 @@
 		4F0E38FF1BA76C8300FF2A96 /* doc-source */ = {
 			isa = PBXGroup;
 			children = (
-				4F0E391F1BA76D8400FF2A96 /* 1 introduction.md */,
-				4F0E39211BA76D8400FF2A96 /* 2 a-quick-tutorial.md */,
-				4F0E39201BA76D8400FF2A96 /* 3 understanding-apple-events.md */,
-				4F0E39221BA76D8400FF2A96 /* 4 creating-and-using-static-glues.md */,
-				4F0E39231BA76D8400FF2A96 /* 5 ae-type-mappings.md */,
-				4F0E39241BA76D8400FF2A96 /* 6 application-objects.md */,
-				4F0E39251BA76D8400FF2A96 /* 7 object-specifiers.md */,
-				4F0E39261BA76D8400FF2A96 /* 8 commands.md */,
-				4F0E39271BA76D8400FF2A96 /* 9 examples.md */,
-				4F0E39281BA76D8400FF2A96 /* 10 optimizing-performance.md */,
-				4F0E39291BA76D8400FF2A96 /* 11 low-level-apis.md */,
-				4F0E392A1BA76D8400FF2A96 /* 12 notes.md */,
+				4F0E391F1BA76D8400FF2A96 /* 1 welcome.md */,
+				4F0FD40A1DE8D46800F306D3 /* 2 installing-swiftautomation.md */,
+				4F0E39211BA76D8400FF2A96 /* 3 tutorial-introduction.md */,
+				4F0E39201BA76D8400FF2A96 /* 4 understanding-apple-events.md */,
+				4F0E39221BA76D8400FF2A96 /* 5 creating-and-using-static-glues.md */,
+				4F0E39231BA76D8400FF2A96 /* 6 type-mappings.md */,
+				4F0E39241BA76D8400FF2A96 /* 7 application-objects.md */,
+				4F0E39251BA76D8400FF2A96 /* 8 object-specifiers.md */,
+				4F0E39261BA76D8400FF2A96 /* 9 commands.md */,
+				4F0E39271BA76D8400FF2A96 /* 10 examples.md */,
+				4F21AEEF1DA6D004009C3605 /* 11 advanced-type-support.md */,
+				4F0E39281BA76D8400FF2A96 /* 12 optimizing-performance.md */,
+				4F0E39291BA76D8400FF2A96 /* 13 low-level-apis.md */,
+				4F0E392A1BA76D8400FF2A96 /* 14 notes.md */,
 				4F0E392B1BA76D8400FF2A96 /* application_architecture.gif */,
 				4F0E392C1BA76D8400FF2A96 /* application_architecture2.gif */,
 				4F0E392D1BA76D8400FF2A96 /* client_app_to_itunes_event.gif */,
 				4F0E392E1BA76D8400FF2A96 /* finder_to_textedit_event.gif */,
-				4F0E392F1BA76D8400FF2A96 /* full.css */,
 				4F0E39301BA76D8400FF2A96 /* relationships_example.gif */,
+				4F0E392F1BA76D8400FF2A96 /* full.css */,
 			);
 			name = "doc-source";
 			sourceTree = "<group>";
@@ -315,25 +465,26 @@
 		4F0E39311BA864A400FF2A96 /* doc-generated */ = {
 			isa = PBXGroup;
 			children = (
-				4F0E39321BA864A400FF2A96 /* a-quick-tutorial.html */,
-				4F0E39331BA864A400FF2A96 /* ae-type-mappings.html */,
+				4F0E393D1BA864A400FF2A96 /* index.html */,
+				4F1A57F01D9AAF5200ACFA51 /* welcome.html */,
+				4F0FD46F1DF5C77E00F306D3 /* installing-swiftautomation.html */,
+				4F1A57F11D9AAF5C00ACFA51 /* tutorial-introduction.html */,
+				4F0E39441BA864A400FF2A96 /* understanding-apple-events.html */,
+				4F0E39391BA864A400FF2A96 /* creating-and-using-static-glues.html */,
+				4F1A57F21D9AAF5C00ACFA51 /* type-mappings.html */,
 				4F0E39341BA864A400FF2A96 /* application-objects.html */,
+				4F0E39411BA864A400FF2A96 /* object-specifiers.html */,
+				4F0E39381BA864A400FF2A96 /* commands.html */,
+				4F0E393A1BA864A400FF2A96 /* examples.html */,
+				4F0E39421BA864A400FF2A96 /* optimizing-performance.html */,
+				4F0E393F1BA864A400FF2A96 /* low-level-apis.html */,
+				4F0E39401BA864A400FF2A96 /* notes.html */,
 				4F0E39351BA864A400FF2A96 /* application_architecture.gif */,
 				4F0E39361BA864A400FF2A96 /* application_architecture2.gif */,
 				4F0E39371BA864A400FF2A96 /* client_app_to_itunes_event.gif */,
-				4F0E39381BA864A400FF2A96 /* commands.html */,
-				4F0E39391BA864A400FF2A96 /* creating-and-using-static-glues.html */,
-				4F0E393A1BA864A400FF2A96 /* examples.html */,
 				4F0E393B1BA864A400FF2A96 /* finder_to_textedit_event.gif */,
-				4F0E393C1BA864A400FF2A96 /* full.css */,
-				4F0E393D1BA864A400FF2A96 /* index.html */,
-				4F0E393E1BA864A400FF2A96 /* introduction.html */,
-				4F0E393F1BA864A400FF2A96 /* low-level-apis.html */,
-				4F0E39401BA864A400FF2A96 /* notes.html */,
-				4F0E39411BA864A400FF2A96 /* object-specifiers.html */,
-				4F0E39421BA864A400FF2A96 /* optimizing-performance.html */,
 				4F0E39431BA864A400FF2A96 /* relationships_example.gif */,
-				4F0E39441BA864A400FF2A96 /* understanding-apple-events.html */,
+				4F0E393C1BA864A400FF2A96 /* full.css */,
 			);
 			path = "doc-generated";
 			sourceTree = "<group>";
@@ -348,7 +499,7 @@
 				4F0E39481BA8717D00FF2A96 /* SDEFParser.swift */,
 				4F0E39501BA9A7EA00FF2A96 /* GlueTable.swift */,
 				4F0E396D1BAA9BA700FF2A96 /* StaticGlueBuilder.swift */,
-				4FFF5D491D89A26C008ED4F5 /* SwiftAEGlueTemplate.swift */,
+				4FFF5D491D89A26C008ED4F5 /* SwiftGlueTemplate.swift */,
 				4F0E39951BADD58500FF2A96 /* AppleEventFormatter.swift */,
 			);
 			name = "terminology support";
@@ -378,23 +529,77 @@
 			name = bridge;
 			sourceTree = "<group>";
 		};
-		4F0E399D1BAF7A7400FF2A96 /* AppleScriptToSwift */ = {
+		4F1A57FB1D9E81C300ACFA51 /* MacOSGlues */ = {
 			isa = PBXGroup;
 			children = (
-				4F0E39D51BB0504D00FF2A96 /* main.m */,
-				4F0E39D01BB00B3300FF2A96 /* AppDelegate.h */,
-				4F0E39D11BB00B3300FF2A96 /* AppDelegate.m */,
-				4F0E39CA1BB008A400FF2A96 /* SAELanguageInstance.h */,
-				4F0E39CB1BB008A400FF2A96 /* SAELanguageInstance.m */,
-				4F0E39CD1BB008B400FF2A96 /* SAEEventSniffer.h */,
-				4F0E39CE1BB008B400FF2A96 /* SAEEventSniffer.m */,
-				4F0E39D31BB0342600FF2A96 /* SAEFormatter.swift */,
-				4F0E39A01BAF7A7400FF2A96 /* Assets.xcassets */,
-				4F0E39A21BAF7A7400FF2A96 /* MainMenu.xib */,
-				4F0E39A51BAF7A7400FF2A96 /* Info.plist */,
-				4F0E39C91BB008A400FF2A96 /* AppleScriptToSwift-Bridging-Header.h */,
+				4F1ABE071E0752DA008BA807 /* MacOSGlues.h */,
+				4F1ABE081E0752DA008BA807 /* Info.plist */,
+				4F1ABE421E075464008BA807 /* AppleScriptUtilityGlue.swift.sdef */,
+				4F1ABDF51E0752DA008BA807 /* AutomatorGlue.swift.sdef */,
+				4F1ABDDE1E0752DA008BA807 /* BluetoothFileExchangeGlue.swift.sdef */,
+				4F1ABDF71E0752DA008BA807 /* CalendarGlue.swift.sdef */,
+				4F1ABDF91E0752DA008BA807 /* ContactsGlue.swift.sdef */,
+				4F1ABE5A1E081D98008BA807 /* DatabaseEventsGlue.swift.sdef */,
+				4F1ABDFB1E0752DA008BA807 /* DVDPlayerGlue.swift.sdef */,
+				4F1ABE061E0752DA008BA807 /* FinderGlue.swift.sdef */,
+				4F1ABDFD1E0752DA008BA807 /* FontBookGlue.swift.sdef */,
+				4F1ABDFF1E0752DA008BA807 /* GarageBandGlue.swift.sdef */,
+				4F1ABDE01E0752DA008BA807 /* GrabGlue.swift.sdef */,
+				4F1ABE3E1E075464008BA807 /* HelpViewerGlue.swift.sdef */,
+				4F1ABE401E075464008BA807 /* ImageEventsGlue.swift.sdef */,
+				4F1ABDE21E0752DA008BA807 /* ITunesGlue.swift.sdef */,
+				4F1ABE501E075B02008BA807 /* KeynoteGlue.swift.sdef */,
+				4F1ABE011E0752DA008BA807 /* MailGlue.swift.sdef */,
+				4F1ABDE81E0752DA008BA807 /* MessagesGlue.swift.sdef */,
+				4F1ABDEA1E0752DA008BA807 /* NotesGlue.swift.sdef */,
+				4F1ABE4C1E075B02008BA807 /* NumbersGlue.swift.sdef */,
+				4F1ABE4E1E075B02008BA807 /* PagesGlue.swift.sdef */,
+				4F1ABDEC1E0752DA008BA807 /* PhotosGlue.swift.sdef */,
+				4F1ABDEE1E0752DA008BA807 /* QuickTimePlayerGlue.swift.sdef */,
+				4F1ABDF01E0752DA008BA807 /* RemindersGlue.swift.sdef */,
+				4F1ABDF21E0752DA008BA807 /* SafariGlue.swift.sdef */,
+				4F1ABDDC1E0752DA008BA807 /* ScriptEditorGlue.swift.sdef */,
+				4F1ABE051E0752DA008BA807 /* SystemEventsGlue.swift.sdef */,
+				4F1ABDD71E0752DA008BA807 /* SystemInformationGlue.swift.sdef */,
+				4F1ABDF41E0752DA008BA807 /* SystemPreferencesGlue.swift.sdef */,
+				4F1ABDD91E0752DA008BA807 /* TerminalGlue.swift.sdef */,
+				4F1ABDE41E0752DA008BA807 /* TextEditGlue.swift.sdef */,
+				4F1ABE3C1E075464008BA807 /* VoiceOverGlue.swift.sdef */,
+				4F1ABDE61E0752DA008BA807 /* XcodeGlue.swift.sdef */,
+				4F1ABE411E075464008BA807 /* AppleScriptUtilityGlue.swift */,
+				4F1ABE021E0752DA008BA807 /* AutomatorGlue.swift */,
+				4F1ABDDD1E0752DA008BA807 /* BluetoothFileExchangeGlue.swift */,
+				4F1ABDF61E0752DA008BA807 /* CalendarGlue.swift */,
+				4F1ABDF81E0752DA008BA807 /* ContactsGlue.swift */,
+				4F1ABE591E081D98008BA807 /* DatabaseEventsGlue.swift */,
+				4F1ABDFA1E0752DA008BA807 /* DVDPlayerGlue.swift */,
+				4F1ABE031E0752DA008BA807 /* FinderGlue.swift */,
+				4F1ABDFC1E0752DA008BA807 /* FontBookGlue.swift */,
+				4F1ABDFE1E0752DA008BA807 /* GarageBandGlue.swift */,
+				4F1ABDDF1E0752DA008BA807 /* GrabGlue.swift */,
+				4F1ABE3D1E075464008BA807 /* HelpViewerGlue.swift */,
+				4F1ABE3F1E075464008BA807 /* ImageEventsGlue.swift */,
+				4F1ABDE11E0752DA008BA807 /* ITunesGlue.swift */,
+				4F1ABE4F1E075B02008BA807 /* KeynoteGlue.swift */,
+				4F1ABE001E0752DA008BA807 /* MailGlue.swift */,
+				4F1ABDE71E0752DA008BA807 /* MessagesGlue.swift */,
+				4F1ABDE91E0752DA008BA807 /* NotesGlue.swift */,
+				4F1ABE4B1E075B02008BA807 /* NumbersGlue.swift */,
+				4F1ABE4D1E075B02008BA807 /* PagesGlue.swift */,
+				4F1ABDEB1E0752DA008BA807 /* PhotosGlue.swift */,
+				4F1ABDED1E0752DA008BA807 /* QuickTimePlayerGlue.swift */,
+				4F1ABDEF1E0752DA008BA807 /* RemindersGlue.swift */,
+				4F1ABDF11E0752DA008BA807 /* SafariGlue.swift */,
+				4F1ABDDB1E0752DA008BA807 /* ScriptEditorGlue.swift */,
+				4F1ABE041E0752DA008BA807 /* SystemEventsGlue.swift */,
+				4F1ABDDA1E0752DA008BA807 /* SystemInformationGlue.swift */,
+				4F1ABDF31E0752DA008BA807 /* SystemPreferencesGlue.swift */,
+				4F1ABDD81E0752DA008BA807 /* TerminalGlue.swift */,
+				4F1ABDE31E0752DA008BA807 /* TextEditGlue.swift */,
+				4F1ABE3B1E075464008BA807 /* VoiceOverGlue.swift */,
+				4F1ABDE51E0752DA008BA807 /* XcodeGlue.swift */,
 			);
-			path = AppleScriptToSwift;
+			path = MacOSGlues;
 			sourceTree = "<group>";
 		};
 		4F2645A31BA37C2B00256402 /* Frameworks */ = {
@@ -421,14 +626,13 @@
 			children = (
 				4F53812A1BA62541001F24A9 /* README */,
 				4FEFCF1C1B93A31E0013FFC8 /* TODO.txt */,
-				4FFF5D631D8A8836008ED4F5 /* MyPlayground.playground */,
 				4F0E38FF1BA76C8300FF2A96 /* doc-source */,
 				4F0E39311BA864A400FF2A96 /* doc-generated */,
 				4F2645A61BA3F58F00256402 /* bin */,
 				4F63C4261B7CF06E000D74EE /* SwiftAutomation */,
 				4F0E39661BAA98A900FF2A96 /* aeglue */,
-				4F0E399D1BAF7A7400FF2A96 /* AppleScriptToSwift */,
 				4F63C4321B7CF13E000D74EE /* test */,
+				4F1A57FB1D9E81C300ACFA51 /* MacOSGlues */,
 				4F2645A31BA37C2B00256402 /* Frameworks */,
 				4F63C4251B7CF06E000D74EE /* Products */,
 			);
@@ -439,8 +643,8 @@
 			children = (
 				4FFF5D241D899F0D008ED4F5 /* SwiftAutomation.framework */,
 				4F0E39651BAA98A900FF2A96 /* aeglue */,
-				4F0E399C1BAF7A7400FF2A96 /* AppleScriptToSwift.app */,
 				4F9AFB361D5B58EB00A71890 /* test */,
+				4F1A57FA1D9E81C300ACFA51 /* MacOSGlues.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -473,6 +677,14 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
+		4F1A57F71D9E81C300ACFA51 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4F1ABE391E0752DA008BA807 /* MacOSGlues.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		4FFF5D211D899F0D008ED4F5 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -501,24 +713,24 @@
 			productReference = 4F0E39651BAA98A900FF2A96 /* aeglue */;
 			productType = "com.apple.product-type.tool";
 		};
-		4F0E399B1BAF7A7400FF2A96 /* AppleScriptToSwift */ = {
+		4F1A57F91D9E81C300ACFA51 /* MacOSGlues */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 4F0E39A61BAF7A7400FF2A96 /* Build configuration list for PBXNativeTarget "AppleScriptToSwift" */;
+			buildConfigurationList = 4F1A57FF1D9E81C300ACFA51 /* Build configuration list for PBXNativeTarget "MacOSGlues" */;
 			buildPhases = (
-				4F0E39981BAF7A7400FF2A96 /* Sources */,
-				4F0E39991BAF7A7400FF2A96 /* Frameworks */,
-				4F0E399A1BAF7A7400FF2A96 /* Resources */,
-				4FFF5D301D899F0D008ED4F5 /* Embed Frameworks */,
+				4F1A57F51D9E81C300ACFA51 /* Sources */,
+				4F1A57F61D9E81C300ACFA51 /* Frameworks */,
+				4F1A57F71D9E81C300ACFA51 /* Headers */,
+				4F5CBDAF1D9EA3A000F58D1B /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				4FFF5D2A1D899F0D008ED4F5 /* PBXTargetDependency */,
+				4F1A580F1D9E9FF700ACFA51 /* PBXTargetDependency */,
 			);
-			name = AppleScriptToSwift;
-			productName = AppleScriptToSwift;
-			productReference = 4F0E399C1BAF7A7400FF2A96 /* AppleScriptToSwift.app */;
-			productType = "com.apple.product-type.application";
+			name = MacOSGlues;
+			productName = MacOSGlues;
+			productReference = 4F1A57FA1D9E81C300ACFA51 /* MacOSGlues.framework */;
+			productType = "com.apple.product-type.framework";
 		};
 		4F9AFB351D5B58EB00A71890 /* test */ = {
 			isa = PBXNativeTarget;
@@ -545,8 +757,8 @@
 				4FFF5D1F1D899F0D008ED4F5 /* Sources */,
 				4FFF5D201D899F0D008ED4F5 /* Frameworks */,
 				4FFF5D211D899F0D008ED4F5 /* Headers */,
-				4FFF5D221D899F0D008ED4F5 /* Resources */,
 				4FFF5D521D89B5A2008ED4F5 /* CopyFiles */,
+				4F63093C1DFC19940089ADDB /* Copy Files */,
 			);
 			buildRules = (
 			);
@@ -565,17 +777,16 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0800;
-				LastUpgradeCheck = 0800;
+				LastUpgradeCheck = 0810;
 				TargetAttributes = {
 					4F0E39641BAA98A900FF2A96 = {
 						CreatedOnToolsVersion = 7.0;
 						LastSwiftMigration = 0800;
 					};
-					4F0E399B1BAF7A7400FF2A96 = {
-						CreatedOnToolsVersion = 7.0;
-						DevelopmentTeam = 27XZ82KJ77;
-						LastSwiftMigration = 0800;
-						ProvisioningStyle = Automatic;
+					4F1A57F91D9E81C300ACFA51 = {
+						CreatedOnToolsVersion = 8.0;
+						LastSwiftMigration = 0820;
+						ProvisioningStyle = Manual;
 					};
 					4F9AFB351D5B58EB00A71890 = {
 						CreatedOnToolsVersion = 8.0;
@@ -583,8 +794,7 @@
 					};
 					4FFF5D231D899F0D008ED4F5 = {
 						CreatedOnToolsVersion = 8.0;
-						DevelopmentTeam = 27XZ82KJ77;
-						ProvisioningStyle = Automatic;
+						ProvisioningStyle = Manual;
 					};
 				};
 			};
@@ -603,26 +813,49 @@
 			targets = (
 				4FFF5D231D899F0D008ED4F5 /* SwiftAutomation */,
 				4F0E39641BAA98A900FF2A96 /* aeglue */,
-				4F0E399B1BAF7A7400FF2A96 /* AppleScriptToSwift */,
 				4F9AFB351D5B58EB00A71890 /* test */,
+				4F1A57F91D9E81C300ACFA51 /* MacOSGlues */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		4F0E399A1BAF7A7400FF2A96 /* Resources */ = {
+		4F5CBDAF1D9EA3A000F58D1B /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4F0E39A11BAF7A7400FF2A96 /* Assets.xcassets in Resources */,
-				4F0E39A41BAF7A7400FF2A96 /* MainMenu.xib in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		4FFF5D221D899F0D008ED4F5 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
+				4F1ABE091E0752DA008BA807 /* SystemInformationGlue.swift.sdef in Resources */,
+				4F1ABE101E0752DA008BA807 /* BluetoothFileExchangeGlue.swift.sdef in Resources */,
+				4F1ABE261E0752DA008BA807 /* SystemPreferencesGlue.swift.sdef in Resources */,
+				4F1ABE461E075464008BA807 /* HelpViewerGlue.swift.sdef in Resources */,
+				4F1ABE0E1E0752DA008BA807 /* ScriptEditorGlue.swift.sdef in Resources */,
+				4F1ABE441E075464008BA807 /* VoiceOverGlue.swift.sdef in Resources */,
+				4F1ABE331E0752DA008BA807 /* MailGlue.swift.sdef in Resources */,
+				4F1ABE161E0752DA008BA807 /* TextEditGlue.swift.sdef in Resources */,
+				4F1ABE0B1E0752DA008BA807 /* TerminalGlue.swift.sdef in Resources */,
+				4F1ABE121E0752DA008BA807 /* GrabGlue.swift.sdef in Resources */,
+				4F1ABE521E075B02008BA807 /* NumbersGlue.swift.sdef in Resources */,
+				4F1ABE141E0752DA008BA807 /* ITunesGlue.swift.sdef in Resources */,
+				4F1ABE541E075B02008BA807 /* PagesGlue.swift.sdef in Resources */,
+				4F1ABE561E075B02008BA807 /* KeynoteGlue.swift.sdef in Resources */,
+				4F1ABE241E0752DA008BA807 /* SafariGlue.swift.sdef in Resources */,
+				4F1ABE2D1E0752DA008BA807 /* DVDPlayerGlue.swift.sdef in Resources */,
+				4F1ABE1C1E0752DA008BA807 /* NotesGlue.swift.sdef in Resources */,
+				4F1ABE371E0752DA008BA807 /* SystemEventsGlue.swift.sdef in Resources */,
+				4F1ABE221E0752DA008BA807 /* RemindersGlue.swift.sdef in Resources */,
+				4F1ABE1A1E0752DA008BA807 /* MessagesGlue.swift.sdef in Resources */,
+				4F1ABE2F1E0752DA008BA807 /* FontBookGlue.swift.sdef in Resources */,
+				4F1ABE271E0752DA008BA807 /* AutomatorGlue.swift.sdef in Resources */,
+				4F1ABE291E0752DA008BA807 /* CalendarGlue.swift.sdef in Resources */,
+				4F1ABE2B1E0752DA008BA807 /* ContactsGlue.swift.sdef in Resources */,
+				4F1ABE1E1E0752DA008BA807 /* PhotosGlue.swift.sdef in Resources */,
+				4F1ABE481E075464008BA807 /* ImageEventsGlue.swift.sdef in Resources */,
+				4F1ABE181E0752DA008BA807 /* XcodeGlue.swift.sdef in Resources */,
+				4F1ABE381E0752DA008BA807 /* FinderGlue.swift.sdef in Resources */,
+				4F1ABE311E0752DA008BA807 /* GarageBandGlue.swift.sdef in Resources */,
+				4F1ABE201E0752DA008BA807 /* QuickTimePlayerGlue.swift.sdef in Resources */,
+				4F1ABE4A1E075464008BA807 /* AppleScriptUtilityGlue.swift.sdef in Resources */,
+				4F1ABE5C1E081D98008BA807 /* DatabaseEventsGlue.swift.sdef in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -649,22 +882,49 @@
 				4FB7D8811D5EA60F00F0DB36 /* SDEFParser.swift in Sources */,
 				4FB7D8821D5EA60F00F0DB36 /* GlueTable.swift in Sources */,
 				4FB7D8831D5EA60F00F0DB36 /* AppleEventFormatter.swift in Sources */,
-				4FFF5D4F1D89B552008ED4F5 /* SwiftAEGlueTemplate.swift in Sources */,
+				4FFF5D4F1D89B552008ED4F5 /* SwiftGlueTemplate.swift in Sources */,
 				4FB7D8841D5EA60F00F0DB36 /* StaticGlueBuilder.swift in Sources */,
 				4FB7D8851D5EA60F00F0DB36 /* AEApplicationGlue.swift in Sources */,
 				4F0E39681BAA98A900FF2A96 /* main.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		4F0E39981BAF7A7400FF2A96 /* Sources */ = {
+		4F1A57F51D9E81C300ACFA51 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4F0E39D61BB0504D00FF2A96 /* main.m in Sources */,
-				4F0E39D21BB00B3300FF2A96 /* AppDelegate.m in Sources */,
-				4F0E39CF1BB008B400FF2A96 /* SAEEventSniffer.m in Sources */,
-				4F0E39CC1BB008A400FF2A96 /* SAELanguageInstance.m in Sources */,
-				4F0E39D41BB0342600FF2A96 /* SAEFormatter.swift in Sources */,
+				4F1ABE361E0752DA008BA807 /* SystemEventsGlue.swift in Sources */,
+				4F1ABE301E0752DA008BA807 /* GarageBandGlue.swift in Sources */,
+				4F1ABE0F1E0752DA008BA807 /* BluetoothFileExchangeGlue.swift in Sources */,
+				4F1ABE191E0752DA008BA807 /* MessagesGlue.swift in Sources */,
+				4F1ABE111E0752DA008BA807 /* GrabGlue.swift in Sources */,
+				4F1ABE471E075464008BA807 /* ImageEventsGlue.swift in Sources */,
+				4F1ABE171E0752DA008BA807 /* XcodeGlue.swift in Sources */,
+				4F1ABE281E0752DA008BA807 /* CalendarGlue.swift in Sources */,
+				4F1ABE131E0752DA008BA807 /* ITunesGlue.swift in Sources */,
+				4F1ABE351E0752DA008BA807 /* FinderGlue.swift in Sources */,
+				4F1ABE5B1E081D98008BA807 /* DatabaseEventsGlue.swift in Sources */,
+				4F1ABE0C1E0752DA008BA807 /* SystemInformationGlue.swift in Sources */,
+				4F1ABE551E075B02008BA807 /* KeynoteGlue.swift in Sources */,
+				4F1ABE1F1E0752DA008BA807 /* QuickTimePlayerGlue.swift in Sources */,
+				4F1ABE451E075464008BA807 /* HelpViewerGlue.swift in Sources */,
+				4F1ABE2C1E0752DA008BA807 /* DVDPlayerGlue.swift in Sources */,
+				4F1ABE1B1E0752DA008BA807 /* NotesGlue.swift in Sources */,
+				4F1ABE431E075464008BA807 /* VoiceOverGlue.swift in Sources */,
+				4F1ABE2E1E0752DA008BA807 /* FontBookGlue.swift in Sources */,
+				4F1ABE321E0752DA008BA807 /* MailGlue.swift in Sources */,
+				4F1ABE211E0752DA008BA807 /* RemindersGlue.swift in Sources */,
+				4F1ABE2A1E0752DA008BA807 /* ContactsGlue.swift in Sources */,
+				4F1ABE251E0752DA008BA807 /* SystemPreferencesGlue.swift in Sources */,
+				4F1ABE0A1E0752DA008BA807 /* TerminalGlue.swift in Sources */,
+				4F1ABE231E0752DA008BA807 /* SafariGlue.swift in Sources */,
+				4F1ABE531E075B02008BA807 /* PagesGlue.swift in Sources */,
+				4F1ABE511E075B02008BA807 /* NumbersGlue.swift in Sources */,
+				4F1ABE491E075464008BA807 /* AppleScriptUtilityGlue.swift in Sources */,
+				4F1ABE0D1E0752DA008BA807 /* ScriptEditorGlue.swift in Sources */,
+				4F1ABE151E0752DA008BA807 /* TextEditGlue.swift in Sources */,
+				4F1ABE1D1E0752DA008BA807 /* PhotosGlue.swift in Sources */,
+				4F1ABE341E0752DA008BA807 /* AutomatorGlue.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -688,7 +948,7 @@
 				4FB7D8921D5EA61F00F0DB36 /* SDEFParser.swift in Sources */,
 				4FB7D8931D5EA61F00F0DB36 /* GlueTable.swift in Sources */,
 				4FB7D8941D5EA61F00F0DB36 /* AppleEventFormatter.swift in Sources */,
-				4FFF5D511D89B572008ED4F5 /* SwiftAEGlueTemplate.swift in Sources */,
+				4FFF5D511D89B572008ED4F5 /* SwiftGlueTemplate.swift in Sources */,
 				4FB7D8951D5EA61F00F0DB36 /* StaticGlueBuilder.swift in Sources */,
 				4FB7D8961D5EA67800F0DB36 /* AEApplicationGlue.swift in Sources */,
 				4F9AFB531D5E9B4100A71890 /* main.swift in Sources */,
@@ -719,7 +979,7 @@
 				4FFF5D3E1D899F29008ED4F5 /* SDEFParser.swift in Sources */,
 				4FFF5D3F1D899F29008ED4F5 /* GlueTable.swift in Sources */,
 				4FFF5D401D899F29008ED4F5 /* AppleEventFormatter.swift in Sources */,
-				4FFF5D4B1D89B4EF008ED4F5 /* SwiftAEGlueTemplate.swift in Sources */,
+				4FFF5D4B1D89B4EF008ED4F5 /* SwiftGlueTemplate.swift in Sources */,
 				4FFF5D411D899F29008ED4F5 /* StaticGlueBuilder.swift in Sources */,
 				4FFF5D421D899F29008ED4F5 /* AEApplicationGlue.swift in Sources */,
 			);
@@ -728,15 +988,15 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		4F1A580F1D9E9FF700ACFA51 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4FFF5D231D899F0D008ED4F5 /* SwiftAutomation */;
+			targetProxy = 4F1A580E1D9E9FF700ACFA51 /* PBXContainerItemProxy */;
+		};
 		4F4C1A251D943D52004F9083 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 4FFF5D231D899F0D008ED4F5 /* SwiftAutomation */;
 			targetProxy = 4F4C1A241D943D52004F9083 /* PBXContainerItemProxy */;
-		};
-		4FFF5D2A1D899F0D008ED4F5 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 4FFF5D231D899F0D008ED4F5 /* SwiftAutomation */;
-			targetProxy = 4FFF5D291D899F0D008ED4F5 /* PBXContainerItemProxy */;
 		};
 		4FFF5D4D1D89B4FC008ED4F5 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -744,17 +1004,6 @@
 			targetProxy = 4FFF5D4C1D89B4FC008ED4F5 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
-
-/* Begin PBXVariantGroup section */
-		4F0E39A21BAF7A7400FF2A96 /* MainMenu.xib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				4F0E39A31BAF7A7400FF2A96 /* Base */,
-			);
-			name = MainMenu.xib;
-			sourceTree = "<group>";
-		};
-/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		4F0E396A1BAA98A900FF2A96 /* Debug */ = {
@@ -774,43 +1023,64 @@
 			};
 			name = Release;
 		};
-		4F0E39A71BAF7A7400FF2A96 /* Debug */ = {
+		4F1A58001D9E81C300ACFA51 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_IDENTITY = "Mac Developer";
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_SUSPICIOUS_MOVES = YES;
+				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = 27XZ82KJ77;
-				INFOPLIST_FILE = "$(TARGET_NAME)/Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "org.bitbucket.hhas.$(TARGET_NAME)";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = "";
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_VERSION = A;
+				INFOPLIST_FILE = MacOSGlues/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				PRODUCT_BUNDLE_IDENTIFIER = org.bitbucket.hhas.MacOSGlues;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_INSTALL_OBJC_HEADER = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = "$(TARGET_NAME)/AppleScriptToSwift-Bridging-Header.h";
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 3.0;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
 			};
 			name = Debug;
 		};
-		4F0E39A81BAF7A7400FF2A96 /* Release */ = {
+		4F1A58011D9E81C300ACFA51 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_IDENTITY = "Mac Developer";
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_SUSPICIOUS_MOVES = YES;
+				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = 27XZ82KJ77;
-				INFOPLIST_FILE = "$(TARGET_NAME)/Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "org.bitbucket.hhas.$(TARGET_NAME)";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = "";
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_VERSION = A;
+				INFOPLIST_FILE = MacOSGlues/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				PRODUCT_BUNDLE_IDENTIFIER = org.bitbucket.hhas.MacOSGlues;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_INSTALL_OBJC_HEADER = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = "$(TARGET_NAME)/AppleScriptToSwift-Bridging-Header.h";
+				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 3.0;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
 			};
 			name = Release;
 		};
@@ -895,6 +1165,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
 				SWIFT_INSTALL_OBJC_HEADER = NO;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 			};
 			name = Release;
 		};
@@ -928,11 +1199,11 @@
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
-				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_IDENTITY = "";
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = 27XZ82KJ77;
+				DEVELOPMENT_TEAM = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -956,11 +1227,11 @@
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
-				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_IDENTITY = "";
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = 27XZ82KJ77;
+				DEVELOPMENT_TEAM = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -990,11 +1261,11 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		4F0E39A61BAF7A7400FF2A96 /* Build configuration list for PBXNativeTarget "AppleScriptToSwift" */ = {
+		4F1A57FF1D9E81C300ACFA51 /* Build configuration list for PBXNativeTarget "MacOSGlues" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				4F0E39A71BAF7A7400FF2A96 /* Debug */,
-				4F0E39A81BAF7A7400FF2A96 /* Release */,
+				4F1A58001D9E81C300ACFA51 /* Debug */,
+				4F1A58011D9E81C300ACFA51 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

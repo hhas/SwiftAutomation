@@ -8,25 +8,20 @@ import Foundation
 
 
 
-public class TerminologyError: SwiftAutomationError {
-    public init(_ message: String) {
-        super.init(code: errOSACorruptTerminology, message: message)
+public class TerminologyError: AutomationError {
+    public init(_ message: String, cause: Error? = nil) {
+        super.init(code: errOSACorruptTerminology, message: message, cause: cause)
     }
 }
 
 
-public typealias KeywordTerms = [KeywordTerm] // note: semi-conflicting terms are disambiguated based on order of appearance
-public typealias CommandTerms = [CommandTerm]
-
-public protocol ApplicationTerminology {
-    var types: KeywordTerms {get}
-    var enumerators: KeywordTerms {get}
-    var properties: KeywordTerms {get}
-    var elements: KeywordTerms {get}
-    var commands: CommandTerms {get}
+public protocol ApplicationTerminology { // GlueTable.add() accepts any object that adopts this protocol (normally AETEParser/SDEFParser, but a dynamic bridge could also use this to reimport previously exported tables to which manual corrections have been made)
+    var types: [KeywordTerm] {get}
+    var enumerators: [KeywordTerm] {get}
+    var properties: [KeywordTerm] {get}
+    var elements: [KeywordTerm] {get}
+    var commands: [CommandTerm] {get}
 }
-
-
 
 
 public enum TermType {
@@ -38,11 +33,9 @@ public enum TermType {
 }
 
 
-// TO DO: use structs?
+public class Term { // base class for keyword and command definitions
 
-public class Term {
-
-    public var name: String // editable as clients may need to escape names to disambiguate conflicting terms // TO DO: safer solution?
+    public var name: String // editable as GlueTable may need to escape names to disambiguate conflicting terms
     public let kind: TermType
 
     init(name: String, kind: TermType) {
@@ -50,6 +43,7 @@ public class Term {
         self.kind = kind
     }
 }
+
 
 public class KeywordTerm: Term, Hashable, CustomStringConvertible { // type/enumerator/property/element/parameter name
 
@@ -62,13 +56,12 @@ public class KeywordTerm: Term, Hashable, CustomStringConvertible { // type/enum
     
     public var hashValue: Int { return Int(self.code) }
     
-    public var description: String { return "<\(self.kind):\(self.name)=\(FourCharCodeString(self.code))>" }
+    public var description: String { return "<\(self.kind):\(self.name)=\(fourCharCode(self.code))>" }
+    
+    public static func ==(lhs: KeywordTerm, rhs: KeywordTerm) -> Bool {
+        return lhs.kind == rhs.kind && lhs.code == rhs.code && lhs.name == rhs.name
+    }
 }
-
-public func ==(lhs: KeywordTerm, rhs: KeywordTerm) -> Bool {
-    return lhs.kind == rhs.kind && lhs.code == rhs.code && lhs.name == rhs.name
-}
-
 
 
 public class CommandTerm: Term, Hashable, CustomStringConvertible {
@@ -92,8 +85,8 @@ public class CommandTerm: Term, Hashable, CustomStringConvertible {
     public var hashValue: Int { return Int(self.eventClass) - Int(self.eventID)}
     
     public var description: String {
-        let params = self.orderedParameters.map({"\($0.name)=\(FourCharCodeString($0.code))"}).joined(separator: ",")
-        return "<Command:\(self.name)=\(FourCharCodeString(self.eventClass))\(FourCharCodeString(self.eventID))(\(params))>"
+        let params = self.orderedParameters.map({"\($0.name)=\(fourCharCode($0.code))"}).joined(separator: ",")
+        return "<Command:\(self.name)=\(fourCharCode(self.eventClass))\(fourCharCode(self.eventID))(\(params))>"
     }
     
     func addParameter(_ name: String, code: OSType) {
@@ -102,11 +95,13 @@ public class CommandTerm: Term, Hashable, CustomStringConvertible {
         self.parametersByCode[code] = paramDef
         self.orderedParameters.append(paramDef)
     }
+    
+    public static func ==(lhs: CommandTerm, rhs: CommandTerm) -> Bool {
+        return lhs.eventClass == rhs.eventClass && lhs.eventID == rhs.eventID
+            && lhs.name == rhs.name && lhs.parametersByCode == rhs.parametersByCode
+    }
 }
 
-public func ==(lhs: CommandTerm, rhs: CommandTerm) -> Bool {
-    return lhs.eventClass == rhs.eventClass && lhs.eventID == rhs.eventID
-        && lhs.name == rhs.name && lhs.parametersByCode == rhs.parametersByCode
-}
+
 
 
