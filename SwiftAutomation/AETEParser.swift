@@ -28,8 +28,8 @@ public class AETEParser: ApplicationTerminology {
     private var foundClassCodes           = Set<OSType>()
     private var foundElementCodes         = Set<OSType>()
     
-    private var aeteData = NSData() // was char*
-    private var cursor: Int = 0 // was unsigned long
+    var aeteData = NSData() // was char*
+    var cursor: Int = 0 // was unsigned long
     
     
     public init(keywordConverter: KeywordConverterProtocol = defaultSwiftKeywordConverter) {
@@ -102,8 +102,8 @@ public class AETEParser: ApplicationTerminology {
         var length: UInt8 = 0 // Pascal string = 1-byte length (unsigned char) followed by 0-255 MacRoman chars
         self.aeteData.getBytes(&length, range: NSMakeRange(self.cursor,MemoryLayout<UInt8>.size))
         self.cursor += MemoryLayout<UInt8>.size
-        let value = length == 0 ? "" : NSString(data: aeteData.subdata(with: NSMakeRange(self.cursor,Int(length))),
-                                                encoding: String.Encoding.macOSRoman.rawValue) as! String
+        let value = length == 0 ? "" : String(data: aeteData.subdata(with: NSMakeRange(self.cursor,Int(length))),
+                                                encoding: .macOSRoman)!
         self.cursor += Int(length)
         return value
     }

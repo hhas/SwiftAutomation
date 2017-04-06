@@ -288,7 +288,7 @@ for applicationURL in applicationURLs {
     do {
         let code = try renderStaticGlueTemplate(glueSpec: glueSpec, typeSupportSpec: typeSupportSpec,
                                                 importFramework: importFramework, extraTags: extraTags)
-        guard let data = code.data(using: String.Encoding.utf8) else { throw TerminologyError("Invalid UTF8 data.") }
+        guard let data = code.data(using: .utf8) else { throw TerminologyError("Invalid UTF8 data.") }
         let outGlueURL = outDir!.appendingPathComponent(glueFileName)
         try writeData(data as NSData, toURL: outGlueURL, overwriting: canOverwrite)
         print(outGlueURL.path)

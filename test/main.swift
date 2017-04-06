@@ -129,7 +129,7 @@ do {
     
     
     print("\nTEST: get files 1 thru 3 of home")
-    let r = try Finder().home.files[1, 3].get() as [Int]//[FINItem]
+    let r = try Finder().home.files[1, 3].get() as [FINItem]
     print("=> \(r)")
     
     
