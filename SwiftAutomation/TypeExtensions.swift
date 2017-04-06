@@ -19,7 +19,7 @@ public protocol SelfPacking {
     func SwiftAutomation_packSelf(_ appData: AppData) throws -> NSAppleEventDescriptor
 }
 
-protocol SelfUnpacking {
+public protocol SelfUnpacking {
     static func SwiftAutomation_unpackSelf(_ desc: NSAppleEventDescriptor, appData: AppData) throws -> Self
     static func SwiftAutomation_noValue() throws -> Self
 }
@@ -49,7 +49,7 @@ public enum MissingValueType: CustomStringConvertible, SelfPacking, SelfUnpackin
         return MissingValue
     }
     
-    static func SwiftAutomation_noValue() throws -> MissingValueType { return MissingValueType() }
+    public static func SwiftAutomation_noValue() throws -> MissingValueType { return MissingValueType() }
     
     public var description: String { return "MissingValue" }
 }
@@ -97,7 +97,7 @@ public enum MayBeMissing<T>: SelfPacking, SelfUnpacking { // TO DO: rename 'Miss
         }
     }
     
-    static func SwiftAutomation_noValue() throws -> MayBeMissing<T> { return MayBeMissing<T>() }
+    public static func SwiftAutomation_noValue() throws -> MayBeMissing<T> { return MayBeMissing<T>() }
     
     public var value: T? { // unbox the actual value, or return `nil` if it was MissingValue; this should allow users to bridge safely from MissingValue to nil
         switch self {
@@ -135,7 +135,7 @@ extension Optional: SelfPacking, SelfUnpacking {
         }
     }
     
-    static func SwiftAutomation_noValue() throws -> Optional<Wrapped> { return Optional<Wrapped>.none }
+    public static func SwiftAutomation_noValue() throws -> Optional<Wrapped> { return Optional<Wrapped>.none }
 }
 
 
@@ -151,7 +151,7 @@ extension Set: SelfPacking, SelfUnpacking { // note: AEM doesn't define a standa
         return desc
     }
     
-    static func SwiftAutomation_unpackSelf(_ desc: NSAppleEventDescriptor, appData: AppData) throws -> Set<Element> {
+    public static func SwiftAutomation_unpackSelf(_ desc: NSAppleEventDescriptor, appData: AppData) throws -> Set<Element> {
         var result = Set<Element>()
         switch desc.descriptorType {
         case _typeAEList:
@@ -168,7 +168,7 @@ extension Set: SelfPacking, SelfUnpacking { // note: AEM doesn't define a standa
         return result
     }
     
-    static func SwiftAutomation_noValue() throws -> Set<Element> { return Set<Element>() }
+    public static func SwiftAutomation_noValue() throws -> Set<Element> { return Set<Element>() }
 }
 
 
@@ -180,7 +180,7 @@ extension Array: SelfPacking, SelfUnpacking {
         return desc
     }
     
-    static func SwiftAutomation_unpackSelf(_ desc: NSAppleEventDescriptor, appData: AppData) throws -> [Element] {
+    public static func SwiftAutomation_unpackSelf(_ desc: NSAppleEventDescriptor, appData: AppData) throws -> [Element] {
         switch desc.descriptorType {
         case _typeAEList:
             var result = [Element]()
@@ -212,7 +212,7 @@ extension Array: SelfPacking, SelfUnpacking {
         }
     }
     
-    static func SwiftAutomation_noValue() throws -> Array<Element> { return Array<Element>() }
+    public static func SwiftAutomation_noValue() throws -> Array<Element> { return Array<Element>() }
 }
 
 
@@ -245,7 +245,7 @@ extension Dictionary: SelfPacking, SelfUnpacking {
         return desc
     }
     
-    static func SwiftAutomation_unpackSelf(_ desc: NSAppleEventDescriptor, appData: AppData) throws -> [Key:Value] {
+    public static func SwiftAutomation_unpackSelf(_ desc: NSAppleEventDescriptor, appData: AppData) throws -> [Key:Value] {
         if !desc.isRecordDescriptor {
             throw UnpackError(appData: appData, descriptor: desc, type: self, message: "Not a record.")
         }
@@ -298,7 +298,7 @@ extension Dictionary: SelfPacking, SelfUnpacking {
         return result
     }
     
-    static func SwiftAutomation_noValue() throws -> Dictionary<Key,Value> { return Dictionary<Key,Value>() }
+    public static func SwiftAutomation_noValue() throws -> Dictionary<Key,Value> { return Dictionary<Key,Value>() }
 }
 
 

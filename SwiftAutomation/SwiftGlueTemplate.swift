@@ -176,7 +176,7 @@ let SwiftGlueTemplate = [
 "        throw «SWIFTAE»UnpackError(appData: appData, descriptor: desc, type: «ENUM_TYPE_NAME».self,",
 "                          message: \"Can't coerce descriptor to Swift type: \\(«ENUM_TYPE_NAME».self)\")",
 "    }",
-"    static func SwiftAutomation_noValue() throws -> «ENUM_TYPE_NAME» { «ENUM_NO_VALUE» }",
+"    public static func SwiftAutomation_noValue() throws -> «ENUM_TYPE_NAME» { «ENUM_NO_VALUE» }",
 "}",
 "«-ENUM_TYPE_DEFINITION»",
 "",
