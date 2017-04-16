@@ -65,33 +65,12 @@ raw four-char codes or correct generated glue code by hand.)
 SwiftAutomation requires macOS 10.11 and Swift 3.0 and Xcode 8.0 or later.
 
 
-## Love it
-
-SwiftAutomation's goal is to provide better than 99.9% compatibility across the
-wide range of real-world "AppleScriptable" macOS applications available today.
-
-Unlike macOS's ScriptingBridge framework (an ORM-style design that suffers from
-many missing/broken features and incompatibilities with many "AppleScriptable"
-applications), SwiftAutomation uses the same RPC + Query Builder approach used
-by the appscript AE bridges for Python and Ruby, not to mention AppleScript
-itself! Appscript has already been tested and proven over a decade of real-world
-production use, and SwiftAutomation updates and improves on that original design
-while tailoring it to take full advantage of Swift's powerful syntax and static
-type systems.
-
-SwiftAutomation is still under development, but even as Apple decide the future
-of Automation across its products, we believe SwiftAutomation could mark a new
-dawn for both current and future Automation technologies, attracting thousands
-of ambitious new Swift users to macOS's Automation platform, establish a roadmap
-for upgrading and enhancing the existing platform, and laying the groundwork for
-establishing full, modern, advanced Automation capabilities on iOS too.
-
-
 ## Status
 
-SwiftAutomation is currently approaching beta status. The implementation is
-largely complete though not yet fully tested, and the documentation is a work
-in progress. Expect errors and omissions, use at own risk, etc.
+The code is complete except for testing and bug fixes. The documentation lacks
+a usable tutorial chapter. Given current uncertainty regarding the future of
+Apple event-based automation the project is on hiatus until WWDC17, after which
+a final decision on its future can be made.
 
 
 ## Known issues
@@ -107,6 +86,8 @@ non-idempotent and/or unsafe function calls, not just application commands.
 
 
 ## Etc.
+
+SwiftAutomation is released into the public domain.
 
 No warranty given, E&OE, use at own risk, etc.
 
