@@ -41,6 +41,9 @@ TO DO:
 
 
 
+- starting to dislike PREFIXApp, PREFIXCon, PREFIXIts as they're a pain to type and inconsistent with other SA syntax; change to PREFIX.app, PREFIX.con, PREFIX.its and see how that compares (semantically it's a little awkward, since PREFIX is shorthand for PREFIXSymbol, but if we consider PREFIX a generic namespace used by glue to hold all related objects then it probably makes sense; one could even argue for all glue classes moving into that namespace, eliminating prefixes on their names - however, Swift lacks a definitive `namespace` statement so forces hacky workarounds using `class`/`struct`/`enum` instead, thereby muddying semantics even worse); note that app, con, its could also be defined as static constants on glue's Application class (whether this would help or confuse is unclear). Ah, the joys of bridging rigidly OO syntax+semantics to non-relational systems.
+
+
 - For convenience, generated glues include a convenience initializer containing the bundleID for the target application, allowing user to write [e.g.] `TextEdit()` as shorthand for `TextEdit(bundleIndentifier: "com.apple.TextEdit")`. However, in Swift3/Xcode8, if the glue's application class uses the following convenience initializer, it crashes with EXC_BAD_ACCESS, presumably due to a Swift bug:
 
         public class TextEdit: TEDRoot, Application {
