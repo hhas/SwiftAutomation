@@ -174,6 +174,40 @@ extension Set: SelfPacking, SelfUnpacking { // note: AEM doesn't define a standa
 
 extension Array: SelfPacking, SelfUnpacking {
     
+    // TO DO: protocol hierarchy for Swift's various numeric types is both complicated and useless; see about factoring out `Int(n) as! Element` as a block, in which case copy-paste can be replaced with generic
+    
+    private static func unpackInt16Array(_ desc: NSAppleEventDescriptor, appData: AppData, indexes: [Int]) throws -> [Element] {
+        if Element.self == Int.self { // common case
+            var result = [Element]()
+            let data = desc.data
+            for i in indexes { // QDPoint is YX, so swap to give [X,Y]
+                var n: Int16 = 0
+                (data as NSData).getBytes(&n, range: NSRange(location: i*MemoryLayout<Int16>.size, length: MemoryLayout<Int16>.size))
+                result.append(Int(n) as! Element) // note: can't use Element(n) here as Swift doesn't define integer constructors in IntegerType protocol (but does for FloatingPointType)
+            }
+            return result
+        } else { // for any other Element, unpack as Int then repack as AEList of typeSInt32, and [try to] unpack that as [Element] (bit lazy, but will do)
+            return try self.SwiftAutomation_unpackSelf(try appData.pack(appData.unpack(desc) as [Int]), appData: appData)
+        }
+    }
+    
+    private static func unpackUInt16Array(_ desc: NSAppleEventDescriptor, appData: AppData, indexes:[Int]) throws -> [Element] {
+        if Element.self == Int.self { // common case
+            var result = [Element]()
+            let data = desc.data
+            for i in indexes { // QDPoint is YX, so swap to give [X,Y]
+                var n: UInt16 = 0
+                (data as NSData).getBytes(&n, range: NSRange(location: i*MemoryLayout<UInt16>.size, length: MemoryLayout<UInt16>.size))
+                result.append(Int(n) as! Element) // note: can't use Element(n) here as Swift doesn't define integer constructors in IntegerType protocol (but does for FloatingPointType)
+            }
+            return result
+        } else { // for any other Element, unpack as Int then repack as AEList of typeSInt32, and [try to] unpack that as [Element] (bit lazy, but will do)
+            return try self.SwiftAutomation_unpackSelf(try appData.pack(appData.unpack(desc) as [Int]), appData: appData)
+        }
+    }
+    
+    //
+    
     public func SwiftAutomation_packSelf(_ appData: AppData) throws -> NSAppleEventDescriptor {
         let desc = NSAppleEventDescriptor.list()
         for item in self { desc.insert(try appData.pack(item), at: 0) }
@@ -192,21 +226,13 @@ extension Array: SelfPacking, SelfUnpacking {
                 }
             }
             return result
-        case _typeQDPoint, _typeQDRectangle, _typeRGBColor: // short[2], short[4], unsigned short[3] (used by older Carbon apps; Cocoa apps use lists)
-            // note: coercing these types to typeAEList and unpacking those would be simpler, but while AEM provides coercion handlers for coercing e.g. typeAEList to typeQDPoint, it doesn't provide handlers for the reverse (coercing a typeQDPoint desc to typeAEList merely produces a single-item AEList containing the original typeQDPoint, not a 2-item AEList of typeSInt16)
-            if Element.self == Int.self { // common case
-                var result = [Element]()
-                let data = desc.data
-                for i in 0..<([_typeQDPoint:2, _typeQDRectangle:4, _typeRGBColor:3][desc.descriptorType]!) {
-                    var n: Int16 = 0
-                    (data as NSData).getBytes(&n, range: NSRange(location: i*MemoryLayout<Int16>.size, length: MemoryLayout<Int16>.size))
-                    result.append(Int(n) as! Element) // note: can't use Element(n) here as Swift doesn't define integer constructors in IntegerType protocol (but does for FloatingPointType)
-                }
-                return result
-            } else { // for any other Element, unpack as Int then repack as AEList of typeSInt32, and [try to] unpack that as [Element] (bit lazy, but will do)
-                let array = try appData.unpack(desc) as [Int]
-                return try self.SwiftAutomation_unpackSelf(try appData.pack(array), appData: appData)
-            }
+            // note: coercing QD types to typeAEList and unpacking those would be simpler, but while AEM provides coercion handlers for coercing e.g. typeAEList to typeQDPoint, it doesn't provide handlers for the reverse (coercing a typeQDPoint desc to typeAEList merely produces a single-item AEList containing the original typeQDPoint, not a 2-item AEList of typeSInt16)
+        case _typeQDPoint: // SInt16[2]
+            return try self.unpackInt16Array(desc, appData: appData, indexes: [1,0]) // QDPoint is YX; swap to give [X,Y]
+        case _typeQDRectangle: // SInt16[4]
+            return try self.unpackInt16Array(desc, appData: appData, indexes: [1,0,3,2]) // QDPoint is Y0X0Y1X1; swap to give [X0,Y0,X1,Y1]
+        case _typeRGBColor: // UInt16[3] (used by older Carbon apps; Cocoa apps use lists)
+            return try self.unpackUInt16Array(desc, appData: appData, indexes: [0,1,2])
         default:
             return [try appData.unpack(desc) as Element]
         }

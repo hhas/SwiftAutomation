@@ -62,6 +62,7 @@ do {
         print(v,try te.appData.unpack(v))
     }
     
+    
     /*
     let itunes = ITunes()
     let state: ITU = try itunes.playerState.get()
@@ -134,12 +135,14 @@ do {
     let result4c = try Finder().home.folders["Documents"].files[FINIts.nameExtension == "txt"].properties.get() as [[FINSymbol:Any]]
     print("=> \(result4c)")
     
-    /*
+    print("\nTEST: duplicate file 1 of home to desktop with replacing")
+    let myresult = try Finder().duplicate(Finder().home.files[1], to:Finder().desktop, replacing:true)
+    print("=> \(myresult)")
+    
+     
     print("\nTEST: TextEdit().documents.properties.get() as [TEDDocumentRecord]")
     let result4d = try TextEdit().documents.properties.get() as [TEDDocumentRecord]
     print("=> \(result4d)")
-
-*/
     
     print("\nTEST: TextEdit().documents[1].properties.get() as TEDDocumentRecord")
     let result4e = try TextEdit().documents[1].properties.get() as TEDDocumentRecord
