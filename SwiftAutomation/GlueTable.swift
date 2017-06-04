@@ -47,7 +47,7 @@ public class GlueTable {
     public var specifiersByName: [String:Term] {
         if self._specifiersByName == nil {
             self._specifiersByName = [String:Term]()
-            for termsByName in [elementsByName, propertiesByName, commandsByName] as [[String:Term]] {
+            for termsByName in [self.elementsByName, self.propertiesByName, self.commandsByName] as [[String:Term]] {
                 for (key, value) in termsByName { self._specifiersByName![key] = value }
             }
         }

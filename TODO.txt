@@ -1,5 +1,8 @@
 TO DO:
 
+- AutoReleasePools?
+
+
 - there is a serious bug when comparing Any result to MissingValue:
 
         print(try Finder().home.name.get() == MissingValue) // returns true!!! (should be false as result is a String value)

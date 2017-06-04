@@ -315,16 +315,10 @@ public enum TargetApplication: CustomReflectable {
     public func descriptor(_ launchOptions: LaunchOptions = DefaultLaunchOptions) throws -> NSAppleEventDescriptor? {
         switch self {
         case .current:
-            return nil
+            return NSAppleEventDescriptor.currentProcess()
         case .name(let name): // app name or full path
-            var url: URL
-            if name.hasPrefix("/") { // full path (note: path must include .app suffix)
-                url = URL(fileURLWithPath: name)
-            } else { // if name is not full path, look up by name (.app suffix is optional)
-                guard let tmp = fileURLForLocalApplication(name) else {
-                    throw ConnectionError(target: self, message: "Application not found: \(name)")
-                }
-                url = tmp
+            guard let url = fileURLForLocalApplication(name) else {
+                throw ConnectionError(target: self, message: "Application not found: \(name)")
             }
             return try self.processDescriptorForLocalApplication(url: url, launchOptions: launchOptions)
         case .url(let url): // file/eppc URL

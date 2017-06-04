@@ -8,6 +8,10 @@
 import Foundation
 import AppKit
 
+// TO DO: get rid of waitReply: arg and just pass .ignoreReply to sendOptions (if ignore/wait/queue option not given, add .waitReply by default)
+
+// TO DO: 'considering' arg is misnamed: by default it takes [.case], which is the text attributes to *ignore*; FIX!!! (also need to review the  relevant code and the packed AE attributes against AS's, to see what it's doing; these flags are an absolute mess even without semantic/logic errors creeping into code here)
+
 
 // TO DO: there are some inbuilt assumptions about `Int` and `UInt` always being 64-bit
 
@@ -554,7 +558,7 @@ open class AppData {
     }
     
     private let _comparisonOperatorCodes: Set<OSType> = [_kAELessThan, _kAELessThanEquals, _kAEEquals,
-                                                         _kAENotEquals, kAEGreaterThan, _kAEGreaterThanEquals,
+                                                         _kAENotEquals, _kAEGreaterThan, _kAEGreaterThanEquals,
                                                          _kAEBeginsWith, _kAEEndsWith, _kAEContains, _kAEIsIn]
     private let _logicalOperatorCodes: Set<OSType> = [_kAEAND, _kAEOR, _kAENOT]
     
@@ -694,15 +698,15 @@ open class AppData {
                         || (self.relaunchMode == .limited && LimitedRelaunchEvents.contains(where: {$0.0 == eventClass && $0.1 == eventID}))) {
                     // event failed as target process has quit since previous event; recreate AppleEvent with new address and resend
                     self._targetDescriptor = nil
-                    let event = NSAppleEventDescriptor(eventClass: eventClass, eventID: eventID, targetDescriptor: try self.targetDescriptor(),
-                                                       returnID: _kAutoGenerateReturnID, transactionID: _kAnyTransactionID)
-                    for i in 1..<(event.numberOfItems+1) {
-                        event.setParam(event.atIndex(i)!, forKeyword: event.keywordForDescriptor(at: i))
+                    let event2 = NSAppleEventDescriptor(eventClass: eventClass, eventID: eventID, targetDescriptor: try self.targetDescriptor(),
+                                                        returnID: _kAutoGenerateReturnID, transactionID: _kAnyTransactionID)
+                    for i in 1...event.numberOfItems {
+                        event2.setParam(event.atIndex(i)!, forKeyword: event.keywordForDescriptor(at: i))
                     }
                     for key in [_keySubjectAttr, _enumConsiderations, _enumConsidsAndIgnores] {
-                        event.setAttribute(event.attributeDescriptor(forKeyword: key)!, forKeyword: key)
+                        event2.setAttribute(event.attributeDescriptor(forKeyword: key)!, forKeyword: key)
                     }
-                    replyEvent = try self.send(event: event, sendMode: sendMode, timeout: timeout)
+                    replyEvent = try self.send(event: event2, sendMode: sendMode, timeout: timeout)
                 } else {
                     throw error
                 }
@@ -800,6 +804,8 @@ let considerationsTable: [(Considerations, NSAppleEventDescriptor, UInt32, UInt3
     (.punctuation,      NSAppleEventDescriptor(enumCode: _kAEPunctuation),       0x00000020, 0x00200000),
     (.numericStrings,   NSAppleEventDescriptor(enumCode: _kASNumericStrings),    0x00000080, 0x00800000),
 ]
+
+// TO DO: review this code; is considering attr misnamed?
 
 private func packConsideringAndIgnoringFlags(_ considerations: ConsideringOptions) -> (NSAppleEventDescriptor, NSAppleEventDescriptor) {
     let considerationsListDesc = NSAppleEventDescriptor.list()

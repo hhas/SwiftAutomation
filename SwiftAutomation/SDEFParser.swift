@@ -33,7 +33,7 @@ public class SDEFParser: ApplicationTerminology {
     public init(keywordConverter: KeywordConverterProtocol = defaultSwiftKeywordConverter,
                 errorHandler: @escaping (Error)->() = { (error: Error) in print(error, to: &errStream) }) {
         self.keywordConverter = keywordConverter
-        self.errorHandler = errorHandler
+        self.errorHandler = errorHandler // TO DO: currently unused (currently parse methods always throw); also, errorHandler should probably be throwable
     }
     
     // parse an OSType given as 4/8-character "MacRoman" string, or 10/18-character hex string
@@ -105,36 +105,35 @@ public class SDEFParser: ApplicationTerminology {
         if let element = node as? XMLElement, let tagName = element.name {
             switch tagName {
             case "class":
-                let (name, code) = try parse(typeOfElement: element)
-                try parse(propertiesOfElement: element)
+                let (name, code) = try self.parse(typeOfElement: element)
+                try self.parse(propertiesOfElement: element)
                 // use plural class name as elements name (if not given, append "s" to singular name)
                 // (note: record and value types also define plurals, but we only use plurals for element names and elements should always be classes, so we ignore those)
                 let plural = element.attribute(forName: "plural")?.stringValue ?? "\(name)s" // note: the spec says to append 's' to name when plural attribute isn't given; in practice, appending 's' doesn't work so well for names already ending in 's' (e.g. 'print settings'), but that's the SDEF's problem
                 self.elements.append(KeywordTerm(name: self.keywordConverter.convertSpecifierName(plural), kind: .elementOrType, code: code))
             case "class-extension":
-                try parse(propertiesOfElement: element)
+                try self.parse(propertiesOfElement: element)
             case "record-type":
-                let _ = try parse(typeOfElement: element)
-                try parse(propertiesOfElement: element)
+                let _ = try self.parse(typeOfElement: element)
+                try self.parse(propertiesOfElement: element)
             case "value-type":
-                let _ = try parse(typeOfElement: element)
+                let _ = try self.parse(typeOfElement: element)
             case "enumeration":
                 for element in element.elements(forName: "enumerator") {
                     let (name, code) = try self.parse(keywordElement: element)
                     self.enumerators.append(KeywordTerm(name: self.keywordConverter.convertSpecifierName(name), kind: .enumerator, code: code))
                 }
             case "command", "event":
-                let (name, eventClass, eventID) = try parse(commandElement: element)
+                let (name, eventClass, eventID) = try self.parse(commandElement: element)
                 // Note: overlapping command definitions (e.g. 'path to') should be processed as follows:
                 // - If their names and codes are the same, only the last definition is used; other definitions are ignored
                 //   and will not compile.
                 // - If their names are the same but their codes are different, only the first definition is used; other
                 //   definitions are ignored and will not compile.
-                let previousDef = commandsDict[name]
-                let command: CommandTerm
+                let previousDef = self.commandsDict[name]
                 if previousDef == nil || (previousDef!.eventClass == eventClass && previousDef!.eventID == eventID) {
-                    command = CommandTerm(name: self.keywordConverter.convertSpecifierName(name), eventClass: eventClass, eventID: eventID)
-                    commandsDict[name] = command
+                    let command = CommandTerm(name: self.keywordConverter.convertSpecifierName(name), eventClass: eventClass, eventID: eventID)
+                    self.commandsDict[name] = command
                     for element in element.elements(forName: "parameter") {
                         let (name, code) = try self.parse(keywordElement: element)
                         command.addParameter(self.keywordConverter.convertParameterName(name), code: code)

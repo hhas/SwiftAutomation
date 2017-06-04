@@ -304,8 +304,9 @@ extension Dictionary: SelfPacking, SelfUnpacking {
                                               message: "Can't unpack value of record's \(key) property as Swift type: \(Value.self)")
                         }
                     }
-                } else {
-                    
+                } else { // TO DO: not sure what AS's behavior is; does it unpack as single property or report as error? check and amend if needed (main rationale for throwing is that returned record would vary wildly in structure depending the property's value; which is not to say AS wouldn't do it, but it'd be poor design if it did; plus we already throw if odd items aren't strings)
+                    throw UnpackError(appData: appData, descriptor: desc, type: Value.self,
+                                      message: "Can't unpack record: malformed keyASUserRecordFields value.")
                 }
             } else {
                 // unpack record property whose key is a four-char code (typically corresponding to a dictionary-defined property name)
