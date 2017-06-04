@@ -62,7 +62,7 @@ var errStream = StderrStream()
 func fourCharCode(_ string: String) throws -> OSType {
     // convert four-character string containing MacOSRoman characters to OSType
     // (this is safer than using UTGetOSTypeFromString, which silently fails if string is malformed)
-    guard let data = string.data(using: String.Encoding.macOSRoman) else {
+    guard let data = string.data(using: .macOSRoman) else {
         throw AutomationError(code: 1, message: "Invalid four-char code (bad encoding): \(string.debugDescription)")
     }
     if (data.count != 4) {

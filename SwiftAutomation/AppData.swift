@@ -117,15 +117,16 @@ open class AppData {
     
     
     /******************************************************************************/
-    // Convert a Swift value to an Apple event descriptor
+    // Convert a Swift or Cocoa value to an Apple event descriptor
     
-    private let _NSBooleanType = type(of: NSNumber(value: true)) // assumes this will always be __NSCFBooleanType; see comments in pack()
-    private let _NSNumberType = type(of: NSNumber(value: 1))
+    // Swift's NSNumber bridging is hopelessly ambiguous, so it's not enough to ask if `value is Bool/Int/Double` or to try casting it to Bool/Int/Double, as these ALWAYS succeed for ALL NSNumbers, regardless of what type the NSNumber actually represents, e.g. `NSNumber(value:true) is Bool` returns `true` as expected, but `NSNumber(value:2) is Bool` and `NSNumber(value:3.3) is Bool` return `true` too! Therefore, the only way to determine if `value` is a Swift Bool/Int/Double is to first eliminate the possibility that it's an NSNumber by testing for that first. This is further complicated by NSNumber being a class cluster, not a concrete class, so we can't just test if `type(of: value) == NSNumber.self`; we have to extract the underlying __NSCF… classes and test against those. This makes some assumptions based on established NSNumber implementation; if that implementation should change in future (either in Cocoa itself or in the way that Swift maps it) then these assumptions may break, resulting in incorrect/broken behavior in the pack() method below.
+    private let _NSBooleanType = type(of: NSNumber(value: true)) // this assumes Cocoa always represents true/false as __NSCFBoolean
+    private let _NSNumberType = type(of: NSNumber(value: 1)) // this assumes Cocoa always represents all integer and FP numbers as __NSCFNumber
     
     
     public func pack(_ value: Any) throws -> NSAppleEventDescriptor {
         // note: Swift's Bool/Int/Double<->NSNumber bridging sucks, so NSNumber instances require special processing to ensure the underlying value's exact type (Bool/Int/Double/etc) isn't lost in translation
-        if type(of: value) == self._NSBooleanType || value is DarwinBoolean { // test for NSNumber(bool:) or Swift Bool (true/false)
+        if type(of: value) == self._NSBooleanType { // test for NSNumber(value:true/false)
             // important: 
             // - the first test assumes NSNumber class cluster always returns an instance of __NSCFBooleanType (or at least something that can be distinguished from all other NSNumbers)
             // - `value is Bool/Int/Double` always returns true for any NSNumber, so must not be used; however, checking for BooleanType returns true only for Bool (or other Swift types that implement BooleanType protocol) so should be safe
@@ -239,6 +240,8 @@ open class AppData {
             }
         case let val as Float:
             return NSAppleEventDescriptor(double: Double(val))
+        case let val as Bool: // hopefully Swift hasn't [mis]cast `true` or `false` in one of the above cases
+            return NSAppleEventDescriptor(boolean: val)
         case let val as Error:
             throw val // if value is ErrorType, rethrow it as-is; e.g. see ObjectSpecifier.unpackParentSpecifiers(), which needs to report [rare] errors but can't throw itself; this should allow APIs that can't raise errors directly (e.g. specifier constructors) to have those errors raised if/when used in commands (which can throw)
         default:

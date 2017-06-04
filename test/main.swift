@@ -37,7 +37,32 @@ print("\n\n")
 */
 
 do {
+    do {
+        let v = try te.appData.pack(true)
+        print(v, try te.appData.unpack(v))
+    }
+    do {
+        let v = try te.appData.pack(NSNumber(value: true))
+        print(v,try te.appData.unpack(v))
+    }
+    do {
+        let v = try te.appData.pack(-25)
+        print(v, try te.appData.unpack(v))
+    }
+    do {
+        let v = try te.appData.pack(NSNumber(value: -25))
+        print(v,try te.appData.unpack(v))
+    }
+    do {
+        let v = try te.appData.pack(4.12)
+        print(v, try te.appData.unpack(v))
+    }
+    do {
+        let v = try te.appData.pack(NSNumber(value: 4.12))
+        print(v,try te.appData.unpack(v))
+    }
     
+    /*
     let itunes = ITunes()
     let state: ITU = try itunes.playerState.get()
     print("itunes.playerState.get() -> \(state)")
@@ -129,10 +154,10 @@ do {
     
     
     print("\nTEST: get files 1 thru 3 of home")
-    let r = try Finder().home.files[1, 3].get() as [Int]//[FINItem]
+    let r = try Finder().home.files[1, 3].get() as [FINItem]
     print("=> \(r)")
     
-    
+    */
 } catch {
     print("ERROR: \(error)")
 }
