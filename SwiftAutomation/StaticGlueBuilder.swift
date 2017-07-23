@@ -540,8 +540,10 @@ public func translateScriptingDefinition(_ data: Data, glueSpec: GlueSpec) throw
         throw TerminologyError("Malformed SDEF resource: missing root.")
     }
     // add attributes to root node indicating SDEF has been translated to SA syntax, including name of Application class (e.g. "ITunes")
-    root.setAttributesWith(["classNamePrefix": glueSpec.classNamePrefix, "applicationClassName": glueSpec.applicationClassName,
-                            "frameworkName": glueSpec.frameworkName, "frameworkVersion": glueSpec.frameworkVersion])
+    root.setAttributesWith(["apple-event-bridge-name": glueSpec.frameworkName,
+                            "apple-event-bridge-version": glueSpec.frameworkVersion,
+                            "application-class-name": glueSpec.applicationClassName,
+                            "class-name-prefix": glueSpec.classNamePrefix])
     for suite in root.elements(forName: "suite") {
         for key in ["command", "event"] {
             for command in suite.elements(forName: key) {
