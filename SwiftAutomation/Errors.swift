@@ -135,7 +135,7 @@ public class AutomationError: Error, CustomStringConvertible {
     
     let _message: String?
     
-    init(code: Int, message: String? = nil, cause: Error? = nil) {
+    public init(code: Int, message: String? = nil, cause: Error? = nil) {
         self._code = code
         self._message = message
         self.cause = cause
@@ -166,7 +166,7 @@ public class ConnectionError: AutomationError {
     
     public let target: TargetApplication
     
-    init(target: TargetApplication, message: String, cause: Error? = nil) {
+    public init(target: TargetApplication, message: String, cause: Error? = nil) {
         self.target = target
         super.init(code: defaultErrorCode, message: message, cause: cause)
     }
@@ -179,7 +179,7 @@ public class PackError: AutomationError {
     
     let object: Any
     
-    init(object: Any, message: String? = nil, cause: Error? = nil) {
+    public init(object: Any, message: String? = nil, cause: Error? = nil) {
         self.object = object
         super.init(code: packErrorCode, message: message, cause: cause)
     }
@@ -196,7 +196,7 @@ public class UnpackError: AutomationError {
     let appData: AppData
     let descriptor: NSAppleEventDescriptor
     
-    init(appData: AppData, descriptor: NSAppleEventDescriptor, type: Any.Type, message: String? = nil, cause: Error? = nil) {
+    public init(appData: AppData, descriptor: NSAppleEventDescriptor, type: Any.Type, message: String? = nil, cause: Error? = nil) {
         self.appData = appData
         self.descriptor = descriptor
         self.type = type
@@ -229,7 +229,7 @@ public class CommandError: AutomationError { // raised whenever an application c
     let event: NSAppleEventDescriptor? // non-nil if event was built and send
     let reply: NSAppleEventDescriptor? // non-nil if reply event was received
     
-    init(commandInfo: CommandDescription, appData: AppData,
+    public init(commandInfo: CommandDescription, appData: AppData,
          event: NSAppleEventDescriptor? = nil, reply: NSAppleEventDescriptor? = nil, cause: Error? = nil) {
         self.appData = appData
         self.event = event

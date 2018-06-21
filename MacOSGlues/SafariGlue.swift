@@ -1108,7 +1108,7 @@ public class SAFRoot: SwiftAutomation.RootSpecifier, SAFObject, SwiftAutomation.
 // Application
 public class Safari: SAFRoot, SwiftAutomation.Application {
     public convenience init(launchOptions: SwiftAutomation.LaunchOptions = SwiftAutomation.DefaultLaunchOptions, relaunchMode: SwiftAutomation.RelaunchMode = SwiftAutomation.DefaultRelaunchMode) {
-        self.init(rootObject: SwiftAutomation.AppRootDesc, appData: type(of:self).untargetedAppData.targetedCopy(
+        self.init(rootObject: SwiftAutomation.AppRootDesc, appData: Swift.type(of:self).untargetedAppData.targetedCopy(
                   .bundleIdentifier("com.apple.Safari", true), launchOptions: launchOptions, relaunchMode: relaunchMode))
     }
 }

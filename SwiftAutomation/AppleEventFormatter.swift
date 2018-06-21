@@ -231,7 +231,7 @@ public struct CommandDescription {
         // unpack subject attribute, if given
         if let desc = event.attributeDescriptor(forKeyword: _keySubjectAttr) {
             if desc.descriptorType != _typeNull { // typeNull = root application object
-                self.subject = (try? appData.unpackAsAny(desc)) ?? desc
+                self.subject = (try? appData.unpackAsAny(desc)) ?? desc // TO DO: double-check formatter knows how to display descriptor (or any other non-specifier) as customRoot
             }
         }
         // unpack reply requested and timeout attributes (note: these attributes are unreliable since their values are passed via AESendMessage() rather than packed directly into the AppleEvent)

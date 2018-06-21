@@ -205,7 +205,8 @@ public class GlueTable {
     }
     
     public func add(SDEF data: Data) throws {
-        let parser = SDEFParser(keywordConverter: self.keywordConverter)
+        let parser = SDEFParser(keywordConverter: self.keywordConverter,
+                                errorHandler: { (error: Error) in print(error, to: &errStream) })
         try parser.parse(data)
         self.add(terminology: parser)       
     }

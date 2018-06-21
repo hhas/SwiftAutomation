@@ -31,7 +31,7 @@ public class SDEFParser: ApplicationTerminology {
     private let errorHandler: (Error)->()
     
     public init(keywordConverter: KeywordConverterProtocol = defaultSwiftKeywordConverter,
-                errorHandler: @escaping (Error)->() = { (error: Error) in print(error, to: &errStream) }) {
+                errorHandler: @escaping (Error)->()) {
         self.keywordConverter = keywordConverter
         self.errorHandler = errorHandler // TO DO: currently unused (currently parse methods always throw); also, errorHandler should probably be throwable
     }
@@ -148,7 +148,7 @@ public class SDEFParser: ApplicationTerminology {
     
     public func parse(_ sdef: Data) throws {
         do {
-            let parser = try XMLDocument(data: sdef, options: (1 << 16)) // XMLNode.Options.documentXInclude
+            let parser = try XMLDocument(data: sdef, options: XMLNode.Options.documentXInclude)
             guard let dictionary = parser.rootElement() else { throw TerminologyError("Missing `dictionary` element.") }
             for suite in dictionary.elements(forName: "suite") {
                 if let nodes = suite.children {

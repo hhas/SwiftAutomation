@@ -140,7 +140,7 @@ let SwiftGlueTemplate = [
 "// Application",
 "public class «APPLICATION_CLASS_NAME»: «PREFIX»Root, «SWIFTAE»Application {«+DEFAULT_INIT»",
 "    public convenience init(launchOptions: «SWIFTAE»LaunchOptions = «SWIFTAE»DefaultLaunchOptions, relaunchMode: «SWIFTAE»RelaunchMode = «SWIFTAE»DefaultRelaunchMode) {",
-"        self.init(rootObject: «SWIFTAE»AppRootDesc, appData: type(of:self).untargetedAppData.targetedCopy(",
+"        self.init(rootObject: «SWIFTAE»AppRootDesc, appData: Swift.type(of:self).untargetedAppData.targetedCopy(",
 "                  .bundleIdentifier(\"«BUNDLE_IDENTIFIER»\", true), launchOptions: launchOptions, relaunchMode: relaunchMode))",
 "    }",
 "«-DEFAULT_INIT»}",

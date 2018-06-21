@@ -11,17 +11,17 @@ import Foundation
 /******************************************************************************/
 // Identifiers (legal characters, reserved names, etc)
 
-let uppercaseChars    = Set<Character>("ABCDEFGHIJKLMNOPQRSTUVWXYZ".characters)
-let lowercaseChars    = Set<Character>("abcdefghijklmnopqrstuvwxyz".characters)
-let numericChars      = Set<Character>("0123456789".characters)
-let interstitialChars = Set<Character>("_".characters)
-let whitespaceChars   = Set<Character>(" \t\n\r".characters)
+let uppercaseChars    = Set<Character>("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+let lowercaseChars    = Set<Character>("abcdefghijklmnopqrstuvwxyz")
+let numericChars      = Set<Character>("0123456789")
+let interstitialChars = Set<Character>("_")
+let whitespaceChars   = Set<Character>(" \t\n\r")
 
 
 
 let legalFirstChars = uppercaseChars.union(lowercaseChars).union(interstitialChars)
 let legalOtherChars = uppercaseChars.union(lowercaseChars).union(interstitialChars).union(numericChars)
-let reservedWordSeparators = whitespaceChars.union("-/".characters) // some AETEs may include hyphens and other non-C-identifier/non-space characters in their keyword names, which are problematic in AppleScript (which [e.g.] compiles `trash-object` to `trash - object`) and a PITA in traditionally C-like languages, so we just bite the bullet and treat them all as if they were just simple spaces between words
+let reservedWordSeparators = whitespaceChars.union("-/") // some AETEs may include hyphens and other non-C-identifier/non-space characters in their keyword names, which are problematic in AppleScript (which [e.g.] compiles `trash-object` to `trash - object`) and a PITA in traditionally C-like languages, so we just bite the bullet and treat them all as if they were just simple spaces between words
 
 
 // TO DO: updated for Swift3, but could be missing some valid keywords - CHECK!!!
@@ -103,8 +103,9 @@ public let reservedPrefixes: Set<String> = ["NS", "AE", "SwiftAutomation"] // TO
 // Checks
 
 func isCIdentifier(_ string: String) -> Bool { // returns true if string is a valid C identifier (caution: the client is responsible for checking identifier string won't conflict with known Swift keywords)
-    var chars = string.characters
-    guard let c = chars.popFirst() else { return false }
+    var chars = Substring(string)
+    guard let c = chars.first else { return false }
+    chars = chars.dropFirst()
     if !legalFirstChars.contains(c) { return false }
     for c in chars { if !legalOtherChars.contains(c) { return false } }
     return true

@@ -977,7 +977,7 @@ public class GRARoot: SwiftAutomation.RootSpecifier, GRAObject, SwiftAutomation.
 // Application
 public class Grab: GRARoot, SwiftAutomation.Application {
     public convenience init(launchOptions: SwiftAutomation.LaunchOptions = SwiftAutomation.DefaultLaunchOptions, relaunchMode: SwiftAutomation.RelaunchMode = SwiftAutomation.DefaultRelaunchMode) {
-        self.init(rootObject: SwiftAutomation.AppRootDesc, appData: type(of:self).untargetedAppData.targetedCopy(
+        self.init(rootObject: SwiftAutomation.AppRootDesc, appData: Swift.type(of:self).untargetedAppData.targetedCopy(
                   .bundleIdentifier("com.apple.Grab", true), launchOptions: launchOptions, relaunchMode: relaunchMode))
     }
 }

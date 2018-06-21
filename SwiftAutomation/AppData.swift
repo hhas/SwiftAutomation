@@ -389,15 +389,20 @@ open class AppData {
             return desc.booleanValue
         case _typeSInt32, _typeSInt16:
             return desc.int32Value
-        case _typeIEEE64BitFloatingPoint, _typeIEEE32BitFloatingPoint, _type128BitFloatingPoint:
+        case _typeIEEE64BitFloatingPoint, _typeIEEE32BitFloatingPoint:
             return desc.doubleValue
+        case _type128BitFloatingPoint: // coerce down lossy
+            guard let doubleDesc = desc.coerce(toDescriptorType: _typeIEEE64BitFloatingPoint) else {
+                throw UnpackError(appData: self, descriptor: desc, type: Any.self, message: "Can't coerce 128-bit float to double.")
+            }
+            return doubleDesc.doubleValue
         case _typeChar, _typeIntlText, _typeUTF8Text, _typeUTF16ExternalRepresentation, _typeStyledText, _typeUnicodeText, _typeVersion:
-            guard let result = desc.stringValue else { //  this should never fail unless the AEDesc contains mis-encoded text data (e.g. claims to be typeUTF8Text but contains non-UTF8 byte sequences)
+            guard let result = desc.stringValue else { // this should never fail unless the AEDesc contains mis-encoded text data (e.g. claims to be typeUTF8Text but contains non-UTF8 byte sequences)
                 throw UnpackError(appData: self, descriptor: desc, type: Any.self, message: "Corrupt descriptor.")
             }
             return result
         case _typeLongDateTime:
-            guard let result = desc.dateValue else { // ditto
+            guard let result = desc.dateValue else { // this should never fail unless the AEDesc contains bad data
                 throw UnpackError(appData: self, descriptor: desc, type: Any.self, message: "Corrupt descriptor.")
             }
             return result
@@ -615,6 +620,9 @@ open class AppData {
     private func send(event: NSAppleEventDescriptor, sendMode: SendOptions, timeout: TimeInterval) throws -> NSAppleEventDescriptor { // used by sendAppleEvent()
         do {
             return try event.sendEvent(options: sendMode, timeout: timeout) // throws NSError on AEM errors (but not app errors)
+        
+        // TO DO: this is wrong; -1708 will be in reply event, not in AEM error; FIX
+        
         } catch { // 'launch' events normally return 'not handled' errors, so just ignore those
             if (error as NSError).code == -1708
                 && event.attributeDescriptor(forKeyword: _keyEventClassAttr)!.typeCodeValue == _kASAppleScriptSuite

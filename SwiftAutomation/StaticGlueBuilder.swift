@@ -68,43 +68,40 @@ let kConcatChar = Character("+")
 
 
 func lowercasedFirstCharacter(_ string: String) -> String {
-    var chars = string.characters
-    let c = String(chars.popFirst()!).lowercased()
-    return c + String(chars)
+    let chars = Substring(string)
+    return String(chars.first!).lowercased() + String(chars.dropFirst())
 }
 
 func sentenceCased(_ string: String) -> String {
-    var chars = string.characters
-    let c = chars.popFirst()!
-    return String(c).uppercased() + String(chars).lowercased()
+    let chars = Substring(string)
+    return String(chars.first!).uppercased() + String(chars.dropFirst()).lowercased()
 }
 
-// TO DO: skipSpace(_ chars: inout String.CharacterView)
+// TO DO: skipSpace(_ chars: inout Substring)
 
-func advanceOne(_ chars: inout String.CharacterView, character c: Character, after: String) throws {
+func advanceOne(_ chars: inout Substring, character c: Character, after: String) throws {
     if chars.first != c { throw SyntaxError(found: chars.first, butExpected: "'\(c)'", after: after) }
     chars.removeFirst()
 }
 
 
-func parseIdentifier(_ chars: inout String.CharacterView) throws -> String {
+func parseIdentifier(_ chars: inout Substring) throws -> String {
     // reads a C-identifier, checking it isn't a Swift keyword
-    var foundChars = String.CharacterView()
+    var name = ""
     let c = chars.popFirst()
     if c == nil || !legalFirstChars.contains(c!) { throw SyntaxError(found: c, butExpected: "an identifier") }
-    foundChars.append(c!)
+    name.append(c!)
     while let c = chars.first {
         if !legalOtherChars.contains(c) { break }
-        foundChars.append(chars.popFirst()!)
+        name.append(chars.popFirst()!)
     }
-    let name = String(foundChars)
     if reservedSwiftKeywords.contains(name) {
         throw SyntaxError("Expected an identifier but found reserved keyword '\(name)' instead.")
     }
     return name
 }
 
-func parseType(_ chars: inout String.CharacterView, classNamePrefix: String, name: String? = nil) throws -> String {
+func parseType(_ chars: inout Substring, classNamePrefix: String, name: String? = nil) throws -> String {
     // reads a C-identifier optionally followed by <TYPE[,TYPE,...]> generic parameters, as used on right side of typealias and struct property definitions; characters are consumed from chars parameter until the name is fully read, then the name is returned as String
     // if the name is one of the base names used by SwiftAutomation (Symbol, Object, etc), a class name prefix is automatically added; this allows the same format string to be reused for multiple glues
     var name = try name ?? parseIdentifier(&chars)
@@ -126,7 +123,7 @@ func parseType(_ chars: inout String.CharacterView, classNamePrefix: String, nam
 }
 
 
-func parseProperty(_ chars: inout String.CharacterView, classNamePrefix: String) throws -> (String, String) {
+func parseProperty(_ chars: inout Substring, classNamePrefix: String) throws -> (String, String) {
     // parse "NAME:TYPE" pair
     let propertyName = try parseIdentifier(&chars)
     // `class` property is a special case that's used to store the AERecord's descriptorType
@@ -140,7 +137,7 @@ func parseProperty(_ chars: inout String.CharacterView, classNamePrefix: String)
 
 public func parseTypeAliasDefinition(_ string: String, classNamePrefix: String) throws -> TypeAliasDefinition {
     // TO DO: don't bother splitting; just define a skipChar() function that consumes one char and errors if it's not the char expected
-    let parts = string.characters.split(maxSplits:1, whereSeparator: {$0=="="})//.map(String.init)
+    let parts = string.split(maxSplits:1, whereSeparator: {$0=="="})//.map(String.init)
     if parts.count != 2 { throw SyntaxError("Expected 'ALIASNAME=TYPE' format string.") }
     let name = String(parts[0])
     try validateCIdentifier(name)
@@ -157,7 +154,7 @@ public func parseTypeAliasDefinition(_ string: String, classNamePrefix: String) 
 func parseEnumeratedTypeDefinition(_ string: String, classNamePrefix: String) throws -> EnumeratedTypeDefinition {
     // an enumerated (aka sum/union) type definition is written as a simple format string: "[TYPENAME=]TYPE1+TYPE2+..."
     // note that class name prefixes are added automatically to both "TYPENAME" and (as needed) "TYPEn", allowing a format string to be used over multiple glues, e.g. "URL+Item" -> `enum FINURLOrItem { case URL; case FINItem; ...}`, or "FileObject=URL+Item" -> `enum FINFileObject { case URL; case FINItem; ...}`
-    let parts = string.characters.split(maxSplits:1, whereSeparator: {$0=="="})
+    let parts = string.split(maxSplits:1, whereSeparator: {$0=="="})
     var enumName: String = parts.count == 2 ? String(parts[0]) : ""
     var enumNameParts = [String]()
     var chars = parts.last!
@@ -210,7 +207,7 @@ func parseEnumeratedTypeDefinition(_ string: String, classNamePrefix: String) th
 
 func parseRecordStructDefinition(_ string: String, classNamePrefix: String,
                                  typesByName: [String: NSAppleEventDescriptor]) throws -> RecordStructDefinition {
-    var chars = string.characters
+    var chars = Substring(string)
     var properties = [(name: String, code: OSType, type: String)]()
     let structName = try parseIdentifier(&chars) + "Record" // e.g. `TEDDocumentRecord`; TO DO: might be twitchy if any application 'class' names end with the word "record" themselves
     if isReservedGlueTypeName(structName) { throw SyntaxError("Invalid record struct name: \(structName)") }
@@ -363,8 +360,8 @@ public class StaticGlueTemplate {
     public var string: String { return self._template.copy() as! String }
     
     
-    public init(string: String = SwiftGlueTemplate) {
-        self._template = NSMutableString(string: string)
+    public init(string: String? = nil) {
+        self._template = NSMutableString(string: string ?? SwiftGlueTemplate)
     }
     
     private func subRender<T>(_ newContents: T, renderer: (StaticGlueTemplate, T) -> ()) -> String {
@@ -483,7 +480,7 @@ public class StaticGlueTemplate {
 // glue renderer
 
 public func renderStaticGlueTemplate(glueSpec: GlueSpec, typeSupportSpec: TypeSupportSpec? = nil, importFramework: Bool = true,
-                                     extraTags: [String:String] = [:], templateString: String = SwiftGlueTemplate) throws -> String {
+                                     extraTags: [String:String] = [:], templateString: String? = nil) throws -> String {
     // note: SwiftGlueTemplate requires additional values for extraTags: ["AEGLUE_COMMAND": shellCommand,"GLUE_NAME": glueFileName]
     let glueTable = try glueSpec.buildGlueTable()
     let template = StaticGlueTemplate(string: templateString)
@@ -535,7 +532,7 @@ public func translateScriptingDefinition(_ data: Data, glueSpec: GlueSpec) throw
             attribute.stringValue = symbolPrefix + glueSpec.keywordConverter.convertSpecifierName(value)
         }
     }
-    let xml = try XMLDocument(data: data, options: (1 << 16)) // XMLNode.Options.documentXInclude
+    let xml = try XMLDocument(data: data, options: XMLNode.Options.documentXInclude)
     guard let root = xml.rootElement() else {
         throw TerminologyError("Malformed SDEF resource: missing root.")
     }
@@ -572,7 +569,7 @@ public func translateScriptingDefinition(_ data: Data, glueSpec: GlueSpec) throw
         }
         for valueType in suite.elements(forName: "value-type") { convertNode(valueType) }
     }
-    return xml.xmlData(withOptions: (1 << 18)) // XMLNode.Options.documentIncludeContentTypeDeclaration
+    return xml.xmlData(options: XMLNode.Options.documentIncludeContentTypeDeclaration)
 }
 
 

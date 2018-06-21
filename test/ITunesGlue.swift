@@ -9,7 +9,6 @@
 import Foundation
 
 
-
 /******************************************************************************/
 // Create an untargeted AppData instance for use in App, Con, Its roots,
 // and in Application initializers to create targeted AppData instances.
@@ -2223,7 +2222,7 @@ public class ITURoot: RootSpecifier, ITUObject, RootSpecifierExtension {
 // Application
 public class ITunes: ITURoot, Application {
     public convenience init(launchOptions: LaunchOptions = DefaultLaunchOptions, relaunchMode: RelaunchMode = DefaultRelaunchMode) {
-        self.init(rootObject: AppRootDesc, appData: type(of:self).untargetedAppData.targetedCopy(
+        self.init(rootObject: AppRootDesc, appData: Swift.type(of:self).untargetedAppData.targetedCopy(
                   .bundleIdentifier("com.apple.iTunes", true), launchOptions: launchOptions, relaunchMode: relaunchMode))
     }
 }

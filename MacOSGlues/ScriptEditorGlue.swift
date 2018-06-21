@@ -1097,7 +1097,7 @@ public class SEDRoot: SwiftAutomation.RootSpecifier, SEDObject, SwiftAutomation.
 // Application
 public class ScriptEditor: SEDRoot, SwiftAutomation.Application {
     public convenience init(launchOptions: SwiftAutomation.LaunchOptions = SwiftAutomation.DefaultLaunchOptions, relaunchMode: SwiftAutomation.RelaunchMode = SwiftAutomation.DefaultRelaunchMode) {
-        self.init(rootObject: SwiftAutomation.AppRootDesc, appData: type(of:self).untargetedAppData.targetedCopy(
+        self.init(rootObject: SwiftAutomation.AppRootDesc, appData: Swift.type(of:self).untargetedAppData.targetedCopy(
                   .bundleIdentifier("com.apple.ScriptEditor2", true), launchOptions: launchOptions, relaunchMode: relaunchMode))
     }
 }

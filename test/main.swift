@@ -9,7 +9,7 @@
 
 import AppKit
 import Foundation
-//import SwiftAutomation
+import SwiftAutomation
 
 
 let te = TextEdit()
@@ -63,7 +63,6 @@ do {
     }
     
     
-    /*
     let itunes = ITunes()
     let state: ITU = try itunes.playerState.get()
     print("itunes.playerState.get() -> \(state)")
@@ -85,6 +84,7 @@ do {
     print("TEST: get text of teDoc")
     print(try teDoc.text.get())
 
+    /*
 /*
     
     // get name of document 1

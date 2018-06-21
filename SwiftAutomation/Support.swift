@@ -14,23 +14,23 @@ import AppKit
 extension NSWorkspace { 
     
     // caution: the configuration parameter is ignored in sandboxed apps; this is unavoidable
-    func launchApplication(withBundleIdentifier bundleID: String, options: NSWorkspaceLaunchOptions = [],
-                           configuration: [String : Any]) throws -> NSRunningApplication {
+    @objc func launchApplication(withBundleIdentifier bundleID: String, options: NSWorkspace.LaunchOptions = [],
+                           configuration: [NSWorkspace.LaunchConfigurationKey : Any]) throws -> NSRunningApplication {
         // if one or more processes with the given bundle ID is already running, return the first one found
         let foundProcesses = NSRunningApplication.runningApplications(withBundleIdentifier: bundleID)
         if foundProcesses.count > 0 {
             return foundProcesses[0]
         }
         // first try to get the app's file URL, as this lets us use the better launchApplication(at:options:configuration:) method…
-        if let url = NSWorkspace.shared().urlForApplication(withBundleIdentifier: bundleID) {
+        if let url = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleID) {
             do {
-                return try NSWorkspace.shared().launchApplication(at: url, options: options, configuration: configuration)
+                return try NSWorkspace.shared.launchApplication(at: url, options: options, configuration: configuration)
             } catch {} // for now, we're not sure if urlForApplication(withBundleIdentifier:) will always return nil if blocked by sandbox; if it returns garbage URL instead then hopefully that'll cause launchApplication(at:...) to throw
         }
         // …else fall back to the inferior launchApplication(withBundleIdentifier:options:additionalEventParamDescriptor:launchIdentifier:)
         var options = options
-        options.remove(.async)
-        if NSWorkspace.shared().launchApplication(withBundleIdentifier: bundleID, options: options,
+        options.remove(NSWorkspace.LaunchOptions.async)
+        if NSWorkspace.shared.launchApplication(withBundleIdentifier: bundleID, options: options,
                                                   additionalEventParamDescriptor: nil, launchIdentifier: nil) {
             // TO DO: confirm that launchApplication() never returns before process is available (otherwise the following will need to be in a loop that blocks until it is available or the loop times out)
             let foundProcesses = NSRunningApplication.runningApplications(withBundleIdentifier: bundleID)
@@ -88,12 +88,12 @@ func eightCharCode(_ eventClass: OSType, _ eventID: OSType) -> UInt64 {
 
 extension NSAppleEventDescriptor { // TO DO: how safe/advisable is extending system-defined classes?
     
-    convenience init(type: OSType, code: OSType) {
+    @objc convenience init(type: OSType, code: OSType) {
         var data = code
         self.init(descriptorType: type, bytes: &data, length: MemoryLayout<OSType>.size)!
     }
     
-    convenience init(uint32 data: UInt32) {
+    @objc convenience init(uint32 data: UInt32) {
         var data = data
         self.init(descriptorType: _typeUInt32, bytes: &data, length: MemoryLayout<UInt32>.size)!
     }
@@ -127,9 +127,9 @@ public typealias SendOptions = NSAppleEventDescriptor.SendOptions
 /******************************************************************************/
 // launch and relaunch options used in Application initializers
 
-public typealias LaunchOptions = NSWorkspaceLaunchOptions
+public typealias LaunchOptions = NSWorkspace.LaunchOptions
 
-public let DefaultLaunchOptions: LaunchOptions = .withoutActivation
+public let DefaultLaunchOptions: LaunchOptions = NSWorkspace.LaunchOptions.withoutActivation
 
 
 public enum RelaunchMode { // if [local] target process has terminated, relaunch it automatically when sending next command to it
@@ -191,7 +191,7 @@ public enum TargetApplication: CustomReflectable {
     
     // support functions
     
-    private func localRunningApplication(url: URL) throws -> NSRunningApplication? {
+    private func localRunningApplication(url: URL) throws -> NSRunningApplication? { // TO DO: rename processForLocalApplication
         guard let bundleID = Bundle(url: url)?.bundleIdentifier else {
             throw ConnectionError(target: self, message: "Application not found: \(url)")
         }
@@ -200,7 +200,16 @@ public enum TargetApplication: CustomReflectable {
             return foundProcesses[0]
         } else if foundProcesses.count > 1 {
             for process in foundProcesses {
-                if process.bundleURL == url { // TO DO: confirm this checks for FS identity, not path string equality; if not, use NSURLFileResourceIdentifierKey
+                if process.bundleURL == url { // TO DO: FIX: need to check for FS equality
+                    /*
+                     function idForFileURL(url) {
+                         const fileIDRef = objc.alloc(objc.NSData, objc.NIL).ref();
+                         if (!url('getResourceValue', fileIDRef, 'forKey', objc.NSURLFileResourceIdentifierKey, 'error', null)) {
+                             throw new Error(`Can't get NSURLFileResourceIdentifierKey for ${url}`);
+                         }
+                         return fileIDRef.deref();
+                     }
+                     */
                     return process
                 }
             }
@@ -224,7 +233,7 @@ public enum TargetApplication: CustomReflectable {
         // get a typeKernelProcessID-based AEAddressDesc for the target app, finding and launch it first if not already running;
         // if app can't be found/launched, throws a ConnectionError/NSError instead
         let runningProcess = try (self.localRunningApplication(url: url) ??
-                NSWorkspace.shared().launchApplication(at: url, options: launchOptions, configuration: [:]))
+            NSWorkspace.shared.launchApplication(at: url, options: launchOptions, configuration: [:]))
         return NSAppleEventDescriptor(processIdentifier: runningProcess.processIdentifier)
     }
     
@@ -276,8 +285,8 @@ public enum TargetApplication: CustomReflectable {
     //
     
     private func launch(url: URL) throws {
-        try NSWorkspace.shared().launchApplication(at: url, options: [.withoutActivation],
-                                                   configuration: [NSWorkspaceLaunchConfigurationAppleEvent: LaunchEvent])
+        try NSWorkspace.shared.launchApplication(at: url, options: [NSWorkspace.LaunchOptions.withoutActivation],
+                                                   configuration: [NSWorkspace.LaunchConfigurationKey.appleEvent: LaunchEvent])
     }
     
     // launch this application (equivalent to AppleScript's `launch` command; an obscure corner case that AS users need to fall back onto when sending an event to a Script Editor applet that isn't saved as 'stay open', so only handles the first event it receives then quits when done) // TO DO: is it worth keeping this for 'quirk-for-quirk' compatibility's sake, or just ditch it and tell users to use `NSWorkspace.launchApplication(at:options:configuration:)` with an `NSWorkspaceLaunchConfigurationAppleEvent` if they really need to pass a non-standard first event?
@@ -300,7 +309,7 @@ public enum TargetApplication: CustomReflectable {
                 try self.launch(url: url)
                 return
             case .bundleIdentifier(let bundleID, _):
-                if let url = NSWorkspace.shared().urlForApplication(withBundleIdentifier: bundleID) {
+                if let url = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleID) {
                     try self.launch(url: url)
                     return
                 }
@@ -331,7 +340,7 @@ public enum TargetApplication: CustomReflectable {
             }
         case .bundleIdentifier(let bundleID, _):
             do {
-                let runningProcess = try NSWorkspace.shared().launchApplication(withBundleIdentifier: bundleID,
+                let runningProcess = try NSWorkspace.shared.launchApplication(withBundleIdentifier: bundleID,
                                                                                 options: launchOptions, configuration: [:])
                 return NSAppleEventDescriptor(processIdentifier: runningProcess.processIdentifier)
             } catch {
@@ -354,7 +363,7 @@ public func fileURLForLocalApplication(_ name: String) -> URL? {
     if name.hasPrefix("/") { // full path (note: path must include .app suffix)
         return URL(fileURLWithPath: name)
     } else { // if name is not full path, look up by name (.app suffix is optional)
-        let workspace = NSWorkspace.shared()
+        let workspace = NSWorkspace.shared
         guard let path = workspace.fullPath(forApplication: name) ?? workspace.fullPath(forApplication: "\(name).app") else {
             return nil
         }

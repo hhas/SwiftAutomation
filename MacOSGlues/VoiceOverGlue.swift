@@ -1028,7 +1028,7 @@ public class VOVRoot: SwiftAutomation.RootSpecifier, VOVObject, SwiftAutomation.
 // Application
 public class VoiceOver: VOVRoot, SwiftAutomation.Application {
     public convenience init(launchOptions: SwiftAutomation.LaunchOptions = SwiftAutomation.DefaultLaunchOptions, relaunchMode: SwiftAutomation.RelaunchMode = SwiftAutomation.DefaultRelaunchMode) {
-        self.init(rootObject: SwiftAutomation.AppRootDesc, appData: type(of:self).untargetedAppData.targetedCopy(
+        self.init(rootObject: SwiftAutomation.AppRootDesc, appData: Swift.type(of:self).untargetedAppData.targetedCopy(
                   .bundleIdentifier("com.apple.VoiceOver", true), launchOptions: launchOptions, relaunchMode: relaunchMode))
     }
 }
