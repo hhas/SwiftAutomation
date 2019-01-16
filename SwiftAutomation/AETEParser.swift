@@ -17,16 +17,14 @@ public class AETEParser: ApplicationTerminology {
     public private(set) var types: [KeywordTerm] = []
     public private(set) var enumerators: [KeywordTerm] = []
     public private(set) var properties: [KeywordTerm] = []
-    public private(set) var elements: [KeywordTerm] = []
+    public private(set) var elements: [ClassTerm] = []
     public var commands: [CommandTerm] { return Array(self.commandsDict.values) }
     
     private var commandsDict = [String:CommandTerm]()
     private let keywordConverter: KeywordConverterProtocol
     
     // following are used in parse() to supply 'missing' singular/plural class names
-    private var classAndElementDefsByCode = [OSType:KeywordTerm]()
-    private var foundClassCodes           = Set<OSType>()
-    private var foundElementCodes         = Set<OSType>()
+    private var classDefinitionsByCode = [OSType:ClassTerm]()
     
     var aeteData = NSData() // was char*
     var cursor: Int = 0 // was unsigned long
@@ -48,20 +46,16 @@ public class AETEParser: ApplicationTerminology {
                 }
                 /* singular names are normally used in the classes table and plural names in the elements table. However, if an aete defines a singular name but not a plural name then the missing plural name is substituted with the singular name; and vice-versa if there's no singular equivalent for a plural name.
                 */
-                for code in self.foundClassCodes {
-                    if !self.foundElementCodes.contains(code) {
-                        self.elements.append(self.classAndElementDefsByCode[code]!)
+                for var elementTerm in self.classDefinitionsByCode.values {
+                    if elementTerm.singular == "" {
+                        elementTerm = ClassTerm(singular: elementTerm.plural, plural: elementTerm.plural, code: elementTerm.code)
+                    } else if elementTerm.plural == "" {
+                        elementTerm = ClassTerm(singular: elementTerm.singular, plural: elementTerm.singular, code: elementTerm.code)
                     }
+                    self.elements.append(elementTerm)
+                    self.types.append(elementTerm)
                 }
-                for code in self.foundElementCodes {
-                    if !self.foundClassCodes.contains(code) {
-                        self.types.append(self.classAndElementDefsByCode[code]!)
-                    }
-                }
-                self.classAndElementDefsByCode.removeAll()
-                self.foundClassCodes.removeAll()
-                self.foundElementCodes.removeAll()
-                
+                self.classDefinitionsByCode.removeAll()
             } catch {
                 throw TerminologyError("An error occurred while parsing AETE. \(error)")
             }
@@ -217,19 +211,14 @@ public class AETEParser: ApplicationTerminology {
             try self.checkCursor()
         }
         // add either singular (class) or plural (element) name definition
-        let classDef = KeywordTerm(name: className, kind: .elementOrType, code: classCode)
+        let elementDef: ClassTerm
+        let oldDef = self.classDefinitionsByCode[classCode]
         if isPlural {
-            if !self.elements.contains(classDef) {
-                self.elements.append(classDef)
-                self.foundElementCodes.insert(classCode)
-            }
+            elementDef = ClassTerm(singular: oldDef?.singular ?? "", plural: className, code: classCode)
         } else {
-            if !self.types.contains(classDef) { // classes
-                self.types.append(classDef)
-                self.foundClassCodes.insert(classCode)
-            }
+            elementDef = ClassTerm(singular: className, plural: oldDef?.plural ?? "", code: classCode)
         }
-        self.classAndElementDefsByCode[classCode] = classDef
+        self.classDefinitionsByCode[classCode] = elementDef
     }
     
     func parseComparison() throws {  // comparison info isn't used

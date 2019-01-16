@@ -24,14 +24,15 @@ public class DefaultTerminology: ApplicationTerminology {
     public let types: [KeywordTerm]
     public let enumerators: [KeywordTerm]
     public let properties: [KeywordTerm]
-    public let elements: [KeywordTerm]
+    public let elements: [ClassTerm]
     public let commands: [CommandTerm]
 
     public init(keywordConverter: KeywordConverterProtocol) {
         self.types = self._types.map({KeywordTerm(name: keywordConverter.convertSpecifierName($0), kind: .elementOrType, code: $1)})
         self.enumerators = self._enumerators.map({KeywordTerm(name: keywordConverter.convertSpecifierName($0), kind: .enumerator, code: $1)})
         self.properties = self._properties.map({KeywordTerm(name: keywordConverter.convertSpecifierName($0), kind: .property, code: $1)})
-        self.elements = self._elements.map({KeywordTerm(name: keywordConverter.convertSpecifierName($0), kind: .elementOrType, code: $1)})
+        self.elements = self._elements.map({ClassTerm(singular: keywordConverter.convertSpecifierName($0),
+                                                        plural: keywordConverter.convertSpecifierName($1), code: $2)})
         self.commands = self._commands.map({
             let term = CommandTerm(name: keywordConverter.convertSpecifierName($0), eventClass: $1, eventID: $2)
             for (name, code) in $3 { term.addParameter(keywordConverter.convertParameterName(name), code: code) }
@@ -40,6 +41,7 @@ public class DefaultTerminology: ApplicationTerminology {
     }
     
     private typealias Keywords = [(String, OSType)]
+    private typealias Elements = [(String, String, OSType)]
     private typealias Commands = [(String, OSType, OSType, [(String, OSType)])]
 
     // note: AppleScript-style keyword names are automatically converted to the required format using the given keyword converter
@@ -156,7 +158,7 @@ public class DefaultTerminology: ApplicationTerminology {
                                          ("id", _pID),
                                          ("properties", _pALL),
     ]
-    private let _elements: Keywords = [("items", _cObject),
+    private let _elements: Elements = [("item", "items", _cObject),
     								   // what about ("text",cText)?
     ]
     private let _commands: Commands = [("run", kCoreEventClass, _kAEOpenApplication, []),

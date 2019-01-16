@@ -96,13 +96,14 @@ func applicationURL(forAddressDescriptor addressDesc: NSAppleEventDescriptor) th
 
 
 
-public class DynamicAppData: AppData { // TO DO: can this be used as-is/with modifications as base class for dynamic bridges? if so, move to its own file as it's not specific to formatting; if not, rename it
+open class DynamicAppData: AppData { // TO DO: rename this and make `public` as it's only useful for rendering AEs to SwiftAutomation syntax, not for implementing dynamic language bridges (also see notes on CommandDescription initializer, as it's possible this subclass could be eliminated entirely)
+
     
-    public internal(set) var glueSpec: GlueSpec! // provides glue metadata; TO DO: initializing these is messy, due to AppData.init() being required; any cleaner solution?
+    public internal(set) var glueSpec: GlueSpec! // provides glue metadata; TO DO: initializing these is messy, due to incomplete AppData initializer below being 'required'; any cleaner solution than using `!`?
     public internal(set) var glueTable: GlueTable! // provides keyword<->FCC translations
     
     
-    public required init(target: TargetApplication, launchOptions: LaunchOptions, relaunchMode: RelaunchMode, glueClasses: GlueClasses) {
+    public required init(target: TargetApplication, launchOptions: LaunchOptions, relaunchMode: RelaunchMode, glueClasses: GlueClasses) { // subclass has to re-implement this AppData initializer due to it being 'required'; however, the resulting AppData instance won't contain glueSpec/glueTable values so will crash if those are subsequently used // TO DO: should this initializer always throw fatalError() here? or is it possible to rework AppData implementation to avoid this redeclaration in first place?
         super.init(target: target, launchOptions: launchOptions, relaunchMode: relaunchMode, glueClasses: glueClasses)
     }
 

@@ -31,10 +31,10 @@ import AppKit
 public class SpecifierFormatter {
     
     let applicationClassName: String, classNamePrefix: String // used to render specifier roots (Application, App, Con, Its)
-    let typeNames: [OSType:String], propertyNames: [OSType:String], elementsNames: [OSType:String] // note: dicts should also used in dynamic appdata to translate attribute names to ostypes
+    let typeNames: [OSType:String], propertyNames: [OSType:String], elementsNames: [OSType: (singular: String, plural: String)]
     
-    public required init(applicationClassName: String = "Application", classNamePrefix: String = "",
-                         typeNames: [OSType:String] = [:], propertyNames: [OSType:String] = [:], elementsNames: [OSType:String] = [:]) {
+    public required init(applicationClassName: String = "Application", classNamePrefix: String = "", typeNames: [OSType:String] = [:],
+                         propertyNames: [OSType:String] = [:], elementsNames: [OSType: (singular: String, plural: String)] = [:]) {
         self.applicationClassName = applicationClassName
         self.classNamePrefix = classNamePrefix
         self.typeNames = typeNames
@@ -82,7 +82,7 @@ public class SpecifierFormatter {
     }
     
     func formatPropertyVar(_ code: OSType) -> String {
-        if let name = self.propertyNames[code] ?? self.elementsNames[code] {
+        if let name = self.propertyNames[code] ?? self.elementsNames[code]?.plural {
             return ".\(name)"
         } else { // no code->name translation available
             return ".property(\(formatFourCharCodeString(code)))"
@@ -90,7 +90,7 @@ public class SpecifierFormatter {
     }
     
     func formatElementsVar(_ code: OSType) -> String {
-        if let name = self.elementsNames[code] ?? self.propertyNames[code] {
+        if let name = self.elementsNames[code]?.plural ?? self.propertyNames[code] {
             return ".\(name)"
         } else { // no code->name translation available
             return ".elements(\(formatFourCharCodeString(code)))"

@@ -130,7 +130,7 @@ private let _specifierFormatter = SpecifierFormatter(applicationClassName: "AEAp
                                                                      0x70414c4c: "properties", // "pALL"
                                                      ],
                                                      elementsNames: [
-                                                                     0x636f626a: "items", // "cobj"
+                                                                     0x636f626a: ("item", "items"), // "cobj"
                                                      ])
 
 private let _glueClasses = GlueClasses(insertionSpecifierType: AEInsertion.self,

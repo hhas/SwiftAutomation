@@ -19,7 +19,7 @@ public protocol ApplicationTerminology { // GlueTable.add() accepts any object t
     var types: [KeywordTerm] {get}
     var enumerators: [KeywordTerm] {get}
     var properties: [KeywordTerm] {get}
-    var elements: [KeywordTerm] {get}
+    var elements: [ClassTerm] {get}
     var commands: [CommandTerm] {get}
 }
 
@@ -60,6 +60,19 @@ public class KeywordTerm: Term, Hashable, CustomStringConvertible { // type/enum
     
     public static func ==(lhs: KeywordTerm, rhs: KeywordTerm) -> Bool {
         return lhs.kind == rhs.kind && lhs.code == rhs.code && lhs.name == rhs.name
+    }
+}
+
+
+public class ClassTerm: KeywordTerm {
+    
+    public var singular: String
+    public var plural: String
+    
+    public init(singular: String, plural: String, code: OSType) {
+        self.singular = singular
+        self.plural = plural
+        super.init(name: self.singular, kind: .elementOrType, code: code)
     }
 }
 

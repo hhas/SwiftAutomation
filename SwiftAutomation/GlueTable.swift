@@ -12,11 +12,12 @@
 //  May also be used by dynamic AE bridges.
 //
 
-// TO DO: this isn't the most efficient design: the parser loops over entire dictionary to extract lists of name+code pairs, then GlueTable loops over those again. Ideally parsers would add entries to glue tables directly as they read dictionaries; however, this'll need some thought as the order in which duplicate names/codes are read is significant. The current implementation mimics the AS behavior (when names are duplicated the last definition is used; however, when codes are duplicated the first definition is used); any replacement would need to do likewise.
+// TO DO: this isn't the most efficient design: the parser loops over entire dictionary to extract lists of name+code pairs, then GlueTable loops over those again. Ideally parsers would add entries to glue tables directly as they read dictionaries; however, this'll need some thought as the order in which duplicate names/codes are read is significant. The current implementation mimics the AS behavior (when names are duplicated the last definition is used; however, when codes are duplicated the first definition is used); any replacement would need to do likewise. (Keyword conversion could also be more efficient; may be worth moving that to AETE+SDEF parsers.)
 
 
 import Foundation
 
+public typealias ElementName = (singular: String, plural: String)
 
 
 public class GlueTable {
@@ -28,7 +29,7 @@ public class GlueTable {
     public private(set) var typesByCode:      [OSType:String]      = [:]
     
     public private(set) var elementsByName:   [String:KeywordTerm] = [:]
-    public private(set) var elementsByCode:   [OSType:String]      = [:]
+    public private(set) var elementsByCode:   [OSType:ElementName] = [:] // (singular, plural)
     
     public private(set) var propertiesByName: [String:KeywordTerm] = [:] // e.g. AERecord keys
     public private(set) var propertiesByCode: [OSType:String]      = [:]
@@ -61,9 +62,11 @@ public class GlueTable {
     private var defaultCommandsByName: [String:CommandTerm] = [:]
     
     private let keywordConverter: KeywordConverterProtocol
+    private let allowSingularElements: Bool
     
-    public init(keywordConverter: KeywordConverterProtocol = defaultSwiftKeywordConverter) {
+    public init(keywordConverter: KeywordConverterProtocol = defaultSwiftKeywordConverter, allowSingularElements: Bool = false) {
         self.keywordConverter = keywordConverter
+        self.allowSingularElements = allowSingularElements
         self.add(terminology: keywordConverter.defaultTerminology)
         // retain copies of default type and command terms; these will be used to disambiguate
         // any conflicting application-defined terms added later
@@ -114,12 +117,11 @@ public class GlueTable {
             }
         }
     }
-
-    private func add(specifierKeywords keywords: [KeywordTerm], nameTable: inout [String:KeywordTerm],
-                     codeTable: inout [OSType:String], defaultKeywordsByName: [String:KeywordTerm]) {
+    
+    private func add(propertyKeywords keywords: [KeywordTerm], defaultKeywordsByName: [String:KeywordTerm]) {
         let len = keywords.count
         for i in 0..<len {
-            do { // add a definition to the elementsByCode/propertiesByCode table
+            do { // add a definition to the propertiesByCode table
                 // to handle synonyms, if same code appears more than once then uses name from last definition in list
                 let term = keywords[i]
                 var name = term.name
@@ -130,9 +132,9 @@ public class GlueTable {
                         term.name = name
                     }
                 }
-                codeTable[code] = name
+                self.propertiesByCode[code] = name
             }
-            do { // add a definition to the elementsByName/propertiesByName table
+            do { // add a definition to the propertiesByName table
                 // to handle synonyms, if same name appears more than once then uses code from first definition in list (iterating array in reverse ensures this)
                 let term = keywords[len - 1 - i]
                 var name = term.name
@@ -143,7 +145,58 @@ public class GlueTable {
                         term.name = name
                     }
                 }
-                nameTable[name] = term
+                self.propertiesByName[name] = term
+            }
+        }
+    }
+    
+    private func add(elementKeywords keywords: [ClassTerm], defaultKeywordsByName: [String:KeywordTerm]) {
+        let len = keywords.count
+        for i in 0..<len {
+            do { // add a definition to the elementsByCode table
+                // to handle synonyms, if same code appears more than once then uses name from last definition in list
+                let term = keywords[i]
+                var singular = term.singular
+                var plural = term.plural
+                let code = term.code
+                if let defaultTerm = defaultKeywordsByName[singular] {
+                    if code != defaultTerm.code {
+                        singular = self.keywordConverter.escapeName(singular)
+                        term.singular = singular
+                    }
+                }
+                if let defaultTerm = defaultKeywordsByName[plural] {
+                    if code != defaultTerm.code {
+                        plural = self.keywordConverter.escapeName(plural)
+                        term.plural = plural
+                    }
+                }
+                self.elementsByCode[code] = (singular, plural)
+            }
+            do { // add a definition to the elementsByName table
+                // to handle synonyms, if same name appears more than once then uses code from first definition in list (iterating array in reverse ensures this)
+                let term = keywords[len - 1 - i]
+                var plural = term.plural
+                let code = term.code
+                if let defaultTerm = defaultKeywordsByName[plural] {
+                    if code != defaultTerm.code {
+                        plural = self.keywordConverter.escapeName(plural)
+                        term.plural = plural
+                    }
+                }
+                self.elementsByName[plural] = term
+                // optionally also allow singular form in element references, e.g. `document 1`
+                if self.allowSingularElements {
+                    var singular = term.singular
+                    let code = term.code
+                    if let defaultTerm = defaultKeywordsByName[singular] {
+                        if code != defaultTerm.code {
+                            singular = self.keywordConverter.escapeName(singular)
+                            term.singular = singular
+                        }
+                    }
+                    self.elementsByName[singular] = term
+                }
             }
         }
     }
@@ -178,10 +231,8 @@ public class GlueTable {
         self.add(symbolKeywords: terms.enumerators, descriptorType: typeEnumerated)
         self.add(symbolKeywords: terms.types, descriptorType: typeType)
         // build specifier tables
-        self.add(specifierKeywords: terms.elements, nameTable: &self.elementsByName,
-                 codeTable: &self.elementsByCode, defaultKeywordsByName: self.defaultElementsByName)
-        self.add(specifierKeywords: terms.properties, nameTable: &self.propertiesByName,
-                 codeTable: &self.propertiesByCode, defaultKeywordsByName: self.defaultPropertiesByName)
+        self.add(elementKeywords: terms.elements, defaultKeywordsByName: self.defaultElementsByName)
+        self.add(propertyKeywords: terms.properties, defaultKeywordsByName: self.defaultPropertiesByName)
         // build command table
         self.add(commandKeywords: terms.commands)
         // special case: if property table contains a 'text' definition, move it to element table

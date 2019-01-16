@@ -8,6 +8,8 @@
 import Foundation
 import AppKit
 
+// TO DO: what about applying self-packing protocol/extension to most/all Swift types (as is already done in TypeExtensions.swift for Array, Dictionary, Set), rather than using large `switch` statement in AppData.pack()?
+
 // TO DO: get rid of waitReply: arg and just pass .ignoreReply to sendOptions (if ignore/wait/queue option not given, add .waitReply by default)
 
 // TO DO: 'considering' arg is misnamed: by default it takes [.case], which is the text attributes to *ignore*; FIX!!! (also need to review the  relevant code and the packed AE attributes against AS's, to see what it's doing; these flags are an absolute mess even without semantic/logic errors creeping into code here)
@@ -124,7 +126,7 @@ open class AppData {
     private let _NSNumberType = type(of: NSNumber(value: 1)) // this assumes Cocoa always represents all integer and FP numbers as __NSCFNumber
     
     
-    public func pack(_ value: Any) throws -> NSAppleEventDescriptor {
+    open func pack(_ value: Any) throws -> NSAppleEventDescriptor {
         // note: Swift's Bool/Int/Double<->NSNumber bridging sucks, so NSNumber instances require special processing to ensure the underlying value's exact type (Bool/Int/Double/etc) isn't lost in translation
         if type(of: value) == self._NSBooleanType { // test for NSNumber(value:true/false)
             // important: 
@@ -253,7 +255,7 @@ open class AppData {
     /******************************************************************************/
     // Convert an Apple event descriptor to the specified Swift type, coercing it as necessary
     
-    public func unpack<T>(_ desc: NSAppleEventDescriptor) throws -> T {
+    open func unpack<T>(_ desc: NSAppleEventDescriptor) throws -> T {
         if T.self == Any.self || T.self == AnyObject.self {
             return try self.unpackAsAny(desc) as! T
         } else if let t = T.self as? SelfUnpacking.Type { // note: Symbol, MissingValueType, Array<>, Dictionary<>, Set<>, and Optional<> types unpack the descriptor themselves, as do any custom structs and enums defined in glues
@@ -382,7 +384,7 @@ open class AppData {
     /******************************************************************************/
     // Convert an Apple event descriptor to its preferred Swift type, as determined by its descriptorType
     
-    public func unpackAsAny(_ desc: NSAppleEventDescriptor) throws -> Any { // note: this never returns Optionals (i.e. cMissingValue AEDescs always unpack as MissingValue when return type is Any) to avoid dropping user into Optional<T>.some(Optional<U>.none) hell.
+    open func unpackAsAny(_ desc: NSAppleEventDescriptor) throws -> Any { // note: this never returns Optionals (i.e. cMissingValue AEDescs always unpack as MissingValue when return type is Any) to avoid dropping user into Optional<T>.some(Optional<U>.none) hell.
         switch desc.descriptorType {
             // common AE types
         case _typeTrue, _typeFalse, _typeBoolean:

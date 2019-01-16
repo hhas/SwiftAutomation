@@ -23,7 +23,7 @@ public class SDEFParser: ApplicationTerminology {
     public private(set) var types: [KeywordTerm] = []
     public private(set) var enumerators: [KeywordTerm] = []
     public private(set) var properties: [KeywordTerm] = []
-    public private(set) var elements: [KeywordTerm] = []
+    public private(set) var elements: [ClassTerm] = []
     public var commands: [CommandTerm] { return Array(self.commandsDict.values) }
     
     private var commandsDict = [String:CommandTerm]()
@@ -109,8 +109,8 @@ public class SDEFParser: ApplicationTerminology {
                 try self.parse(propertiesOfElement: element)
                 // use plural class name as elements name (if not given, append "s" to singular name)
                 // (note: record and value types also define plurals, but we only use plurals for element names and elements should always be classes, so we ignore those)
-                let plural = element.attribute(forName: "plural")?.stringValue ?? "\(name)s" // note: the spec says to append 's' to name when plural attribute isn't given; in practice, appending 's' doesn't work so well for names already ending in 's' (e.g. 'print settings'), but that's the SDEF's problem
-                self.elements.append(KeywordTerm(name: self.keywordConverter.convertSpecifierName(plural), kind: .elementOrType, code: code))
+                let plural = element.attribute(forName: "plural")?.stringValue ?? (name == "text" || name.hasSuffix("s") ? name : "\(name)s") // SDEF spec says to append 's' to name when plural attribute isn't given; in practice, appending 's' doesn't work so well for names already ending in 's' (e.g. 'print settings'), nor for 'text' (which is AppleScript-defined), so special-case those here
+                self.elements.append(ClassTerm(singular: name, plural: self.keywordConverter.convertSpecifierName(plural), code: code))
             case "class-extension":
                 try self.parse(propertiesOfElement: element)
             case "record-type":

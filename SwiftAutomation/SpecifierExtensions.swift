@@ -9,20 +9,6 @@
 //
 //     AEApp.elements(cDocument)["README"].property(cText).elements(cParagraph)[1,-2]
 //
-
-// TO DO: should prob. go ahead and implement `all` property, just to ensure it can be done; can always comment out/leave it undocumented
-
-// TO DO: also define `var all: Self.MultipleObjectSpecifierType {...}` which would convert a property specifier [_formPropertyDesc] to an all-elements specifier [_formAbsolutePositionDesc + _kAEAllDesc]? As with `named()`, it would provide parity with AS and cover all eventualities; see also special handling of 'text' keyword in GlueTable.add(), e.g. if `app.document` returns property specifier but an all-elements specifier is needed, `app.document.all` would force it to the latter.
-//
-//      Note that this sort of confusion shouldn't normally occur, because even when a term (e.g. document) is used as both a class [elements] name and a property name, the class's definition should provide both singular and plural versions, so that the glue uses the singular for the property name (`textedit.windows.document`) and the plural for the elements name (`textedit.documents`).
-//
-//      Occasionally, however, a singular class name doesn't have a plural (e.g. `text`, `sheep`) so if it's also used as a property name then things get very murky as to whether `ref.sheep` is referring to a `sheep` property or to all `sheep` elements. IIRC, AppleScript defaults to property unless it _knows_ it's an element (e.g. `sheep 1 thru -2`, `every sheep`); with [IIRC2] `text` being an extra-special case as it's already defined as a class name by AppleScript itself and that overrides any application definition so always packs as an element name.
-//
-//      Some apps - e.g. Illustrator, InDesign - are a bit quirky in not always defining plural class names, e.g. `ref.paragraph[1]` instead of `ref.paragraphs[1]`, or in using the plural as the property name (e.g. `indesign.pasteboardPreferences`) and singular as the class name (`pasteboardPreference`), so there's always some fear of being caught out if the AppleScript API isn't replicated down to the letter (in this case, `NAME.all` = `every NAME`).
-//
-//      The flipside is to argue that until a concrete need for an `all` selector is demonstrated, it's better to err on the side of simplicity rather than paranoia (since explaining to users how object specifiers work is tough enough already). In which case the same argument should apply to the `named(Any)` selector already defined below, and it should be removed until/unless a concrete need to include it is shown.
-//
-//      (The third option, of course, is to include both `named` and `all` selectors, but leave them undocumented [at least outside of troubleshooting section] same as AppData's compatibility flags. That way we're covered if some crusty old app does decide to be awkward, but we're not going to confuse users by telling them about obscure 'fallback' features that few, if any, of them will ever need to know/use/care about.)
 //
 
 
@@ -117,7 +103,7 @@ public extension ObjectSpecifierExtension {
                                            parentQuery: (self as! Query), appData: self.appData, descriptor: nil)
     }
     
-    public var all: Self.MultipleObjectSpecifierType { // TO DO: this is rather nasty; check it works but best not to document it
+    public var all: Self.MultipleObjectSpecifierType { // equivalent to `every REFERENCE`; applied to a property specifier, converts it to all-elements (this may be necessary when property and element names are identical, in which case [with exception of `text`] a property specifier is constructed by default); applied to an all-elements specifier, returns it as-is; applying it to any other reference form will throw an error when used
         if self.selectorForm.typeCodeValue == _formPropertyID {
             return Self.MultipleObjectSpecifierType(wantType: self.selectorData as! NSAppleEventDescriptor,
                                                     selectorForm: _formAbsolutePositionDesc, selectorData: _kAEAllDesc,
