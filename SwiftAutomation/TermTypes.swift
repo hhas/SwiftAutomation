@@ -56,7 +56,9 @@ public class KeywordTerm: Term, Hashable, CustomStringConvertible { // type/enum
         super.init(name: name, kind: kind)
     }
     
-    public var hashValue: Int { return Int(self.code) }
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(Int(self.code))
+    }
     
     public var description: String { return "<\(type(of:self))=\(self.kind):\(self.name)=\(fourCharCode(self.code))>" }
     
@@ -97,7 +99,9 @@ public class CommandTerm: Term, Hashable, CustomStringConvertible {
         super.init(name: name, kind: .command)
     }
     
-    public var hashValue: Int { return Int(self.eventClass) - Int(self.eventID)}
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine((Int(self.eventClass) << 32) + Int(self.eventID))
+    }
     
     public var description: String {
         let params = self.orderedParameters.map({"\($0.name)=\(fourCharCode($0.code))"}).joined(separator: ",")

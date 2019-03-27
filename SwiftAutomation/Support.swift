@@ -262,11 +262,11 @@ public enum TargetApplication: CustomReflectable {
             return true
         case .name(let name): // application's name (.app suffix is optional) or full path
             if let url = fileURLForLocalApplication(name) {
-                return (try? self.localRunningApplication(url: url)) != nil
+                return (((try? self.localRunningApplication(url: url)) as NSRunningApplication??)) != nil
             }
         case .url(let url): // "file" or "eppc" URL
             if url.isFileURL {
-                return (try? self.localRunningApplication(url: url)) != nil
+                return (((try? self.localRunningApplication(url: url)) as NSRunningApplication??)) != nil
             } else if url.scheme == "eppc" {
                 return self.isRunning(processDescriptor: NSAppleEventDescriptor(applicationURL: url))
             }

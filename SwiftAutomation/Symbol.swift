@@ -94,7 +94,10 @@ open class Symbol: Hashable, Equatable, CustomStringConvertible, CustomDebugStri
     
     // equatable, hashable
     
-    public var hashValue: Int { return self.nameOnly ? self.name!.hashValue : Int(self.code) } // see also comments in `==()` below
+    public func hash(into hasher: inout Hasher) { // see also comments in `==()` below
+        hasher.combine(self.nameOnly ? self.name!.hashValue : Int(self.code))
+    }
+
     
     public static func ==(lhs: Symbol, rhs: Symbol) -> Bool {
         // note: operands are not required to be the same subclass as this compares for AE equality only, e.g.:

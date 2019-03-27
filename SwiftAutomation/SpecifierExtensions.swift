@@ -27,19 +27,19 @@ public protocol ObjectSpecifierExtension: ObjectSpecifierProtocol {
 
 public extension ObjectSpecifierExtension {
 
-    public func userProperty(_ name: String) -> Self.ObjectSpecifierType {
+    func userProperty(_ name: String) -> Self.ObjectSpecifierType {
         return Self.ObjectSpecifierType(wantType: _typePropertyDesc,
                                         selectorForm: _formUserPropertyDesc, selectorData: NSAppleEventDescriptor(string: name),
                                         parentQuery: (self as! Query), appData: self.appData, descriptor: nil)
     }
 
-    public func property(_ code: OSType) -> Self.ObjectSpecifierType {
+    func property(_ code: OSType) -> Self.ObjectSpecifierType {
 		return Self.ObjectSpecifierType(wantType: _typePropertyDesc,
 		                                selectorForm: _formPropertyDesc, selectorData: NSAppleEventDescriptor(typeCode: code),
 		                                parentQuery: (self as! Query), appData: self.appData, descriptor: nil)
     }
     
-    public func property(_ code: String) -> Self.ObjectSpecifierType {
+    func property(_ code: String) -> Self.ObjectSpecifierType {
         let data: Any
         do {
             data = NSAppleEventDescriptor(typeCode: try fourCharCode(code))
@@ -51,13 +51,13 @@ public extension ObjectSpecifierExtension {
                                         parentQuery: (self as! Query), appData: self.appData, descriptor: nil)
     }
     
-    public func elements(_ code: OSType) -> Self.MultipleObjectSpecifierType {
+    func elements(_ code: OSType) -> Self.MultipleObjectSpecifierType {
         return Self.MultipleObjectSpecifierType(wantType: NSAppleEventDescriptor(typeCode: code),
                                                 selectorForm: _formAbsolutePositionDesc, selectorData: _kAEAllDesc,
                                                 parentQuery: (self as! Query), appData: self.appData, descriptor: nil)
     }
     
-    public func elements(_ code: String) -> Self.MultipleObjectSpecifierType {
+    func elements(_ code: String) -> Self.MultipleObjectSpecifierType {
         let want: NSAppleEventDescriptor, data: Any
         do {
             want = NSAppleEventDescriptor(typeCode: try fourCharCode(code))
@@ -73,37 +73,37 @@ public extension ObjectSpecifierExtension {
 
     
     // relative position selectors
-    public func previous(_ elementClass: Symbol? = nil) -> Self.ObjectSpecifierType {
+    func previous(_ elementClass: Symbol? = nil) -> Self.ObjectSpecifierType {
         return Self.ObjectSpecifierType(wantType: elementClass == nil ? self.wantType : elementClass!.descriptor,
                                         selectorForm: _formRelativePositionDesc, selectorData: _kAEPreviousDesc,
                                         parentQuery: (self as! Query), appData: self.appData, descriptor: nil)
     }
     
-    public func next(_ elementClass: Symbol? = nil) -> Self.ObjectSpecifierType {
+    func next(_ elementClass: Symbol? = nil) -> Self.ObjectSpecifierType {
         return Self.ObjectSpecifierType(wantType: elementClass == nil ? self.wantType : elementClass!.descriptor,
                                         selectorForm: _formRelativePositionDesc, selectorData: _kAENextDesc,
                                         parentQuery: (self as! Query), appData: self.appData, descriptor: nil)
     }
     
     // insertion specifiers
-    public var beginning: Self.InsertionSpecifierType {
+    var beginning: Self.InsertionSpecifierType {
         return Self.InsertionSpecifierType(insertionLocation: _kAEBeginningDesc,
                                            parentQuery: (self as! Query), appData: self.appData, descriptor: nil)
     }
-    public var end: Self.InsertionSpecifierType {
+    var end: Self.InsertionSpecifierType {
         return Self.InsertionSpecifierType(insertionLocation: _kAEEndDesc,
                                            parentQuery: (self as! Query), appData: self.appData, descriptor: nil)
     }
-    public var before: Self.InsertionSpecifierType {
+    var before: Self.InsertionSpecifierType {
         return Self.InsertionSpecifierType(insertionLocation: _kAEBeforeDesc,
                                            parentQuery: (self as! Query), appData: self.appData, descriptor: nil)
     }
-    public var after: Self.InsertionSpecifierType {
+    var after: Self.InsertionSpecifierType {
         return Self.InsertionSpecifierType(insertionLocation: _kAEAfterDesc,
                                            parentQuery: (self as! Query), appData: self.appData, descriptor: nil)
     }
     
-    public var all: Self.MultipleObjectSpecifierType { // equivalent to `every REFERENCE`; applied to a property specifier, converts it to all-elements (this may be necessary when property and element names are identical, in which case [with exception of `text`] a property specifier is constructed by default); applied to an all-elements specifier, returns it as-is; applying it to any other reference form will throw an error when used
+    var all: Self.MultipleObjectSpecifierType { // equivalent to `every REFERENCE`; applied to a property specifier, converts it to all-elements (this may be necessary when property and element names are identical, in which case [with exception of `text`] a property specifier is constructed by default); applied to an all-elements specifier, returns it as-is; applying it to any other reference form will throw an error when used
         if self.selectorForm.typeCodeValue == _formPropertyID {
             return Self.MultipleObjectSpecifierType(wantType: self.selectorData as! NSAppleEventDescriptor,
                                                     selectorForm: _formAbsolutePositionDesc, selectorData: _kAEAllDesc,
