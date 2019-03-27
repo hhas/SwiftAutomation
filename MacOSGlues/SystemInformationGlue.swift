@@ -1,6 +1,6 @@
 //
 //  SystemInformationGlue.swift
-//  System Information.app 10.12
+//  System Information.app 10.14
 //  SwiftAutomation.framework 0.1.0
 //  `aeglue -S 'System Information.app'`
 //
@@ -215,18 +215,18 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x707a756d: "zoomed", // "pzum"
                                                      ],
                                                      elementsNames: [
-                                                                     0x63617070: "applications", // "capp"
-                                                                     0x61747473: "attachments", // "atts"
-                                                                     0x63617472: "attributeRuns", // "catr"
-                                                                     0x63686120: "characters", // "cha\0x20"
-                                                                     0x636f6c72: "colors", // "colr"
-                                                                     0x646f6375: "documents", // "docu"
-                                                                     0x636f626a: "items", // "cobj"
-                                                                     0x63706172: "paragraphs", // "cpar"
-                                                                     0x70736574: "printSettingss", // "pset"
-                                                                     0x63747874: "texts", // "ctxt"
-                                                                     0x6377696e: "windows", // "cwin"
-                                                                     0x63776f72: "words", // "cwor"
+                                                                     0x63617070: ("application", "applications"), // "capp"
+                                                                     0x61747473: ("attachment", "attachments"), // "atts"
+                                                                     0x63617472: ("attribute run", "attributeRuns"), // "catr"
+                                                                     0x63686120: ("character", "characters"), // "cha\0x20"
+                                                                     0x636f6c72: ("color", "colors"), // "colr"
+                                                                     0x646f6375: ("document", "documents"), // "docu"
+                                                                     0x636f626a: ("item", "items"), // "cobj"
+                                                                     0x63706172: ("paragraph", "paragraphs"), // "cpar"
+                                                                     0x70736574: ("print settings", "printSettings"), // "pset"
+                                                                     0x63747874: ("text", "text"), // "ctxt"
+                                                                     0x6377696e: ("window", "windows"), // "cwin"
+                                                                     0x63776f72: ("word", "words"), // "cwor"
                                                      ])
 
 private let _glueClasses = SwiftAutomation.GlueClasses(insertionSpecifierType: SINInsertion.self,
@@ -994,8 +994,8 @@ extension SINObject {
     public var documents: SINItems {return self.elements(0x646f6375) as! SINItems} // "docu"
     public var items: SINItems {return self.elements(0x636f626a) as! SINItems} // "cobj"
     public var paragraphs: SINItems {return self.elements(0x63706172) as! SINItems} // "cpar"
-    public var printSettingss: SINItems {return self.elements(0x70736574) as! SINItems} // "pset"
-    public var texts: SINItems {return self.elements(0x63747874) as! SINItems} // "ctxt"
+    public var printSettings: SINItems {return self.elements(0x70736574) as! SINItems} // "pset"
+    public var text: SINItems {return self.elements(0x63747874) as! SINItems} // "ctxt"
     public var windows: SINItems {return self.elements(0x6377696e) as! SINItems} // "cwin"
     public var words: SINItems {return self.elements(0x63776f72) as! SINItems} // "cwor"
 }

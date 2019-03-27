@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <!DOCTYPE dictionary SYSTEM "file://localhost/System/Library/DTDs/sdef.dtd">
-<dictionary xmlns:xi="http://www.w3.org/2003/XInclude" apple-event-bridge-name="SwiftAutomation.framework" class-name-prefix="MAI" application-class-name="Mail" apple-event-bridge-version="0.1.0"><!--
+<dictionary xmlns:xi="http://www.w3.org/2003/XInclude" application-class-name="Mail" apple-event-bridge-name="SwiftAutomation.framework" class-name-prefix="MAI" apple-event-bridge-version="0.1.0"><!--
 		We would like to import the Cocoa Standard sdef wholesale, but unfortunately we need to override the
 		"delete", "duplicate", and "move" command classes with our own custom subclasses in order to have
 		decent performance when deleting, copying, and moving large lists of messages, <rdar://problem/3169718>.

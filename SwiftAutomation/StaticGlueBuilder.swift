@@ -416,6 +416,20 @@ public class StaticGlueTemplate {
         }
     }
     
+    public func insertElements(_ block: String, _ newContents: [ClassTerm], emptyContent: String = "") {
+        self.iterate(block: block, newContents: newContents, emptyContent: emptyContent) {
+            $0.insertString("NAME", $1.plural)
+            $0.insertOSType("CODE", $1.code)
+        }
+    }
+    public func insertElements(_ block: String, _ newContents: [(key: OSType, value: ElementName)], emptyContent: String = "") {
+        self.iterate(block: block, newContents: newContents, emptyContent: emptyContent) {
+            $0.insertString("SINGULAR_NAME", $1.1.singular)
+            $0.insertString("PLURAL_NAME", $1.1.plural)
+            $0.insertOSType("CODE", $1.0)
+        }
+    }
+    
     public func insertCommands(_ block: String, _ newContents: [CommandTerm], emptyContent: String = "") {
         self.iterate(block: block, newContents: newContents, emptyContent: emptyContent) {
             $0.insertString("COMMAND_NAME", $1.name)
@@ -503,10 +517,10 @@ public func renderStaticGlueTemplate(glueSpec: GlueSpec, typeSupportSpec: TypeSu
     template.insertKeywords("ENUM_SYMBOL", typesByName.filter({$1.descriptorType == typeEnumerated}).map({(code: $1.enumCodeValue, name: $0)}))
     template.insertKeywords("TYPE_FORMATTER", glueTable.typesByCode.sorted(by: {$0.1.lowercased()<$1.1.lowercased()}), emptyContent: ":")
     template.insertKeywords("PROPERTY_FORMATTER", glueTable.propertiesByCode.sorted(by: {$0.1.lowercased()<$1.1.lowercased()}), emptyContent: ":")
-    template.insertKeywords("ELEMENTS_FORMATTER", glueTable.elementsByCode.map({($0,$1.plural)}).sorted(by: {$0.1.lowercased()<$1.1.lowercased()}), emptyContent: ":")
+    template.insertElements("ELEMENTS_FORMATTER", glueTable.elementsByCode.map({($0,$1)}).sorted(by: {$0.1.plural.lowercased()<$1.1.plural.lowercased()}), emptyContent: ":")
     let specifiersByName = glueTable.specifiersByName.values.sorted(by: {$0.name.lowercased()<$1.name.lowercased()})
     template.insertKeywords("PROPERTY_SPECIFIER", specifiersByName.filter({$0.kind == TermType.property}) as! [KeywordTerm])
-    template.insertKeywords("ELEMENTS_SPECIFIER", specifiersByName.filter({$0.kind == TermType.elementOrType}) as! [KeywordTerm])
+    template.insertElements("ELEMENTS_SPECIFIER", specifiersByName.filter({$0.kind == TermType.type}) as! [ClassTerm])
     template.insertCommands("COMMAND", specifiersByName.filter({$0.kind == TermType.command}) as! [CommandTerm])
     // render any additional enum/struct/alias type definitions specified by user
     // these provide the glue file with better integration between AE and Swift type systems

@@ -17,7 +17,7 @@
                BlueprintIdentifier = "4F0E39641BAA98A900FF2A96"
                BuildableName = "aeglue"
                BlueprintName = "aeglue"
-               ReferencedContainer = "container:SwiftAE.xcodeproj">
+               ReferencedContainer = "container:SwiftAutomation.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -35,7 +35,7 @@
             BlueprintIdentifier = "4F0E39641BAA98A900FF2A96"
             BuildableName = "aeglue"
             BlueprintName = "aeglue"
-            ReferencedContainer = "container:SwiftAE.xcodeproj">
+            ReferencedContainer = "container:SwiftAutomation.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -58,7 +58,7 @@
             BlueprintIdentifier = "4F0E39641BAA98A900FF2A96"
             BuildableName = "aeglue"
             BlueprintName = "aeglue"
-            ReferencedContainer = "container:SwiftAE.xcodeproj">
+            ReferencedContainer = "container:SwiftAutomation.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <AdditionalOptions>
@@ -77,7 +77,7 @@
             BlueprintIdentifier = "4F0E39641BAA98A900FF2A96"
             BuildableName = "aeglue"
             BlueprintName = "aeglue"
-            ReferencedContainer = "container:SwiftAE.xcodeproj">
+            ReferencedContainer = "container:SwiftAutomation.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

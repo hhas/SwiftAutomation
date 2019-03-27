@@ -1,6 +1,6 @@
 //
 //  TerminalGlue.swift
-//  Terminal.app 2.7
+//  Terminal.app 2.9.4
 //  SwiftAutomation.framework 0.1.0
 //  `aeglue -S 'Terminal.app'`
 //
@@ -238,11 +238,11 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x707a756d: "zoomed", // "pzum"
                                                      ],
                                                      elementsNames: [
-                                                                     0x63617070: "applications", // "capp"
-                                                                     0x636f626a: "items", // "cobj"
-                                                                     0x74707266: "settingsSets", // "tprf"
-                                                                     0x74746162: "tabs", // "ttab"
-                                                                     0x6377696e: "windows", // "cwin"
+                                                                     0x63617070: ("application", "applications"), // "capp"
+                                                                     0x636f626a: ("item", "items"), // "cobj"
+                                                                     0x74707266: ("settings set", "settingsSets"), // "tprf"
+                                                                     0x74746162: ("tab", "tabs"), // "ttab"
+                                                                     0x6377696e: ("window", "windows"), // "cwin"
                                                      ])
 
 private let _glueClasses = SwiftAutomation.GlueClasses(insertionSpecifierType: TERInsertion.self,

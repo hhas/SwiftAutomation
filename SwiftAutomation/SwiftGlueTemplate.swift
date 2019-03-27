@@ -31,7 +31,7 @@ let SwiftGlueTemplate = [
 "                                                                     «CODE»: \"«NAME»\", // «CODE_STR»«-PROPERTY_FORMATTER»",
 "                                                     ],",
 "                                                     elementsNames: [«+ELEMENTS_FORMATTER»",
-"                                                                     «CODE»: \"«NAME»\", // «CODE_STR»«-ELEMENTS_FORMATTER»",
+"                                                                     «CODE»: (\"«SINGULAR_NAME»\", \"«PLURAL_NAME»\"), // «CODE_STR»«-ELEMENTS_FORMATTER»",
 "                                                     ])",
 "",
 "private let _glueClasses = «SWIFTAE»GlueClasses(insertionSpecifierType: «PREFIX»Insertion.self,",

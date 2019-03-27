@@ -24,8 +24,10 @@ public protocol ApplicationTerminology { // GlueTable.add() accepts any object t
 }
 
 
+// TO DO: get rid of Term classes; rename TermType enum to Term and attach names and codes to that
+
 public enum TermType {
-    case elementOrType
+    case type
     case enumerator
     case property
     case command
@@ -56,7 +58,7 @@ public class KeywordTerm: Term, Hashable, CustomStringConvertible { // type/enum
     
     public var hashValue: Int { return Int(self.code) }
     
-    public var description: String { return "<\(self.kind):\(self.name)=\(fourCharCode(self.code))>" }
+    public var description: String { return "<\(type(of:self))=\(self.kind):\(self.name)=\(fourCharCode(self.code))>" }
     
     public static func ==(lhs: KeywordTerm, rhs: KeywordTerm) -> Bool {
         return lhs.kind == rhs.kind && lhs.code == rhs.code && lhs.name == rhs.name
@@ -72,7 +74,7 @@ public class ClassTerm: KeywordTerm {
     public init(singular: String, plural: String, code: OSType) {
         self.singular = singular
         self.plural = plural
-        super.init(name: self.singular, kind: .elementOrType, code: code)
+        super.init(name: self.singular, kind: .type, code: code)
     }
 }
 

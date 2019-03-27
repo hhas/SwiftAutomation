@@ -1,6 +1,6 @@
 //
 //  AutomatorGlue.swift
-//  Automator.app 2.7
+//  Automator.app 2.9
 //  SwiftAutomation.framework 0.1.0
 //  `aeglue -S 'Automator.app'`
 //
@@ -262,23 +262,23 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x707a756d: "zoomed", // "pzum"
                                                      ],
                                                      elementsNames: [
-                                                                     0x63617070: "applications", // "capp"
-                                                                     0x61747473: "attachments", // "atts"
-                                                                     0x63617472: "attributeRuns", // "catr"
-                                                                     0x6163747a: "AutomatorActions", // "actz"
-                                                                     0x63686120: "characters", // "cha\0x20"
-                                                                     0x636f6c72: "colors", // "colr"
-                                                                     0x646f6375: "documents", // "docu"
-                                                                     0x636f626a: "items", // "cobj"
-                                                                     0x63706172: "paragraphs", // "cpar"
-                                                                     0x70736574: "printSettingss", // "pset"
-                                                                     0x72657172: "requiredResources", // "reqr"
-                                                                     0x73746e67: "settings", // "stng"
-                                                                     0x63747874: "texts", // "ctxt"
-                                                                     0x76617269: "variables", // "vari"
-                                                                     0x6377696e: "windows", // "cwin"
-                                                                     0x63776f72: "words", // "cwor"
-                                                                     0x776b6677: "workflows", // "wkfw"
+                                                                     0x63617070: ("application", "applications"), // "capp"
+                                                                     0x61747473: ("attachment", "attachments"), // "atts"
+                                                                     0x63617472: ("attribute run", "attributeRuns"), // "catr"
+                                                                     0x6163747a: ("Automator action", "AutomatorActions"), // "actz"
+                                                                     0x63686120: ("character", "characters"), // "cha\0x20"
+                                                                     0x636f6c72: ("color", "colors"), // "colr"
+                                                                     0x646f6375: ("document", "documents"), // "docu"
+                                                                     0x636f626a: ("item", "items"), // "cobj"
+                                                                     0x63706172: ("paragraph", "paragraphs"), // "cpar"
+                                                                     0x70736574: ("print settings", "printSettings"), // "pset"
+                                                                     0x72657172: ("required resource", "requiredResources"), // "reqr"
+                                                                     0x73746e67: ("setting", "settings"), // "stng"
+                                                                     0x63747874: ("text", "text"), // "ctxt"
+                                                                     0x76617269: ("variable", "variables"), // "vari"
+                                                                     0x6377696e: ("window", "windows"), // "cwin"
+                                                                     0x63776f72: ("word", "words"), // "cwor"
+                                                                     0x776b6677: ("workflow", "workflows"), // "wkfw"
                                                      ])
 
 private let _glueClasses = SwiftAutomation.GlueClasses(insertionSpecifierType: AUTInsertion.self,
@@ -1158,10 +1158,10 @@ extension AUTObject {
     public var documents: AUTItems {return self.elements(0x646f6375) as! AUTItems} // "docu"
     public var items: AUTItems {return self.elements(0x636f626a) as! AUTItems} // "cobj"
     public var paragraphs: AUTItems {return self.elements(0x63706172) as! AUTItems} // "cpar"
-    public var printSettingss: AUTItems {return self.elements(0x70736574) as! AUTItems} // "pset"
+    public var printSettings: AUTItems {return self.elements(0x70736574) as! AUTItems} // "pset"
     public var requiredResources: AUTItems {return self.elements(0x72657172) as! AUTItems} // "reqr"
     public var settings: AUTItems {return self.elements(0x73746e67) as! AUTItems} // "stng"
-    public var texts: AUTItems {return self.elements(0x63747874) as! AUTItems} // "ctxt"
+    public var text: AUTItems {return self.elements(0x63747874) as! AUTItems} // "ctxt"
     public var variables: AUTItems {return self.elements(0x76617269) as! AUTItems} // "vari"
     public var windows: AUTItems {return self.elements(0x6377696e) as! AUTItems} // "cwin"
     public var words: AUTItems {return self.elements(0x63776f72) as! AUTItems} // "cwor"

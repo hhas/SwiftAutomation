@@ -1,6 +1,6 @@
 //
 //  QuickTimePlayerGlue.swift
-//  QuickTime Player.app 10.4
+//  QuickTime Player.app 10.5
 //  SwiftAutomation.framework 0.1.0
 //  `aeglue -S 'QuickTime Player.app'`
 //
@@ -221,15 +221,15 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x707a756d: "zoomed", // "pzum"
                                                      ],
                                                      elementsNames: [
-                                                                     0x63617070: "applications", // "capp"
-                                                                     0x61637072: "audioCompressionPresets", // "acpr"
-                                                                     0x61646576: "audioRecordingDevices", // "adev"
-                                                                     0x646f6375: "documents", // "docu"
-                                                                     0x636f626a: "items", // "cobj"
-                                                                     0x6d637072: "movieCompressionPresets", // "mcpr"
-                                                                     0x73637072: "screenCompressionPresets", // "scpr"
-                                                                     0x76646576: "videoRecordingDevices", // "vdev"
-                                                                     0x6377696e: "windows", // "cwin"
+                                                                     0x63617070: ("application", "applications"), // "capp"
+                                                                     0x61637072: ("audio compression preset", "audioCompressionPresets"), // "acpr"
+                                                                     0x61646576: ("audio recording device", "audioRecordingDevices"), // "adev"
+                                                                     0x646f6375: ("document", "documents"), // "docu"
+                                                                     0x636f626a: ("item", "items"), // "cobj"
+                                                                     0x6d637072: ("movie compression preset", "movieCompressionPresets"), // "mcpr"
+                                                                     0x73637072: ("screen compression preset", "screenCompressionPresets"), // "scpr"
+                                                                     0x76646576: ("video recording device", "videoRecordingDevices"), // "vdev"
+                                                                     0x6377696e: ("window", "windows"), // "cwin"
                                                      ])
 
 private let _glueClasses = SwiftAutomation.GlueClasses(insertionSpecifierType: QTPInsertion.self,

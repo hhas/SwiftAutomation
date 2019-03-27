@@ -1,6 +1,6 @@
 //
 //  NumbersGlue.swift
-//  Numbers.app 4.0.5
+//  Numbers.app 5.3
 //  SwiftAutomation.framework 0.1.0
 //  `aeglue -S 'Numbers.app'`
 //
@@ -347,31 +347,31 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x707a756d: "zoomed", // "pzum"
                                                      ],
                                                      elementsNames: [
-                                                                     0x63617070: "applications", // "capp"
-                                                                     0x73686175: "audioClips", // "shau"
-                                                                     0x4e6d436c: "cells", // "NmCl"
-                                                                     0x63686120: "characters", // "cha\0x20"
-                                                                     0x73686374: "charts", // "shct"
-                                                                     0x4e4d436f: "columns", // "NMCo"
-                                                                     0x646f6375: "documents", // "docu"
-                                                                     0x69677270: "groups", // "igrp"
-                                                                     0x696d6167: "images", // "imag"
-                                                                     0x636f626a: "items", // "cobj"
-                                                                     0x69776b63: "iWorkContainers", // "iwkc"
-                                                                     0x666d7469: "iWorkItems", // "fmti"
-                                                                     0x69576c6e: "lines", // "iWln"
-                                                                     0x73686d76: "movies", // "shmv"
-                                                                     0x63706172: "paragraphs", // "cpar"
-                                                                     0x4e6d4352: "ranges", // "NmCR"
-                                                                     0x72747874: "richText", // "rtxt"
-                                                                     0x4e4d5277: "rows", // "NMRw"
-                                                                     0x73736870: "shapes", // "sshp"
-                                                                     0x4e6d5368: "sheets", // "NmSh"
-                                                                     0x4e6d5462: "tables", // "NmTb"
-                                                                     0x746d706c: "templates", // "tmpl"
-                                                                     0x73687478: "textItems", // "shtx"
-                                                                     0x6377696e: "windows", // "cwin"
-                                                                     0x63776f72: "words", // "cwor"
+                                                                     0x63617070: ("application", "applications"), // "capp"
+                                                                     0x73686175: ("audio clip", "audioClips"), // "shau"
+                                                                     0x4e6d436c: ("cell", "cells"), // "NmCl"
+                                                                     0x63686120: ("character", "characters"), // "cha\0x20"
+                                                                     0x73686374: ("chart", "charts"), // "shct"
+                                                                     0x4e4d436f: ("column", "columns"), // "NMCo"
+                                                                     0x646f6375: ("document", "documents"), // "docu"
+                                                                     0x69677270: ("group", "groups"), // "igrp"
+                                                                     0x696d6167: ("image", "images"), // "imag"
+                                                                     0x636f626a: ("item", "items"), // "cobj"
+                                                                     0x69776b63: ("iWork container", "iWorkContainers"), // "iwkc"
+                                                                     0x666d7469: ("iWork item", "iWorkItems"), // "fmti"
+                                                                     0x69576c6e: ("line", "lines"), // "iWln"
+                                                                     0x73686d76: ("movie", "movies"), // "shmv"
+                                                                     0x63706172: ("paragraph", "paragraphs"), // "cpar"
+                                                                     0x4e6d4352: ("range", "ranges"), // "NmCR"
+                                                                     0x72747874: ("rich text", "richText"), // "rtxt"
+                                                                     0x4e4d5277: ("row", "rows"), // "NMRw"
+                                                                     0x73736870: ("shape", "shapes"), // "sshp"
+                                                                     0x4e6d5368: ("sheet", "sheets"), // "NmSh"
+                                                                     0x4e6d5462: ("table", "tables"), // "NmTb"
+                                                                     0x746d706c: ("template", "templates"), // "tmpl"
+                                                                     0x73687478: ("text item", "textItems"), // "shtx"
+                                                                     0x6377696e: ("window", "windows"), // "cwin"
+                                                                     0x63776f72: ("word", "words"), // "cwor"
                                                      ])
 
 private let _glueClasses = SwiftAutomation.GlueClasses(insertionSpecifierType: NUMInsertion.self,

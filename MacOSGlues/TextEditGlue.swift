@@ -1,6 +1,6 @@
 //
 //  TextEditGlue.swift
-//  TextEdit.app 1.12
+//  TextEdit.app 1.14
 //  SwiftAutomation.framework 0.1.0
 //  `aeglue -S 'TextEdit.app'`
 //
@@ -205,18 +205,18 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x707a756d: "zoomed", // "pzum"
                                                      ],
                                                      elementsNames: [
-                                                                     0x63617070: "applications", // "capp"
-                                                                     0x61747473: "attachments", // "atts"
-                                                                     0x63617472: "attributeRuns", // "catr"
-                                                                     0x63686120: "characters", // "cha\0x20"
-                                                                     0x636f6c72: "colors", // "colr"
-                                                                     0x646f6375: "documents", // "docu"
-                                                                     0x636f626a: "items", // "cobj"
-                                                                     0x63706172: "paragraphs", // "cpar"
-                                                                     0x70736574: "printSettingss", // "pset"
-                                                                     0x63747874: "texts", // "ctxt"
-                                                                     0x6377696e: "windows", // "cwin"
-                                                                     0x63776f72: "words", // "cwor"
+                                                                     0x63617070: ("application", "applications"), // "capp"
+                                                                     0x61747473: ("attachment", "attachments"), // "atts"
+                                                                     0x63617472: ("attribute run", "attributeRuns"), // "catr"
+                                                                     0x63686120: ("character", "characters"), // "cha\0x20"
+                                                                     0x636f6c72: ("color", "colors"), // "colr"
+                                                                     0x646f6375: ("document", "documents"), // "docu"
+                                                                     0x636f626a: ("item", "items"), // "cobj"
+                                                                     0x63706172: ("paragraph", "paragraphs"), // "cpar"
+                                                                     0x70736574: ("print settings", "printSettings"), // "pset"
+                                                                     0x63747874: ("text", "text"), // "ctxt"
+                                                                     0x6377696e: ("window", "windows"), // "cwin"
+                                                                     0x63776f72: ("word", "words"), // "cwor"
                                                      ])
 
 private let _glueClasses = SwiftAutomation.GlueClasses(insertionSpecifierType: TEDInsertion.self,
@@ -948,9 +948,8 @@ extension TEDObject {
     public var documents: TEDItems {return self.elements(0x646f6375) as! TEDItems} // "docu"
     public var items: TEDItems {return self.elements(0x636f626a) as! TEDItems} // "cobj"
     public var paragraphs: TEDItems {return self.elements(0x63706172) as! TEDItems} // "cpar"
-    public var printSettingss: TEDItems {return self.elements(0x70736574) as! TEDItems} // "pset"
+    public var printSettings: TEDItems {return self.elements(0x70736574) as! TEDItems} // "pset"
     public var text: TEDItems {return self.elements(0x63747874) as! TEDItems} // "ctxt"
-    public var texts: TEDItems {return self.elements(0x63747874) as! TEDItems} // "ctxt"
     public var windows: TEDItems {return self.elements(0x6377696e) as! TEDItems} // "cwin"
     public var words: TEDItems {return self.elements(0x63776f72) as! TEDItems} // "cwor"
 }

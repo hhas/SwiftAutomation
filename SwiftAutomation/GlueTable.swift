@@ -239,7 +239,7 @@ public class GlueTable {
         // (AppleScript always packs 'text of...' as an all-elements specifier, not a property specifier)
         // TO DO: should check if this rule only applies to 'text', or other ambiguous property/element names too
         if let specialTerm = self.propertiesByName["text"] {
-            self.elementsByName["text"] = KeywordTerm(name: specialTerm.name, kind: .elementOrType, code: specialTerm.code)
+            self.elementsByName["text"] = ClassTerm(singular: specialTerm.name, plural: specialTerm.name, code: specialTerm.code)
             self.propertiesByName.removeValue(forKey: "text")
         }
         self._specifiersByName = nil

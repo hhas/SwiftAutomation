@@ -1,6 +1,6 @@
 //
 //  ScriptEditorGlue.swift
-//  Script Editor.app 2.9
+//  Script Editor.app 2.11
 //  SwiftAutomation.framework 0.1.0
 //  `aeglue -S 'Script Editor.app'`
 //
@@ -223,22 +223,22 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x707a756d: "zoomed", // "pzum"
                                                      ],
                                                      elementsNames: [
-                                                                     0x63617070: "applications", // "capp"
-                                                                     0x61747473: "attachments", // "atts"
-                                                                     0x63617472: "attributeRuns", // "catr"
-                                                                     0x63686120: "characters", // "cha\0x20"
-                                                                     0x70636c73: "classs", // "pcls"
-                                                                     0x636f6c72: "colors", // "colr"
-                                                                     0x646f6375: "documents", // "docu"
-                                                                     0x63696e73: "insertionPoints", // "cins"
-                                                                     0x636f626a: "items", // "cobj"
-                                                                     0x6c616e67: "languages", // "lang"
-                                                                     0x63706172: "paragraphs", // "cpar"
-                                                                     0x70736574: "printSettingss", // "pset"
-                                                                     0x7473656c: "selectionObjects", // "tsel"
-                                                                     0x63747874: "text", // "ctxt"
-                                                                     0x6377696e: "windows", // "cwin"
-                                                                     0x63776f72: "words", // "cwor"
+                                                                     0x63617070: ("application", "applications"), // "capp"
+                                                                     0x61747473: ("attachment", "attachments"), // "atts"
+                                                                     0x63617472: ("attribute run", "attributeRuns"), // "catr"
+                                                                     0x63686120: ("character", "characters"), // "cha\0x20"
+                                                                     0x70636c73: ("class", "class_"), // "pcls"
+                                                                     0x636f6c72: ("color", "colors"), // "colr"
+                                                                     0x646f6375: ("document", "documents"), // "docu"
+                                                                     0x63696e73: ("insertion point", "insertionPoints"), // "cins"
+                                                                     0x636f626a: ("item", "items"), // "cobj"
+                                                                     0x6c616e67: ("language", "languages"), // "lang"
+                                                                     0x63706172: ("paragraph", "paragraphs"), // "cpar"
+                                                                     0x70736574: ("print settings", "printSettings"), // "pset"
+                                                                     0x7473656c: ("selection-object", "selectionObjects"), // "tsel"
+                                                                     0x63747874: ("text", "text"), // "ctxt"
+                                                                     0x6377696e: ("window", "windows"), // "cwin"
+                                                                     0x63776f72: ("word", "words"), // "cwor"
                                                      ])
 
 private let _glueClasses = SwiftAutomation.GlueClasses(insertionSpecifierType: SEDInsertion.self,
@@ -729,22 +729,6 @@ extension SEDCommand {
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    @discardableResult public func execute(_ directParameter: Any = SwiftAutomation.NoParameter,
-            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "execute", eventClass: 0x73656473, eventID: 0x65786563, // "seds"/"exec"
-                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
-                withTimeout: withTimeout, considering: considering)
-    }
-    public func execute<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
-            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "execute", eventClass: 0x73656473, eventID: 0x65786563, // "seds"/"exec"
-                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
-                withTimeout: withTimeout, considering: considering)
-    }
     @discardableResult public func exists(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
@@ -1054,14 +1038,13 @@ extension SEDObject {
     public var attachments: SEDItems {return self.elements(0x61747473) as! SEDItems} // "atts"
     public var attributeRuns: SEDItems {return self.elements(0x63617472) as! SEDItems} // "catr"
     public var characters: SEDItems {return self.elements(0x63686120) as! SEDItems} // "cha\0x20"
-    public var classs: SEDItems {return self.elements(0x70636c73) as! SEDItems} // "pcls"
     public var colors: SEDItems {return self.elements(0x636f6c72) as! SEDItems} // "colr"
     public var documents: SEDItems {return self.elements(0x646f6375) as! SEDItems} // "docu"
     public var insertionPoints: SEDItems {return self.elements(0x63696e73) as! SEDItems} // "cins"
     public var items: SEDItems {return self.elements(0x636f626a) as! SEDItems} // "cobj"
     public var languages: SEDItems {return self.elements(0x6c616e67) as! SEDItems} // "lang"
     public var paragraphs: SEDItems {return self.elements(0x63706172) as! SEDItems} // "cpar"
-    public var printSettingss: SEDItems {return self.elements(0x70736574) as! SEDItems} // "pset"
+    public var printSettings: SEDItems {return self.elements(0x70736574) as! SEDItems} // "pset"
     public var selectionObjects: SEDItems {return self.elements(0x7473656c) as! SEDItems} // "tsel"
     public var text: SEDItems {return self.elements(0x63747874) as! SEDItems} // "ctxt"
     public var windows: SEDItems {return self.elements(0x6377696e) as! SEDItems} // "cwin"

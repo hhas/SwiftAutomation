@@ -194,12 +194,12 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x707a756d: "zoomed", // "pzum"
                                                      ],
                                                      elementsNames: [
-                                                                     0x78707061: "anchors", // "xppa"
-                                                                     0x63617070: "applications", // "capp"
-                                                                     0x646f6375: "documents", // "docu"
-                                                                     0x636f626a: "items", // "cobj"
-                                                                     0x78707062: "panes", // "xppb"
-                                                                     0x6377696e: "windows", // "cwin"
+                                                                     0x78707061: ("anchor", "anchors"), // "xppa"
+                                                                     0x63617070: ("application", "applications"), // "capp"
+                                                                     0x646f6375: ("document", "documents"), // "docu"
+                                                                     0x636f626a: ("item", "items"), // "cobj"
+                                                                     0x78707062: ("pane", "panes"), // "xppb"
+                                                                     0x6377696e: ("window", "windows"), // "cwin"
                                                      ])
 
 private let _glueClasses = SwiftAutomation.GlueClasses(insertionSpecifierType: SPRInsertion.self,

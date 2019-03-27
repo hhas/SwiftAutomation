@@ -1,6 +1,6 @@
 //
 //  ContactsGlue.swift
-//  Contacts.app 10.0
+//  Contacts.app 12.0
 //  SwiftAutomation.framework 0.1.0
 //  `aeglue -S 'Contacts.app'`
 //
@@ -292,27 +292,27 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x707a756d: "zoomed", // "pzum"
                                                      ],
                                                      elementsNames: [
-                                                                     0x617a3237: "addresses", // "az27"
-                                                                     0x617a3232: "AIMHandles", // "az22"
-                                                                     0x63617070: "applications", // "capp"
-                                                                     0x617a3136: "contactInfos", // "az16"
-                                                                     0x617a3532: "customDates", // "az52"
-                                                                     0x646f6375: "documents", // "docu"
-                                                                     0x617a3231: "emails", // "az21"
-                                                                     0x617a6636: "entries", // "azf6"
-                                                                     0x617a6635: "groups", // "azf5"
-                                                                     0x617a3236: "ICQHandles", // "az26"
-                                                                     0x617a3830: "instantMessages", // "az80"
-                                                                     0x636f626a: "items", // "cobj"
-                                                                     0x617a3233: "JabberHandles", // "az23"
-                                                                     0x617a3234: "MSNHandles", // "az24"
-                                                                     0x617a6634: "people", // "azf4"
-                                                                     0x617a3230: "phones", // "az20"
-                                                                     0x617a3533: "relatedNames", // "az53"
-                                                                     0x73703031: "socialProfiles", // "sp01"
-                                                                     0x617a3730: "urls", // "az70"
-                                                                     0x6377696e: "windows", // "cwin"
-                                                                     0x617a3235: "YahooHandles", // "az25"
+                                                                     0x617a3237: ("address", "addresses"), // "az27"
+                                                                     0x617a3232: ("AIM Handle", "AIMHandles"), // "az22"
+                                                                     0x63617070: ("application", "applications"), // "capp"
+                                                                     0x617a3136: ("contact info", "contactInfos"), // "az16"
+                                                                     0x617a3532: ("custom date", "customDates"), // "az52"
+                                                                     0x646f6375: ("document", "documents"), // "docu"
+                                                                     0x617a3231: ("email", "emails"), // "az21"
+                                                                     0x617a6636: ("entry", "entries"), // "azf6"
+                                                                     0x617a6635: ("group", "groups"), // "azf5"
+                                                                     0x617a3236: ("ICQ handle", "ICQHandles"), // "az26"
+                                                                     0x617a3830: ("instant message", "instantMessages"), // "az80"
+                                                                     0x636f626a: ("item", "items"), // "cobj"
+                                                                     0x617a3233: ("Jabber handle", "JabberHandles"), // "az23"
+                                                                     0x617a3234: ("MSN handle", "MSNHandles"), // "az24"
+                                                                     0x617a6634: ("person", "people"), // "azf4"
+                                                                     0x617a3230: ("phone", "phones"), // "az20"
+                                                                     0x617a3533: ("related name", "relatedNames"), // "az53"
+                                                                     0x73703031: ("social profile", "socialProfiles"), // "sp01"
+                                                                     0x617a3730: ("url", "urls"), // "az70"
+                                                                     0x6377696e: ("window", "windows"), // "cwin"
+                                                                     0x617a3235: ("Yahoo handle", "YahooHandles"), // "az25"
                                                      ])
 
 private let _glueClasses = SwiftAutomation.GlueClasses(insertionSpecifierType: CONInsertion.self,

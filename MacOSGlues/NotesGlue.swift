@@ -1,6 +1,6 @@
 //
 //  NotesGlue.swift
-//  Notes.app 4.3
+//  Notes.app 4.6
 //  SwiftAutomation.framework 0.1.0
 //  `aeglue -S 'Notes.app'`
 //
@@ -49,6 +49,8 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x6c647420: "date", // "ldt\0x20"
                                                                      0x64656320: "December", // "dec\0x20"
                                                                      0x6465636d: "decimalStruct", // "decm"
+                                                                     0x64666163: "defaultAccount", // "dfac"
+                                                                     0x64666f6c: "defaultFolder", // "dfol"
                                                                      0x6c776474: "detailed", // "lwdt"
                                                                      0x64696163: "diacriticals", // "diac"
                                                                      0x646f6375: "document", // "docu"
@@ -113,6 +115,7 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x6f637420: "October", // "oct\0x20"
                                                                      0x6c776c61: "pagesAcross", // "lwla"
                                                                      0x6c776c64: "pagesDown", // "lwld"
+                                                                     0x70777072: "passwordProtected", // "pwpr"
                                                                      0x50494354: "PICTPicture", // "PICT"
                                                                      0x74706d6d: "pixelMapRecord", // "tpmm"
                                                                      0x51447074: "point", // "QDpt"
@@ -151,6 +154,7 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x75636f6d: "unsignedDoubleInteger", // "ucom"
                                                                      0x6d61676e: "unsignedInteger", // "magn"
                                                                      0x75736872: "unsignedShortInteger", // "ushr"
+                                                                     0x75706772: "upgraded", // "upgr"
                                                                      0x75743136: "UTF16Text", // "ut16"
                                                                      0x75746638: "UTF8Text", // "utf8"
                                                                      0x76657273: "version", // "vers"
@@ -173,6 +177,8 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x63696420: "contentIdentifier", // "cid\0x20"
                                                                      0x6c776370: "copies", // "lwcp"
                                                                      0x61736364: "creationDate", // "ascd"
+                                                                     0x64666163: "defaultAccount", // "dfac"
+                                                                     0x64666f6c: "defaultFolder", // "dfol"
                                                                      0x646f6375: "document", // "docu"
                                                                      0x6c776c70: "endingPage", // "lwlp"
                                                                      0x6c776568: "errorHandling", // "lweh"
@@ -188,25 +194,27 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x706e616d: "name", // "pnam"
                                                                      0x6c776c61: "pagesAcross", // "lwla"
                                                                      0x6c776c64: "pagesDown", // "lwld"
+                                                                     0x70777072: "passwordProtected", // "pwpr"
                                                                      0x70414c4c: "properties", // "pALL"
                                                                      0x6c777174: "requestedPrintTime", // "lwqt"
                                                                      0x7072737a: "resizable", // "prsz"
                                                                      0x6c776670: "startingPage", // "lwfp"
                                                                      0x74727072: "targetPrinter", // "trpr"
+                                                                     0x75706772: "upgraded", // "upgr"
                                                                      0x76657273: "version", // "vers"
                                                                      0x70766973: "visible", // "pvis"
                                                                      0x69737a6d: "zoomable", // "iszm"
                                                                      0x707a756d: "zoomed", // "pzum"
                                                      ],
                                                      elementsNames: [
-                                                                     0x61636374: "accounts", // "acct"
-                                                                     0x63617070: "applications", // "capp"
-                                                                     0x61747473: "attachments", // "atts"
-                                                                     0x646f6375: "documents", // "docu"
-                                                                     0x63666f6c: "folders", // "cfol"
-                                                                     0x636f626a: "items", // "cobj"
-                                                                     0x6e6f7465: "notes", // "note"
-                                                                     0x6377696e: "windows", // "cwin"
+                                                                     0x61636374: ("account", "accounts"), // "acct"
+                                                                     0x63617070: ("application", "applications"), // "capp"
+                                                                     0x61747473: ("attachment", "attachments"), // "atts"
+                                                                     0x646f6375: ("document", "documents"), // "docu"
+                                                                     0x63666f6c: ("folder", "folders"), // "cfol"
+                                                                     0x636f626a: ("item", "items"), // "cobj"
+                                                                     0x6e6f7465: ("note", "notes"), // "note"
+                                                                     0x6377696e: ("window", "windows"), // "cwin"
                                                      ])
 
 private let _glueClasses = SwiftAutomation.GlueClasses(insertionSpecifierType: NOTInsertion.self,
@@ -261,6 +269,8 @@ public class NOTSymbol: SwiftAutomation.Symbol {
         case 0x6c647420: return self.date // "ldt\0x20"
         case 0x64656320: return self.December // "dec\0x20"
         case 0x6465636d: return self.decimalStruct // "decm"
+        case 0x64666163: return self.defaultAccount // "dfac"
+        case 0x64666f6c: return self.defaultFolder // "dfol"
         case 0x6c776474: return self.detailed // "lwdt"
         case 0x64696163: return self.diacriticals // "diac"
         case 0x646f6375: return self.document // "docu"
@@ -325,6 +335,7 @@ public class NOTSymbol: SwiftAutomation.Symbol {
         case 0x6f637420: return self.October // "oct\0x20"
         case 0x6c776c61: return self.pagesAcross // "lwla"
         case 0x6c776c64: return self.pagesDown // "lwld"
+        case 0x70777072: return self.passwordProtected // "pwpr"
         case 0x50494354: return self.PICTPicture // "PICT"
         case 0x74706d6d: return self.pixelMapRecord // "tpmm"
         case 0x51447074: return self.point // "QDpt"
@@ -363,6 +374,7 @@ public class NOTSymbol: SwiftAutomation.Symbol {
         case 0x75636f6d: return self.unsignedDoubleInteger // "ucom"
         case 0x6d61676e: return self.unsignedInteger // "magn"
         case 0x75736872: return self.unsignedShortInteger // "ushr"
+        case 0x75706772: return self.upgraded // "upgr"
         case 0x75743136: return self.UTF16Text // "ut16"
         case 0x75746638: return self.UTF8Text // "utf8"
         case 0x76657273: return self.version // "vers"
@@ -409,6 +421,8 @@ public class NOTSymbol: SwiftAutomation.Symbol {
     public static let date = NOTSymbol(name: "date", code: 0x6c647420, type: typeType) // "ldt\0x20"
     public static let December = NOTSymbol(name: "December", code: 0x64656320, type: typeType) // "dec\0x20"
     public static let decimalStruct = NOTSymbol(name: "decimalStruct", code: 0x6465636d, type: typeType) // "decm"
+    public static let defaultAccount = NOTSymbol(name: "defaultAccount", code: 0x64666163, type: typeType) // "dfac"
+    public static let defaultFolder = NOTSymbol(name: "defaultFolder", code: 0x64666f6c, type: typeType) // "dfol"
     public static let document = NOTSymbol(name: "document", code: 0x646f6375, type: typeType) // "docu"
     public static let doubleInteger = NOTSymbol(name: "doubleInteger", code: 0x636f6d70, type: typeType) // "comp"
     public static let encodedString = NOTSymbol(name: "encodedString", code: 0x656e6373, type: typeType) // "encs"
@@ -466,6 +480,7 @@ public class NOTSymbol: SwiftAutomation.Symbol {
     public static let October = NOTSymbol(name: "October", code: 0x6f637420, type: typeType) // "oct\0x20"
     public static let pagesAcross = NOTSymbol(name: "pagesAcross", code: 0x6c776c61, type: typeType) // "lwla"
     public static let pagesDown = NOTSymbol(name: "pagesDown", code: 0x6c776c64, type: typeType) // "lwld"
+    public static let passwordProtected = NOTSymbol(name: "passwordProtected", code: 0x70777072, type: typeType) // "pwpr"
     public static let PICTPicture = NOTSymbol(name: "PICTPicture", code: 0x50494354, type: typeType) // "PICT"
     public static let pixelMapRecord = NOTSymbol(name: "pixelMapRecord", code: 0x74706d6d, type: typeType) // "tpmm"
     public static let point = NOTSymbol(name: "point", code: 0x51447074, type: typeType) // "QDpt"
@@ -502,6 +517,7 @@ public class NOTSymbol: SwiftAutomation.Symbol {
     public static let unsignedDoubleInteger = NOTSymbol(name: "unsignedDoubleInteger", code: 0x75636f6d, type: typeType) // "ucom"
     public static let unsignedInteger = NOTSymbol(name: "unsignedInteger", code: 0x6d61676e, type: typeType) // "magn"
     public static let unsignedShortInteger = NOTSymbol(name: "unsignedShortInteger", code: 0x75736872, type: typeType) // "ushr"
+    public static let upgraded = NOTSymbol(name: "upgraded", code: 0x75706772, type: typeType) // "upgr"
     public static let UTF16Text = NOTSymbol(name: "UTF16Text", code: 0x75743136, type: typeType) // "ut16"
     public static let UTF8Text = NOTSymbol(name: "UTF8Text", code: 0x75746638, type: typeType) // "utf8"
     public static let version = NOTSymbol(name: "version", code: 0x76657273, type: typeType) // "vers"
@@ -895,6 +911,22 @@ extension NOTCommand {
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
+    @discardableResult public func show(_ directParameter: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
+        return try self.appData.sendAppleEvent(name: "show", eventClass: 0x6e6f7465, eventID: 0x73686f77, // "note"/"show"
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
+                withTimeout: withTimeout, considering: considering)
+    }
+    public func show<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent(name: "show", eventClass: 0x6e6f7465, eventID: 0x73686f77, // "note"/"show"
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
+                withTimeout: withTimeout, considering: considering)
+    }
 }
 
 
@@ -912,6 +944,8 @@ extension NOTObject {
     public var contentIdentifier: NOTItem {return self.property(0x63696420) as! NOTItem} // "cid\0x20"
     public var copies: NOTItem {return self.property(0x6c776370) as! NOTItem} // "lwcp"
     public var creationDate: NOTItem {return self.property(0x61736364) as! NOTItem} // "ascd"
+    public var defaultAccount: NOTItem {return self.property(0x64666163) as! NOTItem} // "dfac"
+    public var defaultFolder: NOTItem {return self.property(0x64666f6c) as! NOTItem} // "dfol"
     public var document: NOTItem {return self.property(0x646f6375) as! NOTItem} // "docu"
     public var endingPage: NOTItem {return self.property(0x6c776c70) as! NOTItem} // "lwlp"
     public var errorHandling: NOTItem {return self.property(0x6c776568) as! NOTItem} // "lweh"
@@ -927,11 +961,13 @@ extension NOTObject {
     public var name: NOTItem {return self.property(0x706e616d) as! NOTItem} // "pnam"
     public var pagesAcross: NOTItem {return self.property(0x6c776c61) as! NOTItem} // "lwla"
     public var pagesDown: NOTItem {return self.property(0x6c776c64) as! NOTItem} // "lwld"
+    public var passwordProtected: NOTItem {return self.property(0x70777072) as! NOTItem} // "pwpr"
     public var properties: NOTItem {return self.property(0x70414c4c) as! NOTItem} // "pALL"
     public var requestedPrintTime: NOTItem {return self.property(0x6c777174) as! NOTItem} // "lwqt"
     public var resizable: NOTItem {return self.property(0x7072737a) as! NOTItem} // "prsz"
     public var startingPage: NOTItem {return self.property(0x6c776670) as! NOTItem} // "lwfp"
     public var targetPrinter: NOTItem {return self.property(0x74727072) as! NOTItem} // "trpr"
+    public var upgraded: NOTItem {return self.property(0x75706772) as! NOTItem} // "upgr"
     public var version: NOTItem {return self.property(0x76657273) as! NOTItem} // "vers"
     public var visible: NOTItem {return self.property(0x70766973) as! NOTItem} // "pvis"
     public var zoomable: NOTItem {return self.property(0x69737a6d) as! NOTItem} // "iszm"

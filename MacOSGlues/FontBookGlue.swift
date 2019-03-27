@@ -1,6 +1,6 @@
 //
 //  FontBookGlue.swift
-//  Font Book.app 7.0
+//  Font Book.app 9.0
 //  SwiftAutomation.framework 0.1.0
 //  `aeglue -S 'Font Book.app'`
 //
@@ -210,19 +210,19 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x707a756d: "zoomed", // "pzum"
                                                      ],
                                                      elementsNames: [
-                                                                     0x66626166: "AllFontsLibraryObjects", // "fbaf"
-                                                                     0x63617070: "applications", // "capp"
-                                                                     0x636f6c72: "colors", // "colr"
-                                                                     0x646f6375: "documents", // "docu"
-                                                                     0x6662636c: "fontCollections", // "fbcl"
-                                                                     0x66626374: "fontContainers", // "fbct"
-                                                                     0x6662646f: "fontDomains", // "fbdo"
-                                                                     0x6662666d: "fontFamilies", // "fbfm"
-                                                                     0x66626c72: "fontLibraries", // "fblr"
-                                                                     0x636f626a: "items", // "cobj"
-                                                                     0x66626d66: "MyFontsFontLibraries", // "fbmf"
-                                                                     0x66626663: "typefaces", // "fbfc"
-                                                                     0x6377696e: "windows", // "cwin"
+                                                                     0x66626166: ("All Fonts library object", "AllFontsLibraryObjects"), // "fbaf"
+                                                                     0x63617070: ("application", "applications"), // "capp"
+                                                                     0x636f6c72: ("color", "colors"), // "colr"
+                                                                     0x646f6375: ("document", "documents"), // "docu"
+                                                                     0x6662636c: ("font collection", "fontCollections"), // "fbcl"
+                                                                     0x66626374: ("font container", "fontContainers"), // "fbct"
+                                                                     0x6662646f: ("font domain", "fontDomains"), // "fbdo"
+                                                                     0x6662666d: ("font family", "fontFamilies"), // "fbfm"
+                                                                     0x66626c72: ("font library", "fontLibraries"), // "fblr"
+                                                                     0x636f626a: ("item", "items"), // "cobj"
+                                                                     0x66626d66: ("MyFonts library", "MyFontsFontLibraries"), // "fbmf"
+                                                                     0x66626663: ("typeface", "typefaces"), // "fbfc"
+                                                                     0x6377696e: ("window", "windows"), // "cwin"
                                                      ])
 
 private let _glueClasses = SwiftAutomation.GlueClasses(insertionSpecifierType: FBOInsertion.self,

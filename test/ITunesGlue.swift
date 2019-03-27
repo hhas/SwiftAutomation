@@ -1,19 +1,20 @@
 //
 //  ITunesGlue.swift
-//  iTunes.app 12.5.1
+//  iTunes.app 12.9.4
 //  SwiftAutomation.framework 0.1.0
-//  `aeglue -D 'iTunes.app'`
+//  `aeglue -S 'iTunes.app'`
 //
 
 
 import Foundation
+import SwiftAutomation
 
 
 /******************************************************************************/
 // Create an untargeted AppData instance for use in App, Con, Its roots,
 // and in Application initializers to create targeted AppData instances.
 
-private let _specifierFormatter = SpecifierFormatter(applicationClassName: "ITunes",
+private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(applicationClassName: "ITunes",
                                                      classNamePrefix: "ITU",
                                                      typeNames: [
                                                                      0x70416374: "active", // "pAct"
@@ -29,17 +30,17 @@ private let _specifierFormatter = SpecifierFormatter(applicationClassName: "ITun
                                                                      0x70414c76: "albumLoved", // "pALv"
                                                                      0x70416c52: "albumRating", // "pAlR"
                                                                      0x7041526b: "albumRatingKind", // "pARk"
-                                                                     0x6b536841: "albums", // "kShA"
                                                                      0x6b53724c: "albums", // "kSrL"
+                                                                     0x6b536841: "albums", // "kShA"
                                                                      0x6b4d644c: "alertTone", // "kMdL"
                                                                      0x616c6973: "alias", // "alis"
-                                                                     0x6b416c6c: "all", // "kAll"
+                                                                     0x6b416c6c: "all_", // "kAll"
                                                                      0x2a2a2a2a: "anything", // "****"
                                                                      0x6b415054: "AppleTV", // "kAPT"
                                                                      0x63617070: "application", // "capp"
-                                                                     0x62756e64: "applicationBundleId", // "bund"
+                                                                     0x62756e64: "applicationBundleID", // "bund"
                                                                      0x7369676e: "applicationSignature", // "sign"
-                                                                     0x6170726c: "applicationUrl", // "aprl"
+                                                                     0x6170726c: "applicationURL", // "aprl"
                                                                      0x61707220: "April", // "apr\0x20"
                                                                      0x70417274: "artist", // "pArt"
                                                                      0x6b537252: "artists", // "kSrR"
@@ -63,9 +64,11 @@ private let _specifierFormatter = SpecifierFormatter(applicationClassName: "ITun
                                                                      0x70455139: "band9", // "pEQ9"
                                                                      0x62657374: "best", // "best"
                                                                      0x70425274: "bitRate", // "pBRt"
+                                                                     0x6b415042: "BluetoothDevice", // "kAPB"
                                                                      0x6b4d6442: "book", // "kMdB"
                                                                      0x70426b74: "bookmark", // "pBkt"
                                                                      0x70426b6d: "bookmarkable", // "pBkm"
+                                                                     0x626d726b: "bookmarkData", // "bmrk"
                                                                      0x6b537041: "Books", // "kSpA"
                                                                      0x626f6f6c: "boolean", // "bool"
                                                                      0x71647274: "boundingRectangle", // "qdrt"
@@ -89,6 +92,7 @@ private let _specifierFormatter = SpecifierFormatter(applicationClassName: "ITun
                                                                      0x6b537243: "composers", // "kSrC"
                                                                      0x6b527443: "computed", // "kRtC"
                                                                      0x6b415043: "computer", // "kAPC"
+                                                                     0x656e756d: "constant", // "enum"
                                                                      0x63746e72: "container", // "ctnr"
                                                                      0x70436e76: "converting", // "pCnv"
                                                                      0x6c776370: "copies", // "lwcp"
@@ -125,7 +129,6 @@ private let _specifierFormatter = SpecifierFormatter(applicationClassName: "ITun
                                                                      0x656e6373: "encodedString", // "encs"
                                                                      0x63456e63: "encoder", // "cEnc"
                                                                      0x6c776c70: "endingPage", // "lwlp"
-                                                                     0x656e756d: "enumerator", // "enum"
                                                                      0x70457044: "episodeID", // "pEpD"
                                                                      0x7045704e: "episodeNumber", // "pEpN"
                                                                      0x45505320: "EPSPicture", // "EPS\0x20"
@@ -136,21 +139,19 @@ private let _specifierFormatter = SpecifierFormatter(applicationClassName: "ITun
                                                                      0x6b457272: "error", // "kErr"
                                                                      0x6c776568: "errorHandling", // "lweh"
                                                                      0x65787061: "expansion", // "expa"
-                                                                     0x65787465: "extendedFloat", // "exte"
+                                                                     0x65787465: "extendedReal", // "exte"
                                                                      0x6b505346: "fastForwarding", // "kPSF"
                                                                      0x6661786e: "faxNumber", // "faxn"
                                                                      0x66656220: "February", // "feb\0x20"
                                                                      0x66737266: "fileRef", // "fsrf"
                                                                      0x66737320: "fileSpecification", // "fss\0x20"
                                                                      0x63466c54: "fileTrack", // "cFlT"
-                                                                     0x6675726c: "fileUrl", // "furl"
+                                                                     0x6675726c: "fileURL", // "furl"
                                                                      0x70537470: "finish", // "pStp"
                                                                      0x66697864: "fixed", // "fixd"
                                                                      0x70466978: "fixedIndexing", // "pFix"
                                                                      0x66706e74: "fixedPoint", // "fpnt"
                                                                      0x66726374: "fixedRectangle", // "frct"
-                                                                     0x646f7562: "float", // "doub"
-                                                                     0x6c64626c: "float128bit", // "ldbl"
                                                                      0x6b537046: "folder", // "kSpF"
                                                                      0x63466f50: "folderPlaylist", // "cFoP"
                                                                      0x70466d74: "format", // "pFmt"
@@ -166,6 +167,7 @@ private let _specifierFormatter = SpecifierFormatter(applicationClassName: "ITun
                                                                      0x63677478: "graphicText", // "cgtx"
                                                                      0x70477270: "grouping", // "pGrp"
                                                                      0x6b536847: "groupings", // "kShG"
+                                                                     0x6b415048: "HomePod", // "kAPH"
                                                                      0x6b566448: "homeVideo", // "kVdH"
                                                                      0x68797068: "hyphens", // "hyph"
                                                                      0x49442020: "id", // "ID\0x20\0x20"
@@ -177,15 +179,16 @@ private let _specifierFormatter = SpecifierFormatter(applicationClassName: "ITun
                                                                      0x6b506f64: "iPod", // "kPod"
                                                                      0x636f626a: "item", // "cobj"
                                                                      0x6b495453: "iTunesStore", // "kITS"
-                                                                     0x6b537055: "iTunesU", // "kSpU"
                                                                      0x6b4d6449: "iTunesU", // "kMdI"
+                                                                     0x6b537055: "iTunesU", // "kSpU"
                                                                      0x6a616e20: "January", // "jan\0x20"
                                                                      0x4a504547: "JPEGPicture", // "JPEG"
                                                                      0x6a756c20: "July", // "jul\0x20"
                                                                      0x6a756e20: "June", // "jun\0x20"
-                                                                     0x6b706964: "kernelProcessId", // "kpid"
+                                                                     0x6b706964: "kernelProcessID", // "kpid"
                                                                      0x704b6e64: "kind", // "pKnd"
                                                                      0x6b56534c: "large", // "kVSL"
+                                                                     0x6c64626c: "largeReal", // "ldbl"
                                                                      0x6b53704c: "Library", // "kSpL"
                                                                      0x6b4c6962: "library", // "kLib"
                                                                      0x634c6950: "libraryPlaylist", // "cLiP"
@@ -268,6 +271,7 @@ private let _specifierFormatter = SpecifierFormatter(applicationClassName: "ITun
                                                                      0x70527465: "rating", // "pRte"
                                                                      0x7052746b: "ratingKind", // "pRtk"
                                                                      0x70526177: "rawData", // "pRaw"
+                                                                     0x646f7562: "real", // "doub"
                                                                      0x7265636f: "record", // "reco"
                                                                      0x6f626a20: "reference", // "obj\0x20"
                                                                      0x70526c44: "releaseDate", // "pRlD"
@@ -290,7 +294,6 @@ private let _specifierFormatter = SpecifierFormatter(applicationClassName: "ITun
                                                                      0x70536872: "shared", // "pShr"
                                                                      0x6b536864: "sharedLibrary", // "kShd"
                                                                      0x63536854: "sharedTrack", // "cShT"
-                                                                     0x73696e67: "shortFloat", // "sing"
                                                                      0x73686f72: "shortInteger", // "shor"
                                                                      0x70536877: "show", // "pShw"
                                                                      0x70536661: "shufflable", // "pSfa"
@@ -301,11 +304,12 @@ private let _specifierFormatter = SpecifierFormatter(applicationClassName: "ITun
                                                                      0x70536b43: "skippedCount", // "pSkC"
                                                                      0x70536b44: "skippedDate", // "pSkD"
                                                                      0x6b565353: "small", // "kVSS"
+                                                                     0x73696e67: "smallReal", // "sing"
                                                                      0x70536d74: "smart", // "pSmt"
                                                                      0x6b4d6453: "song", // "kMdS"
                                                                      0x70527074: "songRepeat", // "pRpt"
-                                                                     0x6b536853: "songs", // "kShS"
                                                                      0x6b537253: "songs", // "kSrS"
+                                                                     0x6b536853: "songs", // "kShS"
                                                                      0x7053416c: "sortAlbum", // "pSAl"
                                                                      0x70534141: "sortAlbumArtist", // "pSAA"
                                                                      0x70534172: "sortArtist", // "pSAr"
@@ -340,18 +344,20 @@ private let _specifierFormatter = SpecifierFormatter(applicationClassName: "ITun
                                                                      0x6b566454: "TVShow", // "kVdT"
                                                                      0x6b537054: "TVShows", // "kSpT"
                                                                      0x74797065: "typeClass", // "type"
-                                                                     0x75747874: "unicodeText", // "utxt"
+                                                                     0x75747874: "UnicodeText", // "utxt"
                                                                      0x6b415055: "unknown", // "kAPU"
                                                                      0x6b556e6b: "unknown", // "kUnk"
                                                                      0x70556e70: "unplayed", // "pUnp"
+                                                                     0x75636f6d: "unsignedDoubleInteger", // "ucom"
                                                                      0x6d61676e: "unsignedInteger", // "magn"
+                                                                     0x75736872: "unsignedShortInteger", // "ushr"
                                                                      0x70555443: "updateTracks", // "pUTC"
                                                                      0x6b55706c: "uploaded", // "kUpl"
                                                                      0x63555254: "URLTrack", // "cURT"
                                                                      0x6b527455: "user", // "kRtU"
                                                                      0x63557350: "userPlaylist", // "cUsP"
-                                                                     0x75743136: "utf16Text", // "ut16"
-                                                                     0x75746638: "utf8Text", // "utf8"
+                                                                     0x75743136: "UTF16Text", // "ut16"
+                                                                     0x75746638: "UTF8Text", // "utf8"
                                                                      0x76657273: "version", // "vers"
                                                                      0x7056644b: "videoKind", // "pVdK"
                                                                      0x634e5057: "videoWindow", // "cNPW"
@@ -533,38 +539,35 @@ private let _specifierFormatter = SpecifierFormatter(applicationClassName: "ITun
                                                                      0x707a756d: "zoomed", // "pzum"
                                                      ],
                                                      elementsNames: [
-                                                                     0x63415044: "AirPlayDevices", // "cAPD"
-                                                                     0x63617070: "applications", // "capp"
-                                                                     0x63417274: "artworks", // "cArt"
-                                                                     0x63434450: "audioCDPlaylists", // "cCDP"
-                                                                     0x63434454: "audioCDTracks", // "cCDT"
-                                                                     0x63427257: "browserWindows", // "cBrW"
-                                                                     0x636f6d70: "doubleInteger", // "comp"
-                                                                     0x63456e63: "encoders", // "cEnc"
-                                                                     0x63455150: "EQPresets", // "cEQP"
-                                                                     0x63455157: "EQWindows", // "cEQW"
-                                                                     0x63466c54: "fileTracks", // "cFlT"
-                                                                     0x63466f50: "folderPlaylists", // "cFoP"
-                                                                     0x636f626a: "items", // "cobj"
-                                                                     0x634c6950: "libraryPlaylists", // "cLiP"
-                                                                     0x634d5057: "miniplayerWindows", // "cMPW"
-                                                                     0x50494354: "picture", // "PICT"
-                                                                     0x63506c79: "playlists", // "cPly"
-                                                                     0x63506c57: "playlistWindows", // "cPlW"
-                                                                     0x70736574: "printSettings", // "pset"
-                                                                     0x63525450: "radioTunerPlaylists", // "cRTP"
-                                                                     0x63536854: "sharedTracks", // "cShT"
-                                                                     0x63537263: "sources", // "cSrc"
-                                                                     0x63537550: "subscriptionPlaylists", // "cSuP"
-                                                                     0x6354726b: "tracks", // "cTrk"
-                                                                     0x63555254: "URLTracks", // "cURT"
-                                                                     0x63557350: "userPlaylists", // "cUsP"
-                                                                     0x634e5057: "videoWindows", // "cNPW"
-                                                                     0x63566973: "visuals", // "cVis"
-                                                                     0x6377696e: "windows", // "cwin"
+                                                                     0x63415044: ("AirPlay device", "AirPlayDevices"), // "cAPD"
+                                                                     0x63617070: ("application", "applications"), // "capp"
+                                                                     0x63417274: ("artwork", "artworks"), // "cArt"
+                                                                     0x63434450: ("audio CD playlist", "audioCDPlaylists"), // "cCDP"
+                                                                     0x63434454: ("audio CD track", "audioCDTracks"), // "cCDT"
+                                                                     0x63427257: ("browser window", "browserWindows"), // "cBrW"
+                                                                     0x63456e63: ("encoder", "encoders"), // "cEnc"
+                                                                     0x63455150: ("EQ preset", "EQPresets"), // "cEQP"
+                                                                     0x63455157: ("EQ window", "EQWindows"), // "cEQW"
+                                                                     0x63466c54: ("file track", "fileTracks"), // "cFlT"
+                                                                     0x63466f50: ("folder playlist", "folderPlaylists"), // "cFoP"
+                                                                     0x636f626a: ("item", "items"), // "cobj"
+                                                                     0x634c6950: ("library playlist", "libraryPlaylists"), // "cLiP"
+                                                                     0x634d5057: ("miniplayer window", "miniplayerWindows"), // "cMPW"
+                                                                     0x63506c79: ("playlist", "playlists"), // "cPly"
+                                                                     0x63506c57: ("playlist window", "playlistWindows"), // "cPlW"
+                                                                     0x63525450: ("radio tuner playlist", "radioTunerPlaylists"), // "cRTP"
+                                                                     0x63536854: ("shared track", "sharedTracks"), // "cShT"
+                                                                     0x63537263: ("source", "sources"), // "cSrc"
+                                                                     0x63537550: ("subscription playlist", "subscriptionPlaylists"), // "cSuP"
+                                                                     0x6354726b: ("track", "tracks"), // "cTrk"
+                                                                     0x63555254: ("URL track", "URLTracks"), // "cURT"
+                                                                     0x63557350: ("user playlist", "userPlaylists"), // "cUsP"
+                                                                     0x634e5057: ("video window", "videoWindows"), // "cNPW"
+                                                                     0x63566973: ("visual", "visuals"), // "cVis"
+                                                                     0x6377696e: ("window", "windows"), // "cwin"
                                                      ])
 
-private let _glueClasses = GlueClasses(insertionSpecifierType: ITUInsertion.self,
+private let _glueClasses = SwiftAutomation.GlueClasses(insertionSpecifierType: ITUInsertion.self,
                                        objectSpecifierType: ITUItem.self,
                                        multiObjectSpecifierType: ITUItems.self,
                                        rootSpecifierType: ITURoot.self,
@@ -572,13 +575,13 @@ private let _glueClasses = GlueClasses(insertionSpecifierType: ITUInsertion.self
                                        symbolType: ITUSymbol.self,
                                        formatter: _specifierFormatter)
 
-private let _untargetedAppData = AppData(glueClasses: _glueClasses)
+private let _untargetedAppData = SwiftAutomation.AppData(glueClasses: _glueClasses)
 
 
 /******************************************************************************/
 // Symbol subclass defines static type/enum/property constants based on iTunes.app terminology
 
-public class ITUSymbol: Symbol {
+public class ITUSymbol: SwiftAutomation.Symbol {
 
     override public var typeAliasName: String {return "ITU"}
 
@@ -597,17 +600,17 @@ public class ITUSymbol: Symbol {
         case 0x70414c76: return self.albumLoved // "pALv"
         case 0x70416c52: return self.albumRating // "pAlR"
         case 0x7041526b: return self.albumRatingKind // "pARk"
-        case 0x6b536841: return self.albums // "kShA"
         case 0x6b53724c: return self.albums // "kSrL"
+        case 0x6b536841: return self.albums // "kShA"
         case 0x6b4d644c: return self.alertTone // "kMdL"
         case 0x616c6973: return self.alias // "alis"
-        case 0x6b416c6c: return self.all // "kAll"
+        case 0x6b416c6c: return self.all_ // "kAll"
         case 0x2a2a2a2a: return self.anything // "****"
         case 0x6b415054: return self.AppleTV // "kAPT"
         case 0x63617070: return self.application // "capp"
-        case 0x62756e64: return self.applicationBundleId // "bund"
+        case 0x62756e64: return self.applicationBundleID // "bund"
         case 0x7369676e: return self.applicationSignature // "sign"
-        case 0x6170726c: return self.applicationUrl // "aprl"
+        case 0x6170726c: return self.applicationURL // "aprl"
         case 0x61707220: return self.April // "apr\0x20"
         case 0x70417274: return self.artist // "pArt"
         case 0x6b537252: return self.artists // "kSrR"
@@ -631,9 +634,11 @@ public class ITUSymbol: Symbol {
         case 0x70455139: return self.band9 // "pEQ9"
         case 0x62657374: return self.best // "best"
         case 0x70425274: return self.bitRate // "pBRt"
+        case 0x6b415042: return self.BluetoothDevice // "kAPB"
         case 0x6b4d6442: return self.book // "kMdB"
         case 0x70426b74: return self.bookmark // "pBkt"
         case 0x70426b6d: return self.bookmarkable // "pBkm"
+        case 0x626d726b: return self.bookmarkData // "bmrk"
         case 0x6b537041: return self.Books // "kSpA"
         case 0x626f6f6c: return self.boolean // "bool"
         case 0x71647274: return self.boundingRectangle // "qdrt"
@@ -657,6 +662,7 @@ public class ITUSymbol: Symbol {
         case 0x6b537243: return self.composers // "kSrC"
         case 0x6b527443: return self.computed // "kRtC"
         case 0x6b415043: return self.computer // "kAPC"
+        case 0x656e756d: return self.constant // "enum"
         case 0x63746e72: return self.container // "ctnr"
         case 0x70436e76: return self.converting // "pCnv"
         case 0x6c776370: return self.copies // "lwcp"
@@ -693,7 +699,6 @@ public class ITUSymbol: Symbol {
         case 0x656e6373: return self.encodedString // "encs"
         case 0x63456e63: return self.encoder // "cEnc"
         case 0x6c776c70: return self.endingPage // "lwlp"
-        case 0x656e756d: return self.enumerator // "enum"
         case 0x70457044: return self.episodeID // "pEpD"
         case 0x7045704e: return self.episodeNumber // "pEpN"
         case 0x45505320: return self.EPSPicture // "EPS\0x20"
@@ -704,21 +709,19 @@ public class ITUSymbol: Symbol {
         case 0x6b457272: return self.error // "kErr"
         case 0x6c776568: return self.errorHandling // "lweh"
         case 0x65787061: return self.expansion // "expa"
-        case 0x65787465: return self.extendedFloat // "exte"
+        case 0x65787465: return self.extendedReal // "exte"
         case 0x6b505346: return self.fastForwarding // "kPSF"
         case 0x6661786e: return self.faxNumber // "faxn"
         case 0x66656220: return self.February // "feb\0x20"
         case 0x66737266: return self.fileRef // "fsrf"
         case 0x66737320: return self.fileSpecification // "fss\0x20"
         case 0x63466c54: return self.fileTrack // "cFlT"
-        case 0x6675726c: return self.fileUrl // "furl"
+        case 0x6675726c: return self.fileURL // "furl"
         case 0x70537470: return self.finish // "pStp"
         case 0x66697864: return self.fixed // "fixd"
         case 0x70466978: return self.fixedIndexing // "pFix"
         case 0x66706e74: return self.fixedPoint // "fpnt"
         case 0x66726374: return self.fixedRectangle // "frct"
-        case 0x646f7562: return self.float // "doub"
-        case 0x6c64626c: return self.float128bit // "ldbl"
         case 0x6b537046: return self.folder // "kSpF"
         case 0x63466f50: return self.folderPlaylist // "cFoP"
         case 0x70466d74: return self.format // "pFmt"
@@ -734,6 +737,7 @@ public class ITUSymbol: Symbol {
         case 0x63677478: return self.graphicText // "cgtx"
         case 0x70477270: return self.grouping // "pGrp"
         case 0x6b536847: return self.groupings // "kShG"
+        case 0x6b415048: return self.HomePod // "kAPH"
         case 0x6b566448: return self.homeVideo // "kVdH"
         case 0x68797068: return self.hyphens // "hyph"
         case 0x49442020: return self.id // "ID\0x20\0x20"
@@ -745,15 +749,16 @@ public class ITUSymbol: Symbol {
         case 0x6b506f64: return self.iPod // "kPod"
         case 0x636f626a: return self.item // "cobj"
         case 0x6b495453: return self.iTunesStore // "kITS"
-        case 0x6b537055: return self.iTunesU // "kSpU"
         case 0x6b4d6449: return self.iTunesU // "kMdI"
+        case 0x6b537055: return self.iTunesU // "kSpU"
         case 0x6a616e20: return self.January // "jan\0x20"
         case 0x4a504547: return self.JPEGPicture // "JPEG"
         case 0x6a756c20: return self.July // "jul\0x20"
         case 0x6a756e20: return self.June // "jun\0x20"
-        case 0x6b706964: return self.kernelProcessId // "kpid"
+        case 0x6b706964: return self.kernelProcessID // "kpid"
         case 0x704b6e64: return self.kind // "pKnd"
         case 0x6b56534c: return self.large // "kVSL"
+        case 0x6c64626c: return self.largeReal // "ldbl"
         case 0x6b53704c: return self.Library // "kSpL"
         case 0x6b4c6962: return self.library // "kLib"
         case 0x634c6950: return self.libraryPlaylist // "cLiP"
@@ -836,6 +841,7 @@ public class ITUSymbol: Symbol {
         case 0x70527465: return self.rating // "pRte"
         case 0x7052746b: return self.ratingKind // "pRtk"
         case 0x70526177: return self.rawData // "pRaw"
+        case 0x646f7562: return self.real // "doub"
         case 0x7265636f: return self.record // "reco"
         case 0x6f626a20: return self.reference // "obj\0x20"
         case 0x70526c44: return self.releaseDate // "pRlD"
@@ -858,7 +864,6 @@ public class ITUSymbol: Symbol {
         case 0x70536872: return self.shared // "pShr"
         case 0x6b536864: return self.sharedLibrary // "kShd"
         case 0x63536854: return self.sharedTrack // "cShT"
-        case 0x73696e67: return self.shortFloat // "sing"
         case 0x73686f72: return self.shortInteger // "shor"
         case 0x70536877: return self.show // "pShw"
         case 0x70536661: return self.shufflable // "pSfa"
@@ -869,11 +874,12 @@ public class ITUSymbol: Symbol {
         case 0x70536b43: return self.skippedCount // "pSkC"
         case 0x70536b44: return self.skippedDate // "pSkD"
         case 0x6b565353: return self.small // "kVSS"
+        case 0x73696e67: return self.smallReal // "sing"
         case 0x70536d74: return self.smart // "pSmt"
         case 0x6b4d6453: return self.song // "kMdS"
         case 0x70527074: return self.songRepeat // "pRpt"
-        case 0x6b536853: return self.songs // "kShS"
         case 0x6b537253: return self.songs // "kSrS"
+        case 0x6b536853: return self.songs // "kShS"
         case 0x7053416c: return self.sortAlbum // "pSAl"
         case 0x70534141: return self.sortAlbumArtist // "pSAA"
         case 0x70534172: return self.sortArtist // "pSAr"
@@ -908,18 +914,20 @@ public class ITUSymbol: Symbol {
         case 0x6b566454: return self.TVShow // "kVdT"
         case 0x6b537054: return self.TVShows // "kSpT"
         case 0x74797065: return self.typeClass // "type"
-        case 0x75747874: return self.unicodeText // "utxt"
+        case 0x75747874: return self.UnicodeText // "utxt"
         case 0x6b415055: return self.unknown // "kAPU"
         case 0x6b556e6b: return self.unknown // "kUnk"
         case 0x70556e70: return self.unplayed // "pUnp"
+        case 0x75636f6d: return self.unsignedDoubleInteger // "ucom"
         case 0x6d61676e: return self.unsignedInteger // "magn"
+        case 0x75736872: return self.unsignedShortInteger // "ushr"
         case 0x70555443: return self.updateTracks // "pUTC"
         case 0x6b55706c: return self.uploaded // "kUpl"
         case 0x63555254: return self.URLTrack // "cURT"
         case 0x6b527455: return self.user // "kRtU"
         case 0x63557350: return self.userPlaylist // "cUsP"
-        case 0x75743136: return self.utf16Text // "ut16"
-        case 0x75746638: return self.utf8Text // "utf8"
+        case 0x75743136: return self.UTF16Text // "ut16"
+        case 0x75746638: return self.UTF8Text // "utf8"
         case 0x76657273: return self.version // "vers"
         case 0x7056644b: return self.videoKind // "pVdK"
         case 0x634e5057: return self.videoWindow // "cNPW"
@@ -957,9 +965,9 @@ public class ITUSymbol: Symbol {
     public static let alias = ITUSymbol(name: "alias", code: 0x616c6973, type: typeType) // "alis"
     public static let anything = ITUSymbol(name: "anything", code: 0x2a2a2a2a, type: typeType) // "****"
     public static let application = ITUSymbol(name: "application", code: 0x63617070, type: typeType) // "capp"
-    public static let applicationBundleId = ITUSymbol(name: "applicationBundleId", code: 0x62756e64, type: typeType) // "bund"
+    public static let applicationBundleID = ITUSymbol(name: "applicationBundleID", code: 0x62756e64, type: typeType) // "bund"
     public static let applicationSignature = ITUSymbol(name: "applicationSignature", code: 0x7369676e, type: typeType) // "sign"
-    public static let applicationUrl = ITUSymbol(name: "applicationUrl", code: 0x6170726c, type: typeType) // "aprl"
+    public static let applicationURL = ITUSymbol(name: "applicationURL", code: 0x6170726c, type: typeType) // "aprl"
     public static let April = ITUSymbol(name: "April", code: 0x61707220, type: typeType) // "apr\0x20"
     public static let artist = ITUSymbol(name: "artist", code: 0x70417274, type: typeType) // "pArt"
     public static let artwork = ITUSymbol(name: "artwork", code: 0x63417274, type: typeType) // "cArt"
@@ -981,6 +989,7 @@ public class ITUSymbol: Symbol {
     public static let bitRate = ITUSymbol(name: "bitRate", code: 0x70425274, type: typeType) // "pBRt"
     public static let bookmark = ITUSymbol(name: "bookmark", code: 0x70426b74, type: typeType) // "pBkt"
     public static let bookmarkable = ITUSymbol(name: "bookmarkable", code: 0x70426b6d, type: typeType) // "pBkm"
+    public static let bookmarkData = ITUSymbol(name: "bookmarkData", code: 0x626d726b, type: typeType) // "bmrk"
     public static let boolean = ITUSymbol(name: "boolean", code: 0x626f6f6c, type: typeType) // "bool"
     public static let boundingRectangle = ITUSymbol(name: "boundingRectangle", code: 0x71647274, type: typeType) // "qdrt"
     public static let bounds = ITUSymbol(name: "bounds", code: 0x70626e64, type: typeType) // "pbnd"
@@ -998,6 +1007,7 @@ public class ITUSymbol: Symbol {
     public static let comment = ITUSymbol(name: "comment", code: 0x70436d74, type: typeType) // "pCmt"
     public static let compilation = ITUSymbol(name: "compilation", code: 0x70416e74, type: typeType) // "pAnt"
     public static let composer = ITUSymbol(name: "composer", code: 0x70436d70, type: typeType) // "pCmp"
+    public static let constant = ITUSymbol(name: "constant", code: 0x656e756d, type: typeType) // "enum"
     public static let container = ITUSymbol(name: "container", code: 0x63746e72, type: typeType) // "ctnr"
     public static let converting = ITUSymbol(name: "converting", code: 0x70436e76, type: typeType) // "pCnv"
     public static let copies = ITUSymbol(name: "copies", code: 0x6c776370, type: typeType) // "lwcp"
@@ -1030,7 +1040,6 @@ public class ITUSymbol: Symbol {
     public static let encodedString = ITUSymbol(name: "encodedString", code: 0x656e6373, type: typeType) // "encs"
     public static let encoder = ITUSymbol(name: "encoder", code: 0x63456e63, type: typeType) // "cEnc"
     public static let endingPage = ITUSymbol(name: "endingPage", code: 0x6c776c70, type: typeType) // "lwlp"
-    public static let enumerator = ITUSymbol(name: "enumerator", code: 0x656e756d, type: typeType) // "enum"
     public static let episodeID = ITUSymbol(name: "episodeID", code: 0x70457044, type: typeType) // "pEpD"
     public static let episodeNumber = ITUSymbol(name: "episodeNumber", code: 0x7045704e, type: typeType) // "pEpN"
     public static let EPSPicture = ITUSymbol(name: "EPSPicture", code: 0x45505320, type: typeType) // "EPS\0x20"
@@ -1039,20 +1048,18 @@ public class ITUSymbol: Symbol {
     public static let EQPreset = ITUSymbol(name: "EQPreset", code: 0x63455150, type: typeType) // "cEQP"
     public static let EQWindow = ITUSymbol(name: "EQWindow", code: 0x63455157, type: typeType) // "cEQW"
     public static let errorHandling = ITUSymbol(name: "errorHandling", code: 0x6c776568, type: typeType) // "lweh"
-    public static let extendedFloat = ITUSymbol(name: "extendedFloat", code: 0x65787465, type: typeType) // "exte"
+    public static let extendedReal = ITUSymbol(name: "extendedReal", code: 0x65787465, type: typeType) // "exte"
     public static let faxNumber = ITUSymbol(name: "faxNumber", code: 0x6661786e, type: typeType) // "faxn"
     public static let February = ITUSymbol(name: "February", code: 0x66656220, type: typeType) // "feb\0x20"
     public static let fileRef = ITUSymbol(name: "fileRef", code: 0x66737266, type: typeType) // "fsrf"
     public static let fileSpecification = ITUSymbol(name: "fileSpecification", code: 0x66737320, type: typeType) // "fss\0x20"
     public static let fileTrack = ITUSymbol(name: "fileTrack", code: 0x63466c54, type: typeType) // "cFlT"
-    public static let fileUrl = ITUSymbol(name: "fileUrl", code: 0x6675726c, type: typeType) // "furl"
+    public static let fileURL = ITUSymbol(name: "fileURL", code: 0x6675726c, type: typeType) // "furl"
     public static let finish = ITUSymbol(name: "finish", code: 0x70537470, type: typeType) // "pStp"
     public static let fixed = ITUSymbol(name: "fixed", code: 0x66697864, type: typeType) // "fixd"
     public static let fixedIndexing = ITUSymbol(name: "fixedIndexing", code: 0x70466978, type: typeType) // "pFix"
     public static let fixedPoint = ITUSymbol(name: "fixedPoint", code: 0x66706e74, type: typeType) // "fpnt"
     public static let fixedRectangle = ITUSymbol(name: "fixedRectangle", code: 0x66726374, type: typeType) // "frct"
-    public static let float = ITUSymbol(name: "float", code: 0x646f7562, type: typeType) // "doub"
-    public static let float128bit = ITUSymbol(name: "float128bit", code: 0x6c64626c, type: typeType) // "ldbl"
     public static let folderPlaylist = ITUSymbol(name: "folderPlaylist", code: 0x63466f50, type: typeType) // "cFoP"
     public static let format = ITUSymbol(name: "format", code: 0x70466d74, type: typeType) // "pFmt"
     public static let freeSpace = ITUSymbol(name: "freeSpace", code: 0x66727370, type: typeType) // "frsp"
@@ -1075,8 +1082,9 @@ public class ITUSymbol: Symbol {
     public static let JPEGPicture = ITUSymbol(name: "JPEGPicture", code: 0x4a504547, type: typeType) // "JPEG"
     public static let July = ITUSymbol(name: "July", code: 0x6a756c20, type: typeType) // "jul\0x20"
     public static let June = ITUSymbol(name: "June", code: 0x6a756e20, type: typeType) // "jun\0x20"
-    public static let kernelProcessId = ITUSymbol(name: "kernelProcessId", code: 0x6b706964, type: typeType) // "kpid"
+    public static let kernelProcessID = ITUSymbol(name: "kernelProcessID", code: 0x6b706964, type: typeType) // "kpid"
     public static let kind = ITUSymbol(name: "kind", code: 0x704b6e64, type: typeType) // "pKnd"
+    public static let largeReal = ITUSymbol(name: "largeReal", code: 0x6c64626c, type: typeType) // "ldbl"
     public static let libraryPlaylist = ITUSymbol(name: "libraryPlaylist", code: 0x634c6950, type: typeType) // "cLiP"
     public static let list = ITUSymbol(name: "list", code: 0x6c697374, type: typeType) // "list"
     public static let location = ITUSymbol(name: "location", code: 0x704c6f63, type: typeType) // "pLoc"
@@ -1136,6 +1144,7 @@ public class ITUSymbol: Symbol {
     public static let rating = ITUSymbol(name: "rating", code: 0x70527465, type: typeType) // "pRte"
     public static let ratingKind = ITUSymbol(name: "ratingKind", code: 0x7052746b, type: typeType) // "pRtk"
     public static let rawData = ITUSymbol(name: "rawData", code: 0x70526177, type: typeType) // "pRaw"
+    public static let real = ITUSymbol(name: "real", code: 0x646f7562, type: typeType) // "doub"
     public static let record = ITUSymbol(name: "record", code: 0x7265636f, type: typeType) // "reco"
     public static let reference = ITUSymbol(name: "reference", code: 0x6f626a20, type: typeType) // "obj\0x20"
     public static let releaseDate = ITUSymbol(name: "releaseDate", code: 0x70526c44, type: typeType) // "pRlD"
@@ -1154,7 +1163,6 @@ public class ITUSymbol: Symbol {
     public static let September = ITUSymbol(name: "September", code: 0x73657020, type: typeType) // "sep\0x20"
     public static let shared = ITUSymbol(name: "shared", code: 0x70536872, type: typeType) // "pShr"
     public static let sharedTrack = ITUSymbol(name: "sharedTrack", code: 0x63536854, type: typeType) // "cShT"
-    public static let shortFloat = ITUSymbol(name: "shortFloat", code: 0x73696e67, type: typeType) // "sing"
     public static let shortInteger = ITUSymbol(name: "shortInteger", code: 0x73686f72, type: typeType) // "shor"
     public static let show = ITUSymbol(name: "show", code: 0x70536877, type: typeType) // "pShw"
     public static let shufflable = ITUSymbol(name: "shufflable", code: 0x70536661, type: typeType) // "pSfa"
@@ -1164,6 +1172,7 @@ public class ITUSymbol: Symbol {
     public static let size = ITUSymbol(name: "size", code: 0x7053697a, type: typeType) // "pSiz"
     public static let skippedCount = ITUSymbol(name: "skippedCount", code: 0x70536b43, type: typeType) // "pSkC"
     public static let skippedDate = ITUSymbol(name: "skippedDate", code: 0x70536b44, type: typeType) // "pSkD"
+    public static let smallReal = ITUSymbol(name: "smallReal", code: 0x73696e67, type: typeType) // "sing"
     public static let smart = ITUSymbol(name: "smart", code: 0x70536d74, type: typeType) // "pSmt"
     public static let songRepeat = ITUSymbol(name: "songRepeat", code: 0x70527074, type: typeType) // "pRpt"
     public static let sortAlbum = ITUSymbol(name: "sortAlbum", code: 0x7053416c, type: typeType) // "pSAl"
@@ -1194,14 +1203,16 @@ public class ITUSymbol: Symbol {
     public static let trackNumber = ITUSymbol(name: "trackNumber", code: 0x7054724e, type: typeType) // "pTrN"
     public static let Tuesday = ITUSymbol(name: "Tuesday", code: 0x74756520, type: typeType) // "tue\0x20"
     public static let typeClass = ITUSymbol(name: "typeClass", code: 0x74797065, type: typeType) // "type"
-    public static let unicodeText = ITUSymbol(name: "unicodeText", code: 0x75747874, type: typeType) // "utxt"
+    public static let UnicodeText = ITUSymbol(name: "UnicodeText", code: 0x75747874, type: typeType) // "utxt"
     public static let unplayed = ITUSymbol(name: "unplayed", code: 0x70556e70, type: typeType) // "pUnp"
+    public static let unsignedDoubleInteger = ITUSymbol(name: "unsignedDoubleInteger", code: 0x75636f6d, type: typeType) // "ucom"
     public static let unsignedInteger = ITUSymbol(name: "unsignedInteger", code: 0x6d61676e, type: typeType) // "magn"
+    public static let unsignedShortInteger = ITUSymbol(name: "unsignedShortInteger", code: 0x75736872, type: typeType) // "ushr"
     public static let updateTracks = ITUSymbol(name: "updateTracks", code: 0x70555443, type: typeType) // "pUTC"
     public static let URLTrack = ITUSymbol(name: "URLTrack", code: 0x63555254, type: typeType) // "cURT"
     public static let userPlaylist = ITUSymbol(name: "userPlaylist", code: 0x63557350, type: typeType) // "cUsP"
-    public static let utf16Text = ITUSymbol(name: "utf16Text", code: 0x75743136, type: typeType) // "ut16"
-    public static let utf8Text = ITUSymbol(name: "utf8Text", code: 0x75746638, type: typeType) // "utf8"
+    public static let UTF16Text = ITUSymbol(name: "UTF16Text", code: 0x75743136, type: typeType) // "ut16"
+    public static let UTF8Text = ITUSymbol(name: "UTF8Text", code: 0x75746638, type: typeType) // "utf8"
     public static let version = ITUSymbol(name: "version", code: 0x76657273, type: typeType) // "vers"
     public static let videoKind = ITUSymbol(name: "videoKind", code: 0x7056644b, type: typeType) // "pVdK"
     public static let videoWindow = ITUSymbol(name: "videoWindow", code: 0x634e5057, type: typeType) // "cNPW"
@@ -1224,12 +1235,13 @@ public class ITUSymbol: Symbol {
     public static let albumListing = ITUSymbol(name: "albumListing", code: 0x6b416c62, type: typeEnumerated) // "kAlb"
     public static let albums = ITUSymbol(name: "albums", code: 0x6b536841, type: typeEnumerated) // "kShA"
     public static let alertTone = ITUSymbol(name: "alertTone", code: 0x6b4d644c, type: typeEnumerated) // "kMdL"
-    public static let all = ITUSymbol(name: "all", code: 0x6b416c6c, type: typeEnumerated) // "kAll"
+    public static let all_ = ITUSymbol(name: "all_", code: 0x6b416c6c, type: typeEnumerated) // "kAll"
     public static let AppleTV = ITUSymbol(name: "AppleTV", code: 0x6b415054, type: typeEnumerated) // "kAPT"
     public static let artists = ITUSymbol(name: "artists", code: 0x6b537252, type: typeEnumerated) // "kSrR"
     public static let ask = ITUSymbol(name: "ask", code: 0x61736b20, type: typeEnumerated) // "ask\0x20"
     public static let audiobook = ITUSymbol(name: "audiobook", code: 0x6b4d6441, type: typeEnumerated) // "kMdA"
     public static let audioCD = ITUSymbol(name: "audioCD", code: 0x6b414344, type: typeEnumerated) // "kACD"
+    public static let BluetoothDevice = ITUSymbol(name: "BluetoothDevice", code: 0x6b415042, type: typeEnumerated) // "kAPB"
     public static let book = ITUSymbol(name: "book", code: 0x6b4d6442, type: typeEnumerated) // "kMdB"
     public static let Books = ITUSymbol(name: "Books", code: 0x6b537041, type: typeEnumerated) // "kSpA"
     public static let case_ = ITUSymbol(name: "case_", code: 0x63617365, type: typeEnumerated) // "case"
@@ -1247,6 +1259,7 @@ public class ITUSymbol: Symbol {
     public static let folder = ITUSymbol(name: "folder", code: 0x6b537046, type: typeEnumerated) // "kSpF"
     public static let Genius = ITUSymbol(name: "Genius", code: 0x6b537047, type: typeEnumerated) // "kSpG"
     public static let groupings = ITUSymbol(name: "groupings", code: 0x6b536847, type: typeEnumerated) // "kShG"
+    public static let HomePod = ITUSymbol(name: "HomePod", code: 0x6b415048, type: typeEnumerated) // "kAPH"
     public static let homeVideo = ITUSymbol(name: "homeVideo", code: 0x6b566448, type: typeEnumerated) // "kVdH"
     public static let hyphens = ITUSymbol(name: "hyphens", code: 0x68797068, type: typeEnumerated) // "hyph"
     public static let ineligible = ITUSymbol(name: "ineligible", code: 0x6b52656a, type: typeEnumerated) // "kRej"
@@ -1305,404 +1318,404 @@ public typealias ITU = ITUSymbol // allows symbols to be written as (e.g.) ITU.n
 /******************************************************************************/
 // Specifier extensions; these add command methods and property/elements getters based on iTunes.app terminology
 
-public protocol ITUCommand: SpecifierProtocol {} // provides AE dispatch methods
+public protocol ITUCommand: SwiftAutomation.SpecifierProtocol {} // provides AE dispatch methods
 
 // Command->Any will be bound when return type can't be inferred, else Command->T
 
 extension ITUCommand {
-    @discardableResult public func activate(_ directParameter: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+    @discardableResult public func activate(_ directParameter: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "activate", eventClass: 0x6d697363, eventID: 0x61637476, // "misc"/"actv"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    public func activate<T>(_ directParameter: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+    public func activate<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "activate", eventClass: 0x6d697363, eventID: 0x61637476, // "misc"/"actv"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    @discardableResult public func add(_ directParameter: Any = NoParameter,
-            to: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+    @discardableResult public func add(_ directParameter: Any = SwiftAutomation.NoParameter,
+            to: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "add", eventClass: 0x686f6f6b, eventID: 0x41646420, // "hook"/"Add\0x20"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                     ("to", 0x696e7368, to), // "insh"
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    public func add<T>(_ directParameter: Any = NoParameter,
-            to: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+    public func add<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            to: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "add", eventClass: 0x686f6f6b, eventID: 0x41646420, // "hook"/"Add\0x20"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                     ("to", 0x696e7368, to), // "insh"
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    @discardableResult public func backTrack(_ directParameter: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+    @discardableResult public func backTrack(_ directParameter: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "backTrack", eventClass: 0x686f6f6b, eventID: 0x4261636b, // "hook"/"Back"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    public func backTrack<T>(_ directParameter: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+    public func backTrack<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "backTrack", eventClass: 0x686f6f6b, eventID: 0x4261636b, // "hook"/"Back"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    @discardableResult public func close(_ directParameter: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+    @discardableResult public func close(_ directParameter: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "close", eventClass: 0x636f7265, eventID: 0x636c6f73, // "core"/"clos"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    public func close<T>(_ directParameter: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+    public func close<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "close", eventClass: 0x636f7265, eventID: 0x636c6f73, // "core"/"clos"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    @discardableResult public func convert(_ directParameter: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+    @discardableResult public func convert(_ directParameter: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "convert", eventClass: 0x686f6f6b, eventID: 0x436f6e76, // "hook"/"Conv"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    public func convert<T>(_ directParameter: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+    public func convert<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "convert", eventClass: 0x686f6f6b, eventID: 0x436f6e76, // "hook"/"Conv"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    @discardableResult public func count(_ directParameter: Any = NoParameter,
-            each: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+    @discardableResult public func count(_ directParameter: Any = SwiftAutomation.NoParameter,
+            each: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "count", eventClass: 0x636f7265, eventID: 0x636e7465, // "core"/"cnte"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                     ("each", 0x6b6f636c, each), // "kocl"
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    public func count<T>(_ directParameter: Any = NoParameter,
-            each: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+    public func count<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            each: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "count", eventClass: 0x636f7265, eventID: 0x636e7465, // "core"/"cnte"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                     ("each", 0x6b6f636c, each), // "kocl"
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    @discardableResult public func delete(_ directParameter: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+    @discardableResult public func delete(_ directParameter: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "delete", eventClass: 0x636f7265, eventID: 0x64656c6f, // "core"/"delo"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    public func delete<T>(_ directParameter: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+    public func delete<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "delete", eventClass: 0x636f7265, eventID: 0x64656c6f, // "core"/"delo"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    @discardableResult public func download(_ directParameter: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+    @discardableResult public func download(_ directParameter: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "download", eventClass: 0x686f6f6b, eventID: 0x44776e6c, // "hook"/"Dwnl"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    public func download<T>(_ directParameter: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+    public func download<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "download", eventClass: 0x686f6f6b, eventID: 0x44776e6c, // "hook"/"Dwnl"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    @discardableResult public func duplicate(_ directParameter: Any = NoParameter,
-            to: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+    @discardableResult public func duplicate(_ directParameter: Any = SwiftAutomation.NoParameter,
+            to: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "duplicate", eventClass: 0x636f7265, eventID: 0x636c6f6e, // "core"/"clon"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                     ("to", 0x696e7368, to), // "insh"
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    public func duplicate<T>(_ directParameter: Any = NoParameter,
-            to: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+    public func duplicate<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            to: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "duplicate", eventClass: 0x636f7265, eventID: 0x636c6f6e, // "core"/"clon"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                     ("to", 0x696e7368, to), // "insh"
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    @discardableResult public func eject(_ directParameter: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+    @discardableResult public func eject(_ directParameter: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "eject", eventClass: 0x686f6f6b, eventID: 0x456a6374, // "hook"/"Ejct"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    public func eject<T>(_ directParameter: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+    public func eject<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "eject", eventClass: 0x686f6f6b, eventID: 0x456a6374, // "hook"/"Ejct"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    @discardableResult public func exists(_ directParameter: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+    @discardableResult public func exists(_ directParameter: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "exists", eventClass: 0x636f7265, eventID: 0x646f6578, // "core"/"doex"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    public func exists<T>(_ directParameter: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+    public func exists<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "exists", eventClass: 0x636f7265, eventID: 0x646f6578, // "core"/"doex"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    @discardableResult public func fastForward(_ directParameter: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+    @discardableResult public func fastForward(_ directParameter: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "fastForward", eventClass: 0x686f6f6b, eventID: 0x46617374, // "hook"/"Fast"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    public func fastForward<T>(_ directParameter: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+    public func fastForward<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "fastForward", eventClass: 0x686f6f6b, eventID: 0x46617374, // "hook"/"Fast"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    @discardableResult public func get(_ directParameter: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+    @discardableResult public func get(_ directParameter: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "get", eventClass: 0x636f7265, eventID: 0x67657464, // "core"/"getd"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    public func get<T>(_ directParameter: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+    public func get<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "get", eventClass: 0x636f7265, eventID: 0x67657464, // "core"/"getd"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    @discardableResult public func make(_ directParameter: Any = NoParameter,
-            new: Any = NoParameter,
-            at: Any = NoParameter,
-            withProperties: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+    @discardableResult public func make(_ directParameter: Any = SwiftAutomation.NoParameter,
+            new: Any = SwiftAutomation.NoParameter,
+            at: Any = SwiftAutomation.NoParameter,
+            withProperties: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "make", eventClass: 0x636f7265, eventID: 0x6372656c, // "core"/"crel"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                     ("new", 0x6b6f636c, new), // "kocl"
                     ("at", 0x696e7368, at), // "insh"
                     ("withProperties", 0x70726474, withProperties), // "prdt"
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    public func make<T>(_ directParameter: Any = NoParameter,
-            new: Any = NoParameter,
-            at: Any = NoParameter,
-            withProperties: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+    public func make<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            new: Any = SwiftAutomation.NoParameter,
+            at: Any = SwiftAutomation.NoParameter,
+            withProperties: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "make", eventClass: 0x636f7265, eventID: 0x6372656c, // "core"/"crel"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                     ("new", 0x6b6f636c, new), // "kocl"
                     ("at", 0x696e7368, at), // "insh"
                     ("withProperties", 0x70726474, withProperties), // "prdt"
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    @discardableResult public func move(_ directParameter: Any = NoParameter,
-            to: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+    @discardableResult public func move(_ directParameter: Any = SwiftAutomation.NoParameter,
+            to: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "move", eventClass: 0x636f7265, eventID: 0x6d6f7665, // "core"/"move"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                     ("to", 0x696e7368, to), // "insh"
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    public func move<T>(_ directParameter: Any = NoParameter,
-            to: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+    public func move<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            to: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "move", eventClass: 0x636f7265, eventID: 0x6d6f7665, // "core"/"move"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                     ("to", 0x696e7368, to), // "insh"
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    @discardableResult public func nextTrack(_ directParameter: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+    @discardableResult public func nextTrack(_ directParameter: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "nextTrack", eventClass: 0x686f6f6b, eventID: 0x4e657874, // "hook"/"Next"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    public func nextTrack<T>(_ directParameter: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+    public func nextTrack<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "nextTrack", eventClass: 0x686f6f6b, eventID: 0x4e657874, // "hook"/"Next"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    @discardableResult public func open(_ directParameter: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+    @discardableResult public func open(_ directParameter: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "open", eventClass: 0x61657674, eventID: 0x6f646f63, // "aevt"/"odoc"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    public func open<T>(_ directParameter: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+    public func open<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "open", eventClass: 0x61657674, eventID: 0x6f646f63, // "aevt"/"odoc"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    @discardableResult public func openLocation(_ directParameter: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+    @discardableResult public func openLocation(_ directParameter: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "openLocation", eventClass: 0x4755524c, eventID: 0x4755524c, // "GURL"/"GURL"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    public func openLocation<T>(_ directParameter: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+    public func openLocation<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "openLocation", eventClass: 0x4755524c, eventID: 0x4755524c, // "GURL"/"GURL"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    @discardableResult public func pause(_ directParameter: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+    @discardableResult public func pause(_ directParameter: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "pause", eventClass: 0x686f6f6b, eventID: 0x50617573, // "hook"/"Paus"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    public func pause<T>(_ directParameter: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+    public func pause<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "pause", eventClass: 0x686f6f6b, eventID: 0x50617573, // "hook"/"Paus"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    @discardableResult public func play(_ directParameter: Any = NoParameter,
-            once: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+    @discardableResult public func play(_ directParameter: Any = SwiftAutomation.NoParameter,
+            once: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "play", eventClass: 0x686f6f6b, eventID: 0x506c6179, // "hook"/"Play"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                     ("once", 0x504f6e65, once), // "POne"
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    public func play<T>(_ directParameter: Any = NoParameter,
-            once: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+    public func play<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            once: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "play", eventClass: 0x686f6f6b, eventID: 0x506c6179, // "hook"/"Play"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                     ("once", 0x504f6e65, once), // "POne"
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    @discardableResult public func playpause(_ directParameter: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+    @discardableResult public func playpause(_ directParameter: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "playpause", eventClass: 0x686f6f6b, eventID: 0x506c5073, // "hook"/"PlPs"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    public func playpause<T>(_ directParameter: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+    public func playpause<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "playpause", eventClass: 0x686f6f6b, eventID: 0x506c5073, // "hook"/"PlPs"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    @discardableResult public func previousTrack(_ directParameter: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+    @discardableResult public func previousTrack(_ directParameter: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "previousTrack", eventClass: 0x686f6f6b, eventID: 0x50726576, // "hook"/"Prev"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    public func previousTrack<T>(_ directParameter: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+    public func previousTrack<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "previousTrack", eventClass: 0x686f6f6b, eventID: 0x50726576, // "hook"/"Prev"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    @discardableResult public func print(_ directParameter: Any = NoParameter,
-            printDialog: Any = NoParameter,
-            withProperties: Any = NoParameter,
-            kind: Any = NoParameter,
-            theme: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+    @discardableResult public func print(_ directParameter: Any = SwiftAutomation.NoParameter,
+            printDialog: Any = SwiftAutomation.NoParameter,
+            withProperties: Any = SwiftAutomation.NoParameter,
+            kind: Any = SwiftAutomation.NoParameter,
+            theme: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "print", eventClass: 0x61657674, eventID: 0x70646f63, // "aevt"/"pdoc"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                     ("printDialog", 0x70646c67, printDialog), // "pdlg"
                     ("withProperties", 0x70726474, withProperties), // "prdt"
                     ("kind", 0x704b6e64, kind), // "pKnd"
@@ -1710,15 +1723,15 @@ extension ITUCommand {
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    public func print<T>(_ directParameter: Any = NoParameter,
-            printDialog: Any = NoParameter,
-            withProperties: Any = NoParameter,
-            kind: Any = NoParameter,
-            theme: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+    public func print<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            printDialog: Any = SwiftAutomation.NoParameter,
+            withProperties: Any = SwiftAutomation.NoParameter,
+            kind: Any = SwiftAutomation.NoParameter,
+            theme: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "print", eventClass: 0x61657674, eventID: 0x70646f63, // "aevt"/"pdoc"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                     ("printDialog", 0x70646c67, printDialog), // "pdlg"
                     ("withProperties", 0x70726474, withProperties), // "prdt"
                     ("kind", 0x704b6e64, kind), // "pKnd"
@@ -1726,278 +1739,278 @@ extension ITUCommand {
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    @discardableResult public func quit(_ directParameter: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+    @discardableResult public func quit(_ directParameter: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "quit", eventClass: 0x61657674, eventID: 0x71756974, // "aevt"/"quit"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    public func quit<T>(_ directParameter: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+    public func quit<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "quit", eventClass: 0x61657674, eventID: 0x71756974, // "aevt"/"quit"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    @discardableResult public func refresh(_ directParameter: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+    @discardableResult public func refresh(_ directParameter: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "refresh", eventClass: 0x686f6f6b, eventID: 0x52667273, // "hook"/"Rfrs"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    public func refresh<T>(_ directParameter: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+    public func refresh<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "refresh", eventClass: 0x686f6f6b, eventID: 0x52667273, // "hook"/"Rfrs"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    @discardableResult public func reopen(_ directParameter: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+    @discardableResult public func reopen(_ directParameter: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "reopen", eventClass: 0x61657674, eventID: 0x72617070, // "aevt"/"rapp"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    public func reopen<T>(_ directParameter: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+    public func reopen<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "reopen", eventClass: 0x61657674, eventID: 0x72617070, // "aevt"/"rapp"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    @discardableResult public func resume(_ directParameter: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+    @discardableResult public func resume(_ directParameter: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "resume", eventClass: 0x686f6f6b, eventID: 0x52657375, // "hook"/"Resu"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    public func resume<T>(_ directParameter: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+    public func resume<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "resume", eventClass: 0x686f6f6b, eventID: 0x52657375, // "hook"/"Resu"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    @discardableResult public func reveal(_ directParameter: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+    @discardableResult public func reveal(_ directParameter: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "reveal", eventClass: 0x686f6f6b, eventID: 0x5265766c, // "hook"/"Revl"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    public func reveal<T>(_ directParameter: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+    public func reveal<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "reveal", eventClass: 0x686f6f6b, eventID: 0x5265766c, // "hook"/"Revl"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    @discardableResult public func rewind(_ directParameter: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+    @discardableResult public func rewind(_ directParameter: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "rewind", eventClass: 0x686f6f6b, eventID: 0x52776e64, // "hook"/"Rwnd"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    public func rewind<T>(_ directParameter: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+    public func rewind<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "rewind", eventClass: 0x686f6f6b, eventID: 0x52776e64, // "hook"/"Rwnd"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    @discardableResult public func run(_ directParameter: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+    @discardableResult public func run(_ directParameter: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "run", eventClass: 0x61657674, eventID: 0x6f617070, // "aevt"/"oapp"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    public func run<T>(_ directParameter: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+    public func run<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "run", eventClass: 0x61657674, eventID: 0x6f617070, // "aevt"/"oapp"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    @discardableResult public func save(_ directParameter: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+    @discardableResult public func save(_ directParameter: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "save", eventClass: 0x636f7265, eventID: 0x73617665, // "core"/"save"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    public func save<T>(_ directParameter: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+    public func save<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "save", eventClass: 0x636f7265, eventID: 0x73617665, // "core"/"save"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    @discardableResult public func search(_ directParameter: Any = NoParameter,
-            for_: Any = NoParameter,
-            only: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+    @discardableResult public func search(_ directParameter: Any = SwiftAutomation.NoParameter,
+            for_: Any = SwiftAutomation.NoParameter,
+            only: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "search", eventClass: 0x686f6f6b, eventID: 0x53726368, // "hook"/"Srch"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                     ("for_", 0x7054726d, for_), // "pTrm"
                     ("only", 0x70417265, only), // "pAre"
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    public func search<T>(_ directParameter: Any = NoParameter,
-            for_: Any = NoParameter,
-            only: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+    public func search<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            for_: Any = SwiftAutomation.NoParameter,
+            only: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "search", eventClass: 0x686f6f6b, eventID: 0x53726368, // "hook"/"Srch"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                     ("for_", 0x7054726d, for_), // "pTrm"
                     ("only", 0x70417265, only), // "pAre"
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    @discardableResult public func select(_ directParameter: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+    @discardableResult public func select(_ directParameter: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "select", eventClass: 0x6d697363, eventID: 0x736c6374, // "misc"/"slct"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    public func select<T>(_ directParameter: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+    public func select<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "select", eventClass: 0x6d697363, eventID: 0x736c6374, // "misc"/"slct"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    @discardableResult public func set(_ directParameter: Any = NoParameter,
-            to: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+    @discardableResult public func set(_ directParameter: Any = SwiftAutomation.NoParameter,
+            to: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "set", eventClass: 0x636f7265, eventID: 0x73657464, // "core"/"setd"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                     ("to", 0x64617461, to), // "data"
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    public func set<T>(_ directParameter: Any = NoParameter,
-            to: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+    public func set<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            to: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "set", eventClass: 0x636f7265, eventID: 0x73657464, // "core"/"setd"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                     ("to", 0x64617461, to), // "data"
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    @discardableResult public func stop(_ directParameter: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+    @discardableResult public func stop(_ directParameter: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "stop", eventClass: 0x686f6f6b, eventID: 0x53746f70, // "hook"/"Stop"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    public func stop<T>(_ directParameter: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+    public func stop<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "stop", eventClass: 0x686f6f6b, eventID: 0x53746f70, // "hook"/"Stop"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    @discardableResult public func subscribe(_ directParameter: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+    @discardableResult public func subscribe(_ directParameter: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "subscribe", eventClass: 0x686f6f6b, eventID: 0x70537562, // "hook"/"pSub"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    public func subscribe<T>(_ directParameter: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+    public func subscribe<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "subscribe", eventClass: 0x686f6f6b, eventID: 0x70537562, // "hook"/"pSub"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    @discardableResult public func update(_ directParameter: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+    @discardableResult public func update(_ directParameter: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "update", eventClass: 0x686f6f6b, eventID: 0x55706474, // "hook"/"Updt"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    public func update<T>(_ directParameter: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+    public func update<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "update", eventClass: 0x686f6f6b, eventID: 0x55706474, // "hook"/"Updt"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    @discardableResult public func updateAllPodcasts(_ directParameter: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+    @discardableResult public func updateAllPodcasts(_ directParameter: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "updateAllPodcasts", eventClass: 0x686f6f6b, eventID: 0x55706470, // "hook"/"Updp"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    public func updateAllPodcasts<T>(_ directParameter: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+    public func updateAllPodcasts<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "updateAllPodcasts", eventClass: 0x686f6f6b, eventID: 0x55706470, // "hook"/"Updp"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    @discardableResult public func updatePodcast(_ directParameter: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
+    @discardableResult public func updatePodcast(_ directParameter: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "updatePodcast", eventClass: 0x686f6f6b, eventID: 0x55706431, // "hook"/"Upd1"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    public func updatePodcast<T>(_ directParameter: Any = NoParameter,
-            requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
+    public func updatePodcast<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "updatePodcast", eventClass: 0x686f6f6b, eventID: 0x55706431, // "hook"/"Upd1"
-                parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
 }
 
 
-public protocol ITUObject: ObjectSpecifierExtension, ITUCommand {} // provides vars and methods for constructing specifiers
+public protocol ITUObject: SwiftAutomation.ObjectSpecifierExtension, ITUCommand {} // provides vars and methods for constructing specifiers
 
 extension ITUObject {
     
@@ -2168,7 +2181,6 @@ extension ITUObject {
     public var audioCDPlaylists: ITUItems {return self.elements(0x63434450) as! ITUItems} // "cCDP"
     public var audioCDTracks: ITUItems {return self.elements(0x63434454) as! ITUItems} // "cCDT"
     public var browserWindows: ITUItems {return self.elements(0x63427257) as! ITUItems} // "cBrW"
-    public var doubleInteger: ITUItems {return self.elements(0x636f6d70) as! ITUItems} // "comp"
     public var encoders: ITUItems {return self.elements(0x63456e63) as! ITUItems} // "cEnc"
     public var EQPresets: ITUItems {return self.elements(0x63455150) as! ITUItems} // "cEQP"
     public var EQWindows: ITUItems {return self.elements(0x63455157) as! ITUItems} // "cEQW"
@@ -2177,10 +2189,8 @@ extension ITUObject {
     public var items: ITUItems {return self.elements(0x636f626a) as! ITUItems} // "cobj"
     public var libraryPlaylists: ITUItems {return self.elements(0x634c6950) as! ITUItems} // "cLiP"
     public var miniplayerWindows: ITUItems {return self.elements(0x634d5057) as! ITUItems} // "cMPW"
-    public var picture: ITUItems {return self.elements(0x50494354) as! ITUItems} // "PICT"
     public var playlists: ITUItems {return self.elements(0x63506c79) as! ITUItems} // "cPly"
     public var playlistWindows: ITUItems {return self.elements(0x63506c57) as! ITUItems} // "cPlW"
-    public var printSettings: ITUItems {return self.elements(0x70736574) as! ITUItems} // "pset"
     public var radioTunerPlaylists: ITUItems {return self.elements(0x63525450) as! ITUItems} // "cRTP"
     public var sharedTracks: ITUItems {return self.elements(0x63536854) as! ITUItems} // "cShT"
     public var sources: ITUItems {return self.elements(0x63537263) as! ITUItems} // "cSrc"
@@ -2198,31 +2208,31 @@ extension ITUObject {
 // Specifier subclasses add app-specific extensions
 
 // beginning/end/before/after
-public class ITUInsertion: InsertionSpecifier, ITUCommand {}
+public class ITUInsertion: SwiftAutomation.InsertionSpecifier, ITUCommand {}
 
 
 // property/by-index/by-name/by-id/previous/next/first/middle/last/any
-public class ITUItem: ObjectSpecifier, ITUObject {
+public class ITUItem: SwiftAutomation.ObjectSpecifier, ITUObject {
     public typealias InsertionSpecifierType = ITUInsertion
     public typealias ObjectSpecifierType = ITUItem
     public typealias MultipleObjectSpecifierType = ITUItems
 }
 
 // by-range/by-test/all
-public class ITUItems: ITUItem, MultipleObjectSpecifierExtension {}
+public class ITUItems: ITUItem, SwiftAutomation.MultipleObjectSpecifierExtension {}
 
 // App/Con/Its
-public class ITURoot: RootSpecifier, ITUObject, RootSpecifierExtension {
+public class ITURoot: SwiftAutomation.RootSpecifier, ITUObject, SwiftAutomation.RootSpecifierExtension {
     public typealias InsertionSpecifierType = ITUInsertion
     public typealias ObjectSpecifierType = ITUItem
     public typealias MultipleObjectSpecifierType = ITUItems
-    public override class var untargetedAppData: AppData { return _untargetedAppData }
+    public override class var untargetedAppData: SwiftAutomation.AppData { return _untargetedAppData }
 }
 
 // Application
-public class ITunes: ITURoot, Application {
-    public convenience init(launchOptions: LaunchOptions = DefaultLaunchOptions, relaunchMode: RelaunchMode = DefaultRelaunchMode) {
-        self.init(rootObject: AppRootDesc, appData: Swift.type(of:self).untargetedAppData.targetedCopy(
+public class ITunes: ITURoot, SwiftAutomation.Application {
+    public convenience init(launchOptions: SwiftAutomation.LaunchOptions = SwiftAutomation.DefaultLaunchOptions, relaunchMode: SwiftAutomation.RelaunchMode = SwiftAutomation.DefaultRelaunchMode) {
+        self.init(rootObject: SwiftAutomation.AppRootDesc, appData: Swift.type(of:self).untargetedAppData.targetedCopy(
                   .bundleIdentifier("com.apple.iTunes", true), launchOptions: launchOptions, relaunchMode: relaunchMode))
     }
 }

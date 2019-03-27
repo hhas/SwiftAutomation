@@ -145,8 +145,8 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x7569656e: "UIElementsEnabled", // "uien"
                                                      ],
                                                      elementsNames: [
-                                                                     0x63617070: "applications", // "capp"
-                                                                     0x636f626a: "items", // "cobj"
+                                                                     0x63617070: ("application", "applications"), // "capp"
+                                                                     0x636f626a: ("item", "items"), // "cobj"
                                                      ])
 
 private let _glueClasses = SwiftAutomation.GlueClasses(insertionSpecifierType: ASUInsertion.self,

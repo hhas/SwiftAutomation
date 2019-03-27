@@ -88,7 +88,7 @@ public class SDEFParser: ApplicationTerminology {
     
     private func parse(typeOfElement element: XMLElement) throws -> (String, OSType) { // class, record-type, value-type
         let (name, code) = try self.parse(keywordElement: element)
-        self.types.append(KeywordTerm(name: self.keywordConverter.convertSpecifierName(name), kind: .elementOrType, code: code))
+        self.types.append(KeywordTerm(name: self.keywordConverter.convertSpecifierName(name), kind: .type, code: code))
         return (name, code)
     }
     
@@ -109,7 +109,8 @@ public class SDEFParser: ApplicationTerminology {
                 try self.parse(propertiesOfElement: element)
                 // use plural class name as elements name (if not given, append "s" to singular name)
                 // (note: record and value types also define plurals, but we only use plurals for element names and elements should always be classes, so we ignore those)
-                let plural = element.attribute(forName: "plural")?.stringValue ?? (name == "text" || name.hasSuffix("s") ? name : "\(name)s") // SDEF spec says to append 's' to name when plural attribute isn't given; in practice, appending 's' doesn't work so well for names already ending in 's' (e.g. 'print settings'), nor for 'text' (which is AppleScript-defined), so special-case those here
+                let plural = element.attribute(forName: "plural")?.stringValue ?? (
+                    (name == "text" || name.hasSuffix("s")) ? name : "\(name)s") // SDEF spec says to append 's' to name when plural attribute isn't given; in practice, appending 's' doesn't work so well for names already ending in 's' (e.g. 'print settings'), nor for 'text' (which is AppleScript-defined), so special-case those here (note that macOS's SDEF->AETE converter will append "s" to singular names that already end in "s"; nothing we can do about that)
                 self.elements.append(ClassTerm(singular: name, plural: self.keywordConverter.convertSpecifierName(plural), code: code))
             case "class-extension":
                 try self.parse(propertiesOfElement: element)

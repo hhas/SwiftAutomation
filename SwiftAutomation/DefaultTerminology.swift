@@ -28,7 +28,7 @@ public class DefaultTerminology: ApplicationTerminology {
     public let commands: [CommandTerm]
 
     public init(keywordConverter: KeywordConverterProtocol) {
-        self.types = self._types.map({KeywordTerm(name: keywordConverter.convertSpecifierName($0), kind: .elementOrType, code: $1)})
+        self.types = self._types.map({KeywordTerm(name: keywordConverter.convertSpecifierName($0), kind: .type, code: $1)})
         self.enumerators = self._enumerators.map({KeywordTerm(name: keywordConverter.convertSpecifierName($0), kind: .enumerator, code: $1)})
         self.properties = self._properties.map({KeywordTerm(name: keywordConverter.convertSpecifierName($0), kind: .property, code: $1)})
         self.elements = self._elements.map({ClassTerm(singular: keywordConverter.convertSpecifierName($0),

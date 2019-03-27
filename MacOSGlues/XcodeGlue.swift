@@ -1,6 +1,6 @@
 //
 //  XcodeGlue.swift
-//  Xcode.app 8.2
+//  Xcode.app 10.2
 //  SwiftAutomation.framework 0.1.0
 //  `aeglue -S 'Xcode.app'`
 //
@@ -249,28 +249,28 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x707a756d: "zoomed", // "pzum"
                                                      ],
                                                      elementsNames: [
-                                                                     0x73616169: "analyzerIssues", // "saai"
-                                                                     0x63617070: "applications", // "capp"
-                                                                     0x62756366: "buildConfigurations", // "bucf"
-                                                                     0x73616265: "buildErrors", // "sabe"
-                                                                     0x61736273: "buildSettings", // "asbs"
-                                                                     0x73616277: "buildWarnings", // "sabw"
-                                                                     0x64657663: "devices", // "devc"
-                                                                     0x646f6375: "documents", // "docu"
-                                                                     0x66696c64: "fileDocuments", // "fild"
-                                                                     0x636f626a: "items", // "cobj"
-                                                                     0x70726f6a: "projects", // "proj"
-                                                                     0x61737273: "resolvedBuildSettings", // "asrs"
-                                                                     0x72756e64: "runDestinations", // "rund"
-                                                                     0x73616973: "schemeActionIssues", // "sais"
-                                                                     0x73617274: "schemeActionResults", // "sart"
-                                                                     0x72756e78: "schemes", // "runx"
-                                                                     0x736f7566: "sourceDocuments", // "souf"
-                                                                     0x74617252: "targets", // "tarR"
-                                                                     0x73617466: "testFailures", // "satf"
-                                                                     0x74657864: "textDocuments", // "texd"
-                                                                     0x6377696e: "windows", // "cwin"
-                                                                     0x776b7364: "workspaceDocuments", // "wksd"
+                                                                     0x73616169: ("analyzer issue", "analyzerIssues"), // "saai"
+                                                                     0x63617070: ("application", "applications"), // "capp"
+                                                                     0x62756366: ("build configuration", "buildConfigurations"), // "bucf"
+                                                                     0x73616265: ("build error", "buildErrors"), // "sabe"
+                                                                     0x61736273: ("build setting", "buildSettings"), // "asbs"
+                                                                     0x73616277: ("build warning", "buildWarnings"), // "sabw"
+                                                                     0x64657663: ("device", "devices"), // "devc"
+                                                                     0x646f6375: ("document", "documents"), // "docu"
+                                                                     0x66696c64: ("file document", "fileDocuments"), // "fild"
+                                                                     0x636f626a: ("item", "items"), // "cobj"
+                                                                     0x70726f6a: ("project", "projects"), // "proj"
+                                                                     0x61737273: ("resolved build setting", "resolvedBuildSettings"), // "asrs"
+                                                                     0x72756e64: ("run destination", "runDestinations"), // "rund"
+                                                                     0x73616973: ("scheme action issue", "schemeActionIssues"), // "sais"
+                                                                     0x73617274: ("scheme action result", "schemeActionResults"), // "sart"
+                                                                     0x72756e78: ("scheme", "schemes"), // "runx"
+                                                                     0x736f7566: ("source document", "sourceDocuments"), // "souf"
+                                                                     0x74617252: ("target", "targets"), // "tarR"
+                                                                     0x73617466: ("test failure", "testFailures"), // "satf"
+                                                                     0x74657864: ("text document", "textDocuments"), // "texd"
+                                                                     0x6377696e: ("window", "windows"), // "cwin"
+                                                                     0x776b7364: ("workspace document", "workspaceDocuments"), // "wksd"
                                                      ])
 
 private let _glueClasses = SwiftAutomation.GlueClasses(insertionSpecifierType: XCOInsertion.self,
@@ -1036,22 +1036,6 @@ extension XCOCommand {
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    @discardableResult public func showDocumentWithUUID(_ directParameter: Any = SwiftAutomation.NoParameter,
-            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "showDocumentWithUUID", eventClass: 0x636f7265, eventID: 0x73646175, // "core"/"sdau"
-                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
-                withTimeout: withTimeout, considering: considering)
-    }
-    public func showDocumentWithUUID<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
-            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
-            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "showDocumentWithUUID", eventClass: 0x636f7265, eventID: 0x73646175, // "core"/"sdau"
-                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
-                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
-                withTimeout: withTimeout, considering: considering)
-    }
     @discardableResult public func stop(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
@@ -1164,9 +1148,9 @@ extension XCOObject {
     public var projects: XCOItems {return self.elements(0x70726f6a) as! XCOItems} // "proj"
     public var resolvedBuildSettings: XCOItems {return self.elements(0x61737273) as! XCOItems} // "asrs"
     public var runDestinations: XCOItems {return self.elements(0x72756e64) as! XCOItems} // "rund"
+    public var schemes: XCOItems {return self.elements(0x72756e78) as! XCOItems} // "runx"
     public var schemeActionIssues: XCOItems {return self.elements(0x73616973) as! XCOItems} // "sais"
     public var schemeActionResults: XCOItems {return self.elements(0x73617274) as! XCOItems} // "sart"
-    public var schemes: XCOItems {return self.elements(0x72756e78) as! XCOItems} // "runx"
     public var sourceDocuments: XCOItems {return self.elements(0x736f7566) as! XCOItems} // "souf"
     public var targets: XCOItems {return self.elements(0x74617252) as! XCOItems} // "tarR"
     public var testFailures: XCOItems {return self.elements(0x73617466) as! XCOItems} // "satf"

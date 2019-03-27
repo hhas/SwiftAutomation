@@ -1,6 +1,6 @@
 //
 //  RemindersGlue.swift
-//  Reminders.app 4.0
+//  Reminders.app 6.0
 //  SwiftAutomation.framework 0.1.0
 //  `aeglue -S 'Reminders.app'`
 //
@@ -209,13 +209,13 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x707a756d: "zoomed", // "pzum"
                                                      ],
                                                      elementsNames: [
-                                                                     0x61636374: "accounts", // "acct"
-                                                                     0x63617070: "applications", // "capp"
-                                                                     0x646f6375: "documents", // "docu"
-                                                                     0x636f626a: "items", // "cobj"
-                                                                     0x6c697374: "lists", // "list"
-                                                                     0x72656d69: "reminders", // "remi"
-                                                                     0x6377696e: "windows", // "cwin"
+                                                                     0x61636374: ("account", "accounts"), // "acct"
+                                                                     0x63617070: ("application", "applications"), // "capp"
+                                                                     0x646f6375: ("document", "documents"), // "docu"
+                                                                     0x636f626a: ("item", "items"), // "cobj"
+                                                                     0x6c697374: ("list", "lists"), // "list"
+                                                                     0x72656d69: ("reminder", "reminders"), // "remi"
+                                                                     0x6377696e: ("window", "windows"), // "cwin"
                                                      ])
 
 private let _glueClasses = SwiftAutomation.GlueClasses(insertionSpecifierType: REMInsertion.self,

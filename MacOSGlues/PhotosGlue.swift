@@ -1,6 +1,6 @@
 //
 //  PhotosGlue.swift
-//  Photos.app 2.0
+//  Photos.app 4.0
 //  SwiftAutomation.framework 0.1.0
 //  `aeglue -S 'Photos.app'`
 //
@@ -123,6 +123,7 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x73656c63: "selection", // "selc"
                                                                      0x73657020: "September", // "sep\0x20"
                                                                      0x73686f72: "shortInteger", // "shor"
+                                                                     0x6673697a: "size", // "fsiz"
                                                                      0x5353726e: "slideshowRunning", // "SSrn"
                                                                      0x73696e67: "smallReal", // "sing"
                                                                      0x54455854: "string", // "TEXT"
@@ -166,18 +167,19 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x70414c4c: "properties", // "pALL"
                                                                      0x7472416c: "recentlyDeletedAlbum", // "trAl"
                                                                      0x73656c63: "selection", // "selc"
+                                                                     0x6673697a: "size", // "fsiz"
                                                                      0x5353726e: "slideshowRunning", // "SSrn"
                                                                      0x76657273: "version", // "vers"
                                                                      0x70776964: "width", // "pwid"
                                                      ],
                                                      elementsNames: [
-                                                                     0x4950616c: "albums", // "IPal"
-                                                                     0x63617070: "applications", // "capp"
-                                                                     0x49506374: "containers", // "IPct"
-                                                                     0x49506664: "folders", // "IPfd"
-                                                                     0x636f626a: "items", // "cobj"
-                                                                     0x49506d69: "mediaItems", // "IPmi"
-                                                                     0x49506d6d: "moments", // "IPmm"
+                                                                     0x4950616c: ("album", "albums"), // "IPal"
+                                                                     0x63617070: ("application", "applications"), // "capp"
+                                                                     0x49506374: ("container", "containers"), // "IPct"
+                                                                     0x49506664: ("folder", "folders"), // "IPfd"
+                                                                     0x636f626a: ("item", "items"), // "cobj"
+                                                                     0x49506d69: ("media item", "mediaItems"), // "IPmi"
+                                                                     0x49506d6d: ("moment", "moments"), // "IPmm"
                                                      ])
 
 private let _glueClasses = SwiftAutomation.GlueClasses(insertionSpecifierType: PHOInsertion.self,
@@ -306,6 +308,7 @@ public class PHOSymbol: SwiftAutomation.Symbol {
         case 0x73656c63: return self.selection // "selc"
         case 0x73657020: return self.September // "sep\0x20"
         case 0x73686f72: return self.shortInteger // "shor"
+        case 0x6673697a: return self.size // "fsiz"
         case 0x5353726e: return self.slideshowRunning // "SSrn"
         case 0x73696e67: return self.smallReal // "sing"
         case 0x54455854: return self.string // "TEXT"
@@ -432,6 +435,7 @@ public class PHOSymbol: SwiftAutomation.Symbol {
     public static let selection = PHOSymbol(name: "selection", code: 0x73656c63, type: typeType) // "selc"
     public static let September = PHOSymbol(name: "September", code: 0x73657020, type: typeType) // "sep\0x20"
     public static let shortInteger = PHOSymbol(name: "shortInteger", code: 0x73686f72, type: typeType) // "shor"
+    public static let size = PHOSymbol(name: "size", code: 0x6673697a, type: typeType) // "fsiz"
     public static let slideshowRunning = PHOSymbol(name: "slideshowRunning", code: 0x5353726e, type: typeType) // "SSrn"
     public static let smallReal = PHOSymbol(name: "smallReal", code: 0x73696e67, type: typeType) // "sing"
     public static let string = PHOSymbol(name: "string", code: 0x54455854, type: typeType) // "TEXT"
@@ -648,28 +652,28 @@ extension PHOCommand {
     }
     @discardableResult public func make(_ directParameter: Any = SwiftAutomation.NoParameter,
             new: Any = SwiftAutomation.NoParameter,
-            named: Any = SwiftAutomation.NoParameter,
+            named_: Any = SwiftAutomation.NoParameter,
             at: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "make", eventClass: 0x636f7265, eventID: 0x6372656c, // "core"/"crel"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                     ("new", 0x6b6f636c, new), // "kocl"
-                    ("named", 0x6e614d45, named), // "naME"
+                    ("named_", 0x6e614d45, named_), // "naME"
                     ("at", 0x61744644, at), // "atFD"
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     public func make<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
             new: Any = SwiftAutomation.NoParameter,
-            named: Any = SwiftAutomation.NoParameter,
+            named_: Any = SwiftAutomation.NoParameter,
             at: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "make", eventClass: 0x636f7265, eventID: 0x6372656c, // "core"/"crel"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                     ("new", 0x6b6f636c, new), // "kocl"
-                    ("named", 0x6e614d45, named), // "naME"
+                    ("named_", 0x6e614d45, named_), // "naME"
                     ("at", 0x61744644, at), // "atFD"
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -838,6 +842,26 @@ extension PHOCommand {
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
+    @discardableResult public func search(_ directParameter: Any = SwiftAutomation.NoParameter,
+            for_: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
+        return try self.appData.sendAppleEvent(name: "search", eventClass: 0x49505853, eventID: 0x73726368, // "IPXS"/"srch"
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
+                    ("for_", 0x7054726d, for_), // "pTrm"
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
+                withTimeout: withTimeout, considering: considering)
+    }
+    public func search<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
+            for_: Any = SwiftAutomation.NoParameter,
+            requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
+            withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
+        return try self.appData.sendAppleEvent(name: "search", eventClass: 0x49505853, eventID: 0x73726368, // "IPXS"/"srch"
+                parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
+                    ("for_", 0x7054726d, for_), // "pTrm"
+                ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
+                withTimeout: withTimeout, considering: considering)
+    }
     @discardableResult public func set(_ directParameter: Any = SwiftAutomation.NoParameter,
             to: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
@@ -936,6 +960,7 @@ extension PHOObject {
     public var properties: PHOItem {return self.property(0x70414c4c) as! PHOItem} // "pALL"
     public var recentlyDeletedAlbum: PHOItem {return self.property(0x7472416c) as! PHOItem} // "trAl"
     public var selection: PHOItem {return self.property(0x73656c63) as! PHOItem} // "selc"
+    public var size: PHOItem {return self.property(0x6673697a) as! PHOItem} // "fsiz"
     public var slideshowRunning: PHOItem {return self.property(0x5353726e) as! PHOItem} // "SSrn"
     public var version: PHOItem {return self.property(0x76657273) as! PHOItem} // "vers"
     public var width: PHOItem {return self.property(0x70776964) as! PHOItem} // "pwid"

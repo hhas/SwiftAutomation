@@ -1,6 +1,6 @@
 //
 //  CalendarGlue.swift
-//  Calendar.app 9.0
+//  Calendar.app 11.0
 //  SwiftAutomation.framework 0.1.0
 //  `aeglue -S 'Calendar.app'`
 //
@@ -256,17 +256,17 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x707a756d: "zoomed", // "pzum"
                                                      ],
                                                      elementsNames: [
-                                                                     0x63617070: "applications", // "capp"
-                                                                     0x77726561: "attendees", // "wrea"
-                                                                     0x77726573: "calendars", // "wres"
-                                                                     0x77616c31: "displayAlarms", // "wal1"
-                                                                     0x646f6375: "documents", // "docu"
-                                                                     0x77726576: "events", // "wrev"
-                                                                     0x636f626a: "items", // "cobj"
-                                                                     0x77616c32: "mailAlarms", // "wal2"
-                                                                     0x77616c33: "openFileAlarms", // "wal3"
-                                                                     0x77616c34: "soundAlarms", // "wal4"
-                                                                     0x6377696e: "windows", // "cwin"
+                                                                     0x63617070: ("application", "applications"), // "capp"
+                                                                     0x77726561: ("attendee", "attendees"), // "wrea"
+                                                                     0x77726573: ("calendar", "calendars"), // "wres"
+                                                                     0x77616c31: ("display alarm", "displayAlarms"), // "wal1"
+                                                                     0x646f6375: ("document", "documents"), // "docu"
+                                                                     0x77726576: ("event", "events"), // "wrev"
+                                                                     0x636f626a: ("item", "items"), // "cobj"
+                                                                     0x77616c32: ("mail alarm", "mailAlarms"), // "wal2"
+                                                                     0x77616c33: ("open file alarm", "openFileAlarms"), // "wal3"
+                                                                     0x77616c34: ("sound alarm", "soundAlarms"), // "wal4"
+                                                                     0x6377696e: ("window", "windows"), // "cwin"
                                                      ])
 
 private let _glueClasses = SwiftAutomation.GlueClasses(insertionSpecifierType: CALInsertion.self,

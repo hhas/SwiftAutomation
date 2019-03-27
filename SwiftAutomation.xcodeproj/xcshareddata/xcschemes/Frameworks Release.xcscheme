@@ -14,10 +14,24 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
+               BlueprintIdentifier = "4FFF5D231D899F0D008ED4F5"
+               BuildableName = "SwiftAutomation.framework"
+               BlueprintName = "SwiftAutomation"
+               ReferencedContainer = "container:SwiftAutomation.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
                BlueprintIdentifier = "4F1A57F91D9E81C300ACFA51"
                BuildableName = "MacOSGlues.framework"
                BlueprintName = "MacOSGlues"
-               ReferencedContainer = "container:SwiftAE.xcodeproj">
+               ReferencedContainer = "container:SwiftAutomation.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -29,11 +43,20 @@
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
       </Testables>
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "4FFF5D231D899F0D008ED4F5"
+            BuildableName = "SwiftAutomation.framework"
+            BlueprintName = "SwiftAutomation"
+            ReferencedContainer = "container:SwiftAutomation.xcodeproj">
+         </BuildableReference>
+      </MacroExpansion>
       <AdditionalOptions>
       </AdditionalOptions>
    </TestAction>
    <LaunchAction
-      buildConfiguration = "Debug"
+      buildConfiguration = "Release"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       launchStyle = "0"
@@ -45,10 +68,10 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "4F1A57F91D9E81C300ACFA51"
-            BuildableName = "MacOSGlues.framework"
-            BlueprintName = "MacOSGlues"
-            ReferencedContainer = "container:SwiftAE.xcodeproj">
+            BlueprintIdentifier = "4FFF5D231D899F0D008ED4F5"
+            BuildableName = "SwiftAutomation.framework"
+            BlueprintName = "SwiftAutomation"
+            ReferencedContainer = "container:SwiftAutomation.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -63,10 +86,10 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "4F1A57F91D9E81C300ACFA51"
-            BuildableName = "MacOSGlues.framework"
-            BlueprintName = "MacOSGlues"
-            ReferencedContainer = "container:SwiftAE.xcodeproj">
+            BlueprintIdentifier = "4FFF5D231D899F0D008ED4F5"
+            BuildableName = "SwiftAutomation.framework"
+            BlueprintName = "SwiftAutomation"
+            ReferencedContainer = "container:SwiftAutomation.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
    </ProfileAction>

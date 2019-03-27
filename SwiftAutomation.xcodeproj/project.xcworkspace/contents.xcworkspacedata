@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:SwiftAE.xcodeproj">
+      location = "self:/Users/has/swift/SwiftAutomation/SwiftAutomation.xcodeproj">
    </FileRef>
 </Workspace>

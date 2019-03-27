@@ -1,6 +1,6 @@
 //
 //  BluetoothFileExchangeGlue.swift
-//  Bluetooth File Exchange.app 5.0.0
+//  Bluetooth File Exchange.app 6.0.11
 //  SwiftAutomation.framework 0.1.0
 //  `aeglue -S 'Bluetooth File Exchange.app'`
 //
@@ -130,7 +130,7 @@ private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(application
                                                                      0x70414c4c: "properties", // "pALL"
                                                      ],
                                                      elementsNames: [
-                                                                     0x636f626a: "items", // "cobj"
+                                                                     0x636f626a: ("item", "items"), // "cobj"
                                                      ])
 
 private let _glueClasses = SwiftAutomation.GlueClasses(insertionSpecifierType: BFEInsertion.self,
