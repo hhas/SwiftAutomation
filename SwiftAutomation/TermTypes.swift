@@ -24,25 +24,15 @@ public protocol ApplicationTerminology { // GlueTable.add() accepts any object t
 }
 
 
-// TO DO: get rid of Term classes; rename TermType enum to Term and attach names and codes to that
-
-public enum TermType {
-    case type
-    case enumerator
-    case property
-    case command
-    case parameter
-}
+// TO DO: get rid of Term classes? (problem with using enum/structs is that GlueTable needs to update terms' names in situ when disambiguating conflicting definitions); FWIW, all this compatibility crap is only needed when parsing AETE/SDEF due to lack of rigid spec and verifier tools; superseding these formats with a real IDL would greatly simplify glue generation
 
 
 public class Term { // base class for keyword and command definitions
 
     public var name: String // editable as GlueTable may need to escape names to disambiguate conflicting terms
-    public let kind: TermType
 
-    init(name: String, kind: TermType) {
+    init(name: String) {
         self.name = name
-        self.kind = kind
     }
 }
 
@@ -51,19 +41,19 @@ public class KeywordTerm: Term, Hashable, CustomStringConvertible { // type/enum
 
     public let code: OSType
     
-    public init(name: String, kind: TermType, code: OSType) {
+    public init(name: String, code: OSType) {
         self.code = code
-        super.init(name: name, kind: kind)
+        super.init(name: name)
     }
     
     public func hash(into hasher: inout Hasher) {
         hasher.combine(Int(self.code))
     }
     
-    public var description: String { return "<\(type(of:self))=\(self.kind):\(self.name)=\(fourCharCode(self.code))>" }
+    public var description: String { return "<\(type(of:self)):\(self.name)=\(fourCharCode(self.code))>" }
     
     public static func ==(lhs: KeywordTerm, rhs: KeywordTerm) -> Bool {
-        return lhs.kind == rhs.kind && lhs.code == rhs.code && lhs.name == rhs.name
+        return lhs.code == rhs.code && lhs.name == rhs.name
     }
 }
 
@@ -76,7 +66,7 @@ public class ClassTerm: KeywordTerm {
     public init(singular: String, plural: String, code: OSType) {
         self.singular = singular
         self.plural = plural
-        super.init(name: self.singular, kind: .type, code: code)
+        super.init(name: self.singular, code: code)
     }
 }
 
@@ -85,40 +75,36 @@ public class CommandTerm: Term, Hashable, CustomStringConvertible {
 
     public let eventClass: OSType
     public let eventID: OSType
-    
-    private(set) var parametersByName: [String: KeywordTerm]
-    private(set) var parametersByCode: [OSType: KeywordTerm]
-    private(set) var orderedParameters: [KeywordTerm]
+    public let parameters: [KeywordTerm]
 
-    public init(name: String, eventClass: OSType, eventID: OSType) {
+    public init(name: String, eventClass: OSType, eventID: OSType, parameters: [KeywordTerm]) {
         self.eventClass = eventClass
         self.eventID = eventID
-        self.parametersByName = [String: KeywordTerm]()
-        self.parametersByCode = [OSType: KeywordTerm]()
-        self.orderedParameters = [KeywordTerm]()
-        super.init(name: name, kind: .command)
+        self.parameters = parameters
+        super.init(name: name)
     }
     
     public func hash(into hasher: inout Hasher) {
         hasher.combine((Int(self.eventClass) << 32) + Int(self.eventID))
     }
     
+    public static func ==(lhs: CommandTerm, rhs: CommandTerm) -> Bool {
+        return lhs.eventClass == rhs.eventClass && lhs.eventID == rhs.eventID
+            && lhs.name == rhs.name && lhs.parameters == rhs.parameters // TO DO: ignore parameters?
+    }
+    
     public var description: String {
-        let params = self.orderedParameters.map({"\($0.name)=\(fourCharCode($0.code))"}).joined(separator: ",")
+        let params = self.parameters.map({"\($0.name)=\(fourCharCode($0.code))"}).joined(separator: ",")
         return "<Command:\(self.name)=\(fourCharCode(self.eventClass))\(fourCharCode(self.eventID))(\(params))>"
     }
     
-    func addParameter(_ name: String, code: OSType) {
-        let paramDef = KeywordTerm(name: name, kind: .parameter, code: code)
-        self.parametersByName[name] = paramDef
-        self.parametersByCode[code] = paramDef
-        self.orderedParameters.append(paramDef)
+    func parameter(for name: String) -> KeywordTerm? {
+        return self.parameters.first{ $0.name == name }
+    }
+    func parameter(for code: OSType) -> KeywordTerm? {
+        return self.parameters.first{ $0.code == code }
     }
     
-    public static func ==(lhs: CommandTerm, rhs: CommandTerm) -> Bool {
-        return lhs.eventClass == rhs.eventClass && lhs.eventID == rhs.eventID
-            && lhs.name == rhs.name && lhs.parametersByCode == rhs.parametersByCode
-    }
 }
 
 

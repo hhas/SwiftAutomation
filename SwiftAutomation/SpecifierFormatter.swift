@@ -7,6 +7,7 @@
 
 import Foundation
 import AppKit
+import Carbon
 
 
 // TO DO: when formatting specifiers, what info is needed? appData?, isNestedSpecifier; anything else? (note, this data ought to be available throughout; e.g. given a list of specifiers, current nesting flag should be carried over; there is also the question of when to adopt specifier's own appData vs use the one already provided to formatter; furthermore, it might be argued that AppData should do the formatting itself [although that leaves the flag problem])
@@ -138,8 +139,8 @@ public class SpecifierFormatter {
     }
     
     func formatInsertionSpecifier(_ specifier: InsertionSpecifier) -> String {
-        if let name = [_kAEBeginning: "beginning", _kAEEnd: "end",
-                       _kAEBefore: "before", _kAEAfter: "after"][specifier.insertionLocation.enumCodeValue] {
+        if let name = [kAEBeginning: "beginning", kAEEnd: "end",
+                       kAEBefore: "before", kAEAfter: "after"][specifier.insertionLocation.enumCodeValue] {
             return "\(self.format(specifier.parentQuery)).\(name)"
         }
         return "<\(type(of: specifier))(kpos:\(specifier.insertionLocation),kobj:\(self.format(specifier.parentQuery)))>"
@@ -149,18 +150,18 @@ public class SpecifierFormatter {
         let form = specifier.selectorForm.enumCodeValue
         var result = self.format(specifier.parentQuery)
         switch form {
-        case _formPropertyID:
+        case OSType(formPropertyID):
             // kludge, seld is either desc or symbol, depending on whether constructed or unpacked; TO DO: eliminate?
-            if let desc = specifier.selectorData as? NSAppleEventDescriptor, let propertyDesc = desc.coerce(toDescriptorType: _typeType) {
+            if let desc = specifier.selectorData as? NSAppleEventDescriptor, let propertyDesc = desc.coerce(toDescriptorType: typeType) {
                 return result + formatPropertyVar(propertyDesc.typeCodeValue)
             } else if let symbol = specifier.selectorData as? Symbol {
                 return result + formatPropertyVar(symbol.code)
             } // else malformed desc
-        case _formUserPropertyID:
+        case OSType(formUserPropertyID):
             return "\(result).userProperty(\(self.formatValue(specifier.selectorData)))"
-        case _formRelativePosition: // specifier.previous/next(SYMBOL)
+        case OSType(formRelativePosition): // specifier.previous/next(SYMBOL)
             if let seld = specifier.selectorData as? NSAppleEventDescriptor, // ObjectSpecifier.unpackSelf does not unpack ordinals
-                    let name = [_kAEPrevious: "previous", _kAENext: "next"][seld.enumCodeValue],
+                    let name = [kAEPrevious: "previous", kAENext: "next"][seld.enumCodeValue],
                     let parent = specifier.parentQuery as? ObjectSpecifier {
                 if specifier.wantType.typeCodeValue == parent.wantType.typeCodeValue {
                     return "\(result).\(name)()" // use shorthand form for neatness
@@ -171,27 +172,27 @@ public class SpecifierFormatter {
             }
         default:
             result += formatElementsVar(specifier.wantType.typeCodeValue)
-            if let desc = specifier.selectorData as? NSAppleEventDescriptor, desc.typeCodeValue == _kAEAll { // TO DO: check this is right (replaced `where` with `,`)
+            if let desc = specifier.selectorData as? NSAppleEventDescriptor, desc.typeCodeValue == kAEAll { // TO DO: check this is right (replaced `where` with `,`)
                 return result
             }
             switch form {
-            case _formAbsolutePosition: // specifier[IDX] or specifier.first/middle/last/any
+            case OSType(formAbsolutePosition): // specifier[IDX] or specifier.first/middle/last/any
                 if let desc = specifier.selectorData as? NSAppleEventDescriptor, // ObjectSpecifier.unpackSelf does not unpack ordinals
-                        let ordinal = [_kAEFirst: "first", _kAEMiddle: "middle", _kAELast: "last", _kAEAny: "any"][desc.enumCodeValue] {
+                        let ordinal = [kAEFirst: "first", kAEMiddle: "middle", kAELast: "last", kAEAny: "any"][desc.enumCodeValue] {
                     return "\(result).\(ordinal)"
                 } else {
                     return "\(result)[\(self.formatValue(specifier.selectorData))]"
                 }
-            case _formName: // specifier[NAME] or specifier.named(NAME)
+            case OSType(formName): // specifier[NAME] or specifier.named(NAME)
                 return specifier.selectorData is Int ? "\(result).named(\(self.formatValue(specifier.selectorData)))"
                                                      : "\(result)[\(self.formatValue(specifier.selectorData))]"
-            case _formUniqueID: // specifier.ID(UID)
+            case OSType(formUniqueID): // specifier.ID(UID)
                 return "\(result).ID(\(self.format(specifier.selectorData)))"
-            case _formRange: // specifier[FROM,TO]
+            case OSType(formRange): // specifier[FROM,TO]
                 if let seld = specifier.selectorData as? RangeSelector {
                     return "\(result)[\(self.format(seld.start)), \(self.format(seld.stop))]" // TO DO: app-based specifiers should use untargeted 'App' root; con-based specifiers should be reduced to minimal representation if their wantType == specifier.wantType
                 }
-            case _formTest: // specifier[TEST]
+            case OSType(formTest): // specifier[TEST]
                 return "\(result)[\(self.format(specifier.selectorData))]"
             default:
                 break
@@ -200,9 +201,10 @@ public class SpecifierFormatter {
         return "<\(type(of: specifier))(want:\(specifier.wantType),form:\(specifier.selectorForm),seld:\(self.formatValue(specifier.selectorData)),from:\(self.format(specifier.parentQuery)))>"
     }
     
-    private let _comparisonOperators = [_kAELessThan: "<", _kAELessThanEquals: "<=", _kAEEquals: "==",
-                                        _kAENotEquals: "!=", kAEGreaterThan: ">", _kAEGreaterThanEquals: ">="]
-    private let _logicalOperators = [_kAEBeginsWith: "beginsWith", _kAEEndsWith: "endsWith", _kAEContains: "contains", _kAEIsIn: "isIn"]
+    private let _comparisonOperators = [OSType(kAELessThan): "<", OSType(kAELessThanEquals): "<=", OSType(kAEEquals): "==",
+                                        OSType(kAENotEquals): "!=", OSType(kAEGreaterThan): ">", OSType(kAEGreaterThanEquals): ">="]
+    private let _logicalOperators = [OSType(kAEBeginsWith): "beginsWith", OSType(kAEEndsWith): "endsWith",
+                                     OSType(kAEContains): "contains", OSType(kAEIsIn): "isIn"]
     
     func formatComparisonTest(_ specifier: ComparisonTest) -> String {
         let operand1 = self.formatValue(specifier.operand1), operand2 = self.formatValue(specifier.operand2)
@@ -218,11 +220,11 @@ public class SpecifierFormatter {
     func formatLogicalTest(_ specifier: LogicalTest) -> String {
         let operands = specifier.operands.map({self.formatValue($0)})
         let opcode = specifier.operatorType.enumCodeValue
-        if let name = [_kAEAND: "&&", _kAEOR: "||"][opcode] {
+        if let name = [kAEAND: "&&", kAEOR: "||"][opcode] {
             if operands.count > 1 {
                 return operands.joined(separator: " \(name) ")
             }
-        } else if opcode == _kAENOT && operands.count == 1 {
+        } else if opcode == kAENOT && operands.count == 1 {
             return "!(\(operands[0]))"
         }
         return "<\(type(of: specifier))(logc:\(specifier.operatorType),term:\(self.formatValue(operands)))>"
@@ -268,7 +270,7 @@ public class SpecifierFormatter {
             if description.subject != nil && parameterExists(directParameter) {
                 parentSpecifier = self.format(description.subject!)
                 args.append(self.format(directParameter))
-                //} else if eventClass == _kAECoreSuite && eventID == _kAECreateElement { // TO DO: format make command as special case (for convenience, sendAppleEvent should allow user to call `make` directly on a specifier, in which case the specifier is used as its `at` parameter if not already given)
+                //} else if eventClass == kAECoreSuite && eventID == kAECreateElement { // TO DO: format make command as special case (for convenience, sendAppleEvent should allow user to call `make` directly on a specifier, in which case the specifier is used as its `at` parameter if not already given)
             } else if description.subject == nil && parameterExists(directParameter) {
                 parentSpecifier = self.format(directParameter)
             } else if description.subject != nil && !parameterExists(directParameter) {

@@ -5,6 +5,7 @@
 
 import Foundation
 import AppKit
+import Carbon
 
 
 /******************************************************************************/
@@ -95,7 +96,7 @@ extension NSAppleEventDescriptor { // TO DO: how safe/advisable is extending sys
     
     @objc convenience init(uint32 data: UInt32) {
         var data = data
-        self.init(descriptorType: _typeUInt32, bytes: &data, length: MemoryLayout<UInt32>.size)!
+        self.init(descriptorType: typeUInt32, bytes: &data, length: MemoryLayout<UInt32>.size)!
     }
 }
 
@@ -163,9 +164,10 @@ private let ProcessNotFoundErrorNumbers: Set<Int> = [procNotFound, connectionInv
 
 private let LaunchEventSucceededErrorNumbers: Set<Int> = [Int(noErr), errAEEventNotHandled]
 
-private let LaunchEvent = NSAppleEventDescriptor(eventClass: _kASAppleScriptSuite, eventID: _kASLaunchEvent,
-                                                 targetDescriptor: NSAppleEventDescriptor.null(), returnID: _kAutoGenerateReturnID,
-                                                 transactionID: _kAnyTransactionID)
+private let LaunchEvent = NSAppleEventDescriptor(eventClass: AEEventClass(kASAppleScriptSuite), eventID: AEEventID(kASLaunchEvent),
+                                                 targetDescriptor: NSAppleEventDescriptor.null(),
+                                                 returnID: AEReturnID(kAutoGenerateReturnID),
+                                                 transactionID: AETransactionID(kAnyTransactionID))
 
 // Application initializers pass application-identifying information to AppData initializer as enum according to which initializer was called
 
@@ -219,9 +221,10 @@ public enum TargetApplication: CustomReflectable {
     
     private func sendLaunchEvent(processDescriptor: NSAppleEventDescriptor) -> Int {
         do {
-            let event = NSAppleEventDescriptor(eventClass: _kASAppleScriptSuite, eventID: _kASLaunchEvent,
-                                               targetDescriptor: processDescriptor, returnID: _kAutoGenerateReturnID,
-                                               transactionID: _kAnyTransactionID)
+            let event = NSAppleEventDescriptor(eventClass: AEEventClass(kASAppleScriptSuite), eventID: AEEventID(kASLaunchEvent),
+                                               targetDescriptor: processDescriptor,
+                                               returnID: AEReturnID(kAutoGenerateReturnID),
+                                               transactionID: AETransactionID(kAnyTransactionID))
             let reply = try event.sendEvent(options: .waitForReply, timeout: 30)
             return Int(reply.paramDescriptor(forKeyword: keyErrorNumber)?.int32Value ?? 0) // application error (errAEEventNotHandled is normal)
         } catch {

@@ -16,6 +16,7 @@
 
 
 import Foundation
+import Carbon
 
 public typealias ElementName = (singular: String, plural: String)
 
@@ -85,7 +86,7 @@ public class GlueTable {
                 let term = keywords[i]
                 var name = term.name
                 let code = term.code
-                if !(name == "missing value" && code == _cMissingValue) { // (ignore `missing value` as it's treated separately)
+                if !(name == "missing value" && code == cMissingValue) { // (ignore `missing value` as it's treated separately)
                     // escape definitions that semi-overlap default definitions
                     if let desc = self.defaultTypesByName[name] {
                         if desc.typeCodeValue != code {
@@ -102,7 +103,7 @@ public class GlueTable {
                 let term = keywords[len - 1 - i]
                 var name = term.name
                 var code = term.code // actually constant, but NSAppleEventDescriptor constructor below insists on var
-                if !(name == "missing value" && code == _cMissingValue) { // (ignore `missing value` as it's treated separately)
+                if !(name == "missing value" && code == cMissingValue) { // (ignore `missing value` as it's treated separately)
                     // escape definitions that semi-overlap default definitions
                     if let desc = self.defaultTypesByName[name] {
                         if desc.typeCodeValue != code {

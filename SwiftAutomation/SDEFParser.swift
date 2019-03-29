@@ -88,14 +88,14 @@ public class SDEFParser: ApplicationTerminology {
     
     private func parse(typeOfElement element: XMLElement) throws -> (String, OSType) { // class, record-type, value-type
         let (name, code) = try self.parse(keywordElement: element)
-        self.types.append(KeywordTerm(name: self.keywordConverter.convertSpecifierName(name), kind: .type, code: code))
+        self.types.append(KeywordTerm(name: self.keywordConverter.convertSpecifierName(name), code: code))
         return (name, code)
     }
     
     private func parse(propertiesOfElement element: XMLElement) throws { // class, class-extension, record-value
         for element in element.elements(forName: "property") {
             let (name, code) = try self.parse(keywordElement: element)
-            self.properties.append(KeywordTerm(name: self.keywordConverter.convertSpecifierName(name), kind: .property, code: code))
+            self.properties.append(KeywordTerm(name: self.keywordConverter.convertSpecifierName(name), code: code))
         }
     }
     
@@ -111,7 +111,8 @@ public class SDEFParser: ApplicationTerminology {
                 // (note: record and value types also define plurals, but we only use plurals for element names and elements should always be classes, so we ignore those)
                 let plural = element.attribute(forName: "plural")?.stringValue ?? (
                     (name == "text" || name.hasSuffix("s")) ? name : "\(name)s") // SDEF spec says to append 's' to name when plural attribute isn't given; in practice, appending 's' doesn't work so well for names already ending in 's' (e.g. 'print settings'), nor for 'text' (which is AppleScript-defined), so special-case those here (note that macOS's SDEF->AETE converter will append "s" to singular names that already end in "s"; nothing we can do about that)
-                self.elements.append(ClassTerm(singular: name, plural: self.keywordConverter.convertSpecifierName(plural), code: code))
+                self.elements.append(ClassTerm(singular: self.keywordConverter.convertSpecifierName(name),
+                                               plural: self.keywordConverter.convertSpecifierName(plural), code: code))
             case "class-extension":
                 try self.parse(propertiesOfElement: element)
             case "record-type":
@@ -122,7 +123,7 @@ public class SDEFParser: ApplicationTerminology {
             case "enumeration":
                 for element in element.elements(forName: "enumerator") {
                     let (name, code) = try self.parse(keywordElement: element)
-                    self.enumerators.append(KeywordTerm(name: self.keywordConverter.convertSpecifierName(name), kind: .enumerator, code: code))
+                    self.enumerators.append(KeywordTerm(name: self.keywordConverter.convertSpecifierName(name), code: code))
                 }
             case "command", "event":
                 let (name, eventClass, eventID) = try self.parse(commandElement: element)
@@ -133,12 +134,13 @@ public class SDEFParser: ApplicationTerminology {
                 //   definitions are ignored and will not compile.
                 let previousDef = self.commandsDict[name]
                 if previousDef == nil || (previousDef!.eventClass == eventClass && previousDef!.eventID == eventID) {
-                    let command = CommandTerm(name: self.keywordConverter.convertSpecifierName(name), eventClass: eventClass, eventID: eventID)
-                    self.commandsDict[name] = command
+                    var parameters = [KeywordTerm]()
                     for element in element.elements(forName: "parameter") {
-                        let (name, code) = try self.parse(keywordElement: element)
-                        command.addParameter(self.keywordConverter.convertParameterName(name), code: code)
+                        let (paramName, paramCode) = try self.parse(keywordElement: element)
+                        parameters.append(KeywordTerm(name: self.keywordConverter.convertParameterName(paramName), code: paramCode))
                     }
+                    self.commandsDict[name] = CommandTerm(name: self.keywordConverter.convertSpecifierName(name),
+                                                          eventClass: eventClass, eventID: eventID, parameters: parameters)
                 } // else ignore duplicate declaration
             default: ()
             }

@@ -12,6 +12,7 @@
 //
 
 import Foundation
+import Carbon
 
 
 // TO DO: check for any missing terms (e.g. ctxt)
@@ -28,15 +29,14 @@ public class DefaultTerminology: ApplicationTerminology {
     public let commands: [CommandTerm]
 
     public init(keywordConverter: KeywordConverterProtocol) {
-        self.types = self._types.map({KeywordTerm(name: keywordConverter.convertSpecifierName($0), kind: .type, code: $1)})
-        self.enumerators = self._enumerators.map({KeywordTerm(name: keywordConverter.convertSpecifierName($0), kind: .enumerator, code: $1)})
-        self.properties = self._properties.map({KeywordTerm(name: keywordConverter.convertSpecifierName($0), kind: .property, code: $1)})
-        self.elements = self._elements.map({ClassTerm(singular: keywordConverter.convertSpecifierName($0),
-                                                        plural: keywordConverter.convertSpecifierName($1), code: $2)})
+        self.types = self._types.map{ KeywordTerm(name: keywordConverter.convertSpecifierName($0), code: $1) }
+        self.enumerators = self._enumerators.map{ KeywordTerm(name: keywordConverter.convertSpecifierName($0), code: $1) }
+        self.properties = self._properties.map{ KeywordTerm(name: keywordConverter.convertSpecifierName($0), code: $1) }
+        self.elements = self._elements.map{ ClassTerm(singular: keywordConverter.convertSpecifierName($0),
+                                                        plural: keywordConverter.convertSpecifierName($1), code: $2) }
         self.commands = self._commands.map({
-            let term = CommandTerm(name: keywordConverter.convertSpecifierName($0), eventClass: $1, eventID: $2)
-            for (name, code) in $3 { term.addParameter(keywordConverter.convertParameterName(name), code: code) }
-            return term
+            return CommandTerm(name: keywordConverter.convertSpecifierName($0), eventClass: $1, eventID: $2,
+                               parameters: $3.map{ KeywordTerm(name: keywordConverter.convertParameterName($0), code: $1) })
         })
     }
     
@@ -48,129 +48,131 @@ public class DefaultTerminology: ApplicationTerminology {
     
     // TO DO: review list against current AppleScript AEUT
     
-    private let _types: Keywords = [("anything", _typeWildCard),
-                                    ("boolean", _typeBoolean),
-                                    ("short integer", _typeSInt16),
-                                    ("integer", _typeSInt32),
-                                    ("double integer", _typeSInt64),
-                                    ("unsigned short integer", _typeUInt16), // no AS keyword
-                                    ("unsigned integer", _typeUInt32),
-                                    ("unsigned double integer", _typeUInt64), // no AS keyword
-                                    ("fixed", _typeFixed),
-                                    ("long fixed", _typeLongFixed),
-                                    ("decimal struct", _typeDecimalStruct), // no AS keyword
-                                    ("small real", _typeIEEE32BitFloatingPoint),
-                                    ("real", _typeIEEE64BitFloatingPoint),
-                                    ("extended real", _typeExtended),
-                                    ("large real", _type128BitFloatingPoint), // no AS keyword
-                                    ("string", _typeText),
-                                    ("styled text", _typeStyledText),
-                                    ("text style info", _typeTextStyles),
-                                    ("styled clipboard text", _typeScrapStyles),
-                                    ("encoded string", _typeEncodedString),
-                                    ("writing code", _pScriptTag),
-                                    ("international writing code", _typeIntlWritingCode),
-                                    ("international text", _typeIntlText),
-                                    ("Unicode text", _typeUnicodeText),
-                                    ("UTF8 text", _typeUTF8Text), // no AS keyword
-                                    ("UTF16 text", _typeUTF16ExternalRepresentation), // no AS keyword
-                                    ("version", _typeVersion),
-                                    ("date", _typeLongDateTime),
-                                    ("list", _typeAEList),
-                                    ("record", _typeAERecord),
-                                    ("data", _typeData),
-                                    ("script", _typeScript),
-                                    ("location reference", _typeInsertionLoc),
-                                    ("reference", _typeObjectSpecifier),
-                                    ("alias", _typeAlias),
-                                    ("file ref", _typeFSRef), // no AS keyword
-                                    ("file specification", _typeFSS),
-                                    ("bookmark data", _typeBookmarkData), // no AS keyword
-                                    ("file URL", _typeFileURL), // no AS keyword
-                                    ("point", _typeQDPoint),
-                                    ("bounding rectangle", _typeQDRectangle),
-                                    ("fixed point", _typeFixedPoint),
-                                    ("fixed rectangle", _typeFixedRectangle),
-                                    ("long point", _typeLongPoint),
-                                    ("long rectangle", _typeLongRectangle),
-                                    ("long fixed point", _typeLongFixedPoint),
-                                    ("long fixed rectangle", _typeLongFixedRectangle),
-                                    ("EPS picture", _typeEPS),
-                                    ("GIF picture", _typeGIF),
-                                    ("JPEG picture", _typeJPEG),
-                                    ("PICT picture", _typePict),
-                                    ("TIFF picture", _typeTIFF),
-                                    ("RGB color", _typeRGBColor),
-                                    ("RGB16 color", _typeRGB16),
-                                    ("RGB96 color", _typeRGB96),
-                                    ("graphic text", _typeGraphicText),
-                                    ("color table", _typeColorTable),
-                                    ("pixel map record", _typePixMapMinus),
-                                    ("best", _typeBest),
-                                    ("type class", _typeType),
-                                    ("constant", _typeEnumeration),
-                                    ("property", _typeProperty),
-                                    ("mach port", _typeMachPort), // no AS keyword
-                                    ("kernel process ID", _typeKernelProcessID), // no AS keyword
-                                    ("application bundle ID", _typeApplicationBundleID), // no AS keyword
-                                    ("process serial number", _typeProcessSerialNumber), // no AS keyword
-                                    ("application signature", _typeApplSignature), // no AS keyword
-                                    ("application URL", _typeApplicationURL), // no AS keyword
-                                    // ("missing value", _cMissingValue), // represented as MissingValue constant, not Symbol instance
-                                    ("null", _typeNull),
-                                    ("machine location", _typeMachineLoc),
-                                    ("machine", _cMachine),
-                                    ("dash style", _typeDashStyle),
-                                    ("rotation", _typeRotation),
-                                    ("item", _cObject),
-                                    ("January", _cJanuary),
-                                    ("February", _cFebruary),
-                                    ("March", _cMarch),
-                                    ("April", _cApril),
-                                    ("May", _cMay),
-                                    ("June", _cJune),
-                                    ("July", _cJuly),
-                                    ("August", _cAugust),
-                                    ("September", _cSeptember),
-                                    ("October", _cOctober),
-                                    ("November", _cNovember),
-                                    ("December", _cDecember),
-                                    ("Sunday", _cSunday),
-                                    ("Monday", _cMonday),
-                                    ("Tuesday", _cTuesday),
-                                    ("Wednesday", _cWednesday),
-                                    ("Thursday", _cThursday),
-                                    ("Friday", _cFriday),
-                                    ("Saturday", _cSaturday),
+    private let _types: Keywords = [("anything", typeWildCard),
+                                    ("boolean", typeBoolean),
+                                    ("short integer", typeSInt16),
+                                    ("integer", typeSInt32),
+                                    ("double integer", typeSInt64),
+                                    ("unsigned short integer", typeUInt16), // no AS keyword
+                                    ("unsigned integer", typeUInt32),
+                                    ("unsigned double integer", typeUInt64), // no AS keyword
+                                    ("fixed", typeFixed),
+                                    ("long fixed", typeLongFixed),
+                                    ("decimal struct", typeDecimalStruct), // no AS keyword
+                                    ("small real", typeIEEE32BitFloatingPoint),
+                                    ("real", typeIEEE64BitFloatingPoint),
+                                    //("extended real", typeExtended),
+                                    ("large real", type128BitFloatingPoint), // no AS keyword
+                                    ("string", typeText),
+                                    ("styled text", typeStyledText),
+                                    ("text style info", typeTextStyles),
+                                    ("styled clipboard text", typeScrapStyles),
+                                    ("encoded string", typeEncodedString),
+                                    ("writing code", pScriptTag),
+                                    ("international writing code", typeIntlWritingCode),
+                                    ("international text", typeIntlText),
+                                    ("Unicode text", typeUnicodeText),
+                                    ("UTF8 text", typeUTF8Text), // no AS keyword
+                                    ("UTF16 text", typeUTF16ExternalRepresentation), // no AS keyword
+                                    ("version", typeVersion),
+                                    ("date", typeLongDateTime),
+                                    ("list", typeAEList),
+                                    ("record", typeAERecord),
+                                    ("data", typeData),
+                                    ("script", typeScript),
+                                    ("location reference", typeInsertionLoc),
+                                    ("reference", typeObjectSpecifier),
+                                    ("alias", typeAlias),
+                                    ("file ref", typeFSRef), // no AS keyword
+                                    //("file specification", typeFSS),
+                                    ("bookmark data", typeBookmarkData), // no AS keyword
+                                    ("file URL", typeFileURL), // no AS keyword
+                                    ("point", typeQDPoint),
+                                    ("bounding rectangle", typeQDRectangle),
+                                    ("fixed point", typeFixedPoint),
+                                    ("fixed rectangle", typeFixedRectangle),
+                                    ("long point", typeLongPoint),
+                                    ("long rectangle", typeLongRectangle),
+                                    ("long fixed point", typeLongFixedPoint),
+                                    ("long fixed rectangle", typeLongFixedRectangle),
+                                    ("EPS picture", typeEPS),
+                                    ("GIF picture", typeGIF),
+                                    ("JPEG picture", typeJPEG),
+                                    ("PICT picture", typePict),
+                                    ("TIFF picture", typeTIFF),
+                                    ("RGB color", typeRGBColor),
+                                    ("RGB16 color", typeRGB16),
+                                    ("RGB96 color", typeRGB96),
+                                    ("graphic text", typeGraphicText),
+                                    ("color table", typeColorTable),
+                                    ("pixel map record", typePixMapMinus),
+                                    ("best", typeBest),
+                                    ("type class", typeType),
+                                    ("constant", typeEnumeration),
+                                    ("property", typeProperty),
+                                    ("mach port", typeMachPort), // no AS keyword
+                                    ("kernel process ID", typeKernelProcessID), // no AS keyword
+                                    ("application bundle ID", typeApplicationBundleID), // no AS keyword
+                                    ("process serial number", typeProcessSerialNumber), // no AS keyword
+                                    ("application signature", typeApplSignature), // no AS keyword
+                                    ("application URL", typeApplicationURL), // no AS keyword
+                                    // ("missing value", cMissingValue), // represented as MissingValue constant, not Symbol instance
+                                    ("null", typeNull),
+                                    ("machine location", typeMachineLoc),
+                                    ("machine", OSType(cMachine)), // OpenScripting/ASRegistry.h
+                                    ("dash style", typeDashStyle),
+                                    ("rotation", typeRotation),
+                                    ("item", cObject),
+                                    // more OpenScripting terms
+                                    ("January", OSType(cJanuary)),
+                                    ("February", OSType(cFebruary)),
+                                    ("March", OSType(cMarch)),
+                                    ("April", OSType(cApril)),
+                                    ("May", OSType(cMay)),
+                                    ("June", OSType(cJune)),
+                                    ("July", OSType(cJuly)),
+                                    ("August", OSType(cAugust)),
+                                    ("September", OSType(cSeptember)),
+                                    ("October", OSType(cOctober)),
+                                    ("November", OSType(cNovember)),
+                                    ("December", OSType(cDecember)),
+                                    ("Sunday", OSType(cSunday)),
+                                    ("Monday", OSType(cMonday)),
+                                    ("Tuesday", OSType(cTuesday)),
+                                    ("Wednesday", OSType(cWednesday)),
+                                    ("Thursday", OSType(cThursday)),
+                                    ("Friday", OSType(cFriday)),
+                                    ("Saturday", OSType(cSaturday)),
+ 
     ]
-    private let _enumerators: Keywords = [("yes", _kAEYes),
-                                          ("no", _kAENo),
-                                          ("ask", _kAEAsk),
-                                          ("case", _kAECase),
-                                          ("diacriticals", _kAEDiacritic),
-                                          ("expansion", _kAEExpansion),
-                                          ("hyphens", _kAEHyphens),
-                                          ("punctuation", _kAEPunctuation),
-                                          ("whitespace", _kAEWhiteSpace),
-                                          ("numeric strings", _kASNumericStrings),
+    private let _enumerators: Keywords = [("yes", kAEYes),
+                                          ("no", kAENo),
+                                          ("ask", kAEAsk),
+                                          ("case", OSType(kAECase)),
+                                          ("diacriticals", OSType(kAEDiacritic)),
+                                          ("expansion", OSType(kAEExpansion)),
+                                          ("hyphens", OSType(kAEHyphens)),
+                                          ("punctuation", OSType(kAEPunctuation)),
+                                          ("whitespace", OSType(kAEWhiteSpace)),
+                                          ("numeric strings", OSType(kASNumericStrings)),
     ]
-    private let _properties: Keywords = [("class", _pClass),
-                                         ("id", _pID),
+    private let _properties: Keywords = [("class", pClass),
+                                         ("id", pID),
                                          ("properties", _pALL),
     ]
-    private let _elements: Elements = [("item", "items", _cObject),
+    private let _elements: Elements = [("item", "items", cObject),
     								   // what about ("text",cText)?
     ]
-    private let _commands: Commands = [("run", kCoreEventClass, _kAEOpenApplication, []),
-                                       ("open", kCoreEventClass, _kAEOpenDocuments, []),
-                                       ("print", kCoreEventClass, _kAEPrintDocuments, []),
-                                       ("quit", kCoreEventClass, _kAEQuitApplication, [("saving", _keyAESaveOptions)]),
-                                       ("reopen", kCoreEventClass, _kAEReopenApplication, []),
+    private let _commands: Commands = [("run", kCoreEventClass, kAEOpenApplication, []),
+                                       ("open", kCoreEventClass, kAEOpenDocuments, []),
+                                       ("print", kCoreEventClass, kAEPrintDocuments, []),
+                                       ("quit", kCoreEventClass, kAEQuitApplication, [("saving", keyAESaveOptions)]),
+                                       ("reopen", kCoreEventClass, kAEReopenApplication, []),
                                        //("launch", _kASAppleScriptSuite, _kASLaunchEvent, []), // this is a hardcoded method
-                                       ("activate", _kAEMiscStandards, _kAEActivate, []),
+                                       ("activate", kAEMiscStandards, kAEActivate, []),
                                        ("open location", _GURL, _GURL, [("window", _WIND)]),
-                                       ("get", _kAECoreSuite, _kAEGetData, []),
-                                       ("set", _kAECoreSuite, _kAESetData, [("to", _keyAEData)]),
+                                       ("get", kAECoreSuite, kAEGetData, []),
+                                       ("set", kAECoreSuite, kAESetData, [("to", keyAEData)]),
     ]
     
     private static let _GURL = try! fourCharCode("GURL")

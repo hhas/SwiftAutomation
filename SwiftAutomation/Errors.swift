@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import Carbon
 
 
 // TO DO: currently Errors are mostly opaque to client code (even inits are internal only); what (if any) properties should be made public?
@@ -241,7 +242,7 @@ public class CommandError: AutomationError { // raised whenever an application c
             errorNumber = error._code
         } else if let replyEvent = reply {
 //            print("! DEBUG: App reply event: \(reply)")
-            if let appError = replyEvent.forKeyword(_keyErrorNumber) {
+            if let appError = replyEvent.forKeyword(keyErrorNumber) {
                 errorNumber = Int(appError.int32Value)
                 // TO DO: [lazily] unpack any other available error info
             }
@@ -251,13 +252,13 @@ public class CommandError: AutomationError { // raised whenever an application c
     }
     
     public override var message: String? {
-        return (self.reply?.forKeyword(_keyErrorString)?.stringValue
-                ?? self.reply?.forKeyword(_kOSAErrorBriefMessage)?.stringValue
+        return (self.reply?.forKeyword(keyErrorString)?.stringValue
+            ?? self.reply?.forKeyword(AEKeyword(kOSAErrorBriefMessage))?.stringValue
                 ?? descriptionForError[self._code])
     }
     
     public var expectedType: Symbol? {
-        if let desc = self.reply?.forKeyword(_kOSAErrorExpectedType) {
+        if let desc = self.reply?.forKeyword(AEKeyword(kOSAErrorExpectedType)) {
             return try? self.appData.unpack(desc) as Symbol
         } else {
             return nil
@@ -265,7 +266,7 @@ public class CommandError: AutomationError { // raised whenever an application c
     }
     
     public var offendingObject: Any? {
-        if let desc = self.reply?.forKeyword(_kOSAErrorOffendingObject) {
+        if let desc = self.reply?.forKeyword(AEKeyword(kOSAErrorOffendingObject)) {
             return try? self.appData.unpack(desc) as Any
         } else {
             return nil
@@ -273,7 +274,7 @@ public class CommandError: AutomationError { // raised whenever an application c
     }
     
     public var partialResult: Any? {
-        if let desc = self.reply?.forKeyword(_kOSAErrorPartialResult) {
+        if let desc = self.reply?.forKeyword(AEKeyword(kOSAErrorPartialResult)) {
             return try? self.appData.unpack(desc) as Any
         } else {
             return nil

@@ -7,6 +7,7 @@
 // TO DO: check endianness in read data methods
 
 import Foundation
+import Carbon
 
 
 /**********************************************************************/
@@ -36,7 +37,7 @@ public class AETEParser: ApplicationTerminology {
     
     public func parse(_ descriptor: NSAppleEventDescriptor) throws { // accepts AETE/AEUT or AEList of AETE/AEUTs
         switch descriptor.descriptorType {
-        case _typeAETE, _typeAEUT:
+        case DescType(typeAETE), DescType(typeAEUT):
             self.aeteData = descriptor.data as NSData
             self.cursor = 6 // skip version, language, script integers
             let n = self.short()
@@ -59,7 +60,7 @@ public class AETEParser: ApplicationTerminology {
             } catch {
                 throw TerminologyError("An error occurred while parsing AETE. \(error)")
             }
-        case _typeAEList:
+        case typeAEList:
             for i in 1..<(descriptor.numberOfItems+1) {
                 try self.parse(descriptor.atIndex(i)!)
             }
@@ -138,7 +139,6 @@ public class AETEParser: ApplicationTerminology {
         self.alignCursor()
         let classCode = self.code()
         let code = self.code()
-        let commandDef = CommandTerm(name: name, eventClass: classCode, eventID: code)
         // skip result
         self.skipCode()     // datatype
         self.skipString()   // description
@@ -155,22 +155,24 @@ public class AETEParser: ApplicationTerminology {
         - If their names are the same but their codes are different, only the first definition is used; other definitions are ignored and will not compile.
         - If a dictionary-defined command has the same name but different code to a built-in definition, escape its name so it doesn't conflict with the default built-in definition.
         */
-        let otherCommandDef: CommandTerm! = self.commandsDict[name]
-        if otherCommandDef == nil || (commandDef.eventClass == otherCommandDef.eventClass
-            && commandDef.eventID == otherCommandDef.eventID) {
-                self.commandsDict[name] = commandDef
-        }
+        var parameters = [KeywordTerm]()
         let n = self.short()
         for _ in 0..<n {
-            let paramName = self.keywordConverter.convertParameterName(self.string())
+            let paramName = self.string()
             self.alignCursor()
             let paramCode = self.code()
             self.skipCode()     // datatype
             self.skipString()   // description
             self.alignCursor()
             self.skipShort()    // flags
-            commandDef.addParameter(paramName, code: paramCode)
+            parameters.append(KeywordTerm(name: self.keywordConverter.convertParameterName(paramName), code: paramCode))
             try self.checkCursor()
+        }
+        let commandDef = CommandTerm(name: name, eventClass: classCode, eventID: code, parameters: parameters)
+        let otherCommandDef: CommandTerm! = self.commandsDict[name]
+        if otherCommandDef == nil || (commandDef.eventClass == otherCommandDef.eventClass
+            && commandDef.eventID == otherCommandDef.eventID) {
+            self.commandsDict[name] = commandDef
         }
     }
     
@@ -192,8 +194,8 @@ public class AETEParser: ApplicationTerminology {
             self.skipString()   // description
             self.alignCursor()
             let flags = self.short()
-            if propertyCode != _kAEInheritedProperties { // it's a normal property definition, not a superclass  definition
-                let propertyDef = KeywordTerm(name: propertyName, kind: .property, code: propertyCode)
+            if propertyCode != kAEInheritedProperties { // it's a normal property definition, not a superclass  definition
+                let propertyDef = KeywordTerm(name: propertyName, code: propertyCode)
                 if (flags % 2 != 0) { // class name is plural
                     isPlural = true
                 } else if !properties.contains(propertyDef) { // add to list of property definitions
@@ -236,7 +238,7 @@ public class AETEParser: ApplicationTerminology {
         for _ in 0..<n {
             let name = self.keywordConverter.convertSpecifierName(self.string())
             self.alignCursor()
-            let enumeratorDef = KeywordTerm(name: name, kind: .enumerator, code: self.code())
+            let enumeratorDef = KeywordTerm(name: name, code: self.code())
             self.skipString()    // description
             self.alignCursor()
             if !self.enumerators.contains(enumeratorDef) {
@@ -281,7 +283,7 @@ public class AETEParser: ApplicationTerminology {
 extension AEApplication { // extends the built-in Application object with convenience method for getting its AETE resource
 
     public func getAETE() throws -> NSAppleEventDescriptor {
-        return try self.sendAppleEvent(_kASAppleScriptSuite, _kGetAETE, [keyDirectObject:0]) as NSAppleEventDescriptor
+        return try self.sendAppleEvent(OSType(kASAppleScriptSuite), OSType(kGetAETE), [keyDirectObject:0]) as NSAppleEventDescriptor
     }
 }
 

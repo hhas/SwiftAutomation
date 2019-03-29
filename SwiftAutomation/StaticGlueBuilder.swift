@@ -435,7 +435,7 @@ public class StaticGlueTemplate {
             $0.insertString("COMMAND_NAME", $1.name)
             $0.insertOSType("EVENT_CLASS", $1.eventClass)
             $0.insertOSType("EVENT_ID", $1.eventID)
-            $0.insertKeywords("PARAMETER", $1.orderedParameters)
+            $0.insertKeywords("PARAMETER", $1.parameters)
         }
     }
     
@@ -519,9 +519,9 @@ public func renderStaticGlueTemplate(glueSpec: GlueSpec, typeSupportSpec: TypeSu
     template.insertKeywords("PROPERTY_FORMATTER", glueTable.propertiesByCode.sorted(by: {$0.1.lowercased()<$1.1.lowercased()}), emptyContent: ":")
     template.insertElements("ELEMENTS_FORMATTER", glueTable.elementsByCode.map({($0,$1)}).sorted(by: {$0.1.plural.lowercased()<$1.1.plural.lowercased()}), emptyContent: ":")
     let specifiersByName = glueTable.specifiersByName.values.sorted(by: {$0.name.lowercased()<$1.name.lowercased()})
-    template.insertKeywords("PROPERTY_SPECIFIER", specifiersByName.filter({$0.kind == TermType.property}) as! [KeywordTerm])
-    template.insertElements("ELEMENTS_SPECIFIER", specifiersByName.filter({$0.kind == TermType.type}) as! [ClassTerm])
-    template.insertCommands("COMMAND", specifiersByName.filter({$0.kind == TermType.command}) as! [CommandTerm])
+    template.insertKeywords("PROPERTY_SPECIFIER", specifiersByName.filter({type(of: $0) == KeywordTerm.self}) as! [KeywordTerm])
+    template.insertElements("ELEMENTS_SPECIFIER", specifiersByName.filter({type(of: $0) == ClassTerm.self}) as! [ClassTerm])
+    template.insertCommands("COMMAND", specifiersByName.filter({type(of: $0) == CommandTerm.self}) as! [CommandTerm])
     // render any additional enum/struct/alias type definitions specified by user
     // these provide the glue file with better integration between AE and Swift type systems
     if let spec = typeSupportSpec {

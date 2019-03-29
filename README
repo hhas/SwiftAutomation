@@ -28,7 +28,7 @@ code for controlling individual applications using human-readable terminology.
 
 To clone the Xcode project to your own machine:
 
-  git clone https://bitbucket.org/hhas/swiftae.git
+  git clone https://github.com/hhas/SwiftAutomation.git
 
 A basic Swift "script editor" (currently under development) is also available:
 
