@@ -151,7 +151,7 @@ public class AESymbol: Symbol {
 
     override public var typeAliasName: String {return "AE"}
 
-    public override class func symbol(code: OSType, type: OSType = typeType, descriptor: NSAppleEventDescriptor? = nil) -> AESymbol {
+    public override class func symbol(code: OSType, type: OSType = typeType, descriptor: AEDesc? = nil) -> AESymbol {
         switch (code) {
         case 0x616c6973: return self.alias // "alis"
         case 0x2a2a2a2a: return self.anything // "****"
@@ -608,13 +608,13 @@ public enum AESymbolOrString: SelfPacking, SelfUnpacking {
     public init(_ value: AESymbol) { self = .symbol(value) }
     public init(_ value: String) { self = .string(value) }
     
-    public func SwiftAutomation_packSelf(_ appData: AppData) throws -> NSAppleEventDescriptor {
+    public func SwiftAutomation_packSelf(_ appData: AppData) throws -> AEDesc {
         switch self {
         case .symbol(let value): return try appData.pack(value)
         case .string(let value): return try appData.pack(value)
         }
     }
-    public static func SwiftAutomation_unpackSelf(_ desc: NSAppleEventDescriptor, appData: AppData) throws -> AESymbolOrString {
+    public static func SwiftAutomation_unpackSelf(_ desc: AEDesc, appData: AppData) throws -> AESymbolOrString {
         do { return .symbol(try appData.unpack(desc) as AESymbol) } catch {}
         do { return .string(try appData.unpack(desc) as String) } catch {}
         throw UnpackError(appData: appData, descriptor: desc, type: AESymbolOrString.self,
@@ -630,13 +630,13 @@ public enum AEStringOrMissingValue: SelfPacking, SelfUnpacking {
     public init(_ value: MissingValueType) { self = .missing(value) }
     public init(_ value: String) { self = .string(value) }
     
-    public func SwiftAutomation_packSelf(_ appData: AppData) throws -> NSAppleEventDescriptor {
+    public func SwiftAutomation_packSelf(_ appData: AppData) throws -> AEDesc {
         switch self {
         case .missing(let value): return try appData.pack(value)
         case .string(let value): return try appData.pack(value)
         }
     }
-    public static func SwiftAutomation_unpackSelf(_ desc: NSAppleEventDescriptor, appData: AppData) throws -> AEStringOrMissingValue {
+    public static func SwiftAutomation_unpackSelf(_ desc: AEDesc, appData: AppData) throws -> AEStringOrMissingValue {
         do { return .missing(try appData.unpack(desc) as MissingValueType) } catch {}
         do { return .string(try appData.unpack(desc) as String) } catch {}
         throw UnpackError(appData: appData, descriptor: desc, type: AEStringOrMissingValue.self,

@@ -234,7 +234,7 @@ public class REMSymbol: SwiftAutomation.Symbol {
 
     override public var typeAliasName: String {return "REM"}
 
-    public override class func symbol(code: OSType, type: OSType = typeType, descriptor: NSAppleEventDescriptor? = nil) -> REMSymbol {
+    public override class func symbol(code: OSType, type: OSType = typeType, descriptor: AEDesc? = nil) -> REMSymbol {
         switch (code) {
         case 0x61636374: return self.account // "acct"
         case 0x616c6973: return self.alias // "alis"

@@ -22,7 +22,7 @@
 
 <h2>Type bridging limitations</h2>
 
-<p>Some applications (e.g. QuarkXpress) may return values which SwiftAutomation cannot convert to equivalent Cocoa types. These values are usually of types which are defined, used and understood only by that particular application, and will be represented in Objective-C as <code>NSAppleEventDescriptor</code> instances which should generally be treated as opaque values.</p>
+<p>Some applications (e.g. QuarkXpress) may return values which SwiftAutomation cannot convert to equivalent Cocoa types. These values are usually of types which are defined, used and understood only by that particular application, and will be represented in Objective-C as <code>AEDesc</code> instances which should generally be treated as opaque values.</p>
 
 <p>A few standard but rarely used AE types are also currently unbridged with Cocoa counterparts, such as image types (<code>typePict</code>, <code>typeTIFF</code>, etc.). Client code should perform any necessary conversions itself.</p>
 

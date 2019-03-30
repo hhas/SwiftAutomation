@@ -285,7 +285,7 @@ public class CALSymbol: SwiftAutomation.Symbol {
 
     override public var typeAliasName: String {return "CAL"}
 
-    public override class func symbol(code: OSType, type: OSType = typeType, descriptor: NSAppleEventDescriptor? = nil) -> CALSymbol {
+    public override class func symbol(code: OSType, type: OSType = typeType, descriptor: AEDesc? = nil) -> CALSymbol {
         switch (code) {
         case 0x45366170: return self.accepted // "E6ap"
         case 0x616c6973: return self.alias // "alis"

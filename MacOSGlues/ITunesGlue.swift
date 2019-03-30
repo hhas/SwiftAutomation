@@ -583,7 +583,7 @@ public class ITUSymbol: SwiftAutomation.Symbol {
 
     override public var typeAliasName: String {return "ITU"}
 
-    public override class func symbol(code: OSType, type: OSType = typeType, descriptor: NSAppleEventDescriptor? = nil) -> ITUSymbol {
+    public override class func symbol(code: OSType, type: OSType = typeType, descriptor: AEDesc? = nil) -> ITUSymbol {
         switch (code) {
         case 0x70416374: return self.active // "pAct"
         case 0x7055524c: return self.address // "pURL"

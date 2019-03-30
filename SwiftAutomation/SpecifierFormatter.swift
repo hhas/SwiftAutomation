@@ -102,7 +102,7 @@ public class SpecifierFormatter {
     
     func formatRootSpecifier(_ specifier: RootSpecifier) -> String {
         var hasCustomRoot = true
-        if let desc = specifier.rootObject as? NSAppleEventDescriptor {
+        if let desc = specifier.rootObject as? AEDesc {
             switch desc.descriptorType {
             case typeCurrentContainer:
                 return "\(self.classNamePrefix)Con"
@@ -140,45 +140,46 @@ public class SpecifierFormatter {
     
     func formatInsertionSpecifier(_ specifier: InsertionSpecifier) -> String {
         if let name = [kAEBeginning: "beginning", kAEEnd: "end",
-                       kAEBefore: "before", kAEAfter: "after"][specifier.insertionLocation.enumCodeValue] {
+                       kAEBefore: "before", kAEAfter: "after"][try! specifier.insertionLocation.enumCode()] {
             return "\(self.format(specifier.parentQuery)).\(name)"
         }
         return "<\(type(of: specifier))(kpos:\(specifier.insertionLocation),kobj:\(self.format(specifier.parentQuery)))>"
     }
     
     func formatObjectSpecifier(_ specifier: ObjectSpecifier) -> String {
-        let form = specifier.selectorForm.enumCodeValue
+        let form = specifier.selectorForm
         var result = self.format(specifier.parentQuery)
         switch form {
         case OSType(formPropertyID):
             // kludge, seld is either desc or symbol, depending on whether constructed or unpacked; TO DO: eliminate?
-            if let desc = specifier.selectorData as? NSAppleEventDescriptor, let propertyDesc = desc.coerce(toDescriptorType: typeType) {
-                return result + formatPropertyVar(propertyDesc.typeCodeValue)
+            if let desc = specifier.selectorData as? AEDesc, let prop = try? desc.typeCode() {
+                return result + formatPropertyVar(prop)
             } else if let symbol = specifier.selectorData as? Symbol {
                 return result + formatPropertyVar(symbol.code)
             } // else malformed desc
         case OSType(formUserPropertyID):
             return "\(result).userProperty(\(self.formatValue(specifier.selectorData)))"
         case OSType(formRelativePosition): // specifier.previous/next(SYMBOL)
-            if let seld = specifier.selectorData as? NSAppleEventDescriptor, // ObjectSpecifier.unpackSelf does not unpack ordinals
-                    let name = [kAEPrevious: "previous", kAENext: "next"][seld.enumCodeValue],
+            if let seld = specifier.selectorData as? AEDesc, // ObjectSpecifier.unpackSelf does not unpack ordinals
+                    let name = [kAEPrevious: "previous", kAENext: "next"][try! seld.enumCode()],
                     let parent = specifier.parentQuery as? ObjectSpecifier {
-                if specifier.wantType.typeCodeValue == parent.wantType.typeCodeValue {
+                if specifier.wantType == parent.wantType {
                     return "\(result).\(name)()" // use shorthand form for neatness
                 } else {
-                    let element = self.formatSymbol(name: nil, code: specifier.wantType.typeCodeValue, type: typeType)
+                    let element = self.formatSymbol(name: nil, code: specifier.wantType, type: typeType)
                     return "\(result).\(name)(\(element))"
                 }
             }
         default:
-            result += formatElementsVar(specifier.wantType.typeCodeValue)
-            if let desc = specifier.selectorData as? NSAppleEventDescriptor, desc.typeCodeValue == kAEAll { // TO DO: check this is right (replaced `where` with `,`)
+            result += formatElementsVar(specifier.wantType)
+            if let desc = specifier.selectorData as? AEDesc, (try? desc.typeCode()) == DescType(kAEAll) { // TO DO: check this is right (replaced `where` with `,`)
                 return result
             }
             switch form {
             case OSType(formAbsolutePosition): // specifier[IDX] or specifier.first/middle/last/any
-                if let desc = specifier.selectorData as? NSAppleEventDescriptor, // ObjectSpecifier.unpackSelf does not unpack ordinals
-                        let ordinal = [kAEFirst: "first", kAEMiddle: "middle", kAELast: "last", kAEAny: "any"][desc.enumCodeValue] {
+                if let desc = specifier.selectorData as? AEDesc, // ObjectSpecifier.unpackSelf does not unpack ordinals
+                        let ordinal = [DescType(kAEFirst): "first", DescType(kAEMiddle): "middle",
+                                       DescType(kAELast): "last", DescType(kAEAny): "any"][try! desc.enumCode()] {
                     return "\(result).\(ordinal)"
                 } else {
                     return "\(result)[\(self.formatValue(specifier.selectorData))]"
@@ -208,10 +209,9 @@ public class SpecifierFormatter {
     
     func formatComparisonTest(_ specifier: ComparisonTest) -> String {
         let operand1 = self.formatValue(specifier.operand1), operand2 = self.formatValue(specifier.operand2)
-        let opcode = specifier.operatorType.enumCodeValue
-        if let name = self._comparisonOperators[opcode] {
+        if let name = self._comparisonOperators[specifier.operatorType] {
             return "\(operand1) \(name) \(operand2)"
-        } else if let name = self._logicalOperators[opcode] {
+        } else if let name = self._logicalOperators[specifier.operatorType] {
             return "\(operand1).\(name)(\(operand2))"
         }
         return "<\(type(of: specifier))(relo:\(specifier.operatorType),obj1:\(self.formatValue(operand1)),obj2:\(self.formatValue(operand2)))>"
@@ -219,12 +219,11 @@ public class SpecifierFormatter {
     
     func formatLogicalTest(_ specifier: LogicalTest) -> String {
         let operands = specifier.operands.map({self.formatValue($0)})
-        let opcode = specifier.operatorType.enumCodeValue
-        if let name = [kAEAND: "&&", kAEOR: "||"][opcode] {
+        if let name = [kAEAND: "&&", kAEOR: "||"][specifier.operatorType] {
             if operands.count > 1 {
                 return operands.joined(separator: " \(name) ")
             }
-        } else if opcode == kAENOT && operands.count == 1 {
+        } else if specifier.operatorType == kAENOT && operands.count == 1 {
             return "!(\(operands[0]))"
         }
         return "<\(type(of: specifier))(logc:\(specifier.operatorType),term:\(self.formatValue(operands)))>"

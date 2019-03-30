@@ -289,7 +289,7 @@ public class XCOSymbol: SwiftAutomation.Symbol {
 
     override public var typeAliasName: String {return "XCO"}
 
-    public override class func symbol(code: OSType, type: OSType = typeType, descriptor: NSAppleEventDescriptor? = nil) -> XCOSymbol {
+    public override class func symbol(code: OSType, type: OSType = typeType, descriptor: AEDesc? = nil) -> XCOSymbol {
         switch (code) {
         case 0x61727564: return self.activeRunDestination // "arud"
         case 0x6172756e: return self.activeScheme // "arun"

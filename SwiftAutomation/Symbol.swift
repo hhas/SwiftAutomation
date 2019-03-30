@@ -16,12 +16,12 @@ import Carbon
 
 open class Symbol: Hashable, Equatable, CustomStringConvertible, CustomDebugStringConvertible, CustomReflectable, SelfPacking {
     
-    private var _descriptor: NSAppleEventDescriptor?
-    public let name: String?, code: OSType, type: OSType
+    private var _descriptor: AEDesc? // TO DO: memory management? (pack() caller takes ownership)
+    public let name: String?, type: DescType, code: OSType
     
     open var typeAliasName: String {return "Symbol"} // provides prefix used in description var; glue subclasses override this with their own strings (e.g. "FIN" for Finder)
     
-    public required init(name: String?, code: OSType, type: OSType = typeType, descriptor: NSAppleEventDescriptor? = nil) { // (When unpacking a symbol descriptor returned by an application command, if the returned AEDesc is passed here it'll be cached here for reuse, avoiding the need to fully-repack the new Symbol instance if/when it's subsequently used in another application command. In practice, this is mostly irrelevant to static glues, as Symbol subclasses in static glues are normally constructed via Symbol.symbol(), which lazily instantiates existing glue-defined static vars instead. Whether it makes any noticeable difference to dynamic bridges remains to be seen [it's not likely to be a major bottleneck], but it costs nothing for AppData to include it if it has it.)
+    public required init(name: String?, code: OSType, type: OSType = typeType, descriptor: AEDesc? = nil) { // (When unpacking a symbol descriptor returned by an application command, if the returned AEDesc is passed here it'll be cached here for reuse, avoiding the need to fully-repack the new Symbol instance if/when it's subsequently used in another application command. In practice, this is mostly irrelevant to static glues, as Symbol subclasses in static glues are normally constructed via Symbol.symbol(), which lazily instantiates existing glue-defined static vars instead. Whether it makes any noticeable difference to dynamic bridges remains to be seen [it's not likely to be a major bottleneck], but it costs nothing for AppData to include it if it has it.)
         self.name = name
         self.code = code
         self.type = type
@@ -31,7 +31,7 @@ open class Symbol: Hashable, Equatable, CustomStringConvertible, CustomDebugStri
     // special constructor for string-based record keys (avoids the need to wrap dictionary keys in a `StringOrSymbol` enum when unpacking)
     // e.g. the AppleScript record `{name:"Bob", isMyUser:true}` maps to the Swift Dictionary `[Symbol.name:"Bob", Symbol("isMyUser"):true]`
     
-    public convenience init(_ name: String, descriptor: NSAppleEventDescriptor? = nil) {
+    public convenience init(_ name: String, descriptor: AEDesc? = nil) {
         self.init(name: name, code: noOSType, type: noOSType, descriptor: descriptor)
     }
     
@@ -46,12 +46,12 @@ open class Symbol: Hashable, Equatable, CustomStringConvertible, CustomDebugStri
     }
     
     // this is called by AppData when unpacking typeType, typeEnumerated, etc; glue-defined symbol subclasses should override to return glue-defined symbols where available
-    open class func symbol(code: OSType, type: OSType = typeType, descriptor: NSAppleEventDescriptor? = nil) -> Symbol {
+    open class func symbol(code: OSType, type: OSType = typeType, descriptor: AEDesc? = nil) -> Symbol {
         return self.init(name: nil, code: code, type: type, descriptor: descriptor)
     }
     
     // this is called by AppData when unpacking string-based record keys
-    public class func symbol(string: String, descriptor: NSAppleEventDescriptor? = nil) -> Symbol {
+    public class func symbol(string: String, descriptor: AEDesc? = nil) -> Symbol {
         return self.init(name: string, code: noOSType, type: noOSType, descriptor: descriptor)
     }
     
@@ -75,12 +75,12 @@ open class Symbol: Hashable, Equatable, CustomStringConvertible, CustomDebugStri
     
     // packing
     
-    public var descriptor: NSAppleEventDescriptor { // used by SwiftAutomation_packSelf and previous()/next() selectors  
+    public var descriptor: AEDesc { // used by SwiftAutomation_packSelf and previous()/next() selectors  
         if self._descriptor == nil {
             if self.nameOnly {
-                self._descriptor = NSAppleEventDescriptor(string: self.name!)
+                self._descriptor = AEDesc(string: self.name!)
             } else {
-                self._descriptor = NSAppleEventDescriptor(type: self.type, code: self.code)
+                self._descriptor = AEDesc(type: self.type, code: self.code)
             }
         }
         return self._descriptor!
@@ -89,7 +89,7 @@ open class Symbol: Hashable, Equatable, CustomStringConvertible, CustomDebugStri
     // returns true if Symbol contains name but not code (i.e. it represents a string-based record property key)
     public var nameOnly: Bool { return self.type == noOSType && self.name != nil }
     
-    public func SwiftAutomation_packSelf(_ appData: AppData) throws -> NSAppleEventDescriptor {
+    public func SwiftAutomation_packSelf(_ appData: AppData) throws -> AEDesc {
         return self.descriptor
     }
     

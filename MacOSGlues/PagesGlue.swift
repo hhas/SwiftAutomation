@@ -410,7 +410,7 @@ public class PAGSymbol: SwiftAutomation.Symbol {
 
     override public var typeAliasName: String {return "PAG"}
 
-    public override class func symbol(code: OSType, type: OSType = typeType, descriptor: NSAppleEventDescriptor? = nil) -> PAGSymbol {
+    public override class func symbol(code: OSType, type: OSType = typeType, descriptor: AEDesc? = nil) -> PAGSymbol {
         switch (code) {
         case 0x4e4d6164: return self.address // "NMad"
         case 0x66696167: return self.advancedGradientFill // "fiag"

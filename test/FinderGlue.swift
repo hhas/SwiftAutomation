@@ -528,7 +528,7 @@ public class FINSymbol: SwiftAutomation.Symbol {
 
     override public var typeAliasName: String {return "FIN"}
 
-    public override class func symbol(code: OSType, type: OSType = typeType, descriptor: NSAppleEventDescriptor? = nil) -> FINSymbol {
+    public override class func symbol(code: OSType, type: OSType = typeType, descriptor: AEDesc? = nil) -> FINSymbol {
         switch (code) {
         case 0x69736162: return self.acceptsHighLevelEvents // "isab"
         case 0x72657674: return self.acceptsRemoteEvents // "revt"

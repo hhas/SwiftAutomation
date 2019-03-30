@@ -30,11 +30,11 @@ TO DO:
 
         try Keynote(name: "/Applications/Keynote.app").customRoot(Error -1700: Can't unpack malformed descriptor:
 
-        <NSAppleEventDescriptor: 'obj '{ 'form':'test', 'want':'shtx', 'from':'obj '{ 'form':'indx', 'want':'KnMs', 'seld':'abso'($206C6C61$), 'from':'obj '{ 'form':'indx', 'want':'docu', 'seld':1, 'from':null() } }, 'seld':'cmpd'{ 'relo':'bgwt', 'obj1':'obj '{ 'form':'prop', 'want':'prop', 'seld':'font', 'from':'obj '{ 'form':'prop', 'want':'prop', 'seld':'pDTx', 'from':'exmn'($$) } }, 'obj2':'utxt'("IowanOldStyle-") } }>
+        <AEDesc: 'obj '{ 'form':'test', 'want':'shtx', 'from':'obj '{ 'form':'indx', 'want':'KnMs', 'seld':'abso'($206C6C61$), 'from':'obj '{ 'form':'indx', 'want':'docu', 'seld':1, 'from':null() } }, 'seld':'cmpd'{ 'relo':'bgwt', 'obj1':'obj '{ 'form':'prop', 'want':'prop', 'seld':'font', 'from':'obj '{ 'form':'prop', 'want':'prop', 'seld':'pDTx', 'from':'exmn'($$) } }, 'obj2':'utxt'("IowanOldStyle-") } }>
 
         Can't unpack object specifier's selector data. Can't unpack malformed descriptor:
 
-        <NSAppleEventDescriptor: 'cmpd'{ 'relo':'bgwt', 'obj1':'obj '{ 'form':'prop', 'want':'prop', 'seld':'font', 'from':'obj '{ 'form':'prop', 'want':'prop', 'seld':'pDTx', 'from':'exmn'($$) } }, 'obj2':'utxt'("IowanOldStyle-") }>
+        <AEDesc: 'cmpd'{ 'relo':'bgwt', 'obj1':'obj '{ 'form':'prop', 'want':'prop', 'seld':'font', 'from':'obj '{ 'form':'prop', 'want':'prop', 'seld':'pDTx', 'from':'exmn'($$) } }, 'obj2':'utxt'("IowanOldStyle-") }>
 
         Can't unpack comparison test: malformed descriptor.).objectText.font.set(to: "Century Schoolbook")
 
@@ -100,7 +100,7 @@ TO DO:
 - worth including convenience API for interacting with `NSAppleScript`/`NSUserAppleScriptTask`/`OSAScript`? Given that SwiftAutomation provides automatic Swift<->AE type bridging, it seems a pity not to take advantage of it as it'll greatly reduce the amount of effort needed to make Swift apps attachable. Or should that be spun off into its own library to avoid crudding up SwiftAutomation's main API? (Probably the latter, as it allows that code to evolve independently later on. That may be particularly significant if the app also implements its own AEOM which attached scripts will want to interact with; doubly so if Swift ever gets a native AEOM framework [as a non-sucky alternative to CocoaScripting]; triply so if it can get a non-sucky replacement to the awful, archaic, and barely supported/supportable ComponentManager-based OpenScripting [OSA] framework.)
 
 
-- default SendMode is currently [.canSwitchLayer,.waitReply]; confirm this is same as AppleScript
+- default SendMode is currently [.waitForReply, .canInteract]; confirm this is same as AppleScript
 
 
 - can custom mirrors be improved? what info should they show? (one problem is that playgrounds tend to display array of specifier as mirror, not description/debugDescription, which is unhelpful)

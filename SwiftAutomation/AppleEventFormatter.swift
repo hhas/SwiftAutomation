@@ -24,7 +24,7 @@ public enum TerminologyType {
 }
 
 
-public func formatAppleEvent(descriptor event: NSAppleEventDescriptor, useTerminology: TerminologyType = .sdef) -> String { // TO DO: return command/reply/error enum, giving caller more choice on how to display
+public func formatAppleEvent(descriptor event: AEDesc, useTerminology: TerminologyType = .sdef) -> String { // TO DO: return command/reply/error enum, giving caller more choice on how to display
     //  Format an outgoing or reply AppleEvent (if the latter, only the return value/error description is displayed).
     //  Caution: if sending events to self, caller MUST use TerminologyType.SDEF or call formatAppleEvent on a background thread, otherwise formatAppleEvent will deadlock the main loop when it tries to fetch host app's AETE via ascr/gdte event.
     if event.descriptorType != typeAppleEvent { // sanity check
@@ -36,13 +36,13 @@ public func formatAppleEvent(descriptor event: NSAppleEventDescriptor, useTermin
     } catch {
         return "Can't format Apple event: can't get terminology: \(error)"
     }
-    if event.attributeDescriptor(forKeyword: keyEventClassAttr)!.typeCodeValue == kCoreEventClass
-            && event.attributeDescriptor(forKeyword: keyEventIDAttr)!.typeCodeValue == kAEAnswer { // it's a reply event, so format error/return value only
-        let errn = event.paramDescriptor(forKeyword: keyErrorNumber)?.int32Value ?? 0
+    if (try! event.attribute(keyEventClassAttr).typeCode()) == kCoreEventClass
+            && (try! event.attribute(keyEventIDAttr).typeCode()) == kAEAnswer { // it's a reply event, so format error/return value only
+        let errn = try! (try? event.parameter(keyErrorNumber))?.int() ?? 0
         if errn != 0 { // format error message
-            let errs = event.paramDescriptor(forKeyword: keyErrorString)?.stringValue
+            let errs = try! (try? event.parameter(keyErrorString))?.string()
             return AutomationError(code: Int(errn), message: errs).description // TO DO: use CommandError? (need to check it's happy with only replyEvent arg)
-        } else if let reply = event.paramDescriptor(forKeyword: keyDirectObject) { // format return value
+        } else if let reply = try? event.parameter(keyDirectObject) { // format return value
             return appData.formatter.format((try? appData.unpackAsAny(reply)) ?? reply)
         } else {
             return MissingValue.description
@@ -58,11 +58,11 @@ public func formatAppleEvent(descriptor event: NSAppleEventDescriptor, useTermin
 
 // cache previously parsed terminology for efficiency
 private let _cacheMaxLength = 10
-private var _cachedTerms = [(NSAppleEventDescriptor, TerminologyType, DynamicAppData)]()
+private var _cachedTerms = [(AEDesc, TerminologyType, DynamicAppData)]()
 
 
-private func dynamicAppData(forAppleEvent event: NSAppleEventDescriptor, useTerminology: TerminologyType) throws -> DynamicAppData {
-    let addressDesc = event.attributeDescriptor(forKeyword: keyAddressAttr)!
+private func dynamicAppData(forAppleEvent event: AEDesc, useTerminology: TerminologyType) throws -> DynamicAppData {
+    let addressDesc = try event.attribute(keyAddressAttr)
     for (desc, terminologyType, appData) in _cachedTerms {
         if desc.descriptorType == addressDesc.descriptorType && desc.data == addressDesc.data && terminologyType == useTerminology {
             return appData
@@ -75,10 +75,11 @@ private func dynamicAppData(forAppleEvent event: NSAppleEventDescriptor, useTerm
 }
 
 // given the AEAddressDesc for a local process, return the fileURL to its .app bundle
-func applicationURL(forAddressDescriptor addressDesc: NSAppleEventDescriptor) throws -> URL {
+func applicationURL(forAddressDescriptor addressDesc: AEDesc) throws -> URL {
     var addressDesc = addressDesc
+   // TO DO: implement AEDesc.processIdentifier()
     if addressDesc.descriptorType == typeProcessSerialNumber { // AppleScript is old school
-        addressDesc = addressDesc.coerce(toDescriptorType: typeKernelProcessID)!
+        addressDesc = try addressDesc.coerce(to: typeKernelProcessID)
     }
     guard addressDesc.descriptorType == typeKernelProcessID else { // local processes are generally targeted by PID
         throw TerminologyError("Unsupported address type: \(formatFourCharCodeString(addressDesc.descriptorType))")
@@ -144,9 +145,9 @@ open class DynamicAppData: AppData { // TO DO: rename this and make `public` as 
                                    glueClasses: self.glueClasses, glueSpec: glueSpec, glueTable: glueTable)
     }
     
-    override func unpackAsSymbol(_ desc: NSAppleEventDescriptor) -> Symbol {
-        return self.glueClasses.symbolType.init(name: self.glueTable.typesByCode[desc.typeCodeValue],
-                                                code: desc.typeCodeValue, type: desc.descriptorType, descriptor: desc)
+    override func unpackAsSymbol(_ desc: AEDesc) -> Symbol { // TO DO: ownership?
+        return self.glueClasses.symbolType.init(name: self.glueTable.typesByCode[try! desc.typeCode()],
+                                                code: try! desc.typeCode(), type: desc.descriptorType, descriptor: desc)
     }
     
     override func recordKey(forCode code: OSType) -> Symbol {
@@ -200,16 +201,16 @@ public struct CommandDescription {
     
     
     // called by [e.g.] SwiftAutoEdit.app with an intercepted AppleEvent descriptor
-    public init(event: NSAppleEventDescriptor, appData: DynamicAppData) { // TO DO: would be more flexible to take AppData + GlueTable as separate params
+    public init(event: AEDesc, appData: DynamicAppData) { // TO DO: would be more flexible to take AppData + GlueTable as separate params
         // unpack the event's parameters
         var rawParameters = [OSType:Any]()
-        for i in 1...event.numberOfItems {
-            let desc = event.atIndex(i)!
-            rawParameters[event.keywordForDescriptor(at:i)] = (try? appData.unpackAsAny(desc)) ?? desc
+        for i in try! 1...event.count() {
+            let (key, desc) = try! event.item(i)
+            rawParameters[key] = (try? appData.unpackAsAny(desc)) ?? desc
         }
         //
-        let eventClass = event.attributeDescriptor(forKeyword: keyEventClassAttr)!.typeCodeValue
-        let eventID = event.attributeDescriptor(forKeyword: keyEventIDAttr)!.typeCodeValue
+        let eventClass = try! event.attribute(keyEventClassAttr).typeCode()
+        let eventID = try! event.attribute(keyEventIDAttr).typeCode()
         if let commandInfo = appData.glueTable.commandsByCode[eightCharCode(eventClass, eventID)] {
             var keywordParameters = [(String, Any)]()
             for paramInfo in commandInfo.parameters { // this ignores parameters that don't have a keyword name; it should also ignore ("as",keyAERequestedType) parameter (this is probably best done by ensuring that command parsers always omit it)
@@ -231,18 +232,18 @@ public struct CommandDescription {
             self.signature = .codes(eventClass: eventClass, eventID: eventID, parameters: rawParameters)
         }
         // unpack subject attribute, if given
-        if let desc = event.attributeDescriptor(forKeyword: AEKeyword(keySubjectAttr)) {
+        if let desc = try? event.attribute(AEKeyword(keySubjectAttr)) {
             if desc.descriptorType != typeNull { // typeNull = root application object
                 self.subject = (try? appData.unpackAsAny(desc)) ?? desc // TO DO: double-check formatter knows how to display descriptor (or any other non-specifier) as customRoot
             }
         }
         // unpack reply requested and timeout attributes (note: these attributes are unreliable since their values are passed via AESendMessage() rather than packed directly into the AppleEvent)
-        if let desc = event.attributeDescriptor(forKeyword: keyReplyRequestedAttr) { // TO DO: attr is unreliable
+        if let desc = try? event.attribute(keyReplyRequestedAttr) { // TO DO: attr is unreliable
             // keyReplyRequestedAttr appears to be boolean value encoded as Int32 (1=wait or queue reply; 0=no reply)
-            if desc.int32Value == 0 { self.waitReply = false }
+            if try! desc.int() == 0 { self.waitReply = false }
         }
-        if let timeout = event.attributeDescriptor(forKeyword: keyTimeoutAttr) { // TO DO: attr is unreliable
-            let timeoutInTicks = timeout.int32Value
+        if let timeout = try? event.attribute(keyTimeoutAttr) { // TO DO: attr is unreliable
+            let timeoutInTicks = try! timeout.int()
             if timeoutInTicks == -2 { // NoTimeout // TO DO: ditto
                 self.withTimeout = -2
             } else if timeoutInTicks > 0 {
@@ -250,7 +251,7 @@ public struct CommandDescription {
             }
         }
         // considering/ignoring attributes
-        if let considersAndIgnoresDesc = event.attributeDescriptor(forKeyword: AEKeyword(enumConsidsAndIgnores)) {
+        if let considersAndIgnoresDesc = try? event.attribute(AEKeyword(enumConsidsAndIgnores)) {
             var considersAndIgnores: UInt32 = 0
             (considersAndIgnoresDesc.data as NSData).getBytes(&considersAndIgnores, length: MemoryLayout<UInt32>.size)
             if considersAndIgnores != defaultConsidersIgnoresMask {

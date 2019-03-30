@@ -525,7 +525,7 @@ public class KEYSymbol: SwiftAutomation.Symbol {
 
     override public var typeAliasName: String {return "KEY"}
 
-    public override class func symbol(code: OSType, type: OSType = typeType, descriptor: NSAppleEventDescriptor? = nil) -> KEYSymbol {
+    public override class func symbol(code: OSType, type: OSType = typeType, descriptor: AEDesc? = nil) -> KEYSymbol {
         switch (code) {
         case 0x4b6d6638: return self._1080p_ // "Kmf8"
         case 0x4b6d6634: return self._2160p_ // "Kmf4"

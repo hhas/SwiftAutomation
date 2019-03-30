@@ -331,7 +331,7 @@ public class CONSymbol: SwiftAutomation.Symbol {
 
     override public var typeAliasName: String {return "CON"}
 
-    public override class func symbol(code: OSType, type: OSType = typeType, descriptor: NSAppleEventDescriptor? = nil) -> CONSymbol {
+    public override class func symbol(code: OSType, type: OSType = typeType, descriptor: AEDesc? = nil) -> CONSymbol {
         switch (code) {
         case 0x617a3237: return self.address // "az27"
         case 0x617a3835: return self.AIM // "az85"

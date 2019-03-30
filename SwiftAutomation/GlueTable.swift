@@ -26,7 +26,7 @@ public class GlueTable {
     // note: dictionary structures are optimized for dynamic bridges, but are also usable
     // by static glue generators (which aren't performance-sensitive anyway)
     
-    public private(set) var typesByName:      [String:NSAppleEventDescriptor] = [:] // Symbol members (properties, types, and enums)
+    public private(set) var typesByName:      [String:AEDesc] = [:] // Symbol members (properties, types, and enums)
     public private(set) var typesByCode:      [OSType:String]      = [:]
     
     public private(set) var elementsByName:   [String:KeywordTerm] = [:]
@@ -57,7 +57,7 @@ public class GlueTable {
     }
     
     // copies of SwiftAutomation's built-in terms, used to disambiguate any conflicting app-defined names
-    private var defaultTypesByName: [String:NSAppleEventDescriptor] = [:]
+    private var defaultTypesByName: [String:AEDesc] = [:]
     private var defaultPropertiesByName: [String:KeywordTerm] = [:]
     private var defaultElementsByName: [String:KeywordTerm] = [:]
     private var defaultCommandsByName: [String:CommandTerm] = [:]
@@ -89,7 +89,7 @@ public class GlueTable {
                 if !(name == "missing value" && code == cMissingValue) { // (ignore `missing value` as it's treated separately)
                     // escape definitions that semi-overlap default definitions
                     if let desc = self.defaultTypesByName[name] {
-                        if desc.typeCodeValue != code {
+                        if (try? desc.typeCode()) != code {
                             name = self.keywordConverter.escapeName(name)
                             term.name = name
                         }
@@ -102,18 +102,17 @@ public class GlueTable {
                 // to handle synonyms, if same name appears more than once then uses code from first definition in list (iterating array in reverse ensures this)
                 let term = keywords[len - 1 - i]
                 var name = term.name
-                var code = term.code // actually constant, but NSAppleEventDescriptor constructor below insists on var
+                let code = term.code // actually constant, but AEDesc constructor below insists on var
                 if !(name == "missing value" && code == cMissingValue) { // (ignore `missing value` as it's treated separately)
                     // escape definitions that semi-overlap default definitions
                     if let desc = self.defaultTypesByName[name] {
-                        if desc.typeCodeValue != code {
+                        if (try? desc.typeCode()) != code {
                             name = self.keywordConverter.escapeName(name)
                             term.name = name
                         }
                     }
                     // add item
-                    self.typesByName[name] = NSAppleEventDescriptor(descriptorType: descriptorType,
-                                                                    bytes: &code, length: MemoryLayout<OSType>.size)
+                    self.typesByName[name] = packFixedSize(code, as: descriptorType) // TO DO: ownership?
                 }
             }
         }
@@ -248,7 +247,7 @@ public class GlueTable {
     
     //
     
-    public func add(AETE descriptor: NSAppleEventDescriptor) throws {
+    public func add(AETE descriptor: AEDesc) throws {
         // note: use `try AEApplication(url: url).getAETE()` to retrieve typeAETE descriptor via an 'ascr'/'gdte' Apple event, or use
         // `OSAGetSysTerminology()` to get typeAEUT (language component)'s AETE/AEUT resource (e.g. for AppleScript's built-in terminology)
         let parser = AETEParser(keywordConverter: self.keywordConverter)

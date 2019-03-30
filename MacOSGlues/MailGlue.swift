@@ -614,7 +614,7 @@ public class MAISymbol: SwiftAutomation.Symbol {
 
     override public var typeAliasName: String {return "MAI"}
 
-    public override class func symbol(code: OSType, type: OSType = typeType, descriptor: NSAppleEventDescriptor? = nil) -> MAISymbol {
+    public override class func symbol(code: OSType, type: OSType = typeType, descriptor: AEDesc? = nil) -> MAISymbol {
         switch (code) {
         case 0x74616363: return self.account // "tacc"
         case 0x6d616374: return self.account // "mact"

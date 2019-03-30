@@ -154,7 +154,7 @@ Finally, each window object has a one-to-one relationship to the document object
 
 ## How SwiftAutomation works
 
-SwiftAutomation is a high-level pure-Swift wrapper for macOS's lower-level Apple Event Manager APIs (`NSAppleEventDescriptor`). 
+SwiftAutomation is a high-level pure-Swift wrapper for macOS's lower-level Apple Event Manager APIs (`AEDesc`). 
 
 The SwiftAutomation architecture consists of two parts:
 

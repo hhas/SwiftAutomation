@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `NSAppleEventDescriptor` Foundation class provides a low-level wrapper around the Carbon Apple Event Manager APIs for building and sending Apple events, and for encapsulating the parameter and result data to be included in those events. `NSAppleEventDescriptor` defines a `descriptorType` property containing an `OSType` (a.k.a. "four-char code") that describes the type of value it holds (e.g. `'utxt'` = `typeUnicodeText` = UTF16-encoded text), and a `data` property containing the value's data serialized as an `NSData` instance.
+The `AEDesc` Foundation class provides a low-level wrapper around the Carbon Apple Event Manager APIs for building and sending Apple events, and for encapsulating the parameter and result data to be included in those events. `AEDesc` defines a `descriptorType` property containing an `OSType` (a.k.a. "four-char code") that describes the type of value it holds (e.g. `'utxt'` = `typeUnicodeText` = UTF16-encoded text), and a `data` property containing the value's data serialized as an `NSData` instance.
 
 Apple event data types include:
 
@@ -14,7 +14,7 @@ Apple event data types include:
 
 * object specifiers, used to construct _first-class queries_ (also known as _references_ in AppleScript), that identify objects within an application.
 
-`NSAppleEventDescriptor` includes methods for converting common Apple event data types to and from their Foundation equivalents (e.g. `typeUnicodeText` ⟷ `NSString`). SwiftAutomation extends and improves on these basic mappings as follows:
+`AEDesc` includes methods for converting common Apple event data types to and from their Foundation equivalents (e.g. `typeUnicodeText` ⟷ `NSString`). SwiftAutomation extends and improves on these basic mappings as follows:
 
 <table width="100%" summary="AE-Foundation type mappings">
 <thead>
@@ -151,7 +151,7 @@ If an `NSNumber` instance is supplied as a command parameter, SwiftAutomation wi
 
 ### Strings
 
-When packing and unpacking `String` values, SwiftAutomation uses the `NSAppleEventDescriptor` class's `+descriptorWithString:` and `-stringValue` methods, both of which use descriptors of `typeUnicodeText`, coercing other types as needed.
+When packing and unpacking `String` values, SwiftAutomation uses the `AEDesc` class's `+descriptorWithString:` and `-stringValue` methods, both of which use descriptors of `typeUnicodeText`, coercing other types as needed.
 
 Note that while the CoreServices framework's `AEDataModel.h` header states that `typeUnicodeText` is deprecated in favor `typeUTF8Text` and `typeUTF16ExternalRepresentation`, it remains in widespread use; therefore SwiftAutomation continues to use `typeUnicodeText` to ensure the broadest compatibility with existing scriptable applications.
 
@@ -168,7 +168,7 @@ SwiftAutomation packs `URL` instances containing `file://` URLs as descriptors o
 
   let myFile = URL(fileURLWithPath: "/Users/jsmith/MyFile.txt")
 
-  let myFileDesc = NSAppleEventDescriptor(fileURL: myFile).coerce(toDescriptorType: typeAlias) [TO DO: not sure this works on recent OS versions]
+  let myFileDesc = AEDesc(fileURL: myFile).coerce(toDescriptorType: typeAlias) [TO DO: not sure this works on recent OS versions]
 
 Similarly, some older Carbon applications may occasionally use colon-delimited HFS path strings even though macOS has long since deprecated these in favor of standard POSIX paths. SwiftAutomation includes the following compatibility functions for converting to and from HFS path strings where unavoidable:
 
@@ -231,7 +231,7 @@ Be aware that symbol names for standard data types are derived from AppleScript,
 
 ### Other types
 
-The Apple Event Manager defines many other AE types whose names and codes are defined by SwiftAutomation for completeness. A few of these types are of occasional interest to users, the rest can simply be ignored. In most cases, values of these types will be represented by `NSAppleEventDescriptor` instances as SwiftAutomation doesn't automatically convert them.
+The Apple Event Manager defines many other AE types whose names and codes are defined by SwiftAutomation for completeness. A few of these types are of occasional interest to users, the rest can simply be ignored. In most cases, values of these types will be represented by `AEDesc` instances as SwiftAutomation doesn't automatically convert them.
 
 
 

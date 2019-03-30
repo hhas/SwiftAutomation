@@ -392,7 +392,7 @@ public class NUMSymbol: SwiftAutomation.Symbol {
 
     override public var typeAliasName: String {return "NUM"}
 
-    public override class func symbol(code: OSType, type: OSType = typeType, descriptor: NSAppleEventDescriptor? = nil) -> NUMSymbol {
+    public override class func symbol(code: OSType, type: OSType = typeType, descriptor: AEDesc? = nil) -> NUMSymbol {
         switch (code) {
         case 0x4e6d4153: return self.activeSheet // "NmAS"
         case 0x4e4d6164: return self.address // "NMad"

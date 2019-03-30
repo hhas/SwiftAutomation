@@ -206,7 +206,7 @@ func parseEnumeratedTypeDefinition(_ string: String, classNamePrefix: String) th
 // struct record format string parser "STRUCTNAME[:CLASS]=PROPERTYNAME:TYPE+PROPERTYNAME:TYPE+..."
 
 func parseRecordStructDefinition(_ string: String, classNamePrefix: String,
-                                 typesByName: [String: NSAppleEventDescriptor]) throws -> RecordStructDefinition {
+                                 typesByName: [String: AEDesc]) throws -> RecordStructDefinition {
     var chars = Substring(string)
     var properties = [(name: String, code: OSType, type: String)]()
     let structName = try parseIdentifier(&chars) + "Record" // e.g. `TEDDocumentRecord`; TO DO: might be twitchy if any application 'class' names end with the word "record" themselves
@@ -224,7 +224,7 @@ func parseRecordStructDefinition(_ string: String, classNamePrefix: String,
     var nc: Character?
     repeat {
         let (propertyName, typeName) = try parseProperty(&chars, classNamePrefix: classNamePrefix)
-        guard let propertyCode = typesByName[propertyName]?.typeCodeValue else {
+        guard let propertyCode = try! typesByName[propertyName]?.typeCode() else {
             throw SyntaxError("Unknown property name: \(propertyName)")
         }
         properties.append((propertyName, propertyCode, typeName))
@@ -265,7 +265,7 @@ public class TypeSupportSpec { // converts custom format strings into enum/struc
     }
     
     public func recordStructDefinitions(classNamePrefix: String,
-                                        typesByName: [String: NSAppleEventDescriptor]) throws -> [RecordStructDefinition] {
+                                        typesByName: [String: AEDesc]) throws -> [RecordStructDefinition] {
         return try self.recordStructFormats.map {
             try parseRecordStructDefinition($0, classNamePrefix: classNamePrefix, typesByName: typesByName)
         }
@@ -513,8 +513,8 @@ public func renderStaticGlueTemplate(glueSpec: GlueSpec, typeSupportSpec: TypeSu
     // note: both by-name and by-code tables are used here to ensure conflicting keywords are represented correctly, e.g. if keyword `foo` is defined as both a type and a property but with different codes for each, it should appear only once in TYPE_SYMBOL (by-name) list but twice in SYMBOL_SWITCH (by-code) list; this [hopefully] emulates the way in which AppleScript resolves these conflicts
     template.insertKeywords("SYMBOL_SWITCH", glueTable.typesByCode.sorted(by: {$0.1.lowercased()<$1.1.lowercased()}))
     let typesByName = glueTable.typesByName.sorted(by: {$0.0.lowercased()<$1.0.lowercased()})
-    template.insertKeywords("TYPE_SYMBOL", typesByName.filter({$1.descriptorType != typeEnumerated}).map({(code: $1.typeCodeValue, name: $0)}))
-    template.insertKeywords("ENUM_SYMBOL", typesByName.filter({$1.descriptorType == typeEnumerated}).map({(code: $1.enumCodeValue, name: $0)}))
+    template.insertKeywords("TYPE_SYMBOL", typesByName.filter({$1.descriptorType != typeEnumerated}).map({(code: try! $1.typeCode(), name: $0)}))
+    template.insertKeywords("ENUM_SYMBOL", typesByName.filter({$1.descriptorType == typeEnumerated}).map({(code: try! $1.enumCode(), name: $0)}))
     template.insertKeywords("TYPE_FORMATTER", glueTable.typesByCode.sorted(by: {$0.1.lowercased()<$1.1.lowercased()}), emptyContent: ":")
     template.insertKeywords("PROPERTY_FORMATTER", glueTable.propertiesByCode.sorted(by: {$0.1.lowercased()<$1.1.lowercased()}), emptyContent: ":")
     template.insertElements("ELEMENTS_FORMATTER", glueTable.elementsByCode.map({($0,$1)}).sorted(by: {$0.1.plural.lowercased()<$1.1.plural.lowercased()}), emptyContent: ":")

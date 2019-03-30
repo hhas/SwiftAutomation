@@ -314,7 +314,7 @@ public class MESSymbol: SwiftAutomation.Symbol {
 
     override public var typeAliasName: String {return "MES"}
 
-    public override class func symbol(code: OSType, type: OSType = typeType, descriptor: NSAppleEventDescriptor? = nil) -> MESSymbol {
+    public override class func symbol(code: OSType, type: OSType = typeType, descriptor: AEDesc? = nil) -> MESSymbol {
         switch (code) {
         case 0x49434376: return self.active // "ICCv"
         case 0x69616176: return self.activeAvChat // "iaav"

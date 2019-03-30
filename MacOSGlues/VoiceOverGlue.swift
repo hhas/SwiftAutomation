@@ -229,7 +229,7 @@ public class VOVSymbol: SwiftAutomation.Symbol {
 
     override public var typeAliasName: String {return "VOV"}
 
-    public override class func symbol(code: OSType, type: OSType = typeType, descriptor: NSAppleEventDescriptor? = nil) -> VOVSymbol {
+    public override class func symbol(code: OSType, type: OSType = typeType, descriptor: AEDesc? = nil) -> VOVSymbol {
         switch (code) {
         case 0x616c6973: return self.alias // "alis"
         case 0x616c7053: return self.alphabeticSpelling // "alpS"

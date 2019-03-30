@@ -35,7 +35,7 @@ public class AETEParser: ApplicationTerminology {
         self.keywordConverter = keywordConverter
     }
     
-    public func parse(_ descriptor: NSAppleEventDescriptor) throws { // accepts AETE/AEUT or AEList of AETE/AEUTs
+    public func parse(_ descriptor: AEDesc) throws { // accepts AETE/AEUT or AEList of AETE/AEUTs
         switch descriptor.descriptorType {
         case DescType(typeAETE), DescType(typeAEUT):
             self.aeteData = descriptor.data as NSData
@@ -61,15 +61,15 @@ public class AETEParser: ApplicationTerminology {
                 throw TerminologyError("An error occurred while parsing AETE. \(error)")
             }
         case typeAEList:
-            for i in 1..<(descriptor.numberOfItems+1) {
-                try self.parse(descriptor.atIndex(i)!)
+            for i in 1..<(try! descriptor.count()+1) {
+                try self.parse(descriptor.item(i).value)
             }
         default:
             throw TerminologyError("An error occurred while parsing AETE. Unsupported descriptor type: \(formatFourCharCodeString(descriptor.descriptorType))")
         }
     }
     
-    public func parse(_ descriptors: [NSAppleEventDescriptor]) throws {
+    public func parse(_ descriptors: [AEDesc]) throws {
         for descriptor in descriptors {
             try self.parse(descriptor)
         }
@@ -282,8 +282,8 @@ public class AETEParser: ApplicationTerminology {
 
 extension AEApplication { // extends the built-in Application object with convenience method for getting its AETE resource
 
-    public func getAETE() throws -> NSAppleEventDescriptor {
-        return try self.sendAppleEvent(OSType(kASAppleScriptSuite), OSType(kGetAETE), [keyDirectObject:0]) as NSAppleEventDescriptor
+    public func getAETE() throws -> AEDesc {
+        return try self.sendAppleEvent(OSType(kASAppleScriptSuite), OSType(kGetAETE), [keyDirectObject:0]) as AEDesc
     }
 }
 

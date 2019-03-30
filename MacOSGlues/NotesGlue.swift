@@ -233,7 +233,7 @@ public class NOTSymbol: SwiftAutomation.Symbol {
 
     override public var typeAliasName: String {return "NOT"}
 
-    public override class func symbol(code: OSType, type: OSType = typeType, descriptor: NSAppleEventDescriptor? = nil) -> NOTSymbol {
+    public override class func symbol(code: OSType, type: OSType = typeType, descriptor: AEDesc? = nil) -> NOTSymbol {
         switch (code) {
         case 0x61636374: return self.account // "acct"
         case 0x616c6973: return self.alias // "alis"

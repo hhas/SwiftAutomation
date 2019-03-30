@@ -195,9 +195,9 @@ public class UnpackError: AutomationError {
     
     let type: Any.Type
     let appData: AppData
-    let descriptor: NSAppleEventDescriptor
+    let descriptor: AEDesc
     
-    public init(appData: AppData, descriptor: NSAppleEventDescriptor, type: Any.Type, message: String? = nil, cause: Error? = nil) {
+    public init(appData: AppData, descriptor: AEDesc, type: Any.Type, message: String? = nil, cause: Error? = nil) {
         self.appData = appData
         self.descriptor = descriptor
         self.type = type
@@ -212,7 +212,7 @@ public class UnpackError: AutomationError {
         do {
             value = try self.appData.unpackAsAny(self.descriptor)
         } catch {
-            string = "Can't unpack malformed descriptor"
+            string = "Can't unpack malformed descriptor" // TO DO:
         }
         return "\(string):\n\n\t\(value)" + (self._message != nil ? "\n\n\(self._message!)" : "")
     }
@@ -227,11 +227,11 @@ public class CommandError: AutomationError { // raised whenever an application c
     
     let commandInfo: CommandDescription // TO DO: this should always be given
     let appData: AppData
-    let event: NSAppleEventDescriptor? // non-nil if event was built and send
-    let reply: NSAppleEventDescriptor? // non-nil if reply event was received
+    let event: AEDesc? // non-nil if event was built and send
+    let reply: AEDesc? // non-nil if reply event was received
     
     public init(commandInfo: CommandDescription, appData: AppData,
-         event: NSAppleEventDescriptor? = nil, reply: NSAppleEventDescriptor? = nil, cause: Error? = nil) {
+         event: AEDesc? = nil, reply: AEDesc? = nil, cause: Error? = nil) {
         self.appData = appData
         self.event = event
         self.reply = reply
@@ -242,8 +242,8 @@ public class CommandError: AutomationError { // raised whenever an application c
             errorNumber = error._code
         } else if let replyEvent = reply {
 //            print("! DEBUG: App reply event: \(reply)")
-            if let appError = replyEvent.forKeyword(keyErrorNumber) {
-                errorNumber = Int(appError.int32Value)
+            if let appError = try? replyEvent.parameter(keyErrorNumber) {
+                errorNumber = (try? appError.int()) ?? 1
                 // TO DO: [lazily] unpack any other available error info
             }
         }
@@ -252,13 +252,13 @@ public class CommandError: AutomationError { // raised whenever an application c
     }
     
     public override var message: String? {
-        return (self.reply?.forKeyword(keyErrorString)?.stringValue
-            ?? self.reply?.forKeyword(AEKeyword(kOSAErrorBriefMessage))?.stringValue
-                ?? descriptionForError[self._code])
+        return (try? self.reply?.parameter(keyErrorString).string())
+            ?? (try? self.reply?.parameter(AEKeyword(kOSAErrorBriefMessage)).string())
+            ?? descriptionForError[self._code]
     }
     
     public var expectedType: Symbol? {
-        if let desc = self.reply?.forKeyword(AEKeyword(kOSAErrorExpectedType)) {
+        if let desc = try? self.reply?.parameter(AEKeyword(kOSAErrorExpectedType)) {
             return try? self.appData.unpack(desc) as Symbol
         } else {
             return nil
@@ -266,7 +266,7 @@ public class CommandError: AutomationError { // raised whenever an application c
     }
     
     public var offendingObject: Any? {
-        if let desc = self.reply?.forKeyword(AEKeyword(kOSAErrorOffendingObject)) {
+        if let desc = try? self.reply?.parameter(AEKeyword(kOSAErrorOffendingObject)) {
             return try? self.appData.unpack(desc) as Any
         } else {
             return nil
@@ -274,7 +274,7 @@ public class CommandError: AutomationError { // raised whenever an application c
     }
     
     public var partialResult: Any? {
-        if let desc = self.reply?.forKeyword(AEKeyword(kOSAErrorPartialResult)) {
+        if let desc = try? self.reply?.parameter(AEKeyword(kOSAErrorPartialResult)) {
             return try? self.appData.unpack(desc) as Any
         } else {
             return nil

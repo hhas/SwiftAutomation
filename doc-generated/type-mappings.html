@@ -12,7 +12,7 @@
                 <div class="navbar"><a href="creating-and-using-static-glues.html">back</a> | <a href="index.html">index</a> | <a href="application-objects.html">next</a></div>
                 <h2>Overview</h2>
 
-<p>The <code>NSAppleEventDescriptor</code> Foundation class provides a low-level wrapper around the Carbon Apple Event Manager APIs for building and sending Apple events, and for encapsulating the parameter and result data to be included in those events. <code>NSAppleEventDescriptor</code> defines a <code>descriptorType</code> property containing an <code>OSType</code> (a.k.a. "four-char code") that describes the type of value it holds (e.g. <code>'utxt'</code> = <code>typeUnicodeText</code> = UTF16-encoded text), and a <code>data</code> property containing the value's data serialized as an <code>NSData</code> instance.</p>
+<p>The <code>AEDesc</code> Foundation class provides a low-level wrapper around the Carbon Apple Event Manager APIs for building and sending Apple events, and for encapsulating the parameter and result data to be included in those events. <code>AEDesc</code> defines a <code>descriptorType</code> property containing an <code>OSType</code> (a.k.a. "four-char code") that describes the type of value it holds (e.g. <code>'utxt'</code> = <code>typeUnicodeText</code> = UTF16-encoded text), and a <code>data</code> property containing the value's data serialized as an <code>NSData</code> instance.</p>
 
 <p>Apple event data types include:</p>
 
@@ -23,7 +23,7 @@
 <li><p>object specifiers, used to construct <em>first-class queries</em> (also known as <em>references</em> in AppleScript), that identify objects within an application.</p></li>
 </ul>
 
-<p><code>NSAppleEventDescriptor</code> includes methods for converting common Apple event data types to and from their Foundation equivalents (e.g. <code>typeUnicodeText</code> ⟷ <code>NSString</code>). SwiftAutomation extends and improves on these basic mappings as follows:</p>
+<p><code>AEDesc</code> includes methods for converting common Apple event data types to and from their Foundation equivalents (e.g. <code>typeUnicodeText</code> ⟷ <code>NSString</code>). SwiftAutomation extends and improves on these basic mappings as follows:</p>
 
 <table width="100%" summary="AE-Foundation type mappings">
 <thead>
@@ -157,7 +157,7 @@ try Contacts().people.nickname(set: name)
 
 <h3>Strings</h3>
 
-<p>When packing and unpacking <code>String</code> values, SwiftAutomation uses the <code>NSAppleEventDescriptor</code> class's <code>+descriptorWithString:</code> and <code>-stringValue</code> methods, both of which use descriptors of <code>typeUnicodeText</code>, coercing other types as needed.</p>
+<p>When packing and unpacking <code>String</code> values, SwiftAutomation uses the <code>AEDesc</code> class's <code>+descriptorWithString:</code> and <code>-stringValue</code> methods, both of which use descriptors of <code>typeUnicodeText</code>, coercing other types as needed.</p>
 
 <p>Note that while the CoreServices framework's <code>AEDataModel.h</code> header states that <code>typeUnicodeText</code> is deprecated in favor <code>typeUTF8Text</code> and <code>typeUTF16ExternalRepresentation</code>, it remains in widespread use; therefore SwiftAutomation continues to use <code>typeUnicodeText</code> to ensure the broadest compatibility with existing scriptable applications.</p>
 
@@ -173,7 +173,7 @@ try Contacts().people.nickname(set: name)
 
 <pre><code>let myFile = URL(fileURLWithPath: "/Users/jsmith/MyFile.txt")
 
-let myFileDesc = NSAppleEventDescriptor(fileURL: myFile).coerce(toDescriptorType: typeAlias) [TO DO: not sure this works on recent OS versions]
+let myFileDesc = AEDesc(fileURL: myFile).coerce(toDescriptorType: typeAlias) [TO DO: not sure this works on recent OS versions]
 </code></pre>
 
 <p>Similarly, some older Carbon applications may occasionally use colon-delimited HFS path strings even though macOS has long since deprecated these in favor of standard POSIX paths. SwiftAutomation includes the following compatibility functions for converting to and from HFS path strings where unavoidable:</p>
@@ -238,7 +238,7 @@ TED.ask
 
 <h3>Other types</h3>
 
-<p>The Apple Event Manager defines many other AE types whose names and codes are defined by SwiftAutomation for completeness. A few of these types are of occasional interest to users, the rest can simply be ignored. In most cases, values of these types will be represented by <code>NSAppleEventDescriptor</code> instances as SwiftAutomation doesn't automatically convert them.</p>
+<p>The Apple Event Manager defines many other AE types whose names and codes are defined by SwiftAutomation for completeness. A few of these types are of occasional interest to users, the rest can simply be ignored. In most cases, values of these types will be represented by <code>AEDesc</code> instances as SwiftAutomation doesn't automatically convert them.</p>
 
             </div>
         </div>

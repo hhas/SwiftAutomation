@@ -198,7 +198,7 @@ public class PHOSymbol: SwiftAutomation.Symbol {
 
     override public var typeAliasName: String {return "PHO"}
 
-    public override class func symbol(code: OSType, type: OSType = typeType, descriptor: NSAppleEventDescriptor? = nil) -> PHOSymbol {
+    public override class func symbol(code: OSType, type: OSType = typeType, descriptor: AEDesc? = nil) -> PHOSymbol {
         switch (code) {
         case 0x4950616c: return self.album // "IPal"
         case 0x616c6973: return self.alias // "alis"

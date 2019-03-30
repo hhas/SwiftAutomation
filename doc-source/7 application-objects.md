@@ -25,7 +25,7 @@ This uses the bundle identifier of the application from which the glue was origi
   Application(processIdentifier: pid_t, ...)
 
   // AEAddressDesc
-  Application(descriptor: NSAppleEventDescriptor, ...)
+  Application(descriptor: AEDesc, ...)
 
   // current (i.e. host) process
   Application.currentApplication()

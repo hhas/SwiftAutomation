@@ -513,7 +513,7 @@ public class IEVSymbol: SwiftAutomation.Symbol {
 
     override public var typeAliasName: String {return "IEV"}
 
-    public override class func symbol(code: OSType, type: OSType = typeType, descriptor: NSAppleEventDescriptor? = nil) -> IEVSymbol {
+    public override class func symbol(code: OSType, type: OSType = typeType, descriptor: AEDesc? = nil) -> IEVSymbol {
         switch (code) {
         case 0x52647233: return self.absoluteColorimetricIntent // "Rdr3"
         case 0x61627374: return self.abstract // "abst"

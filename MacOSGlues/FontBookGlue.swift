@@ -241,7 +241,7 @@ public class FBOSymbol: SwiftAutomation.Symbol {
 
     override public var typeAliasName: String {return "FBO"}
 
-    public override class func symbol(code: OSType, type: OSType = typeType, descriptor: NSAppleEventDescriptor? = nil) -> FBOSymbol {
+    public override class func symbol(code: OSType, type: OSType = typeType, descriptor: AEDesc? = nil) -> FBOSymbol {
         switch (code) {
         case 0x616c6973: return self.alias // "alis"
         case 0x66626166: return self.AllFontsLibraryObject // "fbaf"
