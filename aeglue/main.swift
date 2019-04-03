@@ -6,6 +6,8 @@
 //
 //
 
+// TO DO: how to link to enclosing SwiftAutomation framework
+
 
 // TO DO: add `-c` option for converting an existing SDEF (passed as stdin/file) from AS to SA format
 

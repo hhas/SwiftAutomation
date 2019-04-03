@@ -78,7 +78,7 @@ public class SpecifierFormatter {
         } else if let typeName = self.typeNames[code] {
             return "\(self.classNamePrefix).\(typeName)"
         } else {
-            return "\(self.classNamePrefix)(code:\(formatFourCharCodeString(code)),type:\(formatFourCharCodeString(type)))"
+            return "\(self.classNamePrefix)(code:\(formatFourCharCodeLiteral(code)),type:\(formatFourCharCodeLiteral(type)))"
         }
     }
     
@@ -86,7 +86,7 @@ public class SpecifierFormatter {
         if let name = self.propertyNames[code] ?? self.elementsNames[code]?.plural {
             return ".\(name)"
         } else { // no code->name translation available
-            return ".property(\(formatFourCharCodeString(code)))"
+            return ".property(\(formatFourCharCodeLiteral(code)))"
         }
     }
     
@@ -94,7 +94,7 @@ public class SpecifierFormatter {
         if let name = self.elementsNames[code]?.plural ?? self.propertyNames[code] {
             return ".\(name)"
         } else { // no code->name translation available
-            return ".elements(\(formatFourCharCodeString(code)))"
+            return ".elements(\(formatFourCharCodeLiteral(code)))"
         }
     }
     
@@ -139,11 +139,11 @@ public class SpecifierFormatter {
     }
     
     func formatInsertionSpecifier(_ specifier: InsertionSpecifier) -> String {
-        if let name = [kAEBeginning: "beginning", kAEEnd: "end",
-                       kAEBefore: "before", kAEAfter: "after"][try! specifier.insertionLocation.enumCode()] {
+        if let name = [kAEBeginning: "beginning", kAEEnd: "end", kAEBefore: "before", kAEAfter: "after"][specifier.position] {
             return "\(self.format(specifier.parentQuery)).\(name)"
+        } else { // unknown (bad) position
+            return "<\(type(of: specifier))(kpos:\(specifier.position),kobj:\(self.format(specifier.parentQuery)))>"
         }
-        return "<\(type(of: specifier))(kpos:\(specifier.insertionLocation),kobj:\(self.format(specifier.parentQuery)))>"
     }
     
     func formatObjectSpecifier(_ specifier: ObjectSpecifier) -> String {
@@ -152,7 +152,7 @@ public class SpecifierFormatter {
         switch form {
         case OSType(formPropertyID):
             // kludge, seld is either desc or symbol, depending on whether constructed or unpacked; TO DO: eliminate?
-            if let desc = specifier.selectorData as? AEDesc, let prop = try? desc.typeCode() {
+            if let desc = specifier.selectorData as? AEDesc, let prop = try? desc.fourCharCode() {
                 return result + formatPropertyVar(prop)
             } else if let symbol = specifier.selectorData as? Symbol {
                 return result + formatPropertyVar(symbol.code)
@@ -161,7 +161,7 @@ public class SpecifierFormatter {
             return "\(result).userProperty(\(self.formatValue(specifier.selectorData)))"
         case OSType(formRelativePosition): // specifier.previous/next(SYMBOL)
             if let seld = specifier.selectorData as? AEDesc, // ObjectSpecifier.unpackSelf does not unpack ordinals
-                    let name = [kAEPrevious: "previous", kAENext: "next"][try! seld.enumCode()],
+                    let name = [kAEPrevious: "previous", kAENext: "next"][try! seld.fourCharCode()],
                     let parent = specifier.parentQuery as? ObjectSpecifier {
                 if specifier.wantType == parent.wantType {
                     return "\(result).\(name)()" // use shorthand form for neatness
@@ -172,14 +172,14 @@ public class SpecifierFormatter {
             }
         default:
             result += formatElementsVar(specifier.wantType)
-            if let desc = specifier.selectorData as? AEDesc, (try? desc.typeCode()) == DescType(kAEAll) { // TO DO: check this is right (replaced `where` with `,`)
+            if let desc = specifier.selectorData as? AEDesc, (try? desc.fourCharCode()) == DescType(kAEAll) { // TO DO: check this is right (replaced `where` with `,`)
                 return result
             }
             switch form {
             case OSType(formAbsolutePosition): // specifier[IDX] or specifier.first/middle/last/any
                 if let desc = specifier.selectorData as? AEDesc, // ObjectSpecifier.unpackSelf does not unpack ordinals
                         let ordinal = [DescType(kAEFirst): "first", DescType(kAEMiddle): "middle",
-                                       DescType(kAELast): "last", DescType(kAEAny): "any"][try! desc.enumCode()] {
+                                       DescType(kAELast): "last", DescType(kAEAny): "any"][try! desc.fourCharCode()] {
                     return "\(result).\(ordinal)"
                 } else {
                     return "\(result)[\(self.formatValue(specifier.selectorData))]"
@@ -266,13 +266,13 @@ public class SpecifierFormatter {
         var args: [String] = []
         switch description.signature {
         case .named(let name, let directParameter, let keywordParameters, let requestedType):
-            if description.subject != nil && parameterExists(directParameter) {
+            if description.subject != nil && isParameter(directParameter) {
                 parentSpecifier = self.format(description.subject!)
                 args.append(self.format(directParameter))
                 //} else if eventClass == kAECoreSuite && eventID == kAECreateElement { // TO DO: format make command as special case (for convenience, sendAppleEvent should allow user to call `make` directly on a specifier, in which case the specifier is used as its `at` parameter if not already given)
-            } else if description.subject == nil && parameterExists(directParameter) {
+            } else if description.subject == nil && isParameter(directParameter) {
                 parentSpecifier = self.format(directParameter)
-            } else if description.subject != nil && !parameterExists(directParameter) {
+            } else if description.subject != nil && !isParameter(directParameter) {
                 parentSpecifier = self.format(description.subject!)
             }
             parentSpecifier += ".\(name)"
@@ -283,9 +283,9 @@ public class SpecifierFormatter {
                 parentSpecifier = self.format(subject)
             }
             parentSpecifier += ".sendAppleEvent"
-            args.append("\(formatFourCharCodeString(eventClass)), \(formatFourCharCodeString(eventID))")
+            args.append("\(formatFourCharCodeLiteral(eventClass)), \(formatFourCharCodeLiteral(eventID))")
             if parameters.count > 0 {
-                let params = parameters.map({ "\(formatFourCharCodeString($0)): \(self.format($1)))" }).joined(separator: ", ")
+                let params = parameters.map({ "\(formatFourCharCode($0)): \(self.format($1)))" }).joined(separator: ", ")
                 args.append("[\(params)]")
             }
         }
@@ -305,22 +305,4 @@ public class SpecifierFormatter {
         return "try \(parentSpecifier)(\(args.joined(separator: ", ")))"
     }
 }
-
-
-/******************************************************************************/
-
-
-// convert an OSType to its String literal representation, e.g. 'docu' -> "\"docu\""
-func formatFourCharCodeString(_ code: OSType) -> String {
-    var n = CFSwapInt32HostToBig(code)
-    var result = ""
-    for _ in 1...4 {
-        let c = n % 256
-        result += String(format: (c == 0x21 || 0x23 <= c && c <= 0x7e) ? "%c" : "\\0x%02X", c)
-        n >>= 8
-    }
-    return "\"\(result)\""
-}
-
-
 

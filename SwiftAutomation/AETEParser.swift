@@ -5,12 +5,16 @@
 //
 
 // TO DO: check endianness in read data methods
+// TO DO: when is this still needed? (e.g. remote AEs)
 
 import Foundation
 import Carbon
 
 
 /**********************************************************************/
+
+// kAEInheritedProperties isn't defined in OpenScripting.h
+private let kAEInheritedProperties: OSType = 0x6340235e // 'c@#^'
 
 
 public class AETEParser: ApplicationTerminology {
@@ -35,10 +39,11 @@ public class AETEParser: ApplicationTerminology {
         self.keywordConverter = keywordConverter
     }
     
-    public func parse(_ descriptor: AEDesc) throws { // accepts AETE/AEUT or AEList of AETE/AEUTs
-        switch descriptor.descriptorType {
+    public func parse(_ desc: AEDesc) throws { // accepts AETE/AEUT or AEList of AETE/AEUTs
+        defer { desc.dispose() }
+        switch desc.descriptorType {
         case DescType(typeAETE), DescType(typeAEUT):
-            self.aeteData = descriptor.data as NSData
+            self.aeteData = desc.data as NSData
             self.cursor = 6 // skip version, language, script integers
             let n = self.short()
             do {
@@ -61,11 +66,11 @@ public class AETEParser: ApplicationTerminology {
                 throw TerminologyError("An error occurred while parsing AETE. \(error)")
             }
         case typeAEList:
-            for i in 1..<(try! descriptor.count()+1) {
-                try self.parse(descriptor.item(i).value)
+            for i in 1..<(try! desc.count()+1) {
+                try self.parse(desc.item(i).value)
             }
         default:
-            throw TerminologyError("An error occurred while parsing AETE. Unsupported descriptor type: \(formatFourCharCodeString(descriptor.descriptorType))")
+            throw TerminologyError("An error occurred while parsing AETE. Unsupported descriptor type: \(formatFourCharCodeLiteral(desc.descriptorType))")
         }
     }
     
@@ -282,7 +287,7 @@ public class AETEParser: ApplicationTerminology {
 
 extension AEApplication { // extends the built-in Application object with convenience method for getting its AETE resource
 
-    public func getAETE() throws -> AEDesc {
+    public func getAETE() throws -> AEDesc { // caller takes ownership
         return try self.sendAppleEvent(OSType(kASAppleScriptSuite), OSType(kGetAETE), [keyDirectObject:0]) as AEDesc
     }
 }

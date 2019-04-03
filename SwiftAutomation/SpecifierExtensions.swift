@@ -45,7 +45,7 @@ public extension ObjectSpecifierExtension {
     func property(_ code: String) -> Self.ObjectSpecifierType {
         let data: Any
         do {
-            data = AEDesc(typeCode: try fourCharCode(code)) // TO DO: ownership
+            data = AEDesc(typeCode: try parseFourCharCode(code)) // TO DO: ownership
         } catch {
             data = error
         }
@@ -63,7 +63,7 @@ public extension ObjectSpecifierExtension {
     func elements(_ code: String) -> Self.MultipleObjectSpecifierType {
         let want: DescType, data: Any
         do {
-            want = try fourCharCode(code)
+            want = try parseFourCharCode(code)
             data = kAEAllDesc
         } catch {
             want = typeNull
@@ -90,29 +90,25 @@ public extension ObjectSpecifierExtension {
     
     // insertion specifiers
     var beginning: Self.InsertionSpecifierType {
-        return Self.InsertionSpecifierType(insertionLocation: kAEBeginningDesc,
-                                           parentQuery: (self as! Query), appData: self.appData, descriptor: nil)
+        return Self.InsertionSpecifierType(position: kAEBeginning, parentQuery: (self as! Query), appData: self.appData, descriptor: nil)
     }
     var end: Self.InsertionSpecifierType {
-        return Self.InsertionSpecifierType(insertionLocation: kAEEndDesc,
-                                           parentQuery: (self as! Query), appData: self.appData, descriptor: nil)
+        return Self.InsertionSpecifierType(position: kAEEnd, parentQuery: (self as! Query), appData: self.appData, descriptor: nil)
     }
     var before: Self.InsertionSpecifierType {
-        return Self.InsertionSpecifierType(insertionLocation: kAEBeforeDesc,
-                                           parentQuery: (self as! Query), appData: self.appData, descriptor: nil)
+        return Self.InsertionSpecifierType(position: kAEBefore, parentQuery: (self as! Query), appData: self.appData, descriptor: nil)
     }
     var after: Self.InsertionSpecifierType {
-        return Self.InsertionSpecifierType(insertionLocation: kAEAfterDesc,
-                                           parentQuery: (self as! Query), appData: self.appData, descriptor: nil)
+        return Self.InsertionSpecifierType(position: kAEAfter, parentQuery: (self as! Query), appData: self.appData, descriptor: nil)
     }
     
     var all: Self.MultipleObjectSpecifierType { // equivalent to `every REFERENCE`; applied to a property specifier, converts it to all-elements (this may be necessary when property and element names are identical, in which case [with exception of `text`] a property specifier is constructed by default); applied to an all-elements specifier, returns it as-is; applying it to any other reference form will throw an error when used
         if self.selectorForm == DescType(formPropertyID) {
-            return Self.MultipleObjectSpecifierType(wantType: try! (self.selectorData as! AEDesc).typeCode(),
+            return Self.MultipleObjectSpecifierType(wantType: try! (self.selectorData as! AEDesc).fourCharCode(),
                                                     selectorForm: DescType(formAbsolutePosition), selectorData: kAEAllDesc,
                                                     parentQuery: self.parentQuery, appData: self.appData, descriptor: nil)
         } else if self.selectorForm == DescType(formAbsolutePosition)
-                && (try? (self.selectorData as? AEDesc)?.typeCode()) == DescType(kAEAll),
+                && (try? (self.selectorData as? AEDesc)?.fourCharCode()) == DescType(kAEAll),
                 let specifier = self as? Self.MultipleObjectSpecifierType {
             return specifier
         } else {
@@ -135,7 +131,7 @@ extension MultipleObjectSpecifierExtension {
     // Note: calling an element[s] selector on an all-elements specifier effectively replaces its original gAll selector data with the new selector data, instead of extending the specifier chain. This ensures that applying any selector to `elements[all]` produces `elements[selector]` (effectively replacing the existing selector), while applying a second selector to `elements[selector]` produces `elements[selector][selector2]` (appending the second selection to the first) as normal; e.g. `first document whose modified is true` would be written as `documents[Its.modified==true].first`.
     var baseQuery: Query {
         if let desc = self.selectorData as? AEDesc,
-            desc.descriptorType == DescType(typeAbsoluteOrdinal) && (try? desc.enumCode()) == DescType(kAEAll) {
+            desc.descriptorType == DescType(typeAbsoluteOrdinal) && (try? desc.fourCharCode()) == DescType(kAEAll) {
             return self.parentQuery
         } else {
             return self as! Query

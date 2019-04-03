@@ -81,19 +81,23 @@ open class Query: CustomStringConvertible, CustomDebugStringConvertible, CustomR
         self._cachedDescriptor = descriptor
     }
     
+    deinit {
+        self._cachedDescriptor?.dispose()
+    }
+    
     // unpacking
     
-    func unpackParentSpecifiers() {} // ObjectSpecifier overrides this to recursively unpack its 'from' desc only when needed
+    func unpackParentSpecifiers() { } // ObjectSpecifier overrides this to recursively unpack its 'from' desc only when needed
     
     // packing
     
     public func SwiftAutomation_packSelf(_ appData: AppData) throws -> AEDesc {
-        if self._cachedDescriptor == nil { self._cachedDescriptor = try self.SwiftAutomation_packSelf() }
-        return self._cachedDescriptor!
+        if self._cachedDescriptor == nil { self._cachedDescriptor = try self._packSelf() }
+        return self._cachedDescriptor!.copy() // caller takes ownership of returned desc, so copy cached desc
     }
     
-    func SwiftAutomation_packSelf() throws -> AEDesc { // subclasses must override this to pack themselves
-        fatalError("Query.SwiftAutomation_packSelf() must be overridden by subclasses.")
+    func _packSelf() throws -> AEDesc { // subclasses must override this to pack themselves; called on first use
+        fatalError("Query._packSelf() must be overridden by subclasses.")
     }
     
     // misc
@@ -161,6 +165,7 @@ open class Specifier: Query, SpecifierProtocol {
     
     override func unpackParentSpecifiers() {
         do {
+            // TO DO: ownership/disposal
             guard let descriptor = self._cachedDescriptor, let parentDesc = try? descriptor.parameter(self._parentDescKey) else { // note: self._cachedDescriptor should never be nil (if it is, it's an implementation bug), and parentDesc should never be nil (or else cached descriptor is malformed)
                 throw AutomationError(code: 1, message: "Can't unpack parent specifiers due to internal error or malformed descriptor.")
             }
@@ -186,8 +191,8 @@ open class Specifier: Query, SpecifierProtocol {
                                   requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
                                   withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
         var params = [OSType:Any]()
-        for (k, v) in parameters { params[try fourCharCode(k)] = v }
-        return try self.appData.sendAppleEvent(eventClass: try fourCharCode(eventClass), eventID: try fourCharCode(eventID),
+        for (k, v) in parameters { params[try parseFourCharCode(k)] = v }
+        return try self.appData.sendAppleEvent(eventClass: try parseFourCharCode(eventClass), eventID: try parseFourCharCode(eventID),
                                                parentSpecifier: self, parameters: params,
                                                requestedType: requestedType, waitReply: waitReply,
                                                sendOptions: sendOptions, withTimeout: withTimeout, considering: considering)
@@ -208,8 +213,8 @@ open class Specifier: Query, SpecifierProtocol {
                                                   requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
                                                   withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         var params = [OSType:Any]()
-        for (k, v) in parameters { params[try fourCharCode(k)] = v }
-        return try self.appData.sendAppleEvent(eventClass: try fourCharCode(eventClass), eventID: try fourCharCode(eventID),
+        for (k, v) in parameters { params[try parseFourCharCode(k)] = v }
+        return try self.appData.sendAppleEvent(eventClass: try parseFourCharCode(eventClass), eventID: try parseFourCharCode(eventID),
                                                parentSpecifier: self, parameters: params,
                                                requestedType: requestedType, waitReply: waitReply,
                                                sendOptions: sendOptions, withTimeout: withTimeout, considering: considering)
@@ -222,22 +227,17 @@ open class Specifier: Query, SpecifierProtocol {
 
 open class InsertionSpecifier: Specifier { // SwiftAutomation_packSelf
     
-    // 'insl'
-    public let insertionLocation: AEDesc
+    public let position: DescType
     
     override var _parentDescKey: OSType { return keyAEObject }
 
-    required public init(insertionLocation: AEDesc,
-                         parentQuery: Query?, appData: AppData, descriptor: AEDesc?) {
-        self.insertionLocation = insertionLocation
+    required public init(position: DescType, parentQuery: Query?, appData: AppData, descriptor: AEDesc?) {
+        self.position = position
         super.init(parentQuery: parentQuery, appData: appData, descriptor: descriptor)
     }
     
-    override func SwiftAutomation_packSelf() throws -> AEDesc {
-        let desc = AEDesc.record(as: typeInsertionLoc)
-        try desc.setParameter(keyAEObject, to: try self.parentQuery.SwiftAutomation_packSelf(self.appData))
-        try desc.setParameter(keyAEPosition, to: self.insertionLocation)
-        return desc
+    override func _packSelf() throws -> AEDesc {
+        return AEDesc(insertionLocation: self.position, container: try self.parentQuery.SwiftAutomation_packSelf(self.appData))
     }
 }
 
@@ -267,12 +267,11 @@ open class ObjectSpecifier: Specifier, ObjectSpecifierProtocol { // represents p
         super.init(parentQuery: parentQuery, appData: appData, descriptor: descriptor)
     }
     
-    override func SwiftAutomation_packSelf() throws -> AEDesc {
-        var from = try self.parentQuery.SwiftAutomation_packSelf(self.appData)
-        var seld = try self.appData.pack(self.selectorData)
-        var desc = nullDescriptor
-        try throwIfError(CreateObjSpecifier(self.wantType, &from, self.selectorForm, &seld, false, &desc))
-        return desc
+    override func _packSelf() throws -> AEDesc {
+        let container = try self.parentQuery.SwiftAutomation_packSelf(self.appData)
+        let keyData = try self.appData.pack(self.selectorData)
+        // TO DO: disposal; simpler if it's done here, not in AEDesc.init; note: if caching returned AEDesc here, container desc will already be managed by parentQuery
+        return AEDesc(desiredClass: self.wantType, container: container, keyForm: self.selectorForm, keyData: keyData) // TO DO: cache this desc?
     }
 
     // Comparison test constructors
@@ -346,12 +345,9 @@ struct RangeSelector: SelfPacking { // holds data for by-range selectors
         case is Specifier: // technically, only ObjectSpecifier makes sense here, tho AS prob. doesn't prevent insertion loc or multi-element specifier being passed instead
             return try (selectorData as! Specifier).SwiftAutomation_packSelf(appData)
         default: // pack anything else as a by-name or by-index specifier
-            var from = ConRootDesc
             let form = selectorData is String ? DescType(formName) : DescType(formAbsolutePosition)
-            var seld = try appData.pack(selectorData)
-            var desc = nullDescriptor
-            try throwIfError(CreateObjSpecifier(self.wantType, &from, form, &seld, false, &desc))
-            return desc
+            let seld = try appData.pack(selectorData) // TO DO: disposal
+            return AEDesc(desiredClass: self.wantType, container: ConRootDesc, keyForm: form, keyData: seld)
         }
     }
     
@@ -401,7 +397,7 @@ public class ComparisonTest: TestClause {
         super.init(appData: appData, descriptor: descriptor)
     }
     
-    override func SwiftAutomation_packSelf() throws -> AEDesc {
+    override func _packSelf() throws -> AEDesc {
         if self.operatorType == kAENotEquals { // AEM doesn't support a 'kAENotEqual' enum, so convert to kAEEquals+kAENOT
             return try (!(self.operand1 == self.operand2)).SwiftAutomation_packSelf(self.appData)
         } else {
@@ -436,7 +432,7 @@ public class LogicalTest: TestClause {
         super.init(appData: appData, descriptor: descriptor)
     }
     
-    override func SwiftAutomation_packSelf() throws -> AEDesc {
+    override func _packSelf() throws -> AEDesc {
         var desc = nullDescriptor
         var operandsDesc = try self.appData.pack(self.operands)
         try throwIfError(CreateLogicalDescriptor(&operandsDesc, self.operatorType, false, &desc))
@@ -471,7 +467,7 @@ open class RootSpecifier: ObjectSpecifier { // app, con, its, custom root (note:
         
     }
     
-    public override func SwiftAutomation_packSelf() throws -> AEDesc {
+    public override func _packSelf() throws -> AEDesc {
         return try self.appData.pack(self.selectorData)
     }
 

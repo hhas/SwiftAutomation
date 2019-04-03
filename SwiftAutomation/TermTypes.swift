@@ -50,7 +50,7 @@ public class KeywordTerm: Term, Hashable, CustomStringConvertible { // type/enum
         hasher.combine(Int(self.code))
     }
     
-    public var description: String { return "<\(type(of:self)):\(self.name)=\(fourCharCode(self.code))>" }
+    public var description: String { return "<\(type(of:self)):\(self.name)=\(formatFourCharCodeLiteral(self.code))>" }
     
     public static func ==(lhs: KeywordTerm, rhs: KeywordTerm) -> Bool {
         return lhs.code == rhs.code && lhs.name == rhs.name
@@ -94,8 +94,8 @@ public class CommandTerm: Term, Hashable, CustomStringConvertible {
     }
     
     public var description: String {
-        let params = self.parameters.map({"\($0.name)=\(fourCharCode($0.code))"}).joined(separator: ",")
-        return "<Command:\(self.name)=\(fourCharCode(self.eventClass))\(fourCharCode(self.eventID))(\(params))>"
+        let params = self.parameters.map({"\($0.name)=\(formatFourCharCodeLiteral($0.code))"}).joined(separator: ",")
+        return "<Command:\(self.name)=\(formatFourCharCodeLiteral(self.eventClass))\(formatFourCharCodeLiteral(self.eventID))(\(params))>"
     }
     
     func parameter(for name: String) -> KeywordTerm? {

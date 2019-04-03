@@ -12,7 +12,10 @@ import Foundation
 import SwiftAutomation
 
 
+
+
 let te = TextEdit()
+
 
 /*
 do {
@@ -181,16 +184,16 @@ do {
 //print(try c.pack("hello"))
 print("PACK AS BOOLEAN")
 
-print("\(try c.pack(true)) \(formatFourCharCodeString(try c.pack(true).descriptorType))")
-print("\(try c.pack(NSNumber(bool: true))) \(formatFourCharCodeString(try c.pack(NSNumber(bool: true)).descriptorType))")
+print("\(try c.pack(true)) \(formatFourCharCode(try c.pack(true).descriptorType))")
+print("\(try c.pack(NSNumber(bool: true))) \(formatFourCharCode(try c.pack(NSNumber(bool: true)).descriptorType))")
 print("")
 print("PACK AS INTEGER")
-print("\(try c.pack(3)) \(formatFourCharCodeString(try c.pack(3).descriptorType))")
-print("\(try c.pack(NSNumber(int: 3))) \(formatFourCharCodeString(try c.pack(NSNumber(int: 3)).descriptorType))")
+print("\(try c.pack(3)) \(formatFourCharCode(try c.pack(3).descriptorType))")
+print("\(try c.pack(NSNumber(int: 3))) \(formatFourCharCode(try c.pack(NSNumber(int: 3)).descriptorType))")
 print("")
 print("PACK AS DOUBLE")
-print("\(try c.pack(3.1)) \(formatFourCharCodeString(try c.pack(3.1).descriptorType))")
-print("\(try c.pack(NSNumber(double: 3.1))) \(formatFourCharCodeString(try c.pack(NSNumber(double: 3.1)).descriptorType))")
+print("\(try c.pack(3.1)) \(formatFourCharCode(try c.pack(3.1).descriptorType))")
+print("\(try c.pack(NSNumber(double: 3.1))) \(formatFourCharCode(try c.pack(NSNumber(double: 3.1)).descriptorType))")
 */
     
     do {

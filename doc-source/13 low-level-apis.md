@@ -120,8 +120,8 @@ Be aware that case-[in]sensitivity rules for identifier strings can vary dependi
 
 To determine if a `Symbol` instance represents a keyword or an identifier:
 
-  AE(code:"pnam").nameOnly // false 
-  AE("issingle").nameOnly  // true
+  AE(code:"pnam").isNameOnly // false 
+  AE("issingle").isNameOnly  // true
 
 Scriptable applications do not normally use identifier-based keys in records; however, they may be used by AppleScript-based applets and in `NSAppleScript`/`NSUserAppleScriptTask` calls.
 

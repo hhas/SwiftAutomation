@@ -60,7 +60,7 @@ var errStream = StderrStream()
 
 // TO DO: any value in making the following functions public?
 
-func fourCharCode(_ string: String) throws -> OSType {
+func parseFourCharCode(_ string: String) throws -> OSType {
     // convert four-character string containing MacOSRoman characters to OSType
     // (this is safer than using UTGetOSTypeFromString, which silently fails if string is malformed)
     guard let data = string.data(using: .macOSRoman) else {
@@ -74,12 +74,30 @@ func fourCharCode(_ string: String) throws -> OSType {
     return CFSwapInt32HostToBig(tmp)
 }
 
-func fourCharCode(_ code: OSType) -> String {
+func formatFourCharCode(_ code: OSType) -> String {
     // convert an OSType to four-character string containing MacOSRoman characters
     return UTCreateStringForOSType(code).takeRetainedValue() as String
 }
 
-func eightCharCode(_ eventClass: OSType, _ eventID: OSType) -> UInt64 {
+
+// convert an OSType to its String literal representation, e.g. 'docu' -> "\"docu\"", or to a hexadecimal integer if it contains any problematic characters
+func formatFourCharCodeLiteral(_ code: OSType) -> String {
+    var bigCode = CFSwapInt32HostToBig(code)
+    var result = ""
+    for _ in 0..<MemoryLayout.size(ofValue: code) {
+        let c = bigCode % 256
+        if c < 32 || c > 126 || c == 0x27 || c == 0x5c { // backslash, single quote
+            return String(format: "0x%08x", code)
+        }
+        result += String(format: "%c", c)
+        bigCode >>= 8
+    }
+    return "\"\(result)\""
+}
+
+
+
+func appleEventCode(_ eventClass: OSType, _ eventID: OSType) -> UInt64 {
     // used to construct keys for GlueTable.commandsByCode dictionary
     return UInt64(eventClass) << 32 | UInt64(eventID)
 }
@@ -135,7 +153,7 @@ public enum OptionalParameter {
 
 public let NoParameter = OptionalParameter.none
 
-func parameterExists(_ value: Any) -> Bool {
+func isParameter(_ value: Any) -> Bool {
     return value as? OptionalParameter != NoParameter
 }
 
@@ -203,16 +221,12 @@ public enum TargetApplication: CustomReflectable {
     }
     
     private func sendLaunchEvent(processDescriptor: AEDesc) -> Int {
-        do {
-            let event = AEDesc(eventClass: AEEventClass(kASAppleScriptSuite), eventID: AEEventID(kASLaunchEvent),
-                                               target: processDescriptor,
-                                               returnID: AEReturnID(kAutoGenerateReturnID),
-                                               transactionID: AETransactionID(kAnyTransactionID))
-            let reply = try event.sendEvent(options: .waitForReply, timeout: 30)
-            return try! (try? reply.parameter(keyErrorNumber))?.int() ?? 0 // application error (errAEEventNotHandled is normal)
-        } catch {
-            return (error as Error)._code // AEM error
-        }
+        let event = AEDesc(eventClass: AEEventClass(kASAppleScriptSuite), eventID: AEEventID(kASLaunchEvent),
+                                           target: processDescriptor,
+                                           returnID: AEReturnID(kAutoGenerateReturnID),
+                                           transactionID: AETransactionID(kAnyTransactionID))
+        let (replyEvent, errorCode) = event.sendEvent(options: .waitForReply, timeout: 30)
+        return errorCode != 0 ? errorCode : replyEvent.errorNumber // note: errAEEventNotHandled is normal here
     }
     
     private func processDescriptorForLocalApplication(url: URL, launchOptions: LaunchOptions) throws -> AEDesc {
@@ -379,12 +393,20 @@ public let ItsRootDesc = AEDesc(descriptorType: typeObjectBeingExamined, dataHan
 
 // TO DO: are there any situations where the following method calls could return nil? (think they'll always succeed, though the resulting paths may be nonsense); if so, need to throw error on failure (currently these will raise an exception, but that's based on the assumption that they'll never fail in practice: the paths supplied will be arbitrary, so if failures do occur they'll need to be treated as user errors, not implementation bugs)
 
-public func HFSPath(fromFileURL url: URL) -> String {
-    return try! AEDesc(fileURL: url).coerce(to: typeUnicodeText).string()
+public func HFSPath(fromFileURL url: URL) throws -> String {
+    let desc = try AEDesc(fileURL: url)
+    defer { desc.dispose() }
+    let desc2 = try desc.coerce(to: typeUnicodeText)
+    defer { desc2.dispose() }
+    return try desc2.string()
 }
 
-public func fileURL(fromHFSPath path: String) -> URL {
-    return try! AEDesc(string: path).coerce(to: typeFileURL).fileURL()
+public func fileURL(fromHFSPath path: String) throws -> URL {
+    let desc = AEDesc(string: path)
+    defer { desc.dispose() }
+    let desc2 = try desc.coerce(to: typeFileURL)
+    defer { desc2.dispose() }
+    return try desc2.fileURL()
 }
 
 

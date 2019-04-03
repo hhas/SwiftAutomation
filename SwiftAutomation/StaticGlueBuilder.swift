@@ -224,7 +224,7 @@ func parseRecordStructDefinition(_ string: String, classNamePrefix: String,
     var nc: Character?
     repeat {
         let (propertyName, typeName) = try parseProperty(&chars, classNamePrefix: classNamePrefix)
-        guard let propertyCode = try! typesByName[propertyName]?.typeCode() else {
+        guard let propertyCode = try! typesByName[propertyName]?.fourCharCode() else {
             throw SyntaxError("Unknown property name: \(propertyName)")
         }
         properties.append((propertyName, propertyCode, typeName))
@@ -265,7 +265,7 @@ public class TypeSupportSpec { // converts custom format strings into enum/struc
     }
     
     public func recordStructDefinitions(classNamePrefix: String,
-                                        typesByName: [String: AEDesc]) throws -> [RecordStructDefinition] {
+                                        typesByName: [String: AEDesc]) throws -> [RecordStructDefinition] { // TO DO: AEDesc ownership
         return try self.recordStructFormats.map {
             try parseRecordStructDefinition($0, classNamePrefix: classNamePrefix, typesByName: typesByName)
         }
@@ -291,7 +291,7 @@ public class GlueSpec {
     public let useSDEF: Bool
     public let bundleInfo: BundleInfoType
     
-    public typealias BundleInfoType = [String:AnyObject]
+    public typealias BundleInfoType = [String:Any]
     
     public var applicationFileName: String? { return self.applicationURL?.lastPathComponent }
     public var applicationName: String? { return self.bundleInfo["CFBundleName"] as? String }
@@ -399,8 +399,8 @@ public class StaticGlueTemplate {
     }
     
     public func insertOSType(_ block: String, _ code: OSType) { // insert OSType as numeric and/or string literal representations (tag for the latter is name+"_STR")
-        self.insertString(block, NSString(format: "0x%08x", code) as String)
-        self.insertString("\(block)_STR", formatFourCharCodeString(code))
+        self.insertString(block, String(format: "0x%08x", code) as String)
+        self.insertString("\(block)_STR", formatFourCharCodeLiteral(code))
     }
     
     public func insertKeywords(_ block: String, _ newContents: [KeywordTerm], emptyContent: String = "") {
@@ -513,8 +513,8 @@ public func renderStaticGlueTemplate(glueSpec: GlueSpec, typeSupportSpec: TypeSu
     // note: both by-name and by-code tables are used here to ensure conflicting keywords are represented correctly, e.g. if keyword `foo` is defined as both a type and a property but with different codes for each, it should appear only once in TYPE_SYMBOL (by-name) list but twice in SYMBOL_SWITCH (by-code) list; this [hopefully] emulates the way in which AppleScript resolves these conflicts
     template.insertKeywords("SYMBOL_SWITCH", glueTable.typesByCode.sorted(by: {$0.1.lowercased()<$1.1.lowercased()}))
     let typesByName = glueTable.typesByName.sorted(by: {$0.0.lowercased()<$1.0.lowercased()})
-    template.insertKeywords("TYPE_SYMBOL", typesByName.filter({$1.descriptorType != typeEnumerated}).map({(code: try! $1.typeCode(), name: $0)}))
-    template.insertKeywords("ENUM_SYMBOL", typesByName.filter({$1.descriptorType == typeEnumerated}).map({(code: try! $1.enumCode(), name: $0)}))
+    template.insertKeywords("TYPE_SYMBOL", typesByName.filter({$1.descriptorType != typeEnumerated}).map({(code: try! $1.fourCharCode(), name: $0)}))
+    template.insertKeywords("ENUM_SYMBOL", typesByName.filter({$1.descriptorType == typeEnumerated}).map({(code: try! $1.fourCharCode(), name: $0)}))
     template.insertKeywords("TYPE_FORMATTER", glueTable.typesByCode.sorted(by: {$0.1.lowercased()<$1.1.lowercased()}), emptyContent: ":")
     template.insertKeywords("PROPERTY_FORMATTER", glueTable.propertiesByCode.sorted(by: {$0.1.lowercased()<$1.1.lowercased()}), emptyContent: ":")
     template.insertElements("ELEMENTS_FORMATTER", glueTable.elementsByCode.map({($0,$1)}).sorted(by: {$0.1.plural.lowercased()<$1.1.plural.lowercased()}), emptyContent: ":")

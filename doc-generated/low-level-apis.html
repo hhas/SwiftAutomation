@@ -135,8 +135,8 @@ AE(code: 0x61736b20, type: 0x656e756d)
 
 <p>To determine if a <code>Symbol</code> instance represents a keyword or an identifier:</p>
 
-<pre><code>AE(code:"pnam").nameOnly // false 
-AE("issingle").nameOnly  // true
+<pre><code>AE(code:"pnam").isNameOnly // false 
+AE("issingle").isNameOnly  // true
 </code></pre>
 
 <p>Scriptable applications do not normally use identifier-based keys in records; however, they may be used by AppleScript-based applets and in <code>NSAppleScript</code>/<code>NSUserAppleScriptTask</code> calls.</p>

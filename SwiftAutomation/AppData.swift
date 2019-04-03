@@ -5,6 +5,12 @@
 //  Swift-AE type conversion and Apple event dispatch
 //
 
+// TO DO: AEDesc memory management: client code should always work with memory-managed instances of AppleEventDescriptor class, while AEDesc structs (which require a single owner and explicit disposal) are used internally:
+//
+// - AppData.pack(Any) callers take ownership of returned AEDescs and are responsible for calling AEDesc.dispose() -- TO DO: what about cached descs? (may be safest for SelfPacking objects to return copy of cached AEDesc; alternatively, use AEManagedDesc with isOwner slot to prevent cached desc being disposed by non-owner)
+// - AppData.unpack…(AEDesc) methods always take ownership of AEDesc (even when throwing errors)
+
+
 import Foundation
 import AppKit
 import Carbon
@@ -122,13 +128,13 @@ open class AppData {
     /******************************************************************************/
     // Convert a Swift or Cocoa value to an Apple event descriptor
     
-    open func pack(_ value: Any) throws -> AEDesc {
+    open func pack(_ value: Any) throws -> AEDesc { // important: caller takes ownership of returned AEDesc
         switch value {
         case let val as SelfPacking:
             return try val.SwiftAutomation_packSelf(self)
         case let val as AEDesc: // TO DO: memory management? this API assumes caller takes ownership, so would need to copy
             return val
-        case let val as Double: // beware Swift's NSNumber bridging
+        case let val as Double: // beware Swift's NSNumber bridging; this will pack NSNumber as Double
             return AEDesc(double: val)
         case let val as Int:
             // Note: to maximize application compatibility, always preferentially pack integers as typeSInt32, as that's the traditional integer type recognized by all apps. (In theory, packing as typeSInt64 shouldn't be a problem as apps should coerce to whatever type they actually require before unpacking, but not-so-well-designed Carbon apps sometimes explicitly typecheck instead, so will fail if the descriptor isn't the assumed typeSInt32.)
@@ -155,7 +161,6 @@ open class AppData {
             } else {
                 return AEDesc(double: Double(val))
             }
-            /*
         case let val as Int8:
             return AEDesc(int32: Int32(val))
         case let val as UInt8:
@@ -166,7 +171,7 @@ open class AppData {
             return AEDesc(int32: Int32(val))
         case let val as Int32:
             return AEDesc(int32: Int32(val))
-        case var val as UInt32:
+        case let val as UInt32:
             if val <= UInt32(Int32.max) {
                 return AEDesc(int32: Int32(val))
             } else if self.isInt64Compatible {
@@ -174,7 +179,7 @@ open class AppData {
             } else {
                 return AEDesc(double: Double(val))
             }
-        case var val as Int64:
+        case let val as Int64:
             if val >= Int64(Int32.min) && val <= Int64(Int32.max) {
                 return AEDesc(int32: Int32(val))
             } else if self.isInt64Compatible {
@@ -182,7 +187,7 @@ open class AppData {
             } else {
                 return AEDesc(double: Double(val)) // caution: may be some loss of precision
             }
-        case var val as UInt64:
+        case let val as UInt64:
             if val <= UInt64(Int32.max) {
                 return AEDesc(int32: Int32(val))
             } else if self.isInt64Compatible {
@@ -190,7 +195,6 @@ open class AppData {
             } else {
                 return AEDesc(double: Double(val)) // caution: may be some loss of precision
             }
-            */
         case let val as Float:
             return AEDesc(double: Double(val))
         case let val as Error:
@@ -204,14 +208,29 @@ open class AppData {
     /******************************************************************************/
     // Convert an Apple event descriptor to the specified Swift type, coercing it as necessary
     
-    open func unpack<T>(_ desc: AEDesc) throws -> T {
+    open func unpack<T>(_ desc: AEDesc) throws -> T { // important: this takes ownership of AEDesc and will cache or dispose it before returning
         if T.self == Any.self || T.self == AnyObject.self {
-            return try self.unpackAsAny(desc) as! T
-        } else if let t = T.self as? SelfUnpacking.Type { // note: Symbol, MissingValueType, Array<>, Dictionary<>, Set<>, and Optional<> types unpack the descriptor themselves, as do any custom structs and enums defined in glues
-            return try t.SwiftAutomation_unpackSelf(desc, appData: self) as! T
+            return try self.unpackAsAny(desc) as! T // this takes ownership
+        } else if let type = T.self as? SelfUnpacking.Type { // note: AppleEventDescriptor, Symbol, MissingValueType, Array<>, Dictionary<>, Set<>, and Optional<> types unpack the descriptor themselves, as do any custom structs and enums defined in glues
+            return try type.SwiftAutomation_unpackSelf(desc, appData: self) as! T // this takes ownership
         } else if isMissingValue(desc) {
-            throw UnpackError(appData: self, descriptor: desc, type: T.self, message: "Can't coerce 'missing value' descriptor to \(T.self).") // Important: AppData must not unpack a 'missing value' constant as anything except `MissingValue` or `nil` (i.e. the types to which it self-unpacks). AppleScript doesn't have this problem as all descriptors unpack to their own preferred type, but unpack<T>() forces a descriptor to unpack as a specific type or fail trying. While its role is to act as a `nil`-style placeholder when no other value is given, its descriptor type is typeType so left to its own devices it would naturally unpack the same as any other typeType descriptor. e.g. One of AEM's vagaries is that it supports typeType to typeUnicodeText coercions, so while permitting cDocument to coerce to "docu" might be acceptable [if not exactly helpful], allowing cMissingValue to coerce to "msng" would defeat its whole purpose.
+            throw UnpackError(appData: self, desc: desc, type: T.self, message: "Can't coerce 'missing value' descriptor to \(T.self).") // this takes ownership // Important: AppData must not unpack a 'missing value' constant as anything except `MissingValue` or `nil` (i.e. the types to which it self-unpacks). AppleScript doesn't have this problem as all descriptors unpack to their own preferred type, but unpack<T>() forces a descriptor to unpack as a specific type or fail trying. While its role is to act as a `nil`-style placeholder when no other value is given, its descriptor type is typeType so left to its own devices it would naturally unpack the same as any other typeType descriptor. e.g. One of AEM's vagaries is that it supports typeType to typeUnicodeText coercions, so while permitting cDocument to coerce to "docu" might be acceptable [if not exactly helpful], allowing cMissingValue to coerce to "msng" would defeat its whole purpose.
         }
+        switch T.self {
+        case is Query.Type: // note: user typically specifies exact class ([PREFIX][Object|Elements]Specifier)
+            if let result = try self.unpackAsAny(desc) as? T { // specifiers can be composed of several AE types, so unpack first then check its actual type is what user requested
+                return result
+            }
+        case is Symbol.Type where symbolDescriptorTypes.contains(desc.descriptorType): // TO DO: why isn't Symbol SelfUnpacking?
+            return try self.unpackAsSymbol(desc) as! T
+        case is AnyHashable.Type: // while records always unpack as [Symbol:TYPE], [AnyHashable:TYPE] is a valid return type too
+            if let result = try self.unpackAsAny(desc) as? AnyHashable { return result as! T }
+        case is AEDesc.Type:
+            return desc as! T
+        default: ()
+        }
+        // TO DO: sort error reporting (use do/catch)
+        defer { desc.dispose() }
         switch T.self {
         case is Bool.Type:
             return try desc.bool() as! T
@@ -223,157 +242,99 @@ open class AppData {
             return try desc.double() as! T
         case is String.Type:
             return try desc.string() as! T
-        case is Query.Type: // note: user typically specifies exact class ([PREFIX][Object|Elements]Specifier)
-            if let result = try self.unpackAsAny(desc) as? T { // specifiers can be composed of several AE types, so unpack first then check type
-                return result
-            }
-        case is Symbol.Type:
-            if symbolDescriptorTypes.contains(desc.descriptorType) {
-                return try self.unpackAsSymbol(desc) as! T
-            }
         case is Date.Type:
              return try desc.date() as! T
         case is URL.Type:
              return try desc.fileURL() as! T
-            /*
-        case is Int8.Type: // lack of common protocols on Integer types is a pain
-            if let n = self.unpackAsInt(desc), let result = Int8(exactly: n) {
-                return result as! T
-            }
+        case is Int8.Type:
+            if let n = try? desc.int32(), let result = Int8(exactly: n) { return result as! T }
         case is Int16.Type:
-            if let n = self.unpackAsInt(desc), let result = Int16(exactly: n) {
-                return result as! T
-            }
+            if let n = try? desc.int32(), let result = Int16(exactly: n) { return result as! T }
         case is Int32.Type:
-            if let n = self.unpackAsInt(desc), let result = Int32(exactly: n) {
-                return result as! T
-            }
+            return try desc.int32() as! T
         case is Int64.Type:
-            if let n = self.unpackAsInt(desc), let result = Int64(exactly: n) {
-                return result as! T
-            }
+            if let n = try? desc.int64(), let result = Int64(exactly: n) { return result as! T }
         case is UInt8.Type:
-            if let n = self.unpackAsUInt(desc), let result = UInt8(exactly: n) {
-                return result as! T
-            }
+            if let n = try? desc.uint32(), let result = UInt8(exactly: n) { return result as! T }
         case is UInt16.Type:
-            if let n = self.unpackAsUInt(desc), let result = UInt16(exactly: n) {
-                return result as! T
-            }
+            if let n = try? desc.uint32(), let result = UInt16(exactly: n) { return result as! T }
         case is UInt32.Type:
-            if let n = self.unpackAsUInt(desc), let result = UInt32(exactly: n) {
-                return result as! T
-            }
+            return try desc.uint32() as! T
         case is UInt64.Type:
-            if let n = self.unpackAsUInt(desc), let result = UInt64(exactly: n) {
-                return result as! T
-            }
+            return try desc.uint64() as! T
         case is Float.Type:
-            if let doubleDesc = try desc.coerce(to: typeIEEE64BitFloatingPoint),
-                    let result = Float(exactly: doubleDesc.doubleValue) {
-                return result as! T
-            }
- */
-        case is AnyHashable.Type: // while records always unpack as [Symbol:TYPE], [AnyHashable:TYPE] is a valid return type too
-            if let result = try self.unpackAsAny(desc) as? AnyHashable {
-                return result as! T
-            }
-        case is AEDesc.Type:
-            return desc as! T
+            if let result = Float(exactly: try desc.double()) { return result as! T }
         default:
             ()
         }
         // desc couldn't be coerced to the specified type
         let symbol = self.glueClasses.symbolType.symbol(code: desc.descriptorType)
-        let typeName = symbol.name == nil ? fourCharCode(symbol.code) : symbol.name!
-        throw UnpackError(appData: self, descriptor: desc, type: T.self, message: "Can't coerce \(typeName) descriptor to \(T.self).")
+        let typeName = symbol.name ?? formatFourCharCodeLiteral(symbol.code)
+        throw UnpackError(appData: self, desc: desc.copy(), type: T.self, message: "Can't coerce \(typeName) descriptor to \(T.self).")
     }
     
     
     /******************************************************************************/
     // Convert an Apple event descriptor to its preferred Swift type, as determined by its descriptorType
     
-    open func unpackAsAny(_ desc: AEDesc) throws -> Any { // note: this never returns Optionals (i.e. cMissingValue AEDescs always unpack as MissingValue when return type is Any) to avoid dropping user into Optional<T>.some(Optional<U>.none) hell.
+    open func unpackAsAny(_ desc: AEDesc) throws -> Any { // important: this takes ownership of AEDesc and will cache/dispose it before returning // note: this never returns Optionals (i.e. cMissingValue AEDescs always unpack as MissingValue when return type is Any) to avoid dropping user into Optional<T>.some(Optional<U>.none) hell.
+        if desc.isRecord {
+            switch desc.descriptorType {
+            case typeAERecord:
+                return try Dictionary.SwiftAutomation_unpackSelf(desc, appData: self) as [Symbol:Any]
+            case typeObjectSpecifier:
+                return try self.unpackAsObjectSpecifier(desc)
+            case typeInsertionLoc:
+                return try self.unpackAsInsertionLoc(desc)
+            case typeCompDescriptor:
+                return try self.unpackAsComparisonDescriptor(desc)
+            case typeLogicalDescriptor:
+                return try self.unpackAsLogicalDescriptor(desc)
+            default:
+                return try Dictionary.SwiftAutomation_unpackSelf(desc, appData: self) as [Symbol:Any]
+            }
+        }
+        var dispose = true
+        defer { if dispose { desc.dispose() } }
         switch desc.descriptorType {
+        case typeAEList:
+            dispose = false
+            return try Array.SwiftAutomation_unpackSelf(desc, appData: self) as [Any]
             // common AE types
         case typeTrue, typeFalse, typeBoolean:
             return try desc.bool()
-        case typeSInt32, typeSInt16:
-            return try desc.int()
-        case typeIEEE64BitFloatingPoint, typeIEEE32BitFloatingPoint:
+        case typeIEEE64BitFloatingPoint, typeIEEE32BitFloatingPoint, type128BitFloatingPoint: // 128-bit will be lossily coerced to 64-bit
             return try desc.double()
-        case type128BitFloatingPoint: // coerce down lossy
-            return try unpackFixedSize(desc, as: typeIEEE64BitFloatingPoint) as Double
         case typeChar, typeIntlText, typeUTF8Text, typeUTF16ExternalRepresentation, typeStyledText, typeUnicodeText, typeVersion:
             return try desc.string()
         case typeLongDateTime:
             return try desc.date()
-        case typeAEList:
-            return try Array.SwiftAutomation_unpackSelf(desc, appData: self) as [Any]
-        case typeAERecord:
-            return try Dictionary.SwiftAutomation_unpackSelf(desc, appData: self) as [Symbol:Any]
         case typeAlias, typeBookmarkData, typeFileURL, typeFSRef: //, typeFSS: // note: typeFSS is long defunct so shouldn't be encountered unless dealing with exceptionally old 32-bit Carbon apps, while a `file "HFS:PATH:"` object specifier (typeObjectSpecifier of cFile; basically an AppleScript kludge-around to continue supporting the `file [specifier] "HFS:PATH:"` syntax form despite typeFSS going away) is indistinguishable from any other object specifier so will unpack as an explicit `APPLICATION().files["HFS:PATH:"]` or `APPLICATION().elements("file")["HFS:PATH:"]` specifier depending on whether or not the glue defines a `file[s]` keyword (TBH, not sure if there are any apps do return AEDescs that represent file system locations this way.)
             return try desc.fileURL() as URL
         case typeType, typeEnumerated, typeProperty, typeKeyword:
-            return isMissingValue(desc) ? MissingValue : try self.unpackAsSymbol(desc)
-            // object specifiers
-        case typeObjectSpecifier:
-            return try self.unpackAsObjectSpecifier(desc)
-        case typeInsertionLoc:
-            return try self.unpackAsInsertionLoc(desc)
+            if isMissingValue(desc) {
+                return MissingValue
+            } else {
+                dispose = false
+                return try self.unpackAsSymbol(desc)
+            }
         case typeNull: // null descriptor indicates object specifier root
             return self.application
         case typeCurrentContainer:
             return self.con
         case typeObjectBeingExamined:
             return self.its
-        case typeCompDescriptor:
-            return try self.unpackAsComparisonDescriptor(desc)
-        case typeLogicalDescriptor:
-            return try self.unpackAsLogicalDescriptor(desc)
-        
-            /*
-            // less common types
-        case typeSInt64:
-            return self.unpackAsInt(desc)!
         case typeUInt64, typeUInt32, typeUInt16:
-            return self.unpackAsUInt(desc)!
+            return try desc.uint()
         case typeQDPoint, typeQDRectangle, typeRGBColor:
             return try self.unpack(desc) as [Int]
-            // note: while there are also several AEAddressDesc types used to identify applications, these are very rarely used as command results (e.g. the `choose application` OSAX) and there's little point unpacking them anway as the only type they can automatically be mapped to is AEApplication, which has only minimal functionality anyway. Also unsupported are unit types as they only cover a handful of measurement types and in practice aren't really used for anything except measurement conversions in AppleScript.
- */
+        // TO DO: what about unpacking
          default:
-            if desc.isRecord {
-                return try Dictionary.SwiftAutomation_unpackSelf(desc, appData: self) as [Symbol:Any]
-            }
-            return desc
+            dispose = false
+            return AppleEventDescriptor(desc: desc)
         }
     }
     
-    // helpers for the above
-    /*
-    private func unpackAsInt(_ desc: AEDesc) -> Int? {
-        // coerce the descriptor (whatever it is - typeSInt16, typeUInt32, typeUnicodeText, etc.) to typeSIn64 (hoping the Apple Event Manager has remembered to install TYPE-to-SInt64 coercion handlers for all these types too), and unpack as Int[64]
-        if let intDesc = try desc.coerce(to: typeSInt64) {
-            var result: Int64 = 0
-            (intDesc.data as NSData).getBytes(&result, length: MemoryLayout<Int64>.size)
-            return Int(result) // caution: this assumes Int will always be 64-bit
-        } else {
-            return nil
-        }
-    }
-    
-    private func unpackAsUInt(_ desc: AEDesc) -> UInt? {
-            // as above, but for unsigned ints
-        if let intDesc = try desc.coerce(to: typeUInt64) {
-            var result: UInt64 = 0
-            (intDesc.data as NSData).getBytes(&result, length: MemoryLayout<UInt64>.size)
-            return UInt(result) // caution: this assumes UInt will always be 64-bit
-        } else {
-            return nil
-        }
-    }
-    */
     /******************************************************************************/
     // Supporting methods for unpacking symbols and specifiers
     
@@ -382,19 +343,17 @@ open class AppData {
         return self.glueClasses.symbolType.symbol(code: code, type: typeProperty, descriptor: nil)
     }
     
-    func unpackAsSymbol(_ desc: AEDesc) throws -> Symbol {
-        print("unpackAsSymbol:", desc)
+    func unpackAsSymbol(_ desc: AEDesc) throws -> Symbol { // this takes ownership
         return self.glueClasses.symbolType.symbol(code: try! desc.fourCharCode(), type: desc.descriptorType, descriptor: desc)
     }
     
     func unpackAsInsertionLoc(_ desc: AEDesc) throws -> Specifier {
-        guard let _ = try? desc.parameter(keyAEObject), // only used to check InsertionLoc record is correctly formed
-            let insertionLocation = try? desc.parameter(keyAEPosition) else {
-                throw UnpackError(appData: self, descriptor: desc, type: self.glueClasses.insertionSpecifierType,
+        guard let (container, position) = try? desc.insertionLocation() else {
+                throw UnpackError(appData: self, desc: desc, type: self.glueClasses.insertionSpecifierType,
                                   message: "Can't unpack malformed insertion specifier.")
         }
-        return self.glueClasses.insertionSpecifierType.init(insertionLocation: insertionLocation,
-                                                         parentQuery: nil, appData: self, descriptor: desc)
+        container.dispose() // only used to check InsertionLoc record is correctly formed // TO DO:
+        return self.glueClasses.insertionSpecifierType.init(position: position, parentQuery: nil, appData: self, descriptor: desc)
     }
     
     
@@ -403,64 +362,79 @@ open class AppData {
 
     
     func unpackAsObjectSpecifier(_ desc: AEDesc) throws -> Specifier {
-        guard let parentDesc = try? desc.parameter(AEKeyword(keyAEContainer)), // the 'from' descriptor is normally unused; it's only required in `unpackParentSpecifiers()` when fully unpacking an object specifier (typically to generate a description string), or below if the `fullyUnpackSpecifiers` compatibility flag is set
-            let wantType = try? desc.parameter(AEKeyword(keyAEDesiredClass)).typeCode(),
-            let selectorForm = try? desc.parameter(AEKeyword(keyAEKeyForm)).typeCode(),
-            let selectorDesc = try? desc.parameter(AEKeyword(keyAEKeyData)) else {
-                throw UnpackError(appData: self, descriptor: desc, type: self.glueClasses.objectSpecifierType,
-                                  message: "Can't unpack malformed object specifier.")
-        }
+        let (wantType, parentDesc, selectorForm, selectorDesc) = try desc.objectSpecifier() // TO DO: catch and rethrow with more detailed error? // TO DO: ownership
         do { // unpack selectorData, unless it's a property code or absolute/relative ordinal (in which case use its 'prop'/'enum' descriptor as-is)
-            var selectorData: Any = selectorDesc // the selector won't be unpacked if it's a property/relative/absolute ordinal
-            var objectSpecifierClass = self.glueClasses.objectSpecifierType // most reference forms describe one-to-one relationships
+            var selectorData: Any // the selector won't be unpacked if it's a property/relative/absolute ordinal
+            var objectSpecifierClass = self.glueClasses.objectSpecifierType // reference forms returned by apps usually describe one-to-one relationships
             switch selectorForm {
             case OSType(formPropertyID): // property
                 if ![typeType, typeProperty].contains(selectorDesc.descriptorType) {
-                    throw UnpackError(appData: self, descriptor: desc, type: self.glueClasses.objectSpecifierType,
+                    selectorDesc.dispose()
+                    throw UnpackError(appData: self, desc: desc, type: self.glueClasses.objectSpecifierType,
                                       message: "Can't unpack malformed object specifier.")
                 }
-            case OSType(formRelativePosition): // before/after
-                if !(selectorDesc.descriptorType == typeEnumerated && self._relativeOrdinalCodes.contains(try! selectorDesc.enumCode())) {
-                    throw UnpackError(appData: self, descriptor: desc, type: self.glueClasses.objectSpecifierType,
-                                      message: "Can't unpack malformed object specifier.")
-                }
+                selectorData = AppleEventDescriptor(desc: selectorDesc)
             case OSType(formAbsolutePosition): // by-index or first/middle/last/any/all ordinal
-                if selectorDesc.descriptorType == typeEnumerated && self._absoluteOrdinalCodes.contains(try! selectorDesc.enumCode()) { // don't unpack ordinals
-                    if try! selectorDesc.enumCode() == kAEAll { // `all` ordinal = one-to-many relationship
+                if let ordinal = try? selectorDesc.enumCode(), self._absoluteOrdinalCodes.contains(ordinal) { // don't unpack ordinals
+                    if ordinal == kAEAll { // `all` ordinal = one-to-many relationship
                         objectSpecifierClass = self.glueClasses.multiObjectSpecifierType
                     }
+                    selectorData = AppleEventDescriptor(desc: selectorDesc)
                 } else { // unpack index (normally Int32, though the by-index form can take any type of selector as long as the app understands it)
                     selectorData = try self.unpack(selectorDesc)
                 }
-            case OSType(formRange): // by-range = one-to-many relationship
-                objectSpecifierClass = self.glueClasses.multiObjectSpecifierType
-                if selectorDesc.descriptorType != typeRangeDescriptor {
-                    throw UnpackError(appData: self, descriptor: selectorDesc, type: RangeSelector.self, message: "Malformed selector in by-range specifier.")
+            case OSType(formName), OSType(formUniqueID):
+                selectorData = try self.unpack(selectorDesc)
+            case OSType(formRelativePosition): // before/after
+                guard let code = try? selectorDesc.enumCode(), self._relativeOrdinalCodes.contains(code) else {
+                    selectorDesc.dispose()
+                    throw UnpackError(appData: self, desc: desc, type: self.glueClasses.objectSpecifierType,
+                                      message: "Can't unpack malformed object specifier.")
                 }
-                guard let startDesc = try? selectorDesc.parameter(keyAERangeStart),
-                    let stopDesc = try? selectorDesc.parameter(keyAERangeStop) else {
-                    throw UnpackError(appData: self, descriptor: selectorDesc, type: RangeSelector.self, message: "Malformed selector in by-range specifier.")
+                selectorData = AppleEventDescriptor(desc: selectorDesc)
+            case OSType(formRange): // by-range = one-to-many relationship
+                //
+                defer { selectorDesc.dispose() }
+                objectSpecifierClass = self.glueClasses.multiObjectSpecifierType
+                guard selectorDesc.descriptorType == typeRangeDescriptor,
+                    let (startDesc, stopDesc) = try? selectorDesc.rangeDescriptor() else {
+                        throw UnpackError(appData: self, desc: desc, type: RangeSelector.self,
+                                          message: "Malformed selector in by-range specifier.")
                 }
                 do {
-                    selectorData = RangeSelector(start: try self.unpackAsAny(startDesc), stop: try self.unpackAsAny(stopDesc), wantType: wantType)
+                    let startRange: Any
+                    do {
+                        startRange = try self.unpackAsAny(startDesc)
+                    } catch {
+                        stopDesc.dispose()
+                        throw error
+                    }
+                    selectorData = RangeSelector(start: startRange, stop: try self.unpackAsAny(stopDesc), wantType: wantType)
                 } catch {
-                    throw UnpackError(appData: self, descriptor: selectorDesc, type: RangeSelector.self, message: "Couldn't unpack start/stop selector in by-range specifier.")
+                    startDesc.dispose()
+                    stopDesc.dispose()
+                    throw UnpackError(appData: self, desc: desc, type: RangeSelector.self,
+                                      message: "Couldn't unpack start/stop selector in by-range specifier.")
                 }
             case OSType(formTest): // by-range = one-to-many relationship
                 objectSpecifierClass = self.glueClasses.multiObjectSpecifierType
                 selectorData = try self.unpack(selectorDesc)
                 if !(selectorData is Query) {
-                    throw UnpackError(appData: self, descriptor: selectorDesc, type: Query.self, message: "Malformed selector in by-test specifier.")
+                    throw UnpackError(appData: self, desc: desc, type: Query.self,
+                                      message: "Malformed selector in by-test specifier.")
                 }
-            default: // by-name or by-ID
-                selectorData = try self.unpack(selectorDesc)
+            default:
+                throw UnpackError(appData: self, desc: desc, type: Query.self,
+                                  message: "Unknown reference form: \(formatFourCharCodeLiteral(selectorForm)).")
             }
             return objectSpecifierClass.init(wantType: wantType,
                                              selectorForm: selectorForm, selectorData: selectorData,
                                              parentQuery: (fullyUnpackSpecifiers ? try self.unpack(parentDesc) as Query : nil),
                                              appData: self, descriptor: (fullyUnpackSpecifiers ? nil : desc))
         } catch {
-            throw UnpackError(appData: self, descriptor: desc, type: self.glueClasses.objectSpecifierType,
+            parentDesc.dispose()
+            selectorDesc.dispose()
+            throw UnpackError(appData: self, desc: desc, type: self.glueClasses.objectSpecifierType,
                               message: "Can't unpack object specifier's selector data.", cause: error)
         }
     }
@@ -470,40 +444,47 @@ open class AppData {
                                                          kAEBeginsWith, kAEEndsWith, kAEContains, kAEIsIn]
     private let _logicalOperatorCodes: Set<OSType> = [OSType(kAEAND), OSType(kAEOR), OSType(kAENOT)]
     
-    func unpackAsComparisonDescriptor(_ desc: AEDesc) throws -> TestClause {
-        if let operatorType = try? desc.parameter(AEKeyword(keyAECompOperator)).enumCode(),
-            let operand1Desc = try? desc.parameter(AEKeyword(keyAEObject1)),
-            let operand2Desc = try? desc.parameter(AEKeyword(keyAEObject2)),
-            !self._comparisonOperatorCodes.contains(operatorType) {
-                // don't bother with dedicated error reporting here as malformed operand descs that cause the following unpack calls to fail are unlikely in practice, and will still be caught and reported further up the call chain anyway
-                let operand1 = try self.unpackAsAny(operand1Desc)
+    func unpackAsComparisonDescriptor(_ desc: AEDesc) throws -> TestClause { // takes ownership
+        if let (operatorType, operand1Desc, operand2Desc) = try? desc.comparisonTest() {
+            if self._comparisonOperatorCodes.contains(operatorType) { // TO DO: move validation to AEDesc.comparisonTest()?
+                let operand1: Any
+                do {
+                    operand1 = try self.unpackAsAny(operand1Desc)
+                } catch {
+                    operand2Desc.dispose()
+                    throw error
+                }
                 let operand2 = try self.unpackAsAny(operand2Desc)
-                if operatorType == kAEContains && !(operand1 is ObjectSpecifier) {
-                    if let op2 = operand2 as? ObjectSpecifier {
-                        return ComparisonTest(operatorType: kAEIsIn, operand1: op2, operand2: operand1, appData: self, descriptor: desc)
-                    } // else fall through to throw
-                } else if let op1 = operand1 as? ObjectSpecifier {
+                if let op1 = operand1 as? ObjectSpecifier {
                     return ComparisonTest(operatorType: operatorType, operand1: op1, operand2: operand2, appData: self, descriptor: desc)
+                } else if operatorType == kAEContains, let op2 = operand2 as? ObjectSpecifier {
+                    return ComparisonTest(operatorType: kAEIsIn, operand1: op2, operand2: operand1, appData: self, descriptor: desc)
                 } // else fall through to throw
+            } else {
+                operand1Desc.dispose()
+                operand2Desc.dispose()
+            }
         }
-        throw UnpackError(appData: self, descriptor: desc, type: TestClause.self, message: "Can't unpack comparison test: malformed descriptor.")
+        throw UnpackError(appData: self, desc: desc, type: TestClause.self, message: "Can't unpack comparison test: malformed descriptor.")
     }
     
     func unpackAsLogicalDescriptor(_ desc: AEDesc) throws -> TestClause {
-        if let operatorType = try? desc.parameter(AEKeyword(keyAELogicalOperator)).enumCode(),
-            let operandsDesc = try? desc.parameter(AEKeyword(keyAEObject)),
-            !self._logicalOperatorCodes.contains(operatorType) {
+        if let (operatorType, operandsDesc) = try? desc.logicalTest() {
+            if self._logicalOperatorCodes.contains(operatorType) { // TO DO: as above
                 let operands = try self.unpack(operandsDesc) as [TestClause]
                 return LogicalTest(operatorType: operatorType, operands: operands, appData: self, descriptor: desc)
+            } else {
+                operandsDesc.dispose()
+            }
         }
-        throw UnpackError(appData: self, descriptor: desc, type: TestClause.self, message: "Can't unpack logical test: malformed descriptor.")
+        throw UnpackError(appData: self, desc: desc, type: TestClause.self, message: "Can't unpack logical test: malformed descriptor.")
     }
     
     
     /******************************************************************************/
     // get AEAddressDesc for target application
     
-    public func targetDescriptor() throws -> AEDesc? {
+    public func targetDescriptor() throws -> AEDesc? { // caution: AEDesc is borrowed; caller should not retain it
         if self._targetDescriptor == nil { self._targetDescriptor = try self.target.descriptor(self.launchOptions) }
         return self._targetDescriptor
     }
@@ -529,19 +510,15 @@ open class AppData {
                                                     (OSType(kASAppleScriptSuite), OSType(kASLaunchEvent))]
     
     private func send(event: AEDesc, sendMode: SendOptions, timeout: TimeInterval) throws -> AEDesc { // used by sendAppleEvent()
-        do {
-            return try event.sendEvent(options: sendMode, timeout: timeout) // throws NSError on AEM errors (but not app errors)
-        
-        // TO DO: this is wrong; -1708 will be in reply event, not in AEM error; FIX
-        
-        } catch { // 'launch' events normally return 'not handled' errors, so just ignore those
-            if (error as NSError).code == -1708
-                && (try! event.attribute(keyEventClassAttr).typeCode()) == kASAppleScriptSuite
-                && (try! event.attribute(keyEventIDAttr).typeCode()) == kASLaunchEvent {
-                    return AEDesc.record() // (not a full AppleEvent desc, but reply event's attributes aren't used so is equivalent to a reply event containing neither error nor result)
-            } else {
-                throw error
-            }
+        let (replyEvent, errorCode) = event.sendEvent(options: sendMode, timeout: timeout)
+        if errorCode == 0 {
+            return replyEvent
+        } else if errorCode == -1708 && event.eventClass == kASAppleScriptSuite && event.eventID == kASLaunchEvent {
+            // TO DO: this is wrong; -1708 will be in reply event, not in AEM error; TO DO: check this
+            // 'launch' events normally return 'not handled' errors, so just ignore those
+            return AEDesc.record() // (not a full AppleEvent desc, but reply event's attributes aren't used so is equivalent to a reply event containing neither error nor result)
+        } else {
+            throw AutomationError(code: errorCode)
         }
     }
     
@@ -562,30 +539,39 @@ open class AppData {
             // Create a new AppleEvent descriptor (throws ConnectionError if target app isn't found)
             let event = AEDesc(eventClass: eventClass, eventID: eventID, target: try self.targetDescriptor(),
                                returnID: AEReturnID(kAutoGenerateReturnID), transactionID: AETransactionID(kAnyTransactionID))
+            defer { event.dispose() }
             // pack its keyword parameters
-            for (paramName, code, value) in keywordParameters where parameterExists(value) {
+            for (paramName, code, value) in keywordParameters where isParameter(value) {
                 do {
-                    try event.setParameter(code, to: self.pack(value))
+                    let tmp = try self.pack(value)
+                    defer { tmp.dispose() }
+                    try event.setParameter(code, to: tmp)
                 } catch {
-                    throw AutomationError(code: error._code, message: "Invalid '\(paramName ?? fourCharCode(code))' parameter.", cause: error)
+                    throw AutomationError(code: error._code, message: "Invalid \(paramName ?? formatFourCharCodeLiteral(code)) parameter.", cause: error)
                 }
             }
             // pack event's direct parameter and/or subject attribute
-            let hasDirectParameter = parameterExists(directParameter)
+            let hasDirectParameter = isParameter(directParameter)
             if hasDirectParameter { // if the command includes a direct parameter, pack that normally as its direct param
-                try event.setParameter(keyDirectObject, to: self.pack(directParameter))
+                let tmp = try self.pack(directParameter)
+                defer { tmp.dispose() }
+                try event.setParameter(keyDirectObject, to: tmp)
             }
             // if command method was called on root Application (null) object, the event's subject is also null...
             var subjectDesc = AppRootDesc
+            defer {subjectDesc.dispose() } // check this
             // ... but if the command was called on a Specifier, decide if that specifier should be packed as event's subject
             // or, as a special case, used as event's keyDirectObject/keyAEInsertHere parameter for user's convenience
             if !(parentSpecifier is RootSpecifier) { // technically Application, but there isn't an explicit class for that
                 if eventClass == kAECoreSuite && eventID == kAECreateElement { // for user's convenience, `make` command is treated as a special case
                     // if `make` command is called on a specifier, use that specifier as event's `at` parameter if not already given
-                    if (try? event.parameter(keyAEInsertHere)) != nil { // an `at` parameter was already given, so pack parent specifier as event's subject attribute
+                    if let tmp = try? event.parameter(keyAEInsertHere) { // an `at` parameter was already given, so pack parent specifier as event's subject attribute
+                        tmp.dispose()
                         subjectDesc = try self.pack(parentSpecifier)
                     } else { // else pack parent specifier as event's `at` parameter and use null as event's subject attribute
-                        try event.setParameter(keyAEInsertHere, to: self.pack(parentSpecifier))
+                        let tmp = try self.pack(parentSpecifier)
+                        defer { tmp.dispose() }
+                        try event.setParameter(keyAEInsertHere, to: tmp)
                     }
                 } else { // for all other commands, check if a direct parameter was already given
                     if hasDirectParameter { // pack the parent specifier as the event's subject attribute
@@ -598,47 +584,46 @@ open class AppData {
             try event.setAttribute(AEKeyword(keySubjectAttr), to: subjectDesc)
             // pack requested type (`as`) parameter, if specified; note: most apps ignore this, but a few may recognize it (usually in `get` commands)  even if they don't define it in their dictionary (another AppleScript-introduced quirk); e.g. `Finder().home.get(requestedType:FIN.alias) as URL` tells Finder to return a typeAlias descriptor instead of typeObjectSpecifier, which can then be unpacked as URL
             if let type = requestedType {
-                try event.setParameter(keyAERequestedType, to: AEDesc(typeCode: type.code))
+                try event.packFixedSizeParameter(keyAERequestedType, value: type.code, as: typeType)
             }
             // event attributes
             // (note: most apps ignore considering/ignoring attributes, and always ignore case and consider everything else)
-            let (considerations, consideringIgnoring) = considering == nil ? self.defaultConsiderations : packConsideringAndIgnoringFlags(considering!)
-            try event.setAttribute(AEKeyword(enumConsiderations), to: considerations)
-            try event.setAttribute(AEKeyword(enumConsidsAndIgnores), to: consideringIgnoring)
+            if considering == nil {
+                let (considerations, consideringIgnoring) = self.defaultConsiderations
+                try event.setAttribute(AEKeyword(enumConsiderations), to: considerations)
+                try event.setAttribute(AEKeyword(enumConsidsAndIgnores), to: consideringIgnoring)
+            } else {
+                let (considerations, consideringIgnoring) = packConsideringAndIgnoringFlags(considering!)
+                defer { considerations.dispose(); consideringIgnoring.dispose() }
+                try event.setAttribute(AEKeyword(enumConsiderations), to: considerations)
+                try event.setAttribute(AEKeyword(enumConsidsAndIgnores), to: consideringIgnoring)
+            }
             // send the event
             let sendMode = sendOptions ?? [.canInteract, waitReply ? .waitForReply : .noReply]
             let timeout = withTimeout ?? defaultTimeout
-            var replyEvent: AEDesc
-            sentEvent = event
+            var replyEvent = nullDescriptor
+            defer { replyEvent.dispose() }
+            sentEvent = event // the completed event, for use in error messages
             do {
-                replyEvent = try self.send(event: event, sendMode: sendMode, timeout: timeout) // throws NSError on AEM error
+                replyEvent = try self.send(event: event, sendMode: sendMode, timeout: timeout) // throws on AEM error
             } catch { // handle errors raised by Apple Event Manager (e.g. timeout, process not found)
                 if RelaunchableErrorCodes.contains((error as NSError).code) && self.target.isRelaunchable && (self.relaunchMode == .always
                         || (self.relaunchMode == .limited && LimitedRelaunchEvents.contains(where: {$0.0 == eventClass && $0.1 == eventID}))) {
                     // event failed as target process has quit since previous event; recreate AppleEvent with new address and resend
+                    self._targetDescriptor?.dispose()
                     self._targetDescriptor = nil
-                    let event2 = AEDesc(eventClass: eventClass, eventID: eventID,
-                                                        target: try self.targetDescriptor(),
-                                                        returnID: AEReturnID(kAutoGenerateReturnID),
-                                                        transactionID: AETransactionID(kAnyTransactionID))
-                    for i in try! 1...event.count() {
-                        let (code, desc) = try! event.item(i)
-                        try! event2.setParameter(code, to: desc)
-                    }
-                    for key in [AEKeyword(keySubjectAttr), AEKeyword(enumConsiderations), AEKeyword(enumConsidsAndIgnores)] {
-                        try! event2.setAttribute(key, to: event.attribute(key))
-                    }
-                    replyEvent = try self.send(event: event2, sendMode: sendMode, timeout: timeout)
+                    try event.setAttribute(keyAddressAttr, to: try self.targetDescriptor()!)
+                    replyEvent = try self.send(event: event, sendMode: sendMode, timeout: timeout)
                 } else {
                     throw error
                 }
             }
-            repliedEvent = replyEvent
+            repliedEvent = replyEvent // the received event, for use in error messages
             if sendMode.contains(.waitForReply) {
-                if T.self == ReplyEventDescriptor.self { // return the entire reply event as-is
-                    return ReplyEventDescriptor(descriptor: replyEvent) as! T
-                } else if (try? replyEvent.parameter(keyErrorNumber).int()) ?? 0 != 0 { // check if an application error occurred
-                    throw AutomationError(code: (try? replyEvent.parameter(keyErrorNumber).int()) ?? 1)
+                if T.self == ReplyAppleEvent.self { // return the entire reply event as-is
+                    return ReplyAppleEvent(desc: replyEvent.copy()) as! T
+                } else if replyEvent.errorNumber != 0 { // check if an application error occurred
+                    throw AutomationError(code: replyEvent.errorNumber)
                 } else if let resultDesc = try? replyEvent.parameter(keyDirectObject) {
                     return try self.unpack(resultDesc) as T
                 } // no return value or error, so fall through
@@ -660,7 +645,7 @@ open class AppData {
                                                         directParameter: directParameter, keywordParameters: keywordParameters,
                                                         requestedType: requestedType, waitReply: waitReply,
                                                         withTimeout: withTimeout, considering: considering)
-            throw CommandError(commandInfo: commandDescription, appData: self, event: sentEvent, reply: repliedEvent, cause: error)
+            throw CommandError(commandInfo: commandDescription, appData: self, event: sentEvent?.copy(), reply: repliedEvent?.copy(), cause: error)
         }
     }
     
@@ -717,7 +702,7 @@ open class AppData {
 
 
 let considerationsTable: [(Considerations, AEDesc, UInt32, UInt32)] = [ // also used in AE formatter
-    // note: Swift mistranslates considering/ignoring mask constants as Int, not UInt32, so redefine them here
+    // Swift mistypes considering/ignoring mask constants as Int, not UInt32, so redefine them here
     (.case,             AEDesc(enumCode: OSType(kAECase)),              0x00000001, 0x00010000),
     (.diacritic,        AEDesc(enumCode: OSType(kAEDiacritic)),         0x00000002, 0x00020000),
     (.whiteSpace,       AEDesc(enumCode: OSType(kAEWhiteSpace)),        0x00000004, 0x00040000),

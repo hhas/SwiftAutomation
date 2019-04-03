@@ -617,7 +617,7 @@ public enum AESymbolOrString: SelfPacking, SelfUnpacking {
     public static func SwiftAutomation_unpackSelf(_ desc: AEDesc, appData: AppData) throws -> AESymbolOrString {
         do { return .symbol(try appData.unpack(desc) as AESymbol) } catch {}
         do { return .string(try appData.unpack(desc) as String) } catch {}
-        throw UnpackError(appData: appData, descriptor: desc, type: AESymbolOrString.self,
+        throw UnpackError(appData: appData, desc: desc, type: AESymbolOrString.self,
                           message: "Can't coerce descriptor to Swift type: \(AESymbolOrString.self)")
     }
     public static func SwiftAutomation_noValue() throws -> AESymbolOrString { throw AutomationError(code: -1708) }
@@ -639,7 +639,7 @@ public enum AEStringOrMissingValue: SelfPacking, SelfUnpacking {
     public static func SwiftAutomation_unpackSelf(_ desc: AEDesc, appData: AppData) throws -> AEStringOrMissingValue {
         do { return .missing(try appData.unpack(desc) as MissingValueType) } catch {}
         do { return .string(try appData.unpack(desc) as String) } catch {}
-        throw UnpackError(appData: appData, descriptor: desc, type: AEStringOrMissingValue.self,
+        throw UnpackError(appData: appData, desc: desc, type: AEStringOrMissingValue.self,
                           message: "Can't coerce descriptor to Swift type: \(AEStringOrMissingValue.self)")
     }
     public static func SwiftAutomation_noValue() throws -> AEStringOrMissingValue { return .missing(MissingValue) }

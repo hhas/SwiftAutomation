@@ -45,13 +45,13 @@ public class SDEFParser: ApplicationTerminology {
             }
             return result
         } else {
-            return try fourCharCode(string as String)
+            return try parseFourCharCode(string as String)
         }
     }
     
-    func parse(eightCharCode string: NSString) throws -> (OSType, OSType) { // eventClass and eventID code
+    func parse(appleEventCode string: NSString) throws -> (OSType, OSType) { // eventClass and eventID code
         if string.length == 8 {
-            return (try fourCharCode(string.substring(to: 4)), try fourCharCode(string.substring(from: 4)))
+            return (try parseFourCharCode(string.substring(to: 4)), try parseFourCharCode(string.substring(from: 4)))
         } else if string.length == 18 && (string.hasPrefix("0x") || string.hasPrefix("0X")) { // e.g. "0x0123456701234567"
             guard let eventClass = UInt32(string.substring(with: NSRange(location: 2, length: 8)), radix: 16),
                 let eventID = UInt32(string.substring(with: NSRange(location: 10, length: 8)), radix: 16) else {
@@ -80,7 +80,7 @@ public class SDEFParser: ApplicationTerminology {
         guard let name = self.attribute("name", of: element), let codeString = self.attribute("code", of: element), name != "" else {
             throw TerminologyError("Missing 'name'/'code' attribute.")
         }
-        let (eventClass, eventID) = try self.parse(eightCharCode: codeString as NSString)
+        let (eventClass, eventID) = try self.parse(appleEventCode: codeString as NSString)
         return (name, eventClass, eventID)
     }
     

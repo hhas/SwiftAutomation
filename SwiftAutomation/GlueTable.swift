@@ -89,7 +89,7 @@ public class GlueTable {
                 if !(name == "missing value" && code == cMissingValue) { // (ignore `missing value` as it's treated separately)
                     // escape definitions that semi-overlap default definitions
                     if let desc = self.defaultTypesByName[name] {
-                        if (try? desc.typeCode()) != code {
+                        if (try? desc.fourCharCode()) != code {
                             name = self.keywordConverter.escapeName(name)
                             term.name = name
                         }
@@ -106,7 +106,7 @@ public class GlueTable {
                 if !(name == "missing value" && code == cMissingValue) { // (ignore `missing value` as it's treated separately)
                     // escape definitions that semi-overlap default definitions
                     if let desc = self.defaultTypesByName[name] {
-                        if (try? desc.typeCode()) != code {
+                        if (try? desc.fourCharCode()) != code {
                             name = self.keywordConverter.escapeName(name)
                             term.name = name
                         }
@@ -219,7 +219,7 @@ public class GlueTable {
             }
             // add item
             self.commandsByName[name] = term
-            self.commandsByCode[eightCharCode(eventClass, eventID)] = term
+            self.commandsByCode[appleEventCode(eventClass, eventID)] = term
         }
     }
 

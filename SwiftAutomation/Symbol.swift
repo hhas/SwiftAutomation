@@ -8,6 +8,8 @@
 //  Also used to represent string-based record keys (where type=0 and name!=nil) when unpacking an AERecord's keyASUserRecordFields property, allowing the resulting dictionary to hold any mixture of terminology- (keyword) and user-defined (string) keys while typed as [Symbol:Any].
 //
 
+// initializers take ownership of AEDesc if given
+
 
 import Foundation
 import Carbon
@@ -16,29 +18,37 @@ import Carbon
 
 open class Symbol: Hashable, Equatable, CustomStringConvertible, CustomDebugStringConvertible, CustomReflectable, SelfPacking {
     
-    private var _descriptor: AEDesc? // TO DO: memory management? (pack() caller takes ownership)
+    private var desc: AEDesc
     public let name: String?, type: DescType, code: OSType
     
-    open var typeAliasName: String {return "Symbol"} // provides prefix used in description var; glue subclasses override this with their own strings (e.g. "FIN" for Finder)
+    open var typeAliasName: String { return "Symbol" } // provides prefix used in description var; glue subclasses override this with their own strings (e.g. "FIN" for Finder)
     
-    public required init(name: String?, code: OSType, type: OSType = typeType, descriptor: AEDesc? = nil) { // (When unpacking a symbol descriptor returned by an application command, if the returned AEDesc is passed here it'll be cached here for reuse, avoiding the need to fully-repack the new Symbol instance if/when it's subsequently used in another application command. In practice, this is mostly irrelevant to static glues, as Symbol subclasses in static glues are normally constructed via Symbol.symbol(), which lazily instantiates existing glue-defined static vars instead. Whether it makes any noticeable difference to dynamic bridges remains to be seen [it's not likely to be a major bottleneck], but it costs nothing for AppData to include it if it has it.)
+    public required init(name: String?, code: OSType, type: OSType = typeType, descriptor: AEDesc? = nil) { // takes ownership
         self.name = name
         self.code = code
         self.type = type
-        self._descriptor = descriptor // The SwiftAutomation_packSelf() method below will cache the resulting descriptor the first time it is called, avoiding the need to fully-repack the same Symbol on subsequent calls.
+        self.desc = descriptor ?? (type == noOSType && name != nil ? AEDesc(string: name!) : AEDesc(type: type, code: code))
+    }
+
+    deinit {
+        self.desc.dispose()
     }
     
     // special constructor for string-based record keys (avoids the need to wrap dictionary keys in a `StringOrSymbol` enum when unpacking)
     // e.g. the AppleScript record `{name:"Bob", isMyUser:true}` maps to the Swift Dictionary `[Symbol.name:"Bob", Symbol("isMyUser"):true]`
     
-    public convenience init(_ name: String, descriptor: AEDesc? = nil) {
+    public convenience init(_ name: String) {
+        self.init(name: name, code: noOSType, type: noOSType, descriptor: nil)
+    }
+    
+    internal convenience init(_ name: String, descriptor: AEDesc) { // TO DO: needed?
         self.init(name: name, code: noOSType, type: noOSType, descriptor: descriptor)
     }
     
     // convenience constructors for creating Symbols using raw four-char codes
     
-    public convenience init(code: String, type: String = "type") {
-        self.init(name: nil, code: UTGetOSTypeFromString(code as CFString), type: UTGetOSTypeFromString(type as CFString))
+    public convenience init(code: String, type: String = "type") { // TO DO: use parseFourCharCode() instead, and make this throwing? (Q. why is 'type' a string, rather than enum/OSType?); might be better split into init(typeCode:String) and init(enumCode:String)
+        self.init(name: nil, code: UTGetOSTypeFromString(code as CFString), type: UTGetOSTypeFromString(type as CFString)) // caution: UTGetOSTypeFromString silently fails (returns 0) for invalid strings
     }
     
     public convenience init(code: OSType, type: OSType = typeType) {
@@ -59,44 +69,37 @@ open class Symbol: Hashable, Equatable, CustomStringConvertible, CustomDebugStri
     
     public var description: String {
         if let name = self.name {
-            return self.nameOnly ? "\(self.typeAliasName)(\(name.debugDescription))" : "\(self.typeAliasName).\(name)"
+            return self.isNameOnly ? "\(self.typeAliasName)(\(name.debugDescription))" : "\(self.typeAliasName).\(name)"
         } else {
-            return "\(self.typeAliasName)(code:\(formatFourCharCodeString(self.code)),type:\(formatFourCharCodeString(self.type)))"
+            return "\(self.typeAliasName)(code:\(formatFourCharCodeLiteral(self.code)),type:\(formatFourCharCodeLiteral(self.type)))"
         }
     }
     
     public var debugDescription: String { return self.description }
     
     public var customMirror: Mirror {
-        let children: [Mirror.Child] = [(label: "description", value: self.description), (label: "name", value: self.name ?? ""),
-                                        (label: "code", value: fourCharCode(self.code)), (label: "type", value: fourCharCode(self.type))]
+        let children: [Mirror.Child] = [(label: "description", value: self.description),
+                                        (label: "name", value: self.name ?? ""),
+                                        (label: "code", value: formatFourCharCode(self.code)),
+                                        (label: "type", value: formatFourCharCode(self.type))]
         return Mirror(self, children: children, displayStyle: .`class`, ancestorRepresentation: .suppressed)
     }
     
     // packing
     
-    public var descriptor: AEDesc { // used by SwiftAutomation_packSelf and previous()/next() selectors  
-        if self._descriptor == nil {
-            if self.nameOnly {
-                self._descriptor = AEDesc(string: self.name!)
-            } else {
-                self._descriptor = AEDesc(type: self.type, code: self.code)
-            }
-        }
-        return self._descriptor!
-    }
+    public var descriptor: AppleEventDescriptor { return AppleEventDescriptor(desc: self.desc.copy()) } // TO DO: needed?
     
     // returns true if Symbol contains name but not code (i.e. it represents a string-based record property key)
-    public var nameOnly: Bool { return self.type == noOSType && self.name != nil }
+    public var isNameOnly: Bool { return self.type == noOSType && self.name != nil }
     
-    public func SwiftAutomation_packSelf(_ appData: AppData) throws -> AEDesc {
-        return self.descriptor
+    public func SwiftAutomation_packSelf(_ appData: AppData) throws -> AEDesc { // caller always takes ownership of pack() result
+        return self.desc.copy()
     }
     
     // equatable, hashable
     
     public func hash(into hasher: inout Hasher) { // see also comments in `==()` below
-        hasher.combine(self.nameOnly ? self.name!.hashValue : Int(self.code))
+        hasher.combine(self.isNameOnly ? self.name!.hashValue : Int(self.code))
     }
 
     
@@ -106,7 +109,7 @@ open class Symbol: Hashable, Equatable, CustomStringConvertible, CustomDebugStri
         //    TED.document == AESymbol(code: "docu") -> true
         //
         // note: AE types are also ignored on the [reasonable] assumption that any differences in descriptor type (e.g. typeType vs typeProperty) are irrelevant as apps will only care about the code itself
-        return lhs.nameOnly && rhs.nameOnly ? lhs.name == rhs.name : lhs.code == rhs.code
+        return lhs.isNameOnly && rhs.isNameOnly ? lhs.name == rhs.name : lhs.code == rhs.code
     }
 }
 
