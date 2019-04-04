@@ -8,8 +8,9 @@
 
 // TO DO: how to link to enclosing SwiftAutomation framework
 
+// TO DO: keep AETE support as undocumented -A option? (depends on what, if any, translation bugs still exist in OSACopyScriptingDefinitionFromURL's AETE-to-SDEF conversion; some Carbon apps still use AETEs, so any differences in generated glues may create compatibility problems)
 
-// TO DO: add `-c` option for converting an existing SDEF (passed as stdin/file) from AS to SA format
+// TO DO: if APPNAME is an SDEF file (i.e. a file with "sdef" extension), read SDEF data directly
 
 
 import Foundation
@@ -27,7 +28,7 @@ let helpText = [
     "",
     "\u{1B}[1mUSAGE\u{1B}[m", // TO DO: only use ANSI control chars if connected to tty
     "",
-    "    aeglue [-DdrS] [-n CLASSNAME] [-p PREFIX]",
+    "    aeglue [-Ddr] [-n CLASSNAME] [-p PREFIX]",
     "           [-est FORMAT ...] [-o OUTDIR] [APPNAME ...]",
     "    aeglue [-hv]",
     "",
@@ -52,8 +53,6 @@ let helpText = [
     "                       Auto-generated if omitted.",
     "    -r             Overwrite existing files.",
     "    -s FORMAT      A record struct definition; see Type Support.",
-    "    -S             Use SDEF terminology instead of AETE, e.g. if",
-    "                       application's ascr/gdte handler is broken.",
     "    -t FORMAT      A type alias definition; see Type Support.",
     "    -v             Output the SwiftAutomation framework's version",
     "                       and exit.",
@@ -62,7 +61,7 @@ let helpText = [
     "",
     "    aeglue iTunes",
     "",
-    "    aeglue -r -S Finder",
+    "    aeglue -r Finder",
     "",
     "    aeglue -p TE TextEdit ~/Desktop",
     "",
@@ -165,7 +164,7 @@ var generateDocumentation = true
 var applicationClassName: String?
 var classNamePrefix: String?
 var canOverwrite = false
-var useSDEF = false
+var useSDEF = true
 var applicationURLs: [URL?] = []
 var outDir: URL?
 
@@ -187,6 +186,9 @@ if optArgs.count == 0 {
 }
 while let opt = optArgs.popLast() {
     switch(opt) {
+    case "-A":
+        useSDEF = false
+        foundOpts.append(opt)
     case "-D":
         importFramework = false
         foundOpts.append(opt)
@@ -214,9 +216,6 @@ while let opt = optArgs.popLast() {
         foundOpts.append("\(opt) \(classNamePrefix!)")
     case "-r":
         canOverwrite = true
-    case "-S":
-        useSDEF = true
-        foundOpts.append(opt)
     case "-s":
         let recordStructFormat = optArgs.popLast()
         validateOption(opt: opt, arg: recordStructFormat)

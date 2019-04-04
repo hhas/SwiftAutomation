@@ -32,9 +32,11 @@ public func formatAppleEvent(descriptor event: AppleEvent, useTerminology: Termi
     if event.descriptorType != typeAppleEvent { // sanity check
         return "Can't format Apple event: wrong type: \(formatFourCharCodeLiteral(event.descriptorType))."
     }
+    let addressDesc = try! event.attribute(keyAddressAttr)
+    defer { addressDesc.dispose() }
     let appData: DynamicAppData
     do {
-        appData = try dynamicAppData(forAppleEvent: event, useTerminology: useTerminology)
+        appData = try dynamicAppData(for: addressDesc, useTerminology: useTerminology)
     } catch {
         return "Can't format Apple event: can't get terminology: \(error)"
     }
@@ -61,24 +63,15 @@ private let _cacheMaxLength = 10
 private var _cachedTerms = [(AEDesc, TerminologyType, DynamicAppData)]()
 
 
-// TO DO: only need to pass addressDesc here, not entire AE
-private func dynamicAppData(forAppleEvent event: AppleEvent, useTerminology: TerminologyType) throws -> DynamicAppData {
-    let addressDesc = try event.attribute(keyAddressAttr) // cache takes ownership
+private func dynamicAppData(for addressDesc: AEAddressDesc, useTerminology: TerminologyType) throws -> DynamicAppData {
     for (desc, terminologyType, appData) in _cachedTerms {
         if desc.descriptorType == addressDesc.descriptorType && desc.data == addressDesc.data && terminologyType == useTerminology {
-            addressDesc.dispose()
             return appData
         }
     }
-    let appData: DynamicAppData
-    do {
-        appData = try DynamicAppData(applicationURL: applicationURL(for: addressDesc), useTerminology: useTerminology) // TO DO: are there any cases where keyAddressArrr won't return correct desc? (also, double-check what reply event uses)
-    } catch {
-        addressDesc.dispose()
-        throw error
-    }
+    let appData = try DynamicAppData(applicationURL: applicationURL(for: addressDesc), useTerminology: useTerminology) // TO DO: are there any cases where keyAddressArrr won't return correct desc? (also, double-check what reply event uses)
     if _cachedTerms.count > _cacheMaxLength { _cachedTerms.removeFirst().0.dispose() } // TO DO: ideally this should trim least used, not longest cached
-    _cachedTerms.append((addressDesc, useTerminology, appData))
+    _cachedTerms.append((addressDesc.copy(), useTerminology, appData))
     return appData
 }
 

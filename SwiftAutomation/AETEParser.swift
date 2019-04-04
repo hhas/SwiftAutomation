@@ -31,19 +31,25 @@ public class AETEParser: ApplicationTerminology {
     // following are used in parse() to supply 'missing' singular/plural class names
     private var classDefinitionsByCode = [OSType:ClassTerm]()
     
-    var aeteData = NSData() // was char*
-    var cursor: Int = 0 // was unsigned long
+    private var aeteData: UnsafeMutableRawPointer!
+    private var aeteSize: Int = 0
+    private var cursor: Int = 0
     
     
     public init(keywordConverter: KeywordConverterProtocol = defaultSwiftKeywordConverter) {
         self.keywordConverter = keywordConverter
     }
     
-    public func parse(_ desc: AEDesc) throws { // accepts AETE/AEUT or AEList of AETE/AEUTs
+    public func parse(_ desc: AEDesc) throws { // accepts AETE/AEUT, or AEList of AETE/AEUTs; this takes ownership
         defer { desc.dispose() }
         switch desc.descriptorType {
         case DescType(typeAETE), DescType(typeAEUT):
-            self.aeteData = desc.data as NSData
+            var desc = desc
+            self.aeteSize = AEGetDescDataSize(&desc)
+            self.aeteData = UnsafeMutableRawPointer.allocate(byteCount: self.aeteSize, alignment: MemoryLayout<UInt16>.alignment)
+            defer { self.aeteData.deallocate() }
+            try! throwIfError(AEGetDescData(&desc, self.aeteData, self.aeteSize))
+            //self.aeteData = UnsafeRawBufferPointer(ptr)
             self.cursor = 6 // skip version, language, script integers
             let n = self.short()
             do {
@@ -84,44 +90,48 @@ public class AETEParser: ApplicationTerminology {
     
     // read data methods
     
-    @inline(__always) private func short() -> UInt16 { // unsigned short (2 bytes)
-        var value: UInt16 = 0
-        self.aeteData.getBytes(&value, range: NSMakeRange(self.cursor,MemoryLayout<UInt16>.size))
+    private func short() -> UInt16 { // unsigned short (2 bytes)
+        let value = self.aeteData.load(fromByteOffset: self.cursor, as: UInt16.self)
         self.cursor += MemoryLayout<UInt16>.size
         return value
     }
     
-    @inline(__always) private func code() -> OSType { // (4 bytes)
-        var value: OSType = 0
-        self.aeteData.getBytes(&value, range: NSMakeRange(self.cursor,MemoryLayout<OSType>.size))
+    private func code() -> OSType { // (4 bytes)
+        // can't use aeteData.load() to read OSType as that requires correct 4-byte alignment, but aete is 2-byte…
+        let buffer = UnsafeMutableRawPointer.allocate(byteCount: MemoryLayout<OSType>.size,
+                                                      alignment: MemoryLayout<OSType>.alignment)
+        defer { buffer.deallocate() }
+        // …so copy the raw 4-byte sequence to a new temporary buffer that is aligned to hold OSType, and read that
+        buffer.copyMemory(from: self.aeteData.advanced(by: self.cursor), byteCount: MemoryLayout<OSType>.size)
         self.cursor += MemoryLayout<OSType>.size
-        return value
+        return buffer.bindMemory(to: OSType.self, capacity: 1).pointee
     }
     
-    @inline(__always) private func string() -> String {
-        var length: UInt8 = 0 // Pascal string = 1-byte length (unsigned char) followed by 0-255 MacRoman chars
-        self.aeteData.getBytes(&length, range: NSMakeRange(self.cursor,MemoryLayout<UInt8>.size))
+    private func string() -> String { // Pascal string (first byte indicates length, followed by 0-255 MacRoman chars)
+        let length = Int(self.aeteData.load(fromByteOffset: self.cursor, as: UInt8.self))
         self.cursor += MemoryLayout<UInt8>.size
-        let value = length == 0 ? "" : String(data: aeteData.subdata(with: NSMakeRange(self.cursor,Int(length))),
-                                                encoding: .macOSRoman)!
-        self.cursor += Int(length)
-        return value
+        if length > 0 {
+            let ptr = self.aeteData.advanced(by: self.cursor)
+            self.cursor += length
+            return String(data: Data(bytes: ptr, count: length), encoding: .macOSRoman)!
+        } else {
+            return ""
+        }
     }
     
     // skip unneeded aete data
     
-    @inline(__always) private func skipShort() {
+    private func skipShort() {
         self.cursor += MemoryLayout<UInt16>.size
     }
-    @inline(__always) private func skipCode() {
+    private func skipCode() {
         self.cursor += MemoryLayout<OSType>.size
     }
-    @inline(__always) private func skipString() {
-        var len: UInt8 = 0
-        self.aeteData.getBytes(&len, range: NSMakeRange(self.cursor,MemoryLayout<UInt8>.size))
-        self.cursor += MemoryLayout<UInt8>.size + Int(len)
+    private func skipString() {
+        let length = Int(self.aeteData.load(fromByteOffset: self.cursor, as: UInt8.self))
+        self.cursor += MemoryLayout<UInt8>.size + length
     }
-    @inline(__always) private func alignCursor() { // realign aete data cursor on even byte after reading strings
+    private func alignCursor() { // realign aete data cursor on even byte after reading strings
         if self.cursor % 2 != 0 {
             self.cursor += 1
         }
@@ -129,8 +139,8 @@ public class AETEParser: ApplicationTerminology {
     
     // perform a bounds check on aete data cursor to protect against malformed aete data
     
-    @inline(__always) private func checkCursor() throws {
-        if cursor > self.aeteData.length {
+    private func checkCursor() throws {
+        if cursor > self.aeteSize {
             throw TerminologyError("The AETE ended prematurely: (self.aeteData.length) bytes expected, (self.cursor) bytes read.")
         }
     }
@@ -288,7 +298,7 @@ public class AETEParser: ApplicationTerminology {
 extension AEApplication { // extends the built-in Application object with convenience method for getting its AETE resource
 
     public func getAETE() throws -> AEDesc { // caller takes ownership
-        return try self.sendAppleEvent(OSType(kASAppleScriptSuite), OSType(kGetAETE), [keyDirectObject:0]) as AEDesc
+        return try self.sendAppleEvent(OSType(kASAppleScriptSuite), OSType(kGetAETE), [keyDirectObject:0])
     }
 }
 

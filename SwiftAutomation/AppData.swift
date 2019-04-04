@@ -225,7 +225,7 @@ open class AppData {
             return try self.unpackAsSymbol(desc) as! T
         case is AnyHashable.Type: // while records always unpack as [Symbol:TYPE], [AnyHashable:TYPE] is a valid return type too
             if let result = try self.unpackAsAny(desc) as? AnyHashable { return result as! T }
-        case is AEDesc.Type:
+        case is AEDesc.Type: // for internal use (e.g. getAETE()); caller takes ownership of returned AEDesc
             return desc as! T
         default: ()
         }

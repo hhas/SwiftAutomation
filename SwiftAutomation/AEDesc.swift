@@ -198,14 +198,14 @@ public extension AEDesc {
             default: // no BOM; if typeUnicodeText use platform endianness, else it's big-endian typeUTF16ExternalRepresentation
                 encoding = (desc.descriptorType == typeUnicodeText && isLittleEndianHost) ? .utf16LittleEndian : .utf16BigEndian
             }
-            let buffer = UnsafeMutableRawPointer.allocate(byteCount: size, alignment: 0) // TO DO: fix alignments (see MemoryLayout<T>)
+            let buffer = UnsafeMutableRawPointer.allocate(byteCount: size, alignment: MemoryLayout<UInt16>.alignment)
             try throwIfError(AEGetDescData(&desc, buffer, size))
             if let result = String(bytesNoCopy: buffer, length: size, encoding: encoding, freeWhenDone: true) { // TO DO: avoid using bridged Foundation methods
                 return result
             }
         case typeUTF8Text:
             let size = AEGetDescDataSize(&desc)
-            let buffer = UnsafeMutableRawPointer.allocate(byteCount: size, alignment: 0)
+            let buffer = UnsafeMutableRawPointer.allocate(byteCount: size, alignment: MemoryLayout<UInt8>.alignment)
             try throwIfError(AEGetDescData(&desc, buffer, size))
             if let result = String(bytesNoCopy: buffer, length: size, encoding: .utf8, freeWhenDone: true) {
                 return result
@@ -214,7 +214,7 @@ public extension AEDesc {
             var newDesc = try desc.coerce(to: typeUTF8Text)
             defer { AEDisposeDesc(&newDesc) }
             let size = AEGetDescDataSize(&newDesc)
-            let buffer = UnsafeMutableRawPointer.allocate(byteCount: size, alignment: 0)
+            let buffer = UnsafeMutableRawPointer.allocate(byteCount: size, alignment: MemoryLayout<UInt8>.alignment)
             try throwIfError(AEGetDescData(&newDesc, buffer, size))
             if let result = String(bytesNoCopy: buffer, length: size, encoding: .utf8, freeWhenDone: true) {
                 return result
@@ -257,7 +257,7 @@ public extension AEDesc {
     var data: Data {
         var desc = self
         let size = AEGetDescDataSize(&desc)
-        let buffer = UnsafeMutableRawPointer.allocate(byteCount: size, alignment: 0)
+        let buffer = UnsafeMutableRawPointer.allocate(byteCount: size, alignment: MemoryLayout<UInt8>.alignment)
         try! throwIfError(AEGetDescData(&desc, buffer, size))
         return Data(bytesNoCopy: buffer, count: size, deallocator: .free) // takes ownership
     }
@@ -290,7 +290,7 @@ public extension AEDesc {
     }
     
     func processIdentifier() throws -> pid_t {
-        return self.unpackFixedSize(as: typeKernelProcessID)
+        return try self.unpackFixedSize(as: typeKernelProcessID)
     }
 }
 
