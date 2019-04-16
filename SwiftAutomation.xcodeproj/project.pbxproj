@@ -941,8 +941,9 @@
 			files = (
 				4FFF5D311D899F29008ED4F5 /* main.swift in Sources */,
 				4F252BB5224E1D5800888935 /* AEDesc.swift in Sources */,
-				4FFF5D321D899F29008ED4F5 /* AppData.swift in Sources */,
+				4F252BC12250BADC00888935 /* AppleEventDescriptor.swift in Sources */,
 				4FBE33CA2259F8910032F73C /* AEHandler.swift in Sources */,
+				4FFF5D321D899F29008ED4F5 /* AppData.swift in Sources */,
 				4FFF5D361D899F29008ED4F5 /* Symbol.swift in Sources */,
 				4FFF5D331D899F29008ED4F5 /* Specifier.swift in Sources */,
 				4FFF5D341D899F29008ED4F5 /* SpecifierExtensions.swift in Sources */,
@@ -958,7 +959,6 @@
 				4FFF5D3E1D899F29008ED4F5 /* SDEFParser.swift in Sources */,
 				4FFF5D3F1D899F29008ED4F5 /* GlueTable.swift in Sources */,
 				4FFF5D401D899F29008ED4F5 /* AppleEventFormatter.swift in Sources */,
-				4F252BC12250BADC00888935 /* AppleEventDescriptor.swift in Sources */,
 				4FFF5D4B1D89B4EF008ED4F5 /* SwiftGlueTemplate.swift in Sources */,
 				4FFF5D411D899F29008ED4F5 /* StaticGlueBuilder.swift in Sources */,
 				4FFF5D421D899F29008ED4F5 /* AEApplicationGlue.swift in Sources */,
