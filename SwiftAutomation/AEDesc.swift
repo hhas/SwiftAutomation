@@ -10,15 +10,19 @@ import Carbon
 
 
 
-extension AEDesc: CustomDebugStringConvertible {
+public extension AEDesc {
     
     func dispose() { // free the AEDesc's dataHandle
         var desc = self
         AEDisposeDesc(&desc)
     }
+}
+
+
+extension AEDesc: CustomDebugStringConvertible {
     
     public var debugDescription: String {
-        return "<AEDesc \(formatFourCharCodeLiteral(self.descriptorType))>" // TO DO: AEPrintDescToHandle() depends on deprecated Carbon Handle
+        return "<AEDesc \(formatFourCharCodeLiteral(self.descriptorType))>" // TO DO: AEPrintDescToHandle() requires deprecated Carbon `Handle` APIs so can't use that here; for now, print DescType only
     }
 }
     
@@ -254,7 +258,7 @@ public extension AEDesc {
         }
     }
     
-    var data: Data {
+    func data() -> Data {
         var desc = self
         let size = AEGetDescDataSize(&desc)
         let buffer = UnsafeMutableRawPointer.allocate(byteCount: size, alignment: MemoryLayout<UInt8>.alignment)
@@ -468,6 +472,10 @@ public extension AEDesc {
         var desc = self
         return AECheckIsRecord(&desc)
     }
+    
+    var isList: Bool {
+        return self.descriptorType == typeAEList
+    }
 }
     //
     
@@ -509,7 +517,7 @@ public extension AEDesc { // use on AEDescList/AERecord/AppleEvent only; atomic 
     
     //
     
-    func count() throws -> Int { // throws errAEWrongDataType if not a list or record; TO DO: use `try!` or `try?` returning 0 (or -1?)?
+    func count() throws -> Int { // throws errAEWrongDataType if not a list or record; TO DO: make this a var and raise fatalError/return -1 instead? (we don't want non-list values to be treated accidentally as empty lists,  so returning 0 is not an option; OTOH, client code generally checks descriptor is a list before iterating, leading to awkward )
         var result = 0
         var listDesc = self
         try throwIfError(AECountItems(&listDesc, &result))

@@ -316,7 +316,7 @@ extension Dictionary: SelfPacking, SelfUnpacking, SelfFormatting {
             if property == keyASUserRecordFields {
                 // unpack record properties whose keys are identifiers (represented as AEList of form: [key1,value1,key2,value2,...])
                 let userProperties = itemDesc
-                if userProperties.descriptorType == typeAEList && (try! userProperties.count()) % 2 == 0 {
+                if userProperties.isList && (try! userProperties.count()) % 2 == 0 {
                     for j in stride(from:1, to: try! userProperties.count(), by: 2) {
                         let keyDesc = try! userProperties.item(j).value
                         guard let keyString = try? keyDesc.string() else {

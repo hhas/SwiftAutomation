@@ -65,7 +65,7 @@ private var _cachedTerms = [(AEDesc, TerminologyType, DynamicAppData)]()
 
 private func dynamicAppData(for addressDesc: AEAddressDesc, useTerminology: TerminologyType) throws -> DynamicAppData {
     for (desc, terminologyType, appData) in _cachedTerms {
-        if desc.descriptorType == addressDesc.descriptorType && desc.data == addressDesc.data && terminologyType == useTerminology {
+        if desc.descriptorType == addressDesc.descriptorType && desc.data() == addressDesc.data() && terminologyType == useTerminology {
             return appData
         }
     }
@@ -233,12 +233,11 @@ public struct CommandDescription {
             }
         }
         // unpack reply requested and timeout attributes (note: these attributes are unreliable since their values are passed via AESendMessage() rather than packed directly into the AppleEvent)
-        if let desc = try? event.attribute(keyReplyRequestedAttr) { // TO DO: attr is unreliable
-            // keyReplyRequestedAttr appears to be boolean value encoded as Int32 (1=wait or queue reply; 0=no reply)
-            if try! desc.int() == 0 { self.waitReply = false }
+        if let replyRequested: Int32 = try? event.unpackFixedSizeAttribute(keyReplyRequestedAttr, as: typeSInt32) {
+            // keyReplyRequestedAttr appears to be a boolean value encoded as Int32 (1=wait or queue reply; 0=no reply)
+            if replyRequested == 0 { self.waitReply = false }
         }
-        if let timeout = try? event.attribute(keyTimeoutAttr) { // TO DO: attr is unreliable
-            let timeoutInTicks = try! timeout.int()
+        if let timeoutInTicks: Int32 = try? event.unpackFixedSizeAttribute(keyTimeoutAttr, as: typeSInt32) {
             if timeoutInTicks == -2 { // NoTimeout // TO DO: ditto
                 self.withTimeout = -2
             } else if timeoutInTicks > 0 {
@@ -246,9 +245,7 @@ public struct CommandDescription {
             }
         }
         // considering/ignoring attributes
-        if let considersAndIgnoresDesc = try? event.attribute(AEKeyword(enumConsidsAndIgnores)) {
-            var considersAndIgnores: UInt32 = 0
-            (considersAndIgnoresDesc.data as NSData).getBytes(&considersAndIgnores, length: MemoryLayout<UInt32>.size)
+        if let considersAndIgnores: UInt32 = try? event.unpackFixedSizeAttribute(AEKeyword(enumConsidsAndIgnores), as: typeUInt32) {
             if considersAndIgnores != defaultConsidersIgnoresMask {
                 for (option, _, considersFlag, ignoresFlag) in considerationsTable {
                     if option == .case {
