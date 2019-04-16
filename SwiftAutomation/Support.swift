@@ -203,16 +203,7 @@ public enum TargetApplication: CustomReflectable {
             return foundProcesses[0]
         } else if foundProcesses.count > 1 {
             for process in foundProcesses {
-                if process.bundleURL == url { // TO DO: FIX: need to check for FS equality
-                    /*
-                     function idForFileURL(url) {
-                         const fileIDRef = objc.alloc(objc.NSData, objc.NIL).ref();
-                         if (!url('getResourceValue', fileIDRef, 'forKey', objc.NSURLFileResourceIdentifierKey, 'error', null)) {
-                             throw new Error(`Can't get NSURLFileResourceIdentifierKey for ${url}`);
-                         }
-                         return fileIDRef.deref();
-                     }
-                     */
+                if process.bundleURL?.standardizedFileURL == url.standardizedFileURL {
                     return process
                 }
             }

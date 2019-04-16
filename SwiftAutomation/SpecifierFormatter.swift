@@ -232,12 +232,9 @@ public class SpecifierFormatter {
     // general formatting functions
 
     func formatValue(_ value: Any) -> String { // TO DO: this should probably be a method on SpecifierFormatter so that it can be overridden to generate representations for other languages
-        // formats AE-bridged Swift types as literal syntax; other Swift types will show their default description (unfortunately debugDescription doesn't provide usable literal representations - e.g. String doesn't show tabs in escaped form, Cocoa classes return their [non-literal] description string instead, and reliable representations of Bool/Int/Double are a dead loss as soon as NSNumber gets involved, so custom implementation is needed)
         switch value {
-        case let obj as NSArray: // HACK (since `obj as Array` won't work); see also AppData.pack() // TO DO: implement SelfFormatting protocol on Array, Set, Dictionary
-            return "[" + obj.map({self.formatValue($0)}).joined(separator: ", ") + "]"
-        case let obj as NSDictionary: // HACK; see also AppData.pack()
-            return "[" + obj.map({"\(self.formatValue($0)): \(self.formatValue($1))"}).joined(separator: ", ") + "]"
+        case let obj as SelfFormatting:
+            return obj.SwiftAutomation_formatSelf(self)
         case let obj as String:
             return obj.debugDescription
         case let obj as Date:
@@ -248,14 +245,17 @@ public class SpecifierFormatter {
             } else {
                 return "URL(string:\(self.formatValue(obj.absoluteString)))"
             }
-        case let obj as NSNumber:
+        // bridged ObjC classes
+        case let obj as NSArray:
+            return "[" + obj.map({self.formatValue($0)}).joined(separator: ", ") + "]"
+        case let obj as NSSet:
+            return "[" + obj.map({self.formatValue($0)}).joined(separator: ", ") + "]"
+        case let obj as NSDictionary:
+            return obj.count == 0 ? "[:]" : "[\(obj.map({"\(self.formatValue($0)): \(self.formatValue($1))"}).joined(separator: ", "))]"
+        case let obj as NSNumber where CFBooleanGetTypeID() == CFGetTypeID(obj):
             // note: matching Bool, Int, Double types can be glitchy due to Swift's crappy bridging of ObjC's crappy NSNumber class,
             // so just match NSNumber (which also matches corresponding Swift types) and figure out appropriate representation
-            if CFBooleanGetTypeID() == CFGetTypeID(obj) { // voodoo: NSNumber class cluster uses __NSCFBoolean
-                return obj == 0 ? "false" : "true"
-            } else {
-                return "\(value)"
-            }
+            return obj == 0 ? "false" : "true"
         default:
             return "\(value)" // SwiftAutomation objects (specifiers, symbols) are self-formatting; any other value will use its own default description (which may or may not be the same as its literal representation, but that's Swift's problem, not ours)
         }

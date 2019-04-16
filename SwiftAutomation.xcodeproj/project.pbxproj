@@ -117,6 +117,7 @@
 		4FB7D8831D5EA60F00F0DB36 /* AppleEventFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39951BADD58500FF2A96 /* AppleEventFormatter.swift */; };
 		4FB7D8841D5EA60F00F0DB36 /* StaticGlueBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E396D1BAA9BA700FF2A96 /* StaticGlueBuilder.swift */; };
 		4FB7D8851D5EA60F00F0DB36 /* AEApplicationGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F2645AB1BA4F27700256402 /* AEApplicationGlue.swift */; };
+		4FBE33CA2259F8910032F73C /* AEHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FBE33C92259F8910032F73C /* AEHandler.swift */; };
 		4FDB20441D8ABA2E008AB470 /* FinderGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FDB20411D8ABA2E008AB470 /* FinderGlue.swift */; };
 		4FDB20451D8ABA2E008AB470 /* ITunesGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FDB20421D8ABA2E008AB470 /* ITunesGlue.swift */; };
 		4FDB20461D8ABA2E008AB470 /* TextEditGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FDB20431D8ABA2E008AB470 /* TextEditGlue.swift */; };
@@ -363,6 +364,7 @@
 		4F9AFB361D5B58EB00A71890 /* test */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = test; sourceTree = BUILT_PRODUCTS_DIR; };
 		4F9AFB431D5B6C2600A71890 /* AEConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AEConstants.swift; sourceTree = "<group>"; };
 		4F9AFB451D5E99FC00A71890 /* main.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = main.swift; path = test/main.swift; sourceTree = SOURCE_ROOT; };
+		4FBE33C92259F8910032F73C /* AEHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AEHandler.swift; sourceTree = "<group>"; };
 		4FDB20411D8ABA2E008AB470 /* FinderGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FinderGlue.swift; path = test/FinderGlue.swift; sourceTree = SOURCE_ROOT; };
 		4FDB20421D8ABA2E008AB470 /* ITunesGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ITunesGlue.swift; path = test/ITunesGlue.swift; sourceTree = SOURCE_ROOT; };
 		4FDB20431D8ABA2E008AB470 /* TextEditGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TextEditGlue.swift; path = test/TextEditGlue.swift; sourceTree = SOURCE_ROOT; };
@@ -639,6 +641,7 @@
 				4F63C4271B7CF06E000D74EE /* main.swift */,
 				4F2645AB1BA4F27700256402 /* AEApplicationGlue.swift */,
 				4F252BBC224FE5E200888935 /* aedesc */,
+				4FBE33CB2259F89B0032F73C /* aeom */,
 				4F0E396C1BAA98D700FF2A96 /* bridge */,
 				4F0E39471BA86B6800FF2A96 /* terminology support */,
 			);
@@ -654,6 +657,14 @@
 				4FDB20431D8ABA2E008AB470 /* TextEditGlue.swift */,
 			);
 			path = test;
+			sourceTree = "<group>";
+		};
+		4FBE33CB2259F89B0032F73C /* aeom */ = {
+			isa = PBXGroup;
+			children = (
+				4FBE33C92259F8910032F73C /* AEHandler.swift */,
+			);
+			name = aeom;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -931,6 +942,7 @@
 				4FFF5D311D899F29008ED4F5 /* main.swift in Sources */,
 				4F252BB5224E1D5800888935 /* AEDesc.swift in Sources */,
 				4FFF5D321D899F29008ED4F5 /* AppData.swift in Sources */,
+				4FBE33CA2259F8910032F73C /* AEHandler.swift in Sources */,
 				4FFF5D361D899F29008ED4F5 /* Symbol.swift in Sources */,
 				4FFF5D331D899F29008ED4F5 /* Specifier.swift in Sources */,
 				4FFF5D341D899F29008ED4F5 /* SpecifierExtensions.swift in Sources */,

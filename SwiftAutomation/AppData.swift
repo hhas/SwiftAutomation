@@ -134,10 +134,10 @@ open class AppData {
             return try val.SwiftAutomation_packSelf(self)
         case let val as AEDesc: // TO DO: memory management? this API assumes caller takes ownership, so would need to copy
             return val
-        case let val as Double: // beware Swift's NSNumber bridging; this will pack NSNumber as Double
+        case let val as Double: // beware Swift's NSNumber bridging; this will pack all NSNumbers as Double, on assumption that the receiving app will coerce that to typeBoolean/typeInteger/etc as needed
             return AEDesc(double: val)
         case let val as Int:
-            // Note: to maximize application compatibility, always preferentially pack integers as typeSInt32, as that's the traditional integer type recognized by all apps. (In theory, packing as typeSInt64 shouldn't be a problem as apps should coerce to whatever type they actually require before unpacking, but not-so-well-designed Carbon apps sometimes explicitly typecheck instead, so will fail if the descriptor isn't the assumed typeSInt32.)
+            // For best application compatibility, always pack integers as typeSInt32 if possible, as that's the traditional integer type used by AppleScript. (In theory, packing as typeSInt64 shouldn't be a problem as apps should coerce to whatever type they actually require before unpacking, but not-so-well-designed Carbon apps sometimes explicitly typecheck instead, so will fail if the descriptor isn't the assumed typeSInt32.)
             if Int(Int32.min) <= val && val <= Int(Int32.max) {
                 return AEDesc(int32: Int32(val))
             } else if self.isInt64Compatible {
@@ -607,7 +607,7 @@ open class AppData {
             do {
                 replyEvent = try self.send(event: event, sendMode: sendMode, timeout: timeout) // throws on AEM error
             } catch { // handle errors raised by Apple Event Manager (e.g. timeout, process not found)
-                if RelaunchableErrorCodes.contains((error as NSError).code) && self.target.isRelaunchable && (self.relaunchMode == .always
+                if RelaunchableErrorCodes.contains(error._code) && self.target.isRelaunchable && (self.relaunchMode == .always
                         || (self.relaunchMode == .limited && LimitedRelaunchEvents.contains(where: {$0.0 == eventClass && $0.1 == eventID}))) {
                     // event failed as target process has quit since previous event; recreate AppleEvent with new address and resend
                     self._targetDescriptor?.dispose()

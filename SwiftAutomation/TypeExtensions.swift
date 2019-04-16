@@ -26,6 +26,11 @@ public protocol SelfUnpacking {
 }
 
 
+public protocol SelfFormatting {
+    func SwiftAutomation_formatSelf(_ formatter: SpecifierFormatter) -> String
+}
+
+
 /******************************************************************************/
 // `missing value` constant
 
@@ -147,7 +152,11 @@ extension Optional: SelfPacking, SelfUnpacking {
 // extend Swift's standard collection types to pack and unpack themselves
 
 
-extension Set: SelfPacking, SelfUnpacking { // note: AEM doesn't define a standard AE type for Sets, so pack/unpack as typeAEList (we'll assume client code has its own reasons for suppling/requesting Set<T> instead of Array<T>)
+extension Set: SelfPacking, SelfUnpacking, SelfFormatting { // note: AEM doesn't define a standard AE type for Sets, so pack/unpack as typeAEList (we'll assume client code has its own reasons for suppling/requesting Set<T> instead of Array<T>)
+    
+    public func SwiftAutomation_formatSelf(_ formatter: SpecifierFormatter) -> String {
+        return "[\(self.map{ formatter.format($0) }.joined(separator: ", "))]"
+    }
     
     public func SwiftAutomation_packSelf(_ appData: AppData) throws -> AEDesc {
         let desc = AEDesc.list()
@@ -186,7 +195,11 @@ extension Set: SelfPacking, SelfUnpacking { // note: AEM doesn't define a standa
 }
 
 
-extension Array: SelfPacking, SelfUnpacking {
+extension Array: SelfPacking, SelfUnpacking, SelfFormatting {
+    
+    public func SwiftAutomation_formatSelf(_ formatter: SpecifierFormatter) -> String {
+        return "[\(self.map{ formatter.format($0) }.joined(separator: ", "))]"
+    }
     
     public func SwiftAutomation_packSelf(_ appData: AppData) throws -> AEDesc {
         let listDesc = AEDesc.list()
@@ -243,7 +256,11 @@ extension Array: SelfPacking, SelfUnpacking {
 }
 
 
-extension Dictionary: SelfPacking, SelfUnpacking {
+extension Dictionary: SelfPacking, SelfUnpacking, SelfFormatting {
+    
+    public func SwiftAutomation_formatSelf(_ formatter: SpecifierFormatter) -> String {
+        return self.count == 0 ? "[:]" : "[\(self.map{ "\(formatter.format($0)): \(formatter.format($1))" }.joined(separator: ", "))]"
+    }
     
     public func SwiftAutomation_packSelf(_ appData: AppData) throws -> AEDesc {
         var recordDesc = AEDesc.record()
