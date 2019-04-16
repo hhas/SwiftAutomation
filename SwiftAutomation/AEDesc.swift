@@ -266,7 +266,7 @@ public extension AEDesc {
         return Data(bytesNoCopy: buffer, count: size, deallocator: .free) // takes ownership
     }
     
-    // TO DO: combine typeCode and enumCode into fourCharCode?
+    // TO DO: combine typeCode and enumCode into fourCharCode? or is it better to keep distinction?
     
     func typeCode() throws -> OSType {
         var desc = self
@@ -286,7 +286,7 @@ public extension AEDesc {
     
     func fourCharCode() throws -> OSType {
         switch self.descriptorType {
-        case typeType, typeEnumerated, typeProperty, typeKeyword:
+        case typeType, typeEnumerated, typeProperty, typeKeyword, typeAbsoluteOrdinal: // TO DO: what other types?
             return try self.unpackFixedSize(as: self.descriptorType)
         default:
             return try self.unpackFixedSize(as: typeType)

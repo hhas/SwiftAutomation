@@ -177,9 +177,9 @@ public class SpecifierFormatter {
             }
             switch form {
             case OSType(formAbsolutePosition): // specifier[IDX] or specifier.first/middle/last/any
-                if let desc = specifier.selectorData as? AEDesc, // ObjectSpecifier.unpackSelf does not unpack ordinals
-                        let ordinal = [DescType(kAEFirst): "first", DescType(kAEMiddle): "middle",
-                                       DescType(kAELast): "last", DescType(kAEAny): "any"][try! desc.fourCharCode()] {
+                if let code = try? (specifier.selectorData as? AEDesc)?.fourCharCode(), // ObjectSpecifier.unpackSelf does not unpack ordinals
+                    let ordinal = [DescType(kAEFirst): "first", DescType(kAEMiddle): "middle",
+                                   DescType(kAELast): "last", DescType(kAEAny): "any"][code] {
                     return "\(result).\(ordinal)"
                 } else {
                     return "\(result)[\(self.formatValue(specifier.selectorData))]"
