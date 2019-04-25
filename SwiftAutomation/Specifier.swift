@@ -55,9 +55,12 @@
 //    Except for APPLICATION, users do not instantiate any of these classes directly, but instead by chained property/method calls on existing Query instances.
 //
 
-import Foundation
-import AppKit
 import Carbon
+import Foundation
+
+#if canImport(AppKit)
+import AppKit
+#endif
 
 // TO DO: underscore/prefix non-public properties and methods to reduce risk of terminology clashes 
 

@@ -14,9 +14,12 @@
 // TO DO: review AEDesc ownership
 
 
-import Foundation
-import AppKit
 import Carbon
+import Foundation
+
+#if canImport(AppKit)
+import AppKit
+#endif
 
 
 public enum TerminologyType {
@@ -77,6 +80,7 @@ private func dynamicAppData(for addressDesc: AEAddressDesc, useTerminology: Term
 
 // given the AEAddressDesc for a local process, return the fileURL to its .app bundle
 func applicationURL(for addressDesc: AEAddressDesc) throws -> URL {
+    #if canImport(AppKit)
     // AppleScript uses old typeProcessSerialNumber, but this should coerce to modern typeKernelProcessID
     guard let pid = try? addressDesc.processIdentifier() else { // local processes are generally targeted by PID
         throw TerminologyError("Unsupported address type: \(formatFourCharCodeLiteral(addressDesc.descriptorType))")
@@ -85,6 +89,9 @@ func applicationURL(for addressDesc: AEAddressDesc) throws -> URL {
         throw TerminologyError("Can't get path to application bundle (PID: \(pid)).")
     }
     return applicationURL
+    #else
+    throw AutomationError(code: 1, message: "AppKit not available")
+    #endif
 }
 
 

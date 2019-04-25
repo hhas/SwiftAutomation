@@ -112,6 +112,11 @@ public extension AEDesc {
         self = packFixedSize(value, as: typeKernelProcessID)
     }
     
+    init(bundleIdentifier value: String) throws {
+        self = nullDescriptor
+        value.withCString { try! throwIfError(AECreateDesc(typeApplicationBundleID, $0, value.utf8.count, &self)) }
+    }
+    
     init(applicationURL value: URL) throws { // TO DO: check URL is valid
         self = try value.absoluteString.utf8CString.withUnsafeBufferPointer {
             var desc = nullDescriptor

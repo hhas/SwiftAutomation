@@ -11,9 +11,12 @@
 // - AppData.unpack…(AEDesc) methods always take ownership of AEDesc (even when throwing errors)
 
 
-import Foundation
-import AppKit
 import Carbon
+import Foundation
+
+#if canImport(AppKit)
+import AppKit
+#endif
 
 // TO DO: what about applying self-packing protocol/extension to most/all Swift types (as is already done in TypeExtensions.swift for Array, Dictionary, Set), rather than using large `switch` statement in AppData.pack()?
 

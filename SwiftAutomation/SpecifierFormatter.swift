@@ -5,9 +5,12 @@
 //  Generates source code representation of Specifier.
 //
 
-import Foundation
-import AppKit
 import Carbon
+import Foundation
+
+#if canImport(AppKit)
+import AppKit
+#endif
 
 
 // TO DO: when formatting specifiers, what info is needed? appData?, isNestedSpecifier; anything else? (note, this data ought to be available throughout; e.g. given a list of specifiers, current nesting flag should be carried over; there is also the question of when to adopt specifier's own appData vs use the one already provided to formatter; furthermore, it might be argued that AppData should do the formatting itself [although that leaves the flag problem])

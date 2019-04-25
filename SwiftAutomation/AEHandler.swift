@@ -36,5 +36,5 @@ public func removeEventHandler(eventClass: AEEventClass, eventID: AEEventID) {
     AERemoveEventHandler(eventClass, eventID, nil, false)
 }
 
-// TO DO: suspend/resume current event? (what use-cases require this?)
+// TO DO: suspend/resume current event (see AEInteraction.h under HIToolkit)? (what use-cases require this?)
 

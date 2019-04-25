@@ -3,15 +3,19 @@
 //  SwiftAutomation
 //
 
-import Foundation
-import AppKit
 import Carbon
+import Foundation
+
+#if canImport(AppKit)
+import AppKit
+#endif
 
 
 /******************************************************************************/
 // KLUDGE: NSWorkspace provides a good method for launching apps by file URL, and a crap one for launching by bundle ID - unfortunately, only the latter can be used in sandboxed apps. This extension adds a launchApplication(withBundleIdentifier:options:configuration:)throws->NSRunningApplication method that has a good API and the least compromised behavior, insulating TargetApplication code from the crappiness that hides within. If/when Apple adds a real, robust version of this method to NSWorkspace <rdar://29159280>, this extension can (and should) go away.
 
 
+#if canImport(AppKit)
 extension NSWorkspace { 
     
     // caution: the configuration parameter is ignored in sandboxed apps; this is unavoidable
@@ -43,6 +47,7 @@ extension NSWorkspace {
                       [NSLocalizedDescriptionKey: "Can't find/launch application \(bundleID.debugDescription)"]) // TO DO: what error to report here, since launchApplication(withBundleIdentifier:options:additionalEventParamDescriptor:launchIdentifier:) doesn't provide any error info itself?
     }
 }
+#endif
 
 
 /******************************************************************************/
@@ -131,9 +136,14 @@ public typealias SendOptions = AEDesc.SendOptions
 /******************************************************************************/
 // launch and relaunch options used in Application initializers
 
+#if canImport(AppKit)
 public typealias LaunchOptions = NSWorkspace.LaunchOptions
-
 public let DefaultLaunchOptions: LaunchOptions = NSWorkspace.LaunchOptions.withoutActivation
+#else
+public typealias LaunchOptions = UInt
+public let DefaultLaunchOptions: LaunchOptions = 0
+class NSRunningApplication {}
+#endif
 
 
 public enum RelaunchMode { // if [local] target process has terminated, relaunch it automatically when sending next command to it
@@ -194,6 +204,8 @@ public enum TargetApplication: CustomReflectable {
     
     // support functions
     
+    #if canImport(AppKit)
+    
     private func localRunningApplication(url: URL) throws -> NSRunningApplication? { // TO DO: rename processForLocalApplication
         guard let bundleID = Bundle(url: url)?.bundleIdentifier else {
             throw ConnectionError(target: self, message: "Application not found: \(url)")
@@ -211,6 +223,8 @@ public enum TargetApplication: CustomReflectable {
         return nil
     }
     
+    #endif
+    
     private func sendLaunchEvent(processDescriptor: AEDesc) -> Int {
         let event = AEDesc(eventClass: AEEventClass(kASAppleScriptSuite), eventID: AEEventID(kASLaunchEvent),
                                            target: processDescriptor,
@@ -220,13 +234,19 @@ public enum TargetApplication: CustomReflectable {
         return errorCode != 0 ? errorCode : replyEvent.errorNumber // note: errAEEventNotHandled is normal here
     }
     
+    
     private func processDescriptorForLocalApplication(url: URL, launchOptions: LaunchOptions) throws -> AEDesc {
+        #if canImport(AppKit)
         // get a typeKernelProcessID-based AEAddressDesc for the target app, finding and launch it first if not already running;
         // if app can't be found/launched, throws a ConnectionError/NSError instead
         let runningProcess = try (self.localRunningApplication(url: url) ??
             NSWorkspace.shared.launchApplication(at: url, options: launchOptions, configuration: [:]))
         return AEDesc(processIdentifier: runningProcess.processIdentifier)
+        #else
+        throw AutomationError(code: 1, message: "AppKit not available")
+        #endif
     }
+
     
     private func isRunning(processDescriptor: AEDesc) -> Bool {
         // check if process is running by sending it a 'noop' event; used by isRunning property
@@ -248,6 +268,7 @@ public enum TargetApplication: CustomReflectable {
     }
     
     public var isRunning: Bool {
+        #if canImport(AppKit)
         switch self {
         case .current:
             return true
@@ -270,19 +291,25 @@ public enum TargetApplication: CustomReflectable {
         case .none: // used in untargeted AppData instances; sendAppleEvent() will raise ConnectionError if called
             ()
         }
+        #endif
         return false
     }
     
     //
     
     private func launch(url: URL) throws {
+        #if canImport(AppKit)
         try NSWorkspace.shared.launchApplication(at: url, options: [NSWorkspace.LaunchOptions.withoutActivation],
                                                    configuration: [NSWorkspace.LaunchConfigurationKey.appleEvent: LaunchEvent])
+        #else
+        throw AutomationError(code: 1, message: "AppKit not available")
+        #endif
     }
     
     // launch this application (equivalent to AppleScript's `launch` command; an obscure corner case that AS users need to fall back onto when sending an event to a Script Editor applet that isn't saved as 'stay open', so only handles the first event it receives then quits when done) // TO DO: is it worth keeping this for 'quirk-for-quirk' compatibility's sake, or just ditch it and tell users to use `NSWorkspace.launchApplication(at:options:configuration:)` with an `NSWorkspaceLaunchConfigurationAppleEvent` if they really need to pass a non-standard first event?
 
     public func launch() throws { // called by Application.launch()
+        #if canImport(AppKit)
         // note: in principle an app _could_ implement an AE handler for this event that returns a value, but it probably isn't a good idea to do so (the event is called 'ascr'/'noop' for a reason), so even if a running process does return something (instead of throwing the expected errAEEventNotHandled) we just ignore it for sanity's sake (the flipside being that if the app _isn't_ already running then NSWorkspace.launchApplication() will launch it and pass the 'noop' descriptor as the first Apple event to handle, but doesn't return a result for that event, so to return a result at any other time would be inconsistent)
         if self.isRunning {
             let errorNumber = self.sendLaunchEvent(processDescriptor: try self.descriptor()!)
@@ -309,6 +336,9 @@ public enum TargetApplication: CustomReflectable {
             } // fall through on failure
             throw ConnectionError(target: self, message: "Can't launch application.")
         }
+        #else
+        throw AutomationError(code: 1, message: "AppKit not available")
+        #endif
     }
     
     // get AEAddressDesc for target application (this is typeKernelProcessID for local processes specified by name/url/bundleID/PID)
@@ -331,9 +361,13 @@ public enum TargetApplication: CustomReflectable {
             }
         case .bundleIdentifier(let bundleID, _):
             do {
+                #if canImport(AppKit)
                 let runningProcess = try NSWorkspace.shared.launchApplication(withBundleIdentifier: bundleID,
-                                                                                options: launchOptions, configuration: [:])
+                                                                              options: launchOptions, configuration: [:])
                 return AEDesc(processIdentifier: runningProcess.processIdentifier)
+                #else
+                return try AEDesc(bundleIdentifier: bundleID)
+                #endif
             } catch {
                 throw ConnectionError(target: self, message: "Can't find/launch application: \(bundleID)", cause: error)
             }
@@ -351,6 +385,7 @@ public enum TargetApplication: CustomReflectable {
 // get file URL for the specified .app bundle (also used by `aeglue`)
 // `name` may be full POSIX path (including `.app` suffix), or file name only (`.app` suffix is optional); returns nil if not found
 public func fileURLForLocalApplication(_ name: String) -> URL? {
+    #if canImport(AppKit)
     if name.hasPrefix("/") { // full path (note: path must include .app suffix)
         return URL(fileURLWithPath: name)
     } else { // if name is not full path, look up by name (.app suffix is optional)
@@ -360,6 +395,9 @@ public func fileURLForLocalApplication(_ name: String) -> URL? {
         }
         return URL(fileURLWithPath: path)
     }
+    #else
+    return nil
+    #endif
 }
 
 
