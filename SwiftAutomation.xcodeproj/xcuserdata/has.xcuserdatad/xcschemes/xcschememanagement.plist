@@ -6,6 +6,8 @@
 	<dict>
 		<key>Frameworks Release.xcscheme_^#shared#^_</key>
 		<dict>
+			<key>isShown</key>
+			<false/>
 			<key>orderHint</key>
 			<integer>4</integer>
 		</dict>
@@ -16,6 +18,8 @@
 		</dict>
 		<key>Release.xcscheme</key>
 		<dict>
+			<key>isShown</key>
+			<false/>
 			<key>orderHint</key>
 			<integer>5</integer>
 		</dict>
@@ -26,6 +30,8 @@
 		</dict>
 		<key>SwiftAutomationLite.xcscheme_^#shared#^_</key>
 		<dict>
+			<key>isShown</key>
+			<false/>
 			<key>orderHint</key>
 			<integer>6</integer>
 		</dict>
@@ -68,6 +74,11 @@
 			<true/>
 		</dict>
 		<key>4F9AFB351D5B58EB00A71890</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>4FACE27122723090000A04A0</key>
 		<dict>
 			<key>primary</key>
 			<true/>

@@ -4,10 +4,11 @@
 //
 
 import Foundation
+import AppleEvents
 
 // TO DO: how should next layer above AppleEventHandler look? presumably we need some sort of app-specific glue to map Swift functions with native parameter and return types onto AppleEventHandler callbacks; should Swift functions use standardized naming conventions, allowing them to be auto-detected by glue generator and signatures mapped to 'SDEF' definitions (note: we want to architect a new, comprehensive IDL dictionary format, with basic SDEFs generated for backwards compatibility; the IDL should, as much as possible, be auto-generated from the Swift implementation)
 
-public typealias AppleEventHandler = (inout AppleEvent) throws -> AEDesc? // essentially (parameters_record)->result/error (although); TO DO: think `inout` is used here solely to keep Swift compiler happy when dealing with C pointer-based APIs; the receiving func probably should not attempt to modify the AppleEvent descriptor (need to review this; omitting the `inout` qualifier won't really make a difference safey-wise as the AE's dataHandler is still shared and mutable)
+public typealias AppleEventHandler = (inout AppleEventDescriptor) throws -> Descriptor? // essentially (parameters_record)->result/error (although); TO DO: think `inout` is used here solely to keep Swift compiler happy when dealing with C pointer-based APIs; the receiving func probably should not attempt to modify the AppleEvent descriptor (need to review this; omitting the `inout` qualifier won't really make a difference safey-wise as the AE's dataHandler is still shared and mutable)
 
 
 private let genericEventHandlerUPP: AEEventHandlerUPP = { (request, reply, refcon) -> OSErr in

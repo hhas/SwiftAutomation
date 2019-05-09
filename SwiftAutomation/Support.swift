@@ -3,8 +3,8 @@
 //  SwiftAutomation
 //
 
-import Carbon
 import Foundation
+import AppleEvents
 
 #if canImport(AppKit)
 import AppKit
@@ -108,7 +108,8 @@ func appleEventCode(_ eventClass: OSType, _ eventID: OSType) -> UInt64 {
 }
 
 // the following AEDesc types will be mapped to Symbol instances
-let symbolDescriptorTypes: Set<DescType> = [typeType, typeEnumerated, typeProperty, typeKeyword]
+let symbolDescriptorTypes: Set<DescType> = [AppleEvents.typeType, AppleEvents.typeEnumerated,
+                                            AppleEvents.typeProperty, AppleEvents.typeKeyword]
 
 
 /******************************************************************************/
@@ -130,8 +131,11 @@ public enum Considerations {
 public typealias ConsideringOptions = Set<Considerations>
 
 
-public typealias SendOptions = AEDesc.SendOptions
-
+#if canImport(AppKit)
+public typealias SendOptions = NSAppleEventDescriptor.SendOptions
+#else
+public typealias SendOptions = UInt
+#endif
 
 /******************************************************************************/
 // launch and relaunch options used in Application initializers
@@ -177,8 +181,7 @@ private let ProcessNotFoundErrorNumbers: Set<Int> = [procNotFound, connectionInv
 
 private let LaunchEventSucceededErrorNumbers: Set<Int> = [Int(noErr), errAEEventNotHandled]
 
-private let LaunchEvent = AEDesc(eventClass: AEEventClass(kASAppleScriptSuite), eventID: AEEventID(kASLaunchEvent),
-                                 returnID: AEReturnID(kAutoGenerateReturnID), transactionID: AETransactionID(kAnyTransactionID))
+private let LaunchEvent = AppleEventDescriptor(code: appleEventCode(kASAppleScriptSuite, kASLaunchEvent))
 
 // Application initializers pass application-identifying information to AppData initializer as enum according to which initializer was called
 
@@ -188,7 +191,7 @@ public enum TargetApplication: CustomReflectable {
     case url(URL) // "file" or "eppc" URL
     case bundleIdentifier(String, Bool) // bundleID, isDefault
     case processIdentifier(pid_t)
-    case Descriptor(AEDesc) // AEAddressDesc
+    case Descriptor(AddressDescriptor) // AEAddressDesc
     case none // used in untargeted AppData instances; sendAppleEvent() will raise ConnectionError if called
     
     // TO DO: implement `description` property and use it in all error messages raised here?
@@ -225,30 +228,28 @@ public enum TargetApplication: CustomReflectable {
     
     #endif
     
-    private func sendLaunchEvent(processDescriptor: AEDesc) -> Int {
-        let event = AEDesc(eventClass: AEEventClass(kASAppleScriptSuite), eventID: AEEventID(kASLaunchEvent),
-                                           target: processDescriptor,
-                                           returnID: AEReturnID(kAutoGenerateReturnID),
-                                           transactionID: AETransactionID(kAnyTransactionID))
-        let (replyEvent, errorCode) = event.sendEvent(options: .waitForReply, timeout: 30)
-        return errorCode != 0 ? errorCode : replyEvent.errorNumber // note: errAEEventNotHandled is normal here
+    private func sendLaunchEvent(processDescriptor: AddressDescriptor) -> Int {
+        var event = AppleEventDescriptor(code: appleEventCode(kASAppleScriptSuite, kASLaunchEvent), target: processDescriptor)
+        event.timeout = 30
+        let (replyEvent, errorCode) = event.send()
+        return errorCode != 0 ? errorCode : (replyEvent?.errorNumber ?? 0) // note: errAEEventNotHandled is normal here
     }
     
     
-    private func processDescriptorForLocalApplication(url: URL, launchOptions: LaunchOptions) throws -> AEDesc {
+    private func processDescriptorForLocalApplication(url: URL, launchOptions: LaunchOptions) throws -> AddressDescriptor {
         #if canImport(AppKit)
         // get a typeKernelProcessID-based AEAddressDesc for the target app, finding and launch it first if not already running;
         // if app can't be found/launched, throws a ConnectionError/NSError instead
         let runningProcess = try (self.localRunningApplication(url: url) ??
             NSWorkspace.shared.launchApplication(at: url, options: launchOptions, configuration: [:]))
-        return AEDesc(processIdentifier: runningProcess.processIdentifier)
+        return AddressDescriptor(processIdentifier: runningProcess.processIdentifier)
         #else
         throw AutomationError(code: 1, message: "AppKit not available")
         #endif
     }
 
     
-    private func isRunning(processDescriptor: AEDesc) -> Bool {
+    private func isRunning(processDescriptor: AddressDescriptor) -> Bool {
         // check if process is running by sending it a 'noop' event; used by isRunning property
         // this assumes app is running unless it receives an AEM error that explicitly indicates it isn't (a bit crude, but when the only identifying information for the target process is an arbitrary AEAddressDesc there isn't really a better way to check if it's running other than send it an event and see what happens)
         return !ProcessNotFoundErrorNumbers.contains(self.sendLaunchEvent(processDescriptor: processDescriptor))
@@ -280,7 +281,7 @@ public enum TargetApplication: CustomReflectable {
             if url.isFileURL {
                 return (((try? self.localRunningApplication(url: url)) as NSRunningApplication??)) != nil
             } else if url.scheme == "eppc" {
-                return self.isRunning(processDescriptor: try! AEDesc(applicationURL: url))
+                return self.isRunning(processDescriptor: try! AddressDescriptor(applicationURL: url))
             }
         case .bundleIdentifier(let bundleID, _):
             return NSRunningApplication.runningApplications(withBundleIdentifier: bundleID).count > 0
@@ -342,10 +343,10 @@ public enum TargetApplication: CustomReflectable {
     }
     
     // get AEAddressDesc for target application (this is typeKernelProcessID for local processes specified by name/url/bundleID/PID)
-    public func descriptor(_ launchOptions: LaunchOptions = DefaultLaunchOptions) throws -> AEDesc? { // caller takes ownership
+    public func descriptor(_ launchOptions: LaunchOptions = DefaultLaunchOptions) throws -> AddressDescriptor? {
         switch self {
         case .current:
-            return AEDesc.currentProcess
+            return AddressDescriptor()
         case .name(let name): // app name or full path
             guard let url = fileURLForLocalApplication(name) else {
                 throw ConnectionError(target: self, message: "Application not found: \(name)")
@@ -355,7 +356,7 @@ public enum TargetApplication: CustomReflectable {
             if url.isFileURL {
                 return try self.processDescriptorForLocalApplication(url: url, launchOptions: launchOptions)
             } else if url.scheme == "eppc" {
-                return try AEDesc(applicationURL: url)
+                return try AddressDescriptor(applicationURL: url)
             } else {
                 throw ConnectionError(target: self, message: "Invalid URL scheme (not file/eppc): \(url)")
             }
@@ -364,15 +365,15 @@ public enum TargetApplication: CustomReflectable {
                 #if canImport(AppKit)
                 let runningProcess = try NSWorkspace.shared.launchApplication(withBundleIdentifier: bundleID,
                                                                               options: launchOptions, configuration: [:])
-                return AEDesc(processIdentifier: runningProcess.processIdentifier)
+                return AddressDescriptor(processIdentifier: runningProcess.processIdentifier)
                 #else
-                return try AEDesc(bundleIdentifier: bundleID)
+                return try AddressDescriptor(bundleIdentifier: bundleID)
                 #endif
             } catch {
                 throw ConnectionError(target: self, message: "Can't find/launch application: \(bundleID)", cause: error)
             }
         case .processIdentifier(let pid):
-            return AEDesc(processIdentifier: pid)
+            return AddressDescriptor(processIdentifier: pid)
         case .Descriptor(let desc):
             return desc
         case .none:
@@ -406,38 +407,33 @@ public func fileURLForLocalApplication(_ name: String) -> URL? {
 
 // root descriptor for all absolute object specifiers that do not have a custom root
 // e.g. `document 1 of «typeNull»`
-public let AppRootDesc = nullDescriptor
+public let AppRootDesc = AppleEvents.RootSpecifier.app
 
 // root descriptor for an object specifier describing start or end of a range of elements in a by-range specifier
 // e.g. `folder (folder 2 of «typeCurrentContainer») thru (folder -1 of «typeCurrentContainer»)`
-public let ConRootDesc = AEDesc(descriptorType: typeCurrentContainer, dataHandle: nil)
+public let ConRootDesc = AppleEvents.RootSpecifier.con
 
 // root descriptor for an object specifier describing an element whose state is being compared in a by-test specifier
 // e.g. `every track where (rating of «typeObjectBeingExamined» > 50)`
-public let ItsRootDesc = AEDesc(descriptorType: typeObjectBeingExamined, dataHandle: nil)
+public let ItsRootDesc = AppleEvents.RootSpecifier.its
 
 
 /******************************************************************************/
-// compatibility functions for use with any older Carbon-based applications that still require HFS path strings
+// compatibility functions for use with any older Carbon-based applications that still require HFS path strings (macOS only)
 
 // TO DO: are there any situations where the following method calls could return nil? (think they'll always succeed, though the resulting paths may be nonsense); if so, need to throw error on failure (currently these will raise an exception, but that's based on the assumption that they'll never fail in practice: the paths supplied will be arbitrary, so if failures do occur they'll need to be treated as user errors, not implementation bugs)
 
-public func HFSPath(fromFileURL url: URL) throws -> String {
-    let desc = try AEDesc(fileURL: url)
-    defer { desc.dispose() }
-    let desc2 = try desc.coerce(to: typeUnicodeText)
-    defer { desc2.dispose() }
-    return try desc2.string()
+#if canImport(AppKit)
+
+public func HFSPath(fromFileURL url: URL) -> String? {
+    return url.isFileURL ? NSAppleEventDescriptor(fileURL: url).stringValue : nil
 }
 
-public func fileURL(fromHFSPath path: String) throws -> URL {
-    let desc = AEDesc(string: path)
-    defer { desc.dispose() }
-    let desc2 = try desc.coerce(to: typeFileURL)
-    defer { desc2.dispose() }
-    return try desc2.fileURL()
+public func fileURL(fromHFSPath path: String) throws -> URL? {
+    return NSAppleEventDescriptor(string: path).fileURLValue
 }
 
+#endif
 
 
 

@@ -8,13 +8,19 @@
 // TO DO: when is this still needed? (e.g. remote AEs)
 
 import Foundation
-import Carbon
+import AppleEvents
 
 
 /**********************************************************************/
 
 // kAEInheritedProperties isn't defined in OpenScripting.h
 private let kAEInheritedProperties: OSType = 0x6340235e // 'c@#^'
+
+
+
+internal func unpackFixedSize<T>(_ data: Data) -> T {
+    return data.withUnsafeBytes{ $0.baseAddress!.assumingMemoryBound(to: T.self).pointee } // TO DO: use bindMemory(to:capacity:)? (see also AppleEvents implementation)
+}
 
 
 public class AETEParser: ApplicationTerminology {
@@ -29,9 +35,9 @@ public class AETEParser: ApplicationTerminology {
     private let keywordConverter: KeywordConverterProtocol
     
     // following are used in parse() to supply 'missing' singular/plural class names
-    private var classDefinitionsByCode = [OSType:ClassTerm]()
+    private var classDefinitionsByCode = [UInt32:ClassTerm]()
     
-    private var aeteData: UnsafeMutableRawPointer!
+    private var aeteData: Data = Data()
     private var aeteSize: Int = 0
     private var cursor: Int = 0
     
@@ -40,16 +46,11 @@ public class AETEParser: ApplicationTerminology {
         self.keywordConverter = keywordConverter
     }
     
-    public func parse(_ desc: AEDesc) throws { // accepts AETE/AEUT, or AEList of AETE/AEUTs; this takes ownership
-        defer { desc.dispose() }
-        switch desc.descriptorType {
-        case DescType(typeAETE), DescType(typeAEUT):
-            var desc = desc
-            self.aeteSize = AEGetDescDataSize(&desc)
-            self.aeteData = UnsafeMutableRawPointer.allocate(byteCount: self.aeteSize, alignment: MemoryLayout<UInt16>.alignment)
-            defer { self.aeteData.deallocate() }
-            try! throwIfError(AEGetDescData(&desc, self.aeteData, self.aeteSize))
-            //self.aeteData = UnsafeRawBufferPointer(ptr)
+    public func parse(_ desc: Descriptor) throws { // accepts AETE/AEUT, or AEList of AETE/AEUTs; this takes ownership
+        switch desc.type {
+        case AppleEvents.typeAETE, AppleEvents.typeAEUT:
+            self.aeteSize = desc.data.count
+            self.aeteData = desc.data
             self.cursor = 6 // skip version, language, script integers
             let n = self.short()
             do {
@@ -71,16 +72,16 @@ public class AETEParser: ApplicationTerminology {
             } catch {
                 throw TerminologyError("An error occurred while parsing AETE. \(error)")
             }
-        case typeAEList:
-            for i in 1..<(try! desc.count()+1) {
-                try self.parse(desc.item(i).value)
+        case AppleEvents.typeAEList:
+            for item in (desc as! ListDescriptor) {
+                try self.parse(item)
             }
         default:
-            throw TerminologyError("An error occurred while parsing AETE. Unsupported descriptor type: \(formatFourCharCodeLiteral(desc.descriptorType))")
+            throw TerminologyError("An error occurred while parsing AETE. Unsupported descriptor type: \(formatFourCharCodeLiteral(desc.type))")
         }
     }
     
-    public func parse(_ descriptors: [AEDesc]) throws {
+    public func parse(_ descriptors: [Descriptor]) throws {
         for descriptor in descriptors {
             try self.parse(descriptor)
         }
@@ -90,13 +91,20 @@ public class AETEParser: ApplicationTerminology {
     
     // read data methods
     
-    private func short() -> UInt16 { // unsigned short (2 bytes)
-        let value = self.aeteData.load(fromByteOffset: self.cursor, as: UInt16.self)
-        self.cursor += MemoryLayout<UInt16>.size
+    private func readFixedSize<T>() -> T {
+        let size = MemoryLayout<T>.size
+        let value: T = unpackFixedSize(self.aeteData[self.cursor..<(self.cursor+size)])
+        self.cursor += size
         return value
     }
     
+    private func short() -> UInt16 { // unsigned short (2 bytes)
+        return self.readFixedSize()
+    }
+    
     private func code() -> OSType { // (4 bytes)
+        return self.readFixedSize() // confirm alignment isn't an issue
+        /*
         // can't use aeteData.load() to read OSType as that requires correct 4-byte alignment, but aete is 2-byte…
         let buffer = UnsafeMutableRawPointer.allocate(byteCount: MemoryLayout<OSType>.size,
                                                       alignment: MemoryLayout<OSType>.alignment)
@@ -105,15 +113,15 @@ public class AETEParser: ApplicationTerminology {
         buffer.copyMemory(from: self.aeteData.advanced(by: self.cursor), byteCount: MemoryLayout<OSType>.size)
         self.cursor += MemoryLayout<OSType>.size
         return buffer.bindMemory(to: OSType.self, capacity: 1).pointee
+     */
     }
     
     private func string() -> String { // Pascal string (first byte indicates length, followed by 0-255 MacRoman chars)
-        let length = Int(self.aeteData.load(fromByteOffset: self.cursor, as: UInt8.self))
-        self.cursor += MemoryLayout<UInt8>.size
-        if length > 0 {
-            let ptr = self.aeteData.advanced(by: self.cursor)
-            self.cursor += length
-            return String(data: Data(bytes: ptr, count: length), encoding: .macOSRoman)!
+        let size = Int(self.readFixedSize() as UInt8)
+        if size > 0 {
+            let result = String(data: self.aeteData[self.cursor..<(self.cursor+size)], encoding: .macOSRoman)!
+            self.cursor += size
+            return result
         } else {
             return ""
         }
@@ -128,8 +136,7 @@ public class AETEParser: ApplicationTerminology {
         self.cursor += MemoryLayout<OSType>.size
     }
     private func skipString() {
-        let length = Int(self.aeteData.load(fromByteOffset: self.cursor, as: UInt8.self))
-        self.cursor += MemoryLayout<UInt8>.size + length
+        self.cursor += Int(self.readFixedSize() as UInt8)
     }
     private func alignCursor() { // realign aete data cursor on even byte after reading strings
         if self.cursor % 2 != 0 {
@@ -295,10 +302,13 @@ public class AETEParser: ApplicationTerminology {
 
 
 
+
+
 extension AEApplication { // extends the built-in Application object with convenience method for getting its AETE resource
 
-    public func getAETE() throws -> AEDesc { // caller takes ownership
-        return try self.sendAppleEvent(OSType(kASAppleScriptSuite), OSType(kGetAETE), [keyDirectObject:0])
+    public func getAETE() throws -> Descriptor { // caller takes ownership
+        return try self.sendAppleEvent(AppleEvents.kASAppleScriptSuite, AppleEvents.kGetAETE, [AppleEvents.keyDirectObject:0])
     }
 }
+
 

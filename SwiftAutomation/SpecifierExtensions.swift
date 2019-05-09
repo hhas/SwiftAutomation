@@ -13,7 +13,19 @@
 
 
 import Foundation
-import Carbon
+import AppleEvents
+
+
+// TO DO: TEMPORARY; lifted from AppleEvents
+private let firstPosition   = ScalarDescriptor(type: AppleEvents.typeAbsoluteOrdinal, data: Data([0x66, 0x69, 0x72, 0x73])) // kAEFirst
+private let middlePosition  = ScalarDescriptor(type: AppleEvents.typeAbsoluteOrdinal, data: Data([0x6D, 0x69, 0x64, 0x64])) // kAEMiddle
+private let lastPosition    = ScalarDescriptor(type: AppleEvents.typeAbsoluteOrdinal, data: Data([0x6C, 0x61, 0x73, 0x74])) // kAELast
+private let anyPosition     = ScalarDescriptor(type: AppleEvents.typeAbsoluteOrdinal, data: Data([0x61, 0x6E, 0x79, 0x20])) // kAEAny
+private let allPosition     = ScalarDescriptor(type: AppleEvents.typeAbsoluteOrdinal, data: Data([0x61, 0x6C, 0x6C, 0x20])) // kAEAll
+
+private let previousElement = ScalarDescriptor(type: AppleEvents.typeEnumerated, data: Data([0x70, 0x72, 0x65, 0x76])) // kAEPrevious
+private let nextElement     = ScalarDescriptor(type: AppleEvents.typeEnumerated, data: Data([0x6E, 0x65, 0x78, 0x74])) // kAENext
+
 
 
 /******************************************************************************/
@@ -29,34 +41,32 @@ public protocol ObjectSpecifierExtension: ObjectSpecifierProtocol {
 public extension ObjectSpecifierExtension {
 
     func userProperty(_ name: String) -> Self.ObjectSpecifierType {
-        let desc = AEDesc(string: name) // TO DO: ownership
-        return Self.ObjectSpecifierType(wantType: typeProperty,
-                                        selectorForm: DescType(formUserPropertyID), selectorData: desc,
+        return Self.ObjectSpecifierType(wantType: AppleEvents.typeProperty,
+                                        selectorForm: .userProperty, selectorData: packAsString(name),
                                         parentQuery: (self as! Query), appData: self.appData, descriptor: nil)
     }
 
     func property(_ code: OSType) -> Self.ObjectSpecifierType {
-        let desc = AEDesc(typeCode: code) // TO DO: ownership
-		return Self.ObjectSpecifierType(wantType: typeProperty,
-		                                selectorForm: DescType(formPropertyID), selectorData: desc,
+		return Self.ObjectSpecifierType(wantType: AppleEvents.typeProperty,
+		                                selectorForm: .property, selectorData: packAsType(code),
 		                                parentQuery: (self as! Query), appData: self.appData, descriptor: nil)
     }
     
     func property(_ code: String) -> Self.ObjectSpecifierType {
         let data: Any
         do {
-            data = AEDesc(typeCode: try parseFourCharCode(code)) // TO DO: ownership
+            data = packAsType(try parseFourCharCode(code))
         } catch {
             data = error
         }
-        return Self.ObjectSpecifierType(wantType: typeProperty,
-                                        selectorForm: DescType(formPropertyID), selectorData: data,
+        return Self.ObjectSpecifierType(wantType: AppleEvents.typeProperty,
+                                        selectorForm: .property, selectorData: data,
                                         parentQuery: (self as! Query), appData: self.appData, descriptor: nil)
     }
     
     func elements(_ code: OSType) -> Self.MultipleObjectSpecifierType {
         return Self.MultipleObjectSpecifierType(wantType: code,
-                                                selectorForm: DescType(formAbsolutePosition), selectorData: kAEAllDesc,
+                                                selectorForm: .absolutePosition, selectorData: allPosition,
                                                 parentQuery: (self as! Query), appData: self.appData, descriptor: nil)
     }
     
@@ -64,13 +74,13 @@ public extension ObjectSpecifierExtension {
         let want: DescType, data: Any
         do {
             want = try parseFourCharCode(code)
-            data = kAEAllDesc
+            data = allPosition
         } catch {
-            want = typeNull
+            want = AppleEvents.typeNull
             data = error
         } 
         return Self.MultipleObjectSpecifierType(wantType: want,
-                                                selectorForm: DescType(formAbsolutePosition), selectorData: data,
+                                                selectorForm: .absolutePosition, selectorData: data,
                                                 parentQuery: (self as! Query), appData: self.appData, descriptor: nil)
     }
 
@@ -78,43 +88,42 @@ public extension ObjectSpecifierExtension {
     // relative position selectors
     func previous(_ elementClass: Symbol? = nil) -> Self.ObjectSpecifierType { // passing a name-only Symbol here is really an error, but ignored
         return Self.ObjectSpecifierType(wantType: (elementClass?.code ?? self.wantType),
-                                        selectorForm: DescType(formRelativePosition), selectorData: kAEPreviousDesc,
+                                        selectorForm: .relativePosition, selectorData: previousElement,
                                         parentQuery: (self as! Query), appData: self.appData, descriptor: nil)
     }
     
     func next(_ elementClass: Symbol? = nil) -> Self.ObjectSpecifierType {
         return Self.ObjectSpecifierType(wantType: (elementClass?.code ?? self.wantType),
-                                        selectorForm: DescType(formRelativePosition), selectorData: kAENextDesc,
+                                        selectorForm: .relativePosition, selectorData: nextElement,
                                         parentQuery: (self as! Query), appData: self.appData, descriptor: nil)
     }
     
     // insertion specifiers
     var beginning: Self.InsertionSpecifierType {
-        return Self.InsertionSpecifierType(position: kAEBeginning, parentQuery: (self as! Query), appData: self.appData, descriptor: nil)
+        return Self.InsertionSpecifierType(position: .beginning, parentQuery: (self as! Query), appData: self.appData, descriptor: nil)
     }
     var end: Self.InsertionSpecifierType {
-        return Self.InsertionSpecifierType(position: kAEEnd, parentQuery: (self as! Query), appData: self.appData, descriptor: nil)
+        return Self.InsertionSpecifierType(position: .end, parentQuery: (self as! Query), appData: self.appData, descriptor: nil)
     }
     var before: Self.InsertionSpecifierType {
-        return Self.InsertionSpecifierType(position: kAEBefore, parentQuery: (self as! Query), appData: self.appData, descriptor: nil)
+        return Self.InsertionSpecifierType(position: .before, parentQuery: (self as! Query), appData: self.appData, descriptor: nil)
     }
     var after: Self.InsertionSpecifierType {
-        return Self.InsertionSpecifierType(position: kAEAfter, parentQuery: (self as! Query), appData: self.appData, descriptor: nil)
+        return Self.InsertionSpecifierType(position: .after, parentQuery: (self as! Query), appData: self.appData, descriptor: nil)
     }
     
     var all: Self.MultipleObjectSpecifierType { // equivalent to `every REFERENCE`; applied to a property specifier, converts it to all-elements (this may be necessary when property and element names are identical, in which case [with exception of `text`] a property specifier is constructed by default); applied to an all-elements specifier, returns it as-is; applying it to any other reference form will throw an error when used
-        if self.selectorForm == DescType(formPropertyID) {
-            return Self.MultipleObjectSpecifierType(wantType: try! (self.selectorData as! AEDesc).fourCharCode(),
-                                                    selectorForm: DescType(formAbsolutePosition), selectorData: kAEAllDesc,
+        if self.selectorForm == .property {
+            return Self.MultipleObjectSpecifierType(wantType: try! unpackAsType(self.selectorData as! Descriptor),
+                                                    selectorForm: .absolutePosition, selectorData: allPosition,
                                                     parentQuery: self.parentQuery, appData: self.appData, descriptor: nil)
-        } else if self.selectorForm == DescType(formAbsolutePosition)
-                && (try? (self.selectorData as? AEDesc)?.fourCharCode()) == DescType(kAEAll),
-                let specifier = self as? Self.MultipleObjectSpecifierType {
+        } else if self.selectorForm == .absolutePosition, let desc = self.selectorData as? Descriptor,
+            (try? unpackAsEnum(desc)) == AppleEvents.kAEAll, let specifier = self as? Self.MultipleObjectSpecifierType {
             return specifier
         } else {
             let error = AutomationError(code: 1, message: "Invalid specifier: \(self).all")
             return Self.MultipleObjectSpecifierType(wantType: self.wantType,
-                                                    selectorForm: DescType(formAbsolutePosition), selectorData: error,
+                                                    selectorForm: .absolutePosition, selectorData: error,
                                                     parentQuery: self.parentQuery, appData: self.appData, descriptor: nil)
         }
     }
@@ -130,8 +139,8 @@ extension MultipleObjectSpecifierExtension {
 
     // Note: calling an element[s] selector on an all-elements specifier effectively replaces its original gAll selector data with the new selector data, instead of extending the specifier chain. This ensures that applying any selector to `elements[all]` produces `elements[selector]` (effectively replacing the existing selector), while applying a second selector to `elements[selector]` produces `elements[selector][selector2]` (appending the second selection to the first) as normal; e.g. `first document whose modified is true` would be written as `documents[Its.modified==true].first`.
     var baseQuery: Query {
-        if let desc = self.selectorData as? AEDesc,
-            desc.descriptorType == DescType(typeAbsoluteOrdinal) && (try? desc.fourCharCode()) == DescType(kAEAll) {
+        if let desc = self.selectorData as? Descriptor,
+            desc.type == AppleEvents.typeAbsoluteOrdinal && (try? unpackAsEnum(desc)) == AppleEvents.kAEAll {
             return self.parentQuery
         } else {
             return self as! Query
@@ -140,14 +149,14 @@ extension MultipleObjectSpecifierExtension {
     
     // by-index, by-name, by-test
     public subscript(index: Any) -> Self.ObjectSpecifierType {
-        var form: DescType
+        var form: Form
         switch (index) {
         case is TestClause:
             return self[index as! TestClause]
         case is String:
-            form = DescType(formName)
+            form = .name
         default:
-            form = DescType(formAbsolutePosition)
+            form = .absolutePosition
         }
         return Self.ObjectSpecifierType(wantType: self.wantType,
                                         selectorForm: form, selectorData: index,
@@ -156,19 +165,19 @@ extension MultipleObjectSpecifierExtension {
 
     public subscript(test: TestClause) -> Self.MultipleObjectSpecifierType {
         return Self.MultipleObjectSpecifierType(wantType: self.wantType,
-                                                selectorForm: DescType(formTest), selectorData: test,
+                                                selectorForm: .test, selectorData: test,
                                                 parentQuery: self.baseQuery, appData: self.appData, descriptor: nil)
     }
     
     // by-name, by-id, by-range
     public func named(_ name: Any) -> Self.ObjectSpecifierType { // use this if name is not a String, else use subscript // TO DO: trying to think of a use case where this has ever been found necessary; DELETE? (see also TODOs on whether or not to add an explicit `all` selector property)
         return Self.ObjectSpecifierType(wantType: self.wantType,
-                                        selectorForm: DescType(formName), selectorData: name,
+                                        selectorForm: .name, selectorData: name,
                                         parentQuery: self.baseQuery, appData: self.appData, descriptor: nil)
     }
     public func ID(_ id: Any) -> Self.ObjectSpecifierType {
         return Self.ObjectSpecifierType(wantType: self.wantType,
-                                        selectorForm: DescType(formUniqueID), selectorData: id,
+                                        selectorForm: .uniqueID, selectorData: id,
                                         parentQuery: self.baseQuery, appData: self.appData, descriptor: nil)
     }
     public subscript(from: Any, to: Any) -> Self.MultipleObjectSpecifierType {
@@ -176,7 +185,7 @@ extension MultipleObjectSpecifierExtension {
         // Note that while the `x...y` form _could_ be supported (via the SelfPacking protocol, since Ranges are generics), the `x..<y` form is problematic as it doesn't have a direct analog in Apple events (which are always inclusive of both start and end points). Automatically mapping `x..<y` to `x...y.previous()` is liable to cause its own set of problems, e.g. some apps may fail to resolve this more complex query correctly/at all), and it's hard to justify the additional complexity of having two different ways of constructing ranges, one of which brings various caveats and limitations, and the more complicated user documentation that will inevitably require.
         // Another concern is that supporting 'standard' Range syntax will further encourage users to lapse into using Swift-style zero-indexing (e.g. `0..<3`) instead of the correct Apple event one-indexing (`1 thru 3`) – it'll be hard enough keeping them right when using the single-element by-index syntax (where `elements[0]` is a common user error, and - worse - one that CocoaScripting intentionally indulges instead of reporting as an error, so that both `elements[0]` and `elements[1]` actually refer to the _same_ element, not consecutive elements as expected).
         return Self.MultipleObjectSpecifierType(wantType: self.wantType,
-                                                selectorForm: DescType(formRange),
+                                                selectorForm: .range,
                                                 selectorData: RangeSelector(start: from, stop: to, wantType: self.wantType),
                                                 parentQuery: self.baseQuery, appData: self.appData, descriptor: nil)
     }
@@ -184,22 +193,22 @@ extension MultipleObjectSpecifierExtension {
     // by-ordinal
     public var first: Self.ObjectSpecifierType {
         return Self.ObjectSpecifierType(wantType: self.wantType,
-                                        selectorForm: DescType(formAbsolutePosition), selectorData: kAEFirstDesc,
+                                        selectorForm: .absolutePosition, selectorData: firstPosition,
                                         parentQuery: self.baseQuery, appData: self.appData, descriptor: nil)
     }
     public var middle: Self.ObjectSpecifierType {
         return Self.ObjectSpecifierType(wantType: self.wantType,
-                                        selectorForm: DescType(formAbsolutePosition), selectorData: kAEMiddleDesc,
+                                        selectorForm: .absolutePosition, selectorData: middlePosition,
                                         parentQuery: self.baseQuery, appData: self.appData, descriptor: nil)
     }
     public var last: Self.ObjectSpecifierType {
         return Self.ObjectSpecifierType(wantType: self.wantType,
-                                        selectorForm: DescType(formAbsolutePosition), selectorData: kAELastDesc,
+                                        selectorForm: .absolutePosition, selectorData: lastPosition,
                                         parentQuery: self.baseQuery, appData: self.appData, descriptor: nil)
     }
     public var any: Self.ObjectSpecifierType {
         return Self.ObjectSpecifierType(wantType: self.wantType,
-                                        selectorForm: DescType(formAbsolutePosition), selectorData: kAEAnyDesc,
+                                        selectorForm: .absolutePosition, selectorData: anyPosition,
                                         parentQuery: self.baseQuery, appData: self.appData, descriptor: nil)
     }
 }
@@ -242,7 +251,7 @@ extension Application {
         self.init(target: .processIdentifier(processIdentifier), launchOptions: launchOptions, relaunchMode: relaunchMode)
     }
     
-    public init(addressDescriptor: AEDesc, launchOptions: LaunchOptions = DefaultLaunchOptions, relaunchMode: RelaunchMode = DefaultRelaunchMode) {
+    public init(addressDescriptor: AddressDescriptor, launchOptions: LaunchOptions = DefaultLaunchOptions, relaunchMode: RelaunchMode = DefaultRelaunchMode) {
         self.init(target: .Descriptor(addressDescriptor), launchOptions: launchOptions, relaunchMode: relaunchMode)
     }
     
@@ -270,9 +279,11 @@ extension Application {
     
     // transaction support
     
+    /*
     public func doTransaction<T>(session: Any? = nil, closure: () throws -> (T)) throws -> T {
         return try self.appData.doTransaction(session: session, closure: closure)
     }
+     */
 }
 
 

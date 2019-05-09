@@ -4,6 +4,8 @@
 //
 //  tests // TO DO: move ad-hoc tests to separate target; replace this with examples of use
 //
+//  TO DO: how to bring OS permission-to-automate dialogs to front when running this test? (they tend to get hidden behind Xcode, causing target app to block until AE times out)
+//
 //  TO DO: test `all` selector works correctly (should convert property specifier to all-elements specifier, return all-elements specifier as-is, and report send-time error if called on anything else)
 //
 
@@ -69,7 +71,8 @@ do {
     let itunes = ITunes()
     let state: ITU = try itunes.playerState.get()
     print("itunes.playerState.get() -> \(state)")
-//    try ITunes().play()
+    try ITunes().play()
+    print(try itunes.currentTrack.name.get())
     
     
 //    print("// Specifier.description: \(TEDApp.documents[1].text)")

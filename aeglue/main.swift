@@ -300,7 +300,7 @@ for applicationURL in applicationURLs {
     // generate cheap-n-dirty user documentation
     if let appURL = applicationURL, generateDocumentation {
         do {
-            let sdef = try translateScriptingDefinition(try GetScriptingDefinition(appURL), glueSpec: glueSpec)
+            let sdef = try translateScriptingDefinition(try scriptingDefinition(for: appURL), glueSpec: glueSpec)
             let outSDEFURL = outDir!.appendingPathComponent("\(glueFileName).sdef")
             try writeData(sdef as NSData, toURL: outSDEFURL, overwriting: canOverwrite)
             print(outSDEFURL.path)

@@ -70,13 +70,21 @@
 		4F1ABE561E075B02008BA807 /* KeynoteGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F1ABE501E075B02008BA807 /* KeynoteGlue.swift.sdef */; };
 		4F1ABE5B1E081D98008BA807 /* DatabaseEventsGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1ABE591E081D98008BA807 /* DatabaseEventsGlue.swift */; };
 		4F1ABE5C1E081D98008BA807 /* DatabaseEventsGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F1ABE5A1E081D98008BA807 /* DatabaseEventsGlue.swift.sdef */; };
-		4F252BB5224E1D5800888935 /* AEDesc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F252BB4224E1D5800888935 /* AEDesc.swift */; };
+		4F1EA9EA2283546A000E0A3A /* AppleEvents.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F1EA9E72283545F000E0A3A /* AppleEvents.framework */; };
+		4F1EA9F122841D91000E0A3A /* TermTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39451BA86B5F00FF2A96 /* TermTypes.swift */; };
+		4F1EA9F222841D91000E0A3A /* DefaultTerminology.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39521BA9C6C700FF2A96 /* DefaultTerminology.swift */; };
+		4F1EA9F322841D91000E0A3A /* KeywordConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E394C1BA8C16300FF2A96 /* KeywordConverter.swift */; };
+		4F1EA9F422841D91000E0A3A /* AETEParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E394E1BA8D2F600FF2A96 /* AETEParser.swift */; };
+		4F1EA9F522841D91000E0A3A /* SDEFParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39481BA8717D00FF2A96 /* SDEFParser.swift */; };
+		4F1EA9F622841EA4000E0A3A /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F63C4371B7CF1E0000D74EE /* Carbon.framework */; };
 		4F252BB8224F935C00888935 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F63C4371B7CF1E0000D74EE /* Carbon.framework */; };
 		4F252BB9224F936C00888935 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F63C4331B7CF1C4000D74EE /* Foundation.framework */; };
 		4F252BBA224F937200888935 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F63C4371B7CF1E0000D74EE /* Carbon.framework */; };
-		4F252BBB224F93BE00888935 /* AEDesc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F252BB4224E1D5800888935 /* AEDesc.swift */; };
-		4F252BC12250BADC00888935 /* AppleEventDescriptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F252BC02250BADC00888935 /* AppleEventDescriptor.swift */; };
-		4F252BC22250BADC00888935 /* AppleEventDescriptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F252BC02250BADC00888935 /* AppleEventDescriptor.swift */; };
+		4F3C689E22843233002AD35C /* GlueTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39501BA9A7EA00FF2A96 /* GlueTable.swift */; };
+		4F3C68A1228432B1002AD35C /* StaticGlueBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E396D1BAA9BA700FF2A96 /* StaticGlueBuilder.swift */; };
+		4F3C68A2228432B1002AD35C /* SwiftGlueTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FFF5D491D89A26C008ED4F5 /* SwiftGlueTemplate.swift */; };
+		4F3C68A3228432E3002AD35C /* AEApplicationGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F2645AB1BA4F27700256402 /* AEApplicationGlue.swift */; };
+		4F3C68A422843506002AD35C /* AppleEventFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39951BADD58500FF2A96 /* AppleEventFormatter.swift */; };
 		4F4C1A0E1D910BDE004F9083 /* TypeExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F4C1A0D1D910BDE004F9083 /* TypeExtensions.swift */; };
 		4F4C1A0F1D910E41004F9083 /* TypeExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F4C1A0D1D910BDE004F9083 /* TypeExtensions.swift */; };
 		4F63093D1DFC19A90089ADDB /* index.html in Copy Files */ = {isa = PBXBuildFile; fileRef = 4F0E393D1BA864A400FF2A96 /* index.html */; };
@@ -103,9 +111,6 @@
 		4FACE27622723091000A04A0 /* SwiftAutomationLite.h in Headers */ = {isa = PBXBuildFile; fileRef = 4FACE27422723091000A04A0 /* SwiftAutomationLite.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4FACE27A227230D1000A04A0 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F63C4271B7CF06E000D74EE /* main.swift */; };
 		4FACE27B227230D1000A04A0 /* AEApplicationGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F2645AB1BA4F27700256402 /* AEApplicationGlue.swift */; };
-		4FACE27C227230D1000A04A0 /* AEDesc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F252BB4224E1D5800888935 /* AEDesc.swift */; };
-		4FACE27D227230D1000A04A0 /* AppleEventDescriptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F252BC02250BADC00888935 /* AppleEventDescriptor.swift */; };
-		4FACE27E227230D1000A04A0 /* AEHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FBE33C92259F8910032F73C /* AEHandler.swift */; };
 		4FACE27F227230D1000A04A0 /* AppData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F63C4401B86A335000D74EE /* AppData.swift */; };
 		4FACE280227230D1000A04A0 /* Symbol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F63C4421B87AC88000D74EE /* Symbol.swift */; };
 		4FACE281227230D1000A04A0 /* Specifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F63C42F1B7CF133000D74EE /* Specifier.swift */; };
@@ -114,7 +119,6 @@
 		4FACE284227230D1000A04A0 /* TypeExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F4C1A0D1D910BDE004F9083 /* TypeExtensions.swift */; };
 		4FACE285227230D1000A04A0 /* Support.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F63C4461B8A669C000D74EE /* Support.swift */; };
 		4FACE286227230D1000A04A0 /* Errors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F63C4441B8A4DFC000D74EE /* Errors.swift */; };
-		4FACE287227230D1000A04A0 /* AEConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F9AFB431D5B6C2600A71890 /* AEConstants.swift */; };
 		4FACE288227230D1000A04A0 /* TermTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39451BA86B5F00FF2A96 /* TermTypes.swift */; };
 		4FACE289227230D1000A04A0 /* DefaultTerminology.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39521BA9C6C700FF2A96 /* DefaultTerminology.swift */; };
 		4FACE28A227230D1000A04A0 /* KeywordConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E394C1BA8C16300FF2A96 /* KeywordConverter.swift */; };
@@ -124,8 +128,6 @@
 		4FACE28E227230D1000A04A0 /* StaticGlueBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E396D1BAA9BA700FF2A96 /* StaticGlueBuilder.swift */; };
 		4FACE28F227230D1000A04A0 /* SwiftGlueTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FFF5D491D89A26C008ED4F5 /* SwiftGlueTemplate.swift */; };
 		4FACE290227230D1000A04A0 /* AppleEventFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39951BADD58500FF2A96 /* AppleEventFormatter.swift */; };
-		4FACE29222723112000A04A0 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4FACE29122723112000A04A0 /* Foundation.framework */; };
-		4FACE29422723F0F000A04A0 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4FACE29322723F0E000A04A0 /* Carbon.framework */; };
 		4FB7D8751D5EA60F00F0DB36 /* AppData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F63C4401B86A335000D74EE /* AppData.swift */; };
 		4FB7D8761D5EA60F00F0DB36 /* Specifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F63C42F1B7CF133000D74EE /* Specifier.swift */; };
 		4FB7D8771D5EA60F00F0DB36 /* SpecifierExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1D12401BA3042600875F74 /* SpecifierExtensions.swift */; };
@@ -133,7 +135,6 @@
 		4FB7D8791D5EA60F00F0DB36 /* Symbol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F63C4421B87AC88000D74EE /* Symbol.swift */; };
 		4FB7D87A1D5EA60F00F0DB36 /* Errors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F63C4441B8A4DFC000D74EE /* Errors.swift */; };
 		4FB7D87B1D5EA60F00F0DB36 /* Support.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F63C4461B8A669C000D74EE /* Support.swift */; };
-		4FB7D87C1D5EA60F00F0DB36 /* AEConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F9AFB431D5B6C2600A71890 /* AEConstants.swift */; };
 		4FB7D87D1D5EA60F00F0DB36 /* TermTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39451BA86B5F00FF2A96 /* TermTypes.swift */; };
 		4FB7D87E1D5EA60F00F0DB36 /* DefaultTerminology.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39521BA9C6C700FF2A96 /* DefaultTerminology.swift */; };
 		4FB7D87F1D5EA60F00F0DB36 /* KeywordConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E394C1BA8C16300FF2A96 /* KeywordConverter.swift */; };
@@ -143,7 +144,6 @@
 		4FB7D8831D5EA60F00F0DB36 /* AppleEventFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39951BADD58500FF2A96 /* AppleEventFormatter.swift */; };
 		4FB7D8841D5EA60F00F0DB36 /* StaticGlueBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E396D1BAA9BA700FF2A96 /* StaticGlueBuilder.swift */; };
 		4FB7D8851D5EA60F00F0DB36 /* AEApplicationGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F2645AB1BA4F27700256402 /* AEApplicationGlue.swift */; };
-		4FBE33CA2259F8910032F73C /* AEHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FBE33C92259F8910032F73C /* AEHandler.swift */; };
 		4FDB20441D8ABA2E008AB470 /* FinderGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FDB20411D8ABA2E008AB470 /* FinderGlue.swift */; };
 		4FDB20451D8ABA2E008AB470 /* ITunesGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FDB20421D8ABA2E008AB470 /* ITunesGlue.swift */; };
 		4FDB20461D8ABA2E008AB470 /* TextEditGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FDB20431D8ABA2E008AB470 /* TextEditGlue.swift */; };
@@ -156,21 +156,8 @@
 		4FFF5D361D899F29008ED4F5 /* Symbol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F63C4421B87AC88000D74EE /* Symbol.swift */; };
 		4FFF5D371D899F29008ED4F5 /* Errors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F63C4441B8A4DFC000D74EE /* Errors.swift */; };
 		4FFF5D381D899F29008ED4F5 /* Support.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F63C4461B8A669C000D74EE /* Support.swift */; };
-		4FFF5D391D899F29008ED4F5 /* AEConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F9AFB431D5B6C2600A71890 /* AEConstants.swift */; };
-		4FFF5D3A1D899F29008ED4F5 /* TermTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39451BA86B5F00FF2A96 /* TermTypes.swift */; };
-		4FFF5D3B1D899F29008ED4F5 /* DefaultTerminology.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39521BA9C6C700FF2A96 /* DefaultTerminology.swift */; };
-		4FFF5D3C1D899F29008ED4F5 /* KeywordConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E394C1BA8C16300FF2A96 /* KeywordConverter.swift */; };
-		4FFF5D3D1D899F29008ED4F5 /* AETEParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E394E1BA8D2F600FF2A96 /* AETEParser.swift */; };
-		4FFF5D3E1D899F29008ED4F5 /* SDEFParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39481BA8717D00FF2A96 /* SDEFParser.swift */; };
-		4FFF5D3F1D899F29008ED4F5 /* GlueTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39501BA9A7EA00FF2A96 /* GlueTable.swift */; };
-		4FFF5D401D899F29008ED4F5 /* AppleEventFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39951BADD58500FF2A96 /* AppleEventFormatter.swift */; };
-		4FFF5D411D899F29008ED4F5 /* StaticGlueBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E396D1BAA9BA700FF2A96 /* StaticGlueBuilder.swift */; };
-		4FFF5D421D899F29008ED4F5 /* AEApplicationGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F2645AB1BA4F27700256402 /* AEApplicationGlue.swift */; };
-		4FFF5D4B1D89B4EF008ED4F5 /* SwiftGlueTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FFF5D491D89A26C008ED4F5 /* SwiftGlueTemplate.swift */; };
 		4FFF5D4F1D89B552008ED4F5 /* SwiftGlueTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FFF5D491D89A26C008ED4F5 /* SwiftGlueTemplate.swift */; };
-		4FFF5D531D89B616008ED4F5 /* aeglue in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4F0E39651BAA98A900FF2A96 /* aeglue */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		4FFF5D541D89B6C4008ED4F5 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F63C4351B7CF1C8000D74EE /* AppKit.framework */; };
-		4FFF5D551D89B6C4008ED4F5 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F63C4371B7CF1E0000D74EE /* Carbon.framework */; };
 		4FFF5D561D89B6C4008ED4F5 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F63C4331B7CF1C4000D74EE /* Foundation.framework */; };
 /* End PBXBuildFile section */
 
@@ -182,12 +169,19 @@
 			remoteGlobalIDString = 4FFF5D231D899F0D008ED4F5;
 			remoteInfo = SwiftAutomation;
 		};
-		4F252BB6224F931C00888935 /* PBXContainerItemProxy */ = {
+		4F1EA9E62283545F000E0A3A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 4F63C41C1B7CF06E000D74EE /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 4F0E39641BAA98A900FF2A96;
-			remoteInfo = aeglue;
+			containerPortal = 4F1EA9E12283545F000E0A3A /* AppleEvents.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 4F1EA99B22835040000E0A3A;
+			remoteInfo = AppleEvents;
+		};
+		4F1EA9E82283545F000E0A3A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4F1EA9E12283545F000E0A3A /* AppleEvents.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 4F1EA9C822835239000E0A3A;
+			remoteInfo = AppleEventDescriptor;
 		};
 		4F4C1A241D943D52004F9083 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -253,7 +247,6 @@
 			dstPath = bin;
 			dstSubfolderSpec = 7;
 			files = (
-				4FFF5D531D89B616008ED4F5 /* aeglue in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -372,9 +365,8 @@
 		4F1ABE591E081D98008BA807 /* DatabaseEventsGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatabaseEventsGlue.swift; sourceTree = "<group>"; };
 		4F1ABE5A1E081D98008BA807 /* DatabaseEventsGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = DatabaseEventsGlue.swift.sdef; sourceTree = "<group>"; };
 		4F1D12401BA3042600875F74 /* SpecifierExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpecifierExtensions.swift; sourceTree = "<group>"; };
+		4F1EA9E12283545F000E0A3A /* AppleEvents.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = AppleEvents.xcodeproj; path = ../AppleEventDescriptor/AppleEvents.xcodeproj; sourceTree = "<group>"; };
 		4F21AEEF1DA6D004009C3605 /* 11 advanced-type-support.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "11 advanced-type-support.md"; path = "doc-source/11 advanced-type-support.md"; sourceTree = "<group>"; };
-		4F252BB4224E1D5800888935 /* AEDesc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AEDesc.swift; sourceTree = "<group>"; };
-		4F252BC02250BADC00888935 /* AppleEventDescriptor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppleEventDescriptor.swift; sourceTree = "<group>"; };
 		4F2645AB1BA4F27700256402 /* AEApplicationGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AEApplicationGlue.swift; sourceTree = "<group>"; };
 		4F4C1A0D1D910BDE004F9083 /* TypeExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TypeExtensions.swift; sourceTree = "<group>"; };
 		4F53812A1BA62541001F24A9 /* README */ = {isa = PBXFileReference; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
@@ -388,13 +380,10 @@
 		4F63C4441B8A4DFC000D74EE /* Errors.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Errors.swift; sourceTree = "<group>"; };
 		4F63C4461B8A669C000D74EE /* Support.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Support.swift; sourceTree = "<group>"; };
 		4F9AFB361D5B58EB00A71890 /* test */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = test; sourceTree = BUILT_PRODUCTS_DIR; };
-		4F9AFB431D5B6C2600A71890 /* AEConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AEConstants.swift; sourceTree = "<group>"; };
 		4F9AFB451D5E99FC00A71890 /* main.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = main.swift; path = test/main.swift; sourceTree = SOURCE_ROOT; };
 		4FACE27222723090000A04A0 /* SwiftAutomationLite.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftAutomationLite.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4FACE27422723091000A04A0 /* SwiftAutomationLite.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwiftAutomationLite.h; sourceTree = "<group>"; };
 		4FACE27522723091000A04A0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		4FACE29122723112000A04A0 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS12.2.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
-		4FACE29322723F0E000A04A0 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/Carbon.framework; sourceTree = DEVELOPER_DIR; };
 		4FBE33C92259F8910032F73C /* AEHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AEHandler.swift; sourceTree = "<group>"; };
 		4FDB20411D8ABA2E008AB470 /* FinderGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FinderGlue.swift; path = test/FinderGlue.swift; sourceTree = SOURCE_ROOT; };
 		4FDB20421D8ABA2E008AB470 /* ITunesGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ITunesGlue.swift; path = test/ITunesGlue.swift; sourceTree = SOURCE_ROOT; };
@@ -439,8 +428,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4FACE29422723F0F000A04A0 /* Carbon.framework in Frameworks */,
-				4FACE29222723112000A04A0 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -448,9 +435,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4FFF5D541D89B6C4008ED4F5 /* AppKit.framework in Frameworks */,
-				4FFF5D551D89B6C4008ED4F5 /* Carbon.framework in Frameworks */,
+				4F1EA9F622841EA4000E0A3A /* Carbon.framework in Frameworks */,
+				4F1EA9EA2283546A000E0A3A /* AppleEvents.framework in Frameworks */,
 				4FFF5D561D89B6C4008ED4F5 /* Foundation.framework in Frameworks */,
+				4FFF5D541D89B6C4008ED4F5 /* AppKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -546,7 +534,6 @@
 				4F4C1A0D1D910BDE004F9083 /* TypeExtensions.swift */,
 				4F63C4461B8A669C000D74EE /* Support.swift */,
 				4F63C4441B8A4DFC000D74EE /* Errors.swift */,
-				4F9AFB431D5B6C2600A71890 /* AEConstants.swift */,
 			);
 			name = bridge;
 			sourceTree = "<group>";
@@ -618,20 +605,18 @@
 			path = MacOSGlues;
 			sourceTree = "<group>";
 		};
-		4F252BBC224FE5E200888935 /* aedesc */ = {
+		4F1EA9E22283545F000E0A3A /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				4F252BB4224E1D5800888935 /* AEDesc.swift */,
-				4F252BC02250BADC00888935 /* AppleEventDescriptor.swift */,
+				4F1EA9E72283545F000E0A3A /* AppleEvents.framework */,
+				4F1EA9E92283545F000E0A3A /* AppleEventDescriptor */,
 			);
-			name = aedesc;
+			name = Products;
 			sourceTree = "<group>";
 		};
 		4F2645A31BA37C2B00256402 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				4FACE29322723F0E000A04A0 /* Carbon.framework */,
-				4FACE29122723112000A04A0 /* Foundation.framework */,
 				4F63C4371B7CF1E0000D74EE /* Carbon.framework */,
 				4F63C4351B7CF1C8000D74EE /* AppKit.framework */,
 				4F63C4331B7CF1C4000D74EE /* Foundation.framework */,
@@ -650,6 +635,7 @@
 		4F63C41B1B7CF06E000D74EE = {
 			isa = PBXGroup;
 			children = (
+				4F1EA9E12283545F000E0A3A /* AppleEvents.xcodeproj */,
 				4F53812A1BA62541001F24A9 /* README */,
 				4FEFCF1C1B93A31E0013FFC8 /* TODO.txt */,
 				4F0E38FF1BA76C8300FF2A96 /* doc-source */,
@@ -684,7 +670,6 @@
 				4FFF5D271D899F0D008ED4F5 /* Info.plist */,
 				4F63C4271B7CF06E000D74EE /* main.swift */,
 				4F2645AB1BA4F27700256402 /* AEApplicationGlue.swift */,
-				4F252BBC224FE5E200888935 /* aedesc */,
 				4FBE33CB2259F89B0032F73C /* aeom */,
 				4F0E396C1BAA98D700FF2A96 /* bridge */,
 				4F0E39471BA86B6800FF2A96 /* terminology support */,
@@ -835,7 +820,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				4F252BB7224F931C00888935 /* PBXTargetDependency */,
 			);
 			name = SwiftAutomation;
 			productName = SwiftAutomation;
@@ -893,6 +877,12 @@
 			mainGroup = 4F63C41B1B7CF06E000D74EE;
 			productRefGroup = 4F63C4251B7CF06E000D74EE /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 4F1EA9E22283545F000E0A3A /* Products */;
+					ProjectRef = 4F1EA9E12283545F000E0A3A /* AppleEvents.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				4FFF5D231D899F0D008ED4F5 /* SwiftAutomation */,
@@ -903,6 +893,23 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		4F1EA9E72283545F000E0A3A /* AppleEvents.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = AppleEvents.framework;
+			remoteRef = 4F1EA9E62283545F000E0A3A /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		4F1EA9E92283545F000E0A3A /* AppleEventDescriptor */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.executable";
+			path = AppleEventDescriptor;
+			remoteRef = 4F1EA9E82283545F000E0A3A /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		4F5CBDAF1D9EA3A000F58D1B /* Resources */ = {
@@ -955,7 +962,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4F252BBB224F93BE00888935 /* AEDesc.swift in Sources */,
 				4FB7D8751D5EA60F00F0DB36 /* AppData.swift in Sources */,
 				4FB7D8761D5EA60F00F0DB36 /* Specifier.swift in Sources */,
 				4FB7D8771D5EA60F00F0DB36 /* SpecifierExtensions.swift in Sources */,
@@ -964,7 +970,6 @@
 				4FB7D8791D5EA60F00F0DB36 /* Symbol.swift in Sources */,
 				4FB7D87A1D5EA60F00F0DB36 /* Errors.swift in Sources */,
 				4FB7D87B1D5EA60F00F0DB36 /* Support.swift in Sources */,
-				4FB7D87C1D5EA60F00F0DB36 /* AEConstants.swift in Sources */,
 				4FB7D87D1D5EA60F00F0DB36 /* TermTypes.swift in Sources */,
 				4FB7D87E1D5EA60F00F0DB36 /* DefaultTerminology.swift in Sources */,
 				4FB7D87F1D5EA60F00F0DB36 /* KeywordConverter.swift in Sources */,
@@ -973,7 +978,6 @@
 				4FB7D8821D5EA60F00F0DB36 /* GlueTable.swift in Sources */,
 				4FB7D8831D5EA60F00F0DB36 /* AppleEventFormatter.swift in Sources */,
 				4FFF5D4F1D89B552008ED4F5 /* SwiftGlueTemplate.swift in Sources */,
-				4F252BC22250BADC00888935 /* AppleEventDescriptor.swift in Sources */,
 				4FB7D8841D5EA60F00F0DB36 /* StaticGlueBuilder.swift in Sources */,
 				4FB7D8851D5EA60F00F0DB36 /* AEApplicationGlue.swift in Sources */,
 				4F0E39681BAA98A900FF2A96 /* main.swift in Sources */,
@@ -1033,9 +1037,6 @@
 			files = (
 				4FACE27A227230D1000A04A0 /* main.swift in Sources */,
 				4FACE27B227230D1000A04A0 /* AEApplicationGlue.swift in Sources */,
-				4FACE27C227230D1000A04A0 /* AEDesc.swift in Sources */,
-				4FACE27D227230D1000A04A0 /* AppleEventDescriptor.swift in Sources */,
-				4FACE27E227230D1000A04A0 /* AEHandler.swift in Sources */,
 				4FACE27F227230D1000A04A0 /* AppData.swift in Sources */,
 				4FACE280227230D1000A04A0 /* Symbol.swift in Sources */,
 				4FACE281227230D1000A04A0 /* Specifier.swift in Sources */,
@@ -1044,7 +1045,6 @@
 				4FACE284227230D1000A04A0 /* TypeExtensions.swift in Sources */,
 				4FACE285227230D1000A04A0 /* Support.swift in Sources */,
 				4FACE286227230D1000A04A0 /* Errors.swift in Sources */,
-				4FACE287227230D1000A04A0 /* AEConstants.swift in Sources */,
 				4FACE288227230D1000A04A0 /* TermTypes.swift in Sources */,
 				4FACE289227230D1000A04A0 /* DefaultTerminology.swift in Sources */,
 				4FACE28A227230D1000A04A0 /* KeywordConverter.swift in Sources */,
@@ -1062,9 +1062,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				4FFF5D311D899F29008ED4F5 /* main.swift in Sources */,
-				4F252BB5224E1D5800888935 /* AEDesc.swift in Sources */,
-				4F252BC12250BADC00888935 /* AppleEventDescriptor.swift in Sources */,
-				4FBE33CA2259F8910032F73C /* AEHandler.swift in Sources */,
 				4FFF5D321D899F29008ED4F5 /* AppData.swift in Sources */,
 				4FFF5D361D899F29008ED4F5 /* Symbol.swift in Sources */,
 				4FFF5D331D899F29008ED4F5 /* Specifier.swift in Sources */,
@@ -1073,17 +1070,16 @@
 				4F4C1A0E1D910BDE004F9083 /* TypeExtensions.swift in Sources */,
 				4FFF5D381D899F29008ED4F5 /* Support.swift in Sources */,
 				4FFF5D371D899F29008ED4F5 /* Errors.swift in Sources */,
-				4FFF5D391D899F29008ED4F5 /* AEConstants.swift in Sources */,
-				4FFF5D3A1D899F29008ED4F5 /* TermTypes.swift in Sources */,
-				4FFF5D3B1D899F29008ED4F5 /* DefaultTerminology.swift in Sources */,
-				4FFF5D3C1D899F29008ED4F5 /* KeywordConverter.swift in Sources */,
-				4FFF5D3D1D899F29008ED4F5 /* AETEParser.swift in Sources */,
-				4FFF5D3E1D899F29008ED4F5 /* SDEFParser.swift in Sources */,
-				4FFF5D3F1D899F29008ED4F5 /* GlueTable.swift in Sources */,
-				4FFF5D401D899F29008ED4F5 /* AppleEventFormatter.swift in Sources */,
-				4FFF5D4B1D89B4EF008ED4F5 /* SwiftGlueTemplate.swift in Sources */,
-				4FFF5D411D899F29008ED4F5 /* StaticGlueBuilder.swift in Sources */,
-				4FFF5D421D899F29008ED4F5 /* AEApplicationGlue.swift in Sources */,
+				4F1EA9F122841D91000E0A3A /* TermTypes.swift in Sources */,
+				4F1EA9F222841D91000E0A3A /* DefaultTerminology.swift in Sources */,
+				4F1EA9F322841D91000E0A3A /* KeywordConverter.swift in Sources */,
+				4F1EA9F422841D91000E0A3A /* AETEParser.swift in Sources */,
+				4F1EA9F522841D91000E0A3A /* SDEFParser.swift in Sources */,
+				4F3C689E22843233002AD35C /* GlueTable.swift in Sources */,
+				4F3C68A1228432B1002AD35C /* StaticGlueBuilder.swift in Sources */,
+				4F3C68A2228432B1002AD35C /* SwiftGlueTemplate.swift in Sources */,
+				4F3C68A422843506002AD35C /* AppleEventFormatter.swift in Sources */,
+				4F3C68A3228432E3002AD35C /* AEApplicationGlue.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1094,11 +1090,6 @@
 			isa = PBXTargetDependency;
 			target = 4FFF5D231D899F0D008ED4F5 /* SwiftAutomation */;
 			targetProxy = 4F1A580E1D9E9FF700ACFA51 /* PBXContainerItemProxy */;
-		};
-		4F252BB7224F931C00888935 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 4F0E39641BAA98A900FF2A96 /* aeglue */;
-			targetProxy = 4F252BB6224F931C00888935 /* PBXContainerItemProxy */;
 		};
 		4F4C1A251D943D52004F9083 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

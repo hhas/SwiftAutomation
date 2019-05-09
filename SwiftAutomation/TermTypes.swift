@@ -5,7 +5,7 @@
 //
 
 import Foundation
-
+import AppleEvents
 
 
 public class TerminologyError: AutomationError {

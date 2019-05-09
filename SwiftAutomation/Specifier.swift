@@ -55,8 +55,8 @@
 //    Except for APPLICATION, users do not instantiate any of these classes directly, but instead by chained property/method calls on existing Query instances.
 //
 
-import Carbon
 import Foundation
+import AppleEvents
 
 #if canImport(AppKit)
 import AppKit
@@ -77,15 +77,11 @@ open class Query: CustomStringConvertible, CustomDebugStringConvertible, CustomR
     // note: Equatable isn't implemented here as 1. it's rarely necessary to compare two specifiers, and 2. only the target app can know if two queries identify the same object or not, e.g. `Finder().folders["foo"]`, `Finder().desktop.folders["FOO"]`, and `Finder().home.folders["Desktop:Foo"]` all refer to same object (a folder named "foo" on user's desktop) while `Finder.disks["Bar"]` and `Finder.disks["bar"]` do not (since disk names are case-sensitive)
     
     public let appData: AppData
-    internal private(set) var _cachedDescriptor: AEDesc?
+    internal private(set) var _cachedDescriptor: AppleEvents.Query? // TO DO: caching AppleEvents.Query descriptor doesn't provide much benefit as Query.data property is calculated on each call; would be better to capture result of Query.appendTo(), which is flattened representation ready for appending to parent descriptor's params data
     
-    init(appData: AppData, descriptor: AEDesc?) { // descriptor is supplied on unpacking
+    init(appData: AppData, descriptor: Descriptor?) { // descriptor is supplied on unpacking
         self.appData = appData
-        self._cachedDescriptor = descriptor
-    }
-    
-    deinit {
-        self._cachedDescriptor?.dispose()
+        self._cachedDescriptor = descriptor as? AppleEvents.Query
     }
     
     // unpacking
@@ -94,12 +90,12 @@ open class Query: CustomStringConvertible, CustomDebugStringConvertible, CustomR
     
     // packing
     
-    public func SwiftAutomation_packSelf(_ appData: AppData) throws -> AEDesc {
-        if self._cachedDescriptor == nil { self._cachedDescriptor = try self._packSelf() }
-        return self._cachedDescriptor!.copy() // caller takes ownership of returned desc, so copy cached desc
+    public func SwiftAutomation_packSelf(_ appData: AppData) throws -> Descriptor {
+        if self._cachedDescriptor == nil { self._cachedDescriptor = try self._packSelf() as? AppleEvents.Query }
+        return self._cachedDescriptor! // caller takes ownership of returned desc, so copy cached desc
     }
     
-    func _packSelf() throws -> AEDesc { // subclasses must override this to pack themselves; called on first use
+    func _packSelf() throws -> Descriptor { // subclasses must override this to pack themselves; called on first use
         fatalError("Query._packSelf() must be overridden by subclasses.")
     }
     
@@ -144,13 +140,13 @@ public protocol SpecifierProtocol { // glue-defined Command extensions, and by O
 
 open class Specifier: Query, SpecifierProtocol {
 
-    var _parentDescKey: OSType { return OSType(keyAEContainer) }
+    var _parentDescKey: OSType { return OSType(AppleEvents.keyAEContainer) }
     
     // An object specifier is constructed as a linked list of AERecords of typeObjectSpecifier, terminated by a root descriptor (e.g. a null descriptor represents the root node of the app's Apple event object graph). The topmost node may also be an insertion location specifier, represented by an AERecord of typeInsertionLoc. The abstract Specifier class implements functionality common to both object and insertion specifiers.
     
     private var _parentQuery: Query? // note: object specifiers are lazily unpacked for efficiency, so this is nil if Specifier hasn't been fully unpacked yet (or if class is RootSpecifier, in which case it's unused)
 
-    public init(parentQuery: Query?, appData: AppData, descriptor: AEDesc?) {
+    public init(parentQuery: Query?, appData: AppData, descriptor: Descriptor?) {
         self._parentQuery = parentQuery
         super.init(appData: appData, descriptor: descriptor)
     }
@@ -168,8 +164,8 @@ open class Specifier: Query, SpecifierProtocol {
     
     override func unpackParentSpecifiers() {
         do {
-            // TO DO: ownership/disposal
-            guard let descriptor = self._cachedDescriptor, let parentDesc = try? descriptor.parameter(self._parentDescKey) else { // note: self._cachedDescriptor should never be nil (if it is, it's an implementation bug), and parentDesc should never be nil (or else cached descriptor is malformed)
+            
+            guard let parentDesc = self._cachedDescriptor?.from else { // note: self._cachedDescriptor should never be nil (if it is, it's an implementation bug), and parentDesc should never be nil (or else cached descriptor is malformed)
                 throw AutomationError(code: 1, message: "Can't unpack parent specifiers due to internal error or malformed descriptor.")
             }
             self._parentQuery = try appData.unpack(parentDesc) as Specifier
@@ -193,7 +189,7 @@ open class Specifier: Query, SpecifierProtocol {
     public func sendAppleEvent<T>(_ eventClass: String, _ eventID: String, _ parameters: [String:Any] = [:],
                                   requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
                                   withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
-        var params = [OSType:Any]()
+        var params = [UInt32:Any]()
         for (k, v) in parameters { params[try parseFourCharCode(k)] = v }
         return try self.appData.sendAppleEvent(eventClass: try parseFourCharCode(eventClass), eventID: try parseFourCharCode(eventID),
                                                parentSpecifier: self, parameters: params,
@@ -215,7 +211,7 @@ open class Specifier: Query, SpecifierProtocol {
     @discardableResult public func sendAppleEvent(_ eventClass: String, _ eventID: String, _ parameters: [String:Any] = [:],
                                                   requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
                                                   withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        var params = [OSType:Any]()
+        var params = [UInt32:Any]()
         for (k, v) in parameters { params[try parseFourCharCode(k)] = v }
         return try self.appData.sendAppleEvent(eventClass: try parseFourCharCode(eventClass), eventID: try parseFourCharCode(eventID),
                                                parentSpecifier: self, parameters: params,
@@ -230,17 +226,20 @@ open class Specifier: Query, SpecifierProtocol {
 
 open class InsertionSpecifier: Specifier { // SwiftAutomation_packSelf
     
-    public let position: DescType
+    public typealias Position = AppleEvents.InsertionLocation.Position
     
-    override var _parentDescKey: OSType { return keyAEObject }
+    public let position: Position
+    
+    override var _parentDescKey: OSType { return AppleEvents.keyAEObject }
 
-    required public init(position: DescType, parentQuery: Query?, appData: AppData, descriptor: AEDesc?) {
+    required public init(position: Position, parentQuery: Query?, appData: AppData, descriptor: Descriptor?) {
         self.position = position
         super.init(parentQuery: parentQuery, appData: appData, descriptor: descriptor)
     }
     
-    override func _packSelf() throws -> AEDesc {
-        return AEDesc(insertionLocation: self.position, container: try self.parentQuery.SwiftAutomation_packSelf(self.appData))
+    override func _packSelf() throws -> Descriptor {
+        return InsertionLocation(position: self.position,
+                                 from: try self.parentQuery.SwiftAutomation_packSelf(self.appData) as! AppleEvents.Query) // TO DO
     }
 }
 
@@ -250,8 +249,11 @@ open class InsertionSpecifier: Specifier { // SwiftAutomation_packSelf
 
 
 public protocol ObjectSpecifierProtocol: SpecifierProtocol {
+    
+    typealias Form = AppleEvents.ObjectSpecifier.Form
+    
     var wantType: DescType {get}
-    var selectorForm: DescType {get}
+    var selectorForm: Form {get}
     var selectorData: Any {get}
 }
 
@@ -259,43 +261,44 @@ open class ObjectSpecifier: Specifier, ObjectSpecifierProtocol { // represents p
     
     // 'want', 'form', 'data'
     public let wantType: DescType
-    public let selectorForm: DescType
+    public let selectorForm: Form
     public let selectorData: Any
     
-    required public init(wantType: DescType, selectorForm: DescType, selectorData: Any,
-                         parentQuery: Query?, appData: AppData, descriptor: AEDesc?) {
+    required public init(wantType: DescType, selectorForm: Form, selectorData: Any,
+                         parentQuery: Query?, appData: AppData, descriptor: Descriptor?) {
         self.wantType = wantType
         self.selectorForm = selectorForm
         self.selectorData = selectorData
         super.init(parentQuery: parentQuery, appData: appData, descriptor: descriptor)
     }
     
-    override func _packSelf() throws -> AEDesc {
-        let container = try self.parentQuery.SwiftAutomation_packSelf(self.appData)
+    override func _packSelf() throws -> Descriptor {
+        guard let container = try self.parentQuery.SwiftAutomation_packSelf(self.appData) as? AppleEvents.Query else {
+            throw AppleEventError(code: 1) // TO DO
+        }
         let keyData = try self.appData.pack(self.selectorData)
-        // TO DO: disposal; simpler if it's done here, not in AEDesc.init; note: if caching returned AEDesc here, container desc will already be managed by parentQuery
-        return AEDesc(desiredClass: self.wantType, container: container, keyForm: self.selectorForm, keyData: keyData) // TO DO: cache this desc?
+        return AppleEvents.ObjectSpecifier(want: self.wantType, form: self.selectorForm, seld: keyData, from: container) // TO DO: cache this desc?
     }
 
     // Comparison test constructors
 
     public static func <(lhs: ObjectSpecifier, rhs: Any) -> TestClause {
-        return ComparisonTest(operatorType: kAELessThan, operand1: lhs, operand2: rhs, appData: lhs.appData, descriptor: nil)
+        return ComparisonTest(operatorType: .lessThan, operand1: lhs, operand2: rhs, appData: lhs.appData, descriptor: nil)
     }
     public static func <=(lhs: ObjectSpecifier, rhs: Any) -> TestClause {
-        return ComparisonTest(operatorType: kAELessThanEquals, operand1: lhs, operand2: rhs, appData: lhs.appData, descriptor: nil)
+        return ComparisonTest(operatorType: .lessThanOrEqual, operand1: lhs, operand2: rhs, appData: lhs.appData, descriptor: nil)
     }
     public static func ==(lhs: ObjectSpecifier, rhs: Any) -> TestClause {
-        return ComparisonTest(operatorType: kAEEquals, operand1: lhs, operand2: rhs, appData: lhs.appData, descriptor: nil)
+        return ComparisonTest(operatorType: .equal, operand1: lhs, operand2: rhs, appData: lhs.appData, descriptor: nil)
     }
     public static func !=(lhs: ObjectSpecifier, rhs: Any) -> TestClause {
-        return ComparisonTest(operatorType: kAENotEquals, operand1: lhs, operand2: rhs, appData: lhs.appData, descriptor: nil)
+        return ComparisonTest(operatorType: .notEqual, operand1: lhs, operand2: rhs, appData: lhs.appData, descriptor: nil)
     }
     public static func >(lhs: ObjectSpecifier, rhs: Any) -> TestClause {
-        return ComparisonTest(operatorType: kAEGreaterThan, operand1: lhs, operand2: rhs, appData: lhs.appData, descriptor: nil)
+        return ComparisonTest(operatorType: .greaterThan, operand1: lhs, operand2: rhs, appData: lhs.appData, descriptor: nil)
     }
     public static func >=(lhs: ObjectSpecifier, rhs: Any) -> TestClause {
-        return ComparisonTest(operatorType: kAEGreaterThanEquals, operand1: lhs, operand2: rhs, appData: lhs.appData, descriptor: nil)
+        return ComparisonTest(operatorType: .greaterThanOrEqual, operand1: lhs, operand2: rhs, appData: lhs.appData, descriptor: nil)
     }
         
     // Containment test constructors
@@ -303,16 +306,16 @@ open class ObjectSpecifier: Specifier, ObjectSpecifierProtocol { // represents p
     // note: ideally the following would only appear on objects constructed from an Its root; however, this would complicate the implementation while failing to provide any real benefit to users, who are unlikely to make such a mistake in the first place
     
     public func beginsWith(_ value: Any) -> TestClause {
-        return ComparisonTest(operatorType: kAEBeginsWith, operand1: self, operand2: value, appData: self.appData, descriptor: nil)
+        return ComparisonTest(operatorType: .beginsWith, operand1: self, operand2: value, appData: self.appData, descriptor: nil)
     }
     public func endsWith(_ value: Any) -> TestClause {
-        return ComparisonTest(operatorType: kAEEndsWith, operand1: self, operand2: value, appData: self.appData, descriptor: nil)
+        return ComparisonTest(operatorType: .endsWith, operand1: self, operand2: value, appData: self.appData, descriptor: nil)
     }
     public func contains(_ value: Any) -> TestClause {
-        return ComparisonTest(operatorType: kAEContains, operand1: self, operand2: value, appData: self.appData, descriptor: nil)
+        return ComparisonTest(operatorType: .contains, operand1: self, operand2: value, appData: self.appData, descriptor: nil)
     }
     public func isIn(_ value: Any) -> TestClause {
-        return ComparisonTest(operatorType: kAEIsIn, operand1: self, operand2: value, appData: self.appData, descriptor: nil)
+        return ComparisonTest(operatorType: .isIn, operand1: self, operand2: value, appData: self.appData, descriptor: nil)
     }
 }
 
@@ -341,26 +344,23 @@ struct RangeSelector: SelfPacking { // holds data for by-range selectors
         self.wantType = wantType
     }
     
-    private func packSelector(_ selectorData: Any, appData: AppData) throws -> AEDesc {
+    private func packSelector(_ selectorData: Any, appData: AppData) throws -> AppleEvents.Query {
         switch selectorData {
-        case is AEDesc:
-            return selectorData as! AEDesc
-        case is Specifier: // technically, only ObjectSpecifier makes sense here, tho AS prob. doesn't prevent insertion loc or multi-element specifier being passed instead
-            return try (selectorData as! Specifier).SwiftAutomation_packSelf(appData)
+        case let desc as AppleEvents.Query: // TO DO: is this needed?
+            return desc
+        case let specifier as Specifier: // technically, only ObjectSpecifier makes sense here, tho AS prob. doesn't prevent insertion loc or multi-element specifier being passed instead
+            return try specifier.SwiftAutomation_packSelf(appData) as! AppleEvents.Query
         default: // pack anything else as a by-name or by-index specifier
-            let form = selectorData is String ? DescType(formName) : DescType(formAbsolutePosition)
+            let form: ObjectSpecifier.Form = selectorData is String ? .name : .absolutePosition
             let seld = try appData.pack(selectorData) // TO DO: disposal
-            return AEDesc(desiredClass: self.wantType, container: ConRootDesc, keyForm: form, keyData: seld)
+            return AppleEvents.ObjectSpecifier(want: self.wantType, form: form, seld: seld, from: AppleEvents.RootSpecifier.con)
         }
     }
     
-    func SwiftAutomation_packSelf(_ appData: AppData) throws -> AEDesc {
+    func SwiftAutomation_packSelf(_ appData: AppData) throws -> Descriptor {
         // note: the returned desc will be cached by the MultipleObjectSpecifier, so no need to cache it here
-        var rangeStart = try self.packSelector(self.start, appData: appData)
-        var rangeStop = try self.packSelector(self.stop, appData: appData)
-        var desc = nullDescriptor
-        try throwIfError(CreateRangeDescriptor(&rangeStart, &rangeStop, false, &desc))
-        return desc
+        return AppleEvents.ObjectSpecifier.RangeDescriptor(start:try self.packSelector(self.start, appData: appData),
+                                                           stop: try self.packSelector(self.stop, appData: appData))
     }
 }
 
@@ -378,42 +378,34 @@ public class TestClause: Query {
     // Logical test constructors
     
     public static func &&(lhs: TestClause, rhs: TestClause) -> TestClause {
-        return LogicalTest(operatorType: DescType(kAEAND), operands: [lhs, rhs], appData: lhs.appData, descriptor: nil)
+        return LogicalTest(operatorType: .AND, operands: [lhs, rhs], appData: lhs.appData, descriptor: nil)
     }
     public static func ||(lhs: TestClause, rhs: TestClause) -> TestClause {
-        return LogicalTest(operatorType: DescType(kAEOR), operands: [lhs, rhs], appData: lhs.appData, descriptor: nil)
+        return LogicalTest(operatorType: .OR, operands: [lhs, rhs], appData: lhs.appData, descriptor: nil)
     }
     public static prefix func !(lhs: TestClause) -> TestClause {
-        return LogicalTest(operatorType: DescType(kAENOT), operands: [lhs], appData: lhs.appData, descriptor: nil)
+        return LogicalTest(operatorType: .NOT, operands: [lhs], appData: lhs.appData, descriptor: nil)
     }
 }
 
 
 public class ComparisonTest: TestClause {
     
-    public let operatorType: DescType, operand1: ObjectSpecifier, operand2: Any
+    public typealias Operator = AppleEvents.ComparisonDescriptor.Operator
     
-    init(operatorType: DescType, operand1: ObjectSpecifier, operand2: Any, appData: AppData, descriptor: AEDesc?) {
+    public let operatorType: Operator, operand1: ObjectSpecifier, operand2: Any
+    
+    init(operatorType: Operator, operand1: ObjectSpecifier, operand2: Any, appData: AppData, descriptor: Descriptor?) {
         self.operatorType = operatorType
         self.operand1 = operand1
         self.operand2 = operand2
         super.init(appData: appData, descriptor: descriptor)
     }
     
-    override func _packSelf() throws -> AEDesc {
-        if self.operatorType == kAENotEquals { // AEM doesn't support a 'kAENotEqual' enum, so convert to kAEEquals+kAENOT
-            return try (!(self.operand1 == self.operand2)).SwiftAutomation_packSelf(self.appData)
-        } else {
-            var operatorType = self.operatorType
-            var operandDesc1 = try self.appData.pack(self.operand1)
-            var operandDesc2 = try self.appData.pack(self.operand2)
-            if self.operatorType == kAEIsIn { // AEM doesn't support a 'kAEIsIn' enum,  so use kAEContains with operands reversed
-                (operatorType, operandDesc1, operandDesc2) = (kAEContains, operandDesc2, operandDesc1)
-            }
-            var desc = nullDescriptor
-            try throwIfError(CreateCompDescriptor(operatorType, &operandDesc1, &operandDesc2, false, &desc))
-            return desc
-        }
+    override func _packSelf() throws -> Descriptor {
+        return AppleEvents.ComparisonDescriptor(object: try self.appData.pack(self.operand1) as! AppleEvents.Query,
+                                                comparison: self.operatorType,
+                                                value: try self.appData.pack(self.operand2))
     }
     
     public override var parentQuery: Query {
@@ -427,19 +419,19 @@ public class ComparisonTest: TestClause {
 
 public class LogicalTest: TestClause {
     
-    public let operatorType: DescType, operands: [TestClause] // note: this doesn't have a 'parent' as such; to walk chain, just use first operand
+    public typealias Operator = AppleEvents.LogicalDescriptor.Operator
     
-    init(operatorType: DescType, operands: [TestClause], appData: AppData, descriptor: AEDesc?) {
+    public let operatorType: Operator, operands: [TestClause] // note: this doesn't have a 'parent' as such; to walk chain, just use first operand
+    
+    init(operatorType: Operator, operands: [TestClause], appData: AppData, descriptor: Descriptor?) {
         self.operatorType = operatorType
         self.operands = operands
         super.init(appData: appData, descriptor: descriptor)
     }
     
-    override func _packSelf() throws -> AEDesc {
-        var desc = nullDescriptor
-        var operandsDesc = try self.appData.pack(self.operands)
-        try throwIfError(CreateLogicalDescriptor(&operandsDesc, self.operatorType, false, &desc))
-        return desc
+    override func _packSelf() throws -> Descriptor {
+        return AppleEvents.LogicalDescriptor(logical: self.operatorType,
+                                             operands: try self.appData.pack(self.operands) as! ListDescriptor)
     }
     
     public override var rootSpecifier: RootSpecifier {
@@ -458,19 +450,19 @@ open class RootSpecifier: ObjectSpecifier { // app, con, its, custom root (note:
     
     public required init(rootObject: Any, appData: AppData) {
         // rootObject is either one of the three standard AEDescs indicating app/con/its root, or an arbitrary object supplied by caller (e.g. an AEAddressDesc if constructing a fully qualified specifier)
-        super.init(wantType: typeNull, // wantType and selectorForm are unused here
-                   selectorForm: typeNull, selectorData: rootObject,
-                   parentQuery: nil, appData: appData, descriptor: rootObject as? AEDesc)
+        super.init(wantType: AppleEvents.typeNull, // wantType and selectorForm are unused here
+                   selectorForm: .absolutePosition, selectorData: rootObject,
+                   parentQuery: nil, appData: appData, descriptor: rootObject as? Descriptor)
     }
 
-    public required init(wantType: DescType, selectorForm: DescType,
-                         selectorData: Any, parentQuery: Query?, appData: AppData, descriptor: AEDesc?) {
+    public required init(wantType: DescType, selectorForm: Form,
+                         selectorData: Any, parentQuery: Query?, appData: AppData, descriptor: Descriptor?) {
         super.init(wantType: wantType, selectorForm: selectorForm,
                    selectorData: selectorData, parentQuery: parentQuery, appData: appData, descriptor: descriptor)
         
     }
     
-    public override func _packSelf() throws -> AEDesc {
+    public override func _packSelf() throws -> Descriptor {
         return try self.appData.pack(self.selectorData)
     }
 

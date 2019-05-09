@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import Carbon
+import AppleEvents
 
 
 /******************************************************************************/
@@ -17,11 +17,11 @@ import Carbon
 // note that packSelf/unpackSelf protocol methods are mixed in to standard Swift types (Array, Dictionary, etc), hence the `SwiftAutomation_` prefixes for maximum paranoia
 
 public protocol SelfPacking {
-    func SwiftAutomation_packSelf(_ appData: AppData) throws -> AEDesc // caller takes ownership
+    func SwiftAutomation_packSelf(_ appData: AppData) throws -> Descriptor
 }
 
 public protocol SelfUnpacking {
-    static func SwiftAutomation_unpackSelf(_ desc: AEDesc, appData: AppData) throws -> Self // TO DO: takes ownership? (probably makes sense to do so: descs are thrown away otherwise)
+    static func SwiftAutomation_unpackSelf(_ desc: Descriptor, appData: AppData) throws -> Self
     static func SwiftAutomation_noValue() throws -> Self
 }
 
@@ -36,7 +36,7 @@ public protocol SelfFormatting {
 
 // note: this design is not yet finalized (ideally we'd just map cMissingValue to nil, but returning nil for commands whose return type is `Any` is a PITA as all of Swift's normal unboxing techniques break, and the only way to unbox is to cast from Any to Optional<T> first, which in turn requires that T is known in advance, in which case what's the point of returning Any in the first place?)
 
-let missingValueDesc = AEDesc(typeCode: DescType(cMissingValue))
+let missingValueDesc = packAsType(cMissingValue)
 
 
 // unlike Swift's `nil` (which is actually an infinite number of values since Optional<T>.none is generic), there is only ever one `MissingValue`, which means it should behave sanely when cast to and from `Any`
@@ -47,12 +47,11 @@ public enum MissingValueType: CustomStringConvertible, SelfPacking, SelfUnpackin
     
     init() { self = .missingValue }
     
-    public func SwiftAutomation_packSelf(_ appData: AppData) throws -> AEDesc {
-        return missingValueDesc.copy()
+    public func SwiftAutomation_packSelf(_ appData: AppData) throws -> Descriptor {
+        return missingValueDesc
     }
     
-    public static func SwiftAutomation_unpackSelf(_ desc: AEDesc, appData: AppData) throws -> MissingValueType {
-        desc.dispose()
+    public static func SwiftAutomation_unpackSelf(_ desc: Descriptor, appData: AppData) throws -> MissingValueType {
         return MissingValue
     }
     
@@ -87,18 +86,17 @@ public enum MayBeMissing<T>: SelfPacking, SelfUnpacking { // TO DO: rename 'Miss
         self = .missing(MissingValue)
     }
     
-    public func SwiftAutomation_packSelf(_ appData: AppData) throws -> AEDesc {
+    public func SwiftAutomation_packSelf(_ appData: AppData) throws -> Descriptor {
         switch self {
         case .value(let value):
             return try appData.pack(value)
         case .missing(_):
-            return missingValueDesc.copy()
+            return missingValueDesc
         }
     }
     
-    public static func SwiftAutomation_unpackSelf(_ desc: AEDesc, appData: AppData) throws -> MayBeMissing<T> {
+    public static func SwiftAutomation_unpackSelf(_ desc: Descriptor, appData: AppData) throws -> MayBeMissing<T> {
         if isMissingValue(desc) {
-            desc.dispose()
             return MayBeMissing<T>.missing(MissingValue)
         } else {
             return MayBeMissing<T>.value(try appData.unpack(desc) as T) // unpack takes ownership
@@ -118,26 +116,25 @@ public enum MayBeMissing<T>: SelfPacking, SelfUnpacking { // TO DO: rename 'Miss
 }
 
 
-func isMissingValue(_ desc: AEDesc) -> Bool { // check if the given AEDesc is the `missing value` constant
-    return desc.descriptorType == typeType && (try? desc.fourCharCode()) == DescType(cMissingValue)
+func isMissingValue(_ desc: Descriptor) -> Bool { // check if the given AEDesc is the `missing value` constant
+    return desc.type == AppleEvents.typeType && (try? unpackAsType(desc)) == AppleEvents.cMissingValue
 }
 
 // allow optionals to be used in place of MayBeMissing… arguably, MayBeMissing won't be needed if this works
 
 extension Optional: SelfPacking, SelfUnpacking {
     
-    public func SwiftAutomation_packSelf(_ appData: AppData) throws -> AEDesc {
+    public func SwiftAutomation_packSelf(_ appData: AppData) throws -> Descriptor {
         switch self {
         case .some(let value):
             return try appData.pack(value)
         case .none:
-            return missingValueDesc.copy()
+            return missingValueDesc
         }
     }
     
-    public static func SwiftAutomation_unpackSelf(_ desc: AEDesc, appData: AppData) throws -> Optional<Wrapped> {
+    public static func SwiftAutomation_unpackSelf(_ desc: Descriptor, appData: AppData) throws -> Optional<Wrapped> {
         if isMissingValue(desc) {
-            desc.dispose()
             return Optional<Wrapped>.none
         } else {
             return Optional<Wrapped>.some(try appData.unpack(desc)) // unpack takes ownership
@@ -158,33 +155,21 @@ extension Set: SelfPacking, SelfUnpacking, SelfFormatting { // note: AEM doesn't
         return "[\(self.map{ formatter.format($0) }.joined(separator: ", "))]"
     }
     
-    public func SwiftAutomation_packSelf(_ appData: AppData) throws -> AEDesc {
-        let desc = AEDesc.list()
-        do {
-            for item in self {
-                let tmp = try appData.pack(item)
-                defer { tmp.dispose() }
-                try desc.appendItem(tmp)
-            }
-        } catch {
-            desc.dispose()
-            throw error
-        }
-        return desc
+    public func SwiftAutomation_packSelf(_ appData: AppData) throws -> Descriptor {
+        return try packAsArray(self, using: { try appData.pack($0) })
     }
     
-    public static func SwiftAutomation_unpackSelf(_ desc: AEDesc, appData: AppData) throws -> Set<Element> {
+    public static func SwiftAutomation_unpackSelf(_ desc: Descriptor, appData: AppData) throws -> Set<Element> {
         var result = Set<Element>()
-        switch desc.descriptorType {
-        case typeAEList:
-            for i in 1..<(try! desc.count()+1) {
+        switch desc.type {
+        case AppleEvents.typeAEList:
+            for (i, item) in (desc as! ListDescriptor).enumerated() {
                 do {
-                    result.insert(try appData.unpack(desc.item(i).value) as Element) // unpack takes ownership
+                    result.insert(try appData.unpack(item) as Element)
                 } catch {
                     throw UnpackError(appData: appData, desc: desc, type: self, message: "Can't unpack item \(i) as \(Element.self).")
                 }
             }
-            desc.dispose()
         default:
             result.insert(try appData.unpack(desc) as Element)
         }
@@ -201,58 +186,39 @@ extension Array: SelfPacking, SelfUnpacking, SelfFormatting {
         return "[\(self.map{ formatter.format($0) }.joined(separator: ", "))]"
     }
     
-    public func SwiftAutomation_packSelf(_ appData: AppData) throws -> AEDesc {
-        let listDesc = AEDesc.list()
-        do {
-            for item in self {
-                let itemDesc = try appData.pack(item)
-                defer { itemDesc.dispose() }
-                try listDesc.appendItem(itemDesc)
-            }
-        } catch {
-            listDesc.dispose()
-            throw error
-        }
-        return listDesc
+    public func SwiftAutomation_packSelf(_ appData: AppData) throws -> Descriptor {
+        return try packAsArray(self, using: { try appData.pack($0) })
     }
     
+    /*
+     TO DO: may want to move this to AppleEvents
     private static func unpackAsFixedArray<T: FixedWidthInteger>(_ desc: AEDesc, appData: AppData, of itemType: T.Type, inOrder indexes: [Int]) throws -> [Element] { // takes ownership
         let value = try desc.unpackFixedArray(of: T.self, inOrder: indexes)
-        desc.dispose()
         if let result = value as? [Element] { // [Int] common case
             return result
         } else { // for any other Element, repack and unpack
             return try self.SwiftAutomation_unpackSelf(try appData.pack(value), appData: appData)
         }
-    }
+    }*/
     
-    public static func SwiftAutomation_unpackSelf(_ desc: AEDesc, appData: AppData) throws -> [Element] {
-        switch desc.descriptorType {
-        case typeAEList:
-            var result = [Element]()
-            for i in 1..<(try! desc.count()+1) { // bug workaround for zero-length range: 1...0 throws error, but 1..<1 doesn't
-                do {
-                    result.append(try appData.unpack(desc.item(i).value) as Element)
-                } catch {
-                    // this takes ownership of desc
-                    throw UnpackError(appData: appData, desc: desc, type: self, message: "Can't unpack item \(i) as \(Element.self).")
-                }
-            }
-            desc.dispose()
-            return result
-            // note: coercing QD types to typeAEList and unpacking those would be simpler, but while AEM provides coercion handlers for coercing e.g. typeAEList to typeQDPoint, it doesn't provide handlers for the reverse (coercing a typeQDPoint desc to typeAEList merely produces a single-item AEList containing the original typeQDPoint, not a 2-item AEList of typeSInt16)
+    public static func SwiftAutomation_unpackSelf(_ desc: Descriptor, appData: AppData) throws -> [Element] {
+        switch desc.type {
+        case AppleEvents.typeAEList:
+            return try unpackAsArray(desc, using: { try appData.unpack($0) })
+/*
         case typeQDPoint: // SInt16[2]
             return try self.unpackAsFixedArray(desc, appData: appData, of: Int16.self, inOrder: [1,0]) // QDPoint is YX; swap to give [X,Y]
         case typeQDRectangle: // SInt16[4]
             return try self.unpackAsFixedArray(desc, appData: appData, of: Int16.self, inOrder: [1,0,3,2]) // QDPoint is Y0X0Y1X1; swap to give [X0,Y0,X1,Y1]
         case typeRGBColor: // UInt16[3] (used by older Carbon apps; Cocoa apps use lists)
             return try self.unpackAsFixedArray(desc, appData: appData, of: UInt16.self, inOrder: [0,1,2])
+ */
         default:
             return [try appData.unpack(desc) as Element]
         }
     }
     
-    public static func SwiftAutomation_noValue() throws -> Array<Element> { return Array<Element>() }
+    public static func SwiftAutomation_noValue() throws -> Array<Element> { return [] }
 }
 
 
@@ -262,12 +228,13 @@ extension Dictionary: SelfPacking, SelfUnpacking, SelfFormatting {
         return self.count == 0 ? "[:]" : "[\(self.map{ "\(formatter.format($0)): \(formatter.format($1))" }.joined(separator: ", "))]"
     }
     
-    public func SwiftAutomation_packSelf(_ appData: AppData) throws -> AEDesc {
+    public func SwiftAutomation_packSelf(_ appData: AppData) throws -> Descriptor {
+        /*
         var recordDesc = AEDesc.record()
         var isCustomRecordType: Bool = false
         if let key = AESymbol(code: pClass) as? Key, let recordClass = self[key] as? Symbol { // TO DO: confirm this works
             if !recordClass.isNameOnly {
-                recordDesc.descriptorType = recordClass.code
+                recordDesc.type = recordClass.code
                 isCustomRecordType = true
             }
         }
@@ -275,7 +242,6 @@ extension Dictionary: SelfPacking, SelfUnpacking, SelfFormatting {
         defer {
             if let listDesc = userProperties {
                 try! recordDesc.setParameter(DescType(keyASUserRecordFields), to: listDesc)
-                listDesc.dispose()
             }
         }
         for (key, value) in self {
@@ -285,34 +251,34 @@ extension Dictionary: SelfPacking, SelfUnpacking, SelfFormatting {
             if keySymbol.isNameOnly {
                 if userProperties == nil { userProperties = AEDesc.list() }
                 let keyDesc = try appData.pack(keySymbol)
-                defer { keyDesc.dispose() }
                 try userProperties!.appendItem(keyDesc)
                 let valueDesc = try appData.pack(value)
-                defer { valueDesc.dispose() }
                 try userProperties!.appendItem(valueDesc)
             } else if !(keySymbol.code == pClass && isCustomRecordType) {
                 let tmp = try appData.pack(value)
-                defer { tmp.dispose() }
                 try! recordDesc.setParameter(keySymbol.code, to: tmp)
             }
         }
         return recordDesc
+ */
+        throw AppleEventError(code: 1, message: "TO DO")
     }
     
-    public static func SwiftAutomation_unpackSelf(_ desc: AEDesc, appData: AppData) throws -> [Key:Value] {
+    public static func SwiftAutomation_unpackSelf(_ desc: Descriptor, appData: AppData) throws -> [Key:Value] {
+        throw AppleEventError(code: 1, message: "TO DO")
+        /*
         if !desc.isRecord {
             throw UnpackError(appData: appData, desc: desc, type: self, message: "Not a record.")
         }
         var result = [Key:Value]()
-        if desc.descriptorType != typeAERecord {
+        if desc.type != typeAERecord {
             if let key = appData.glueClasses.symbolType.symbol(code: pClass) as? Key,
-                let value = appData.glueClasses.symbolType.symbol(code: desc.descriptorType) as? Value {
+                let value = appData.glueClasses.symbolType.symbol(code: desc.type) as? Value {
                 result[key] = value
             }
         }
         for i in 1..<(try! desc.count()+1) {
             let (property, itemDesc) = try! desc.item(i)
-            defer { itemDesc.dispose() }
             if property == keyASUserRecordFields {
                 // unpack record properties whose keys are identifiers (represented as AEList of form: [key1,value1,key2,value2,...])
                 let userProperties = itemDesc
@@ -351,26 +317,11 @@ extension Dictionary: SelfPacking, SelfUnpacking, SelfFormatting {
                 }
             }
         }
-        desc.dispose()
         return result
+    */
     }
     
-    public static func SwiftAutomation_noValue() throws -> Dictionary<Key,Value> { return Dictionary<Key,Value>() }
+    public static func SwiftAutomation_noValue() throws -> Dictionary<Key,Value> { return [:] }
 }
 
-
-
-
-// specialized return type for use in commands to return the _entire_ reply AppleEvent as a raw AppleEvent descriptor (to return just the result as descriptor, use AppleEventDescriptor as return type)
-
-public class ReplyAppleEvent: AppleEventDescriptor {
-    
-    public var result: AppleEventDescriptor? { // the application-returned result value, if any
-        return try? AppleEventDescriptor(desc: self.desc.parameter(keyDirectObject))
-    }
-    
-    public var errorNumber: Int { // the application-returned error number, if any; 0 = noErr
-        return self.desc.errorNumber
-    }
-}
 

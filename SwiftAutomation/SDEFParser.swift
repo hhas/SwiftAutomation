@@ -13,7 +13,11 @@
 
 
 import Foundation
-import Carbon
+import AppleEvents
+
+#if canImport(Carbon)
+import Carbon // OSACopyScriptingDefinitionFromURL
+#endif
 
 
 
@@ -165,15 +169,20 @@ public class SDEFParser: ApplicationTerminology {
 }
 
 
-// convenience function
+// convenience function (macOS only)
 
-public func GetScriptingDefinition(_ url: URL) throws -> Data {
+// TO DO: what about getting via AE?
+
+public func scriptingDefinition(for url: URL) throws -> Data {
+    #if canImport(Carbon)
     var sdef: Unmanaged<CFData>?
     let err = OSACopyScriptingDefinitionFromURL(url as NSURL, 0, &sdef)
     if err != 0 {
         throw AutomationError(code: Int(err), message: "Can't retrieve SDEF.")
     }
     return sdef!.takeRetainedValue() as Data
+    #else
+    throw AutomationError(code: Int(err), message: "Can't retrieve SDEF.")
+    #endif
 }
-
 

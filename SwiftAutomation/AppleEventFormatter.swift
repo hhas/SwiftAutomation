@@ -4,18 +4,15 @@
 //
 //  Format an AppleEvent descriptor as Swift source code. Enables user tools to translate application commands from AppleScript to Swift syntax simply by installing a custom SendProc into an AS component instance to intercept outgoing AEs, pass them to formatAppleEvent(), and print the result.
 //
-//
+
+// TO DO: if keeping this in framework, need to sort out its public API
 
 // TO DO: Application object should appear as `APPLICATION()`, not `APPLICATION(name:"/PATH/TO/APP")`, for display in SwiftAutoEdit's command translator -- probably simplest to have a boolean arg to formatAppleEvent that dictates this (since the full version is still useful for debugging work)... might be worth making this an `app/application/fullApplication` enum to cover PREFIXApp case as well
 
 // TO DO: Symbols aren't displaying correctly within arrays/dictionaries/specifiers (currently appear as `Symbol.NAME` instead of `PREFIX.NAME`), e.g. `TextEdit(name: "/Applications/TextEdit.app").make(new: TED.document, withProperties: [Symbol.text: "foo"])`; `tell app "textedit" to document (text)` -> `TextEdit(name: "/Applications/TextEdit.app").documents[Symbol.text].get()` -- note that a custom Symbol subclass won't work as `description` can't be parameterized with prefix name to use; one option might be a Symbol subclass whose init takes the prefix as param when it's unpacked (that probably will work); that said, why isn't Formatter.formatSymbol() doing the job in the first place? (check it has correct prefix) -- it's formatValue() -- when formatting collections, it calls itself and then renders self-formatting objects as-is
 
-
-// TO DO: review AEDesc ownership
-
-
-import Carbon
 import Foundation
+import AppleEvents
 
 #if canImport(AppKit)
 import AppKit
@@ -29,25 +26,23 @@ public enum TerminologyType {
 }
 
 
-public func formatAppleEvent(descriptor event: AppleEvent, useTerminology: TerminologyType = .sdef) -> String { // TO DO: return command/reply/error enum, giving caller more choice on how to display
+public func formatAppleEvent(descriptor event: AppleEventDescriptor, useTerminology: TerminologyType = .sdef) -> String { // TO DO: return command/reply/error enum, giving caller more choice on how to display
     //  Format an outgoing or reply AppleEvent (if the latter, only the return value/error description is displayed).
     //  Caution: if sending events to self, caller MUST use TerminologyType.SDEF or call formatAppleEvent on a background thread, otherwise formatAppleEvent will deadlock the main loop when it tries to fetch host app's AETE via ascr/gdte event.
-    if event.descriptorType != typeAppleEvent { // sanity check
-        return "Can't format Apple event: wrong type: \(formatFourCharCodeLiteral(event.descriptorType))."
+    if event.type != AppleEvents.typeAppleEvent { // sanity check
+        return "Can't format Apple event: wrong type: \(formatFourCharCodeLiteral(event.type))."
     }
-    let addressDesc = try! event.attribute(keyAddressAttr)
-    defer { addressDesc.dispose() }
     let appData: DynamicAppData
     do {
-        appData = try dynamicAppData(for: addressDesc, useTerminology: useTerminology)
+        appData = try dynamicAppData(for: event.target!, useTerminology: useTerminology)
     } catch {
         return "Can't format Apple event: can't get terminology: \(error)"
     }
-    if event.eventClass == kCoreEventClass && event.eventID == kAEAnswer { // it's a reply event, so format error/return value only
+    if event.code == appleEventCode(AppleEvents.kCoreEventClass, AppleEvents.kAEAnswer) { // it's a reply event, so format error/return value only
         let errn = event.errorNumber
         if errn != 0 { // format error message
             return AutomationError(code: Int(errn), message: event.errorMessage).description // TO DO: use CommandError? (need to check it's happy with only replyEvent arg)
-        } else if let reply = try? event.parameter(keyDirectObject) { // format return value
+        } else if let reply = event.parameter(AppleEvents.keyDirectObject) { // format return value
             return appData.formatter.format((try? appData.unpackAsAny(reply)) ?? reply)
         } else {
             return MissingValue.description
@@ -63,27 +58,27 @@ public func formatAppleEvent(descriptor event: AppleEvent, useTerminology: Termi
 
 // cache previously parsed terminology for efficiency
 private let _cacheMaxLength = 10
-private var _cachedTerms = [(AEDesc, TerminologyType, DynamicAppData)]()
+private var _cachedTerms = [(AddressDescriptor, TerminologyType, DynamicAppData)]()
 
 
-private func dynamicAppData(for addressDesc: AEAddressDesc, useTerminology: TerminologyType) throws -> DynamicAppData {
+private func dynamicAppData(for addressDesc: AddressDescriptor, useTerminology: TerminologyType) throws -> DynamicAppData {
     for (desc, terminologyType, appData) in _cachedTerms {
-        if desc.descriptorType == addressDesc.descriptorType && desc.data() == addressDesc.data() && terminologyType == useTerminology {
+        if desc.type == addressDesc.type && desc.data == addressDesc.data && terminologyType == useTerminology {
             return appData
         }
     }
     let appData = try DynamicAppData(applicationURL: applicationURL(for: addressDesc), useTerminology: useTerminology) // TO DO: are there any cases where keyAddressArrr won't return correct desc? (also, double-check what reply event uses)
-    if _cachedTerms.count > _cacheMaxLength { _cachedTerms.removeFirst().0.dispose() } // TO DO: ideally this should trim least used, not longest cached
-    _cachedTerms.append((addressDesc.copy(), useTerminology, appData))
+    if _cachedTerms.count > _cacheMaxLength { _cachedTerms.removeFirst() } // TO DO: ideally this should trim least used, not longest cached
+    _cachedTerms.append((addressDesc, useTerminology, appData))
     return appData
 }
 
 // given the AEAddressDesc for a local process, return the fileURL to its .app bundle
-func applicationURL(for addressDesc: AEAddressDesc) throws -> URL {
+func applicationURL(for addressDesc: AddressDescriptor) throws -> URL {
     #if canImport(AppKit)
     // AppleScript uses old typeProcessSerialNumber, but this should coerce to modern typeKernelProcessID
     guard let pid = try? addressDesc.processIdentifier() else { // local processes are generally targeted by PID
-        throw TerminologyError("Unsupported address type: \(formatFourCharCodeLiteral(addressDesc.descriptorType))")
+        throw TerminologyError("Unsupported address type: \(formatFourCharCodeLiteral(addressDesc.type))")
     }
     guard let applicationURL = NSRunningApplication(processIdentifier: pid)?.bundleURL else {
         throw TerminologyError("Can't get path to application bundle (PID: \(pid)).")
@@ -147,13 +142,13 @@ open class DynamicAppData: AppData { // TO DO: rename this and make `public` as 
                                    glueClasses: self.glueClasses, glueSpec: glueSpec, glueTable: glueTable)
     }
     
-    override func unpackAsSymbol(_ desc: AEDesc) -> Symbol { // TO DO: ownership?
-        return self.glueClasses.symbolType.init(name: self.glueTable.typesByCode[try! desc.fourCharCode()],
-                                                code: try! desc.fourCharCode(), type: desc.descriptorType, descriptor: desc)
+    override func unpackAsSymbol(_ desc: Descriptor) -> Symbol {
+        return self.glueClasses.symbolType.init(name: self.glueTable.typesByCode[try! unpackAsFourCharCode(desc)],
+                                                code: try! unpackAsFourCharCode(desc), type: desc.type, descriptor: desc as? ScalarDescriptor)
     }
     
     override func recordKey(forCode code: OSType) -> Symbol {
-        return self.glueClasses.symbolType.init(name: self.glueTable.typesByCode[code], code: code, type: typeProperty)
+        return self.glueClasses.symbolType.init(name: self.glueTable.typesByCode[code], code: code, type: AppleEvents.typeProperty)
     }
 }
 
@@ -162,52 +157,17 @@ open class DynamicAppData: AppData { // TO DO: rename this and make `public` as 
 // unpack AppleEvent descriptor's contents into struct, to be consumed by SpecifierFormatter.formatCommand()
 
 
-public struct CommandDescription {
-    
-    // note: even when terminology data is available, there's still no guarantee that a command won't have to use raw codes instead (typically due to dodgy terminology; while AS allows mixing of keyword and raw chevron syntax in the same command, it's such a rare defect it's best to stick solely to one or the other)
-    public enum Signature {
-        case named(name: String, directParameter: Any, keywordParameters: [(String, Any)], requestedType: Symbol?)
-        case codes(eventClass: OSType, eventID: OSType, parameters: [OSType:Any])
-    }
-    
-    // name and parameters
-    public let signature: Signature // either keywords or four-char codes
-    
-    // attributes (note that waitReply and withTimeout values are unreliable when extracted from an existing AppleEvent)
-    public private(set) var subject: Any? = nil // TO DO: subject or parentSpecifier? (and what, if any, difference does it make?)
-    public private(set) var waitReply: Bool = true // note that existing AppleEvent descriptors contain keyReplyRequestedAttr, which could be either SendOptions.waitForReply or .queueReply
-    // TO DO: also include sendOptions for completeness
-    public private(set) var withTimeout: TimeInterval = defaultTimeout
-    public private(set) var considering: ConsideringOptions = [.case]
-    
-    
-    // called by sendAppleEvent with a failed command's details
-    public init(name: String?, eventClass: OSType, eventID: OSType, parentSpecifier: Any?,
-                directParameter: Any, keywordParameters: [KeywordParameter],
-                requestedType: Symbol?, waitReply: Bool, withTimeout: TimeInterval?, considering: ConsideringOptions?) {
-        if let commandName = name {
-            self.signature = .named(name: commandName, directParameter: directParameter,
-                                    keywordParameters: keywordParameters.map { ($0!, $2) }, requestedType: requestedType)
-        } else {
-            var parameters = [OSType:Any]()
-            if isParameter(directParameter) { parameters[keyDirectObject] = directParameter }
-            for (_, code, value) in keywordParameters where isParameter(value) { parameters[code] = value }
-            if let symbol = requestedType { parameters[keyAERequestedType] = symbol }
-            self.signature = .codes(eventClass: eventClass, eventID: eventID, parameters: parameters)
-        }
-        self.waitReply = waitReply
-        self.subject = parentSpecifier
-        if withTimeout != nil { self.withTimeout = withTimeout! }
-        if considering != nil { self.considering = considering! }
-    }
-    
+public extension CommandDescription {
     
     // called by [e.g.] SwiftAutoEdit.app with an intercepted AppleEvent descriptor
-    public init(event: AEDesc, appData: DynamicAppData) { // TO DO: would be more flexible to take AppData + GlueTable as separate params
+    init(event: AppleEventDescriptor, appData: DynamicAppData) { // TO DO: would be more flexible to take AppData + GlueTable as separate params
         // unpack the event's parameters
+        
+        fatalError("TO DO")
+        /*
+        
         var rawParameters = [OSType:Any]()
-        for i in try! 1...event.count() {
-            let (key, desc) = try! event.item(i)
+        for (key, desc) in event.parameters {
             rawParameters[key] = (try? appData.unpackAsAny(desc)) ?? desc
         }
         //
@@ -235,7 +195,7 @@ public struct CommandDescription {
         }
         // unpack subject attribute, if given
         if let desc = try? event.attribute(AEKeyword(keySubjectAttr)) {
-            if desc.descriptorType != typeNull { // typeNull = root application object
+            if desc.type != typeNull { // typeNull = root application object
                 self.subject = (try? appData.unpackAsAny(desc)) ?? desc // TO DO: double-check formatter knows how to display descriptor (or any other non-specifier) as customRoot
             }
         }
@@ -263,6 +223,7 @@ public struct CommandDescription {
                 }
             }
         }
+ */
     }
 }
 

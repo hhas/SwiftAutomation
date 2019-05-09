@@ -5,8 +5,8 @@
 //  Generates source code representation of Specifier.
 //
 
-import Carbon
 import Foundation
+import AppleEvents
 
 #if canImport(AppKit)
 import AppKit
@@ -105,13 +105,13 @@ public class SpecifierFormatter {
     
     func formatRootSpecifier(_ specifier: RootSpecifier) -> String {
         var hasCustomRoot = true
-        if let desc = specifier.rootObject as? AEDesc {
-            switch desc.descriptorType {
-            case typeCurrentContainer:
+        if let desc = specifier.rootObject as? Descriptor {
+            switch desc.type {
+            case AppleEvents.typeCurrentContainer:
                 return "\(self.classNamePrefix)Con"
-            case typeObjectBeingExamined:
+            case AppleEvents.typeObjectBeingExamined:
                 return "\(self.classNamePrefix)Its"
-            case typeNull:
+            case AppleEvents.typeNull:
                 hasCustomRoot = false
             default:
                 break
@@ -141,8 +141,11 @@ public class SpecifierFormatter {
         return result
     }
     
+    let _insertionPoints: [InsertionSpecifier.Position: String] = [
+                                    .beginning: "beginning", .end: "end", .before: "before", .after: "after"]
+    
     func formatInsertionSpecifier(_ specifier: InsertionSpecifier) -> String {
-        if let name = [kAEBeginning: "beginning", kAEEnd: "end", kAEBefore: "before", kAEAfter: "after"][specifier.position] {
+        if let name = self._insertionPoints[specifier.position] {
             return "\(self.format(specifier.parentQuery)).\(name)"
         } else { // unknown (bad) position
             return "<\(type(of: specifier))(kpos:\(specifier.position),kobj:\(self.format(specifier.parentQuery)))>"
@@ -153,50 +156,50 @@ public class SpecifierFormatter {
         let form = specifier.selectorForm
         var result = self.format(specifier.parentQuery)
         switch form {
-        case OSType(formPropertyID):
+        case .property:
             // kludge, seld is either desc or symbol, depending on whether constructed or unpacked; TO DO: eliminate?
-            if let desc = specifier.selectorData as? AEDesc, let prop = try? desc.fourCharCode() {
+            if let desc = specifier.selectorData as? Descriptor, let prop = try? unpackAsType(desc) {
                 return result + formatPropertyVar(prop)
             } else if let symbol = specifier.selectorData as? Symbol {
                 return result + formatPropertyVar(symbol.code)
             } // else malformed desc
-        case OSType(formUserPropertyID):
+        case .userProperty:
             return "\(result).userProperty(\(self.formatValue(specifier.selectorData)))"
-        case OSType(formRelativePosition): // specifier.previous/next(SYMBOL)
-            if let seld = specifier.selectorData as? AEDesc, // ObjectSpecifier.unpackSelf does not unpack ordinals
-                    let name = [kAEPrevious: "previous", kAENext: "next"][try! seld.fourCharCode()],
+        case .relativePosition: // specifier.previous/next(SYMBOL)
+            if let seld = specifier.selectorData as? Descriptor, // ObjectSpecifier.unpackSelf does not unpack ordinals
+                    let name = [kAEPrevious: "previous", kAENext: "next"][try! unpackAsEnum(seld)],
                     let parent = specifier.parentQuery as? ObjectSpecifier {
                 if specifier.wantType == parent.wantType {
                     return "\(result).\(name)()" // use shorthand form for neatness
                 } else {
-                    let element = self.formatSymbol(name: nil, code: specifier.wantType, type: typeType)
+                    let element = self.formatSymbol(name: nil, code: specifier.wantType, type: AppleEvents.typeType)
                     return "\(result).\(name)(\(element))"
                 }
             }
         default:
             result += formatElementsVar(specifier.wantType)
-            if let desc = specifier.selectorData as? AEDesc, (try? desc.fourCharCode()) == DescType(kAEAll) { // TO DO: check this is right (replaced `where` with `,`)
+            if let desc = specifier.selectorData as? Descriptor, (try? unpackAsEnum(desc)) == AppleEvents.kAEAll { // TO DO: check this is right (replaced `where` with `,`)
                 return result
             }
             switch form {
-            case OSType(formAbsolutePosition): // specifier[IDX] or specifier.first/middle/last/any
-                if let code = try? (specifier.selectorData as? AEDesc)?.fourCharCode(), // ObjectSpecifier.unpackSelf does not unpack ordinals
-                    let ordinal = [DescType(kAEFirst): "first", DescType(kAEMiddle): "middle",
-                                   DescType(kAELast): "last", DescType(kAEAny): "any"][code] {
+            case .absolutePosition: // specifier[IDX] or specifier.first/middle/last/any
+                if let desc = specifier.selectorData as? Descriptor, let code = try? unpackAsEnum(desc), // ObjectSpecifier.unpackSelf does not unpack ordinals
+                    let ordinal = [AppleEvents.kAEFirst: "first", AppleEvents.kAEMiddle: "middle",
+                                   AppleEvents.kAELast: "last", AppleEvents.kAEAny: "any"][code] {
                     return "\(result).\(ordinal)"
                 } else {
                     return "\(result)[\(self.formatValue(specifier.selectorData))]"
                 }
-            case OSType(formName): // specifier[NAME] or specifier.named(NAME)
+            case .name: // specifier[NAME] or specifier.named(NAME)
                 return specifier.selectorData is Int ? "\(result).named(\(self.formatValue(specifier.selectorData)))"
                                                      : "\(result)[\(self.formatValue(specifier.selectorData))]"
-            case OSType(formUniqueID): // specifier.ID(UID)
+            case .uniqueID: // specifier.ID(UID)
                 return "\(result).ID(\(self.format(specifier.selectorData)))"
-            case OSType(formRange): // specifier[FROM,TO]
+            case .range: // specifier[FROM,TO]
                 if let seld = specifier.selectorData as? RangeSelector {
                     return "\(result)[\(self.format(seld.start)), \(self.format(seld.stop))]" // TO DO: app-based specifiers should use untargeted 'App' root; con-based specifiers should be reduced to minimal representation if their wantType == specifier.wantType
                 }
-            case OSType(formTest): // specifier[TEST]
+            case .test: // specifier[TEST]
                 return "\(result)[\(self.format(specifier.selectorData))]"
             default:
                 break
@@ -205,31 +208,35 @@ public class SpecifierFormatter {
         return "<\(type(of: specifier))(want:\(specifier.wantType),form:\(specifier.selectorForm),seld:\(self.formatValue(specifier.selectorData)),from:\(self.format(specifier.parentQuery)))>"
     }
     
-    private let _comparisonOperators = [OSType(kAELessThan): "<", OSType(kAELessThanEquals): "<=", OSType(kAEEquals): "==",
-                                        OSType(kAENotEquals): "!=", OSType(kAEGreaterThan): ">", OSType(kAEGreaterThanEquals): ">="]
-    private let _logicalOperators = [OSType(kAEBeginsWith): "beginsWith", OSType(kAEEndsWith): "endsWith",
-                                     OSType(kAEContains): "contains", OSType(kAEIsIn): "isIn"]
+    private let _comparisonOperators: [AppleEvents.ComparisonDescriptor.Operator: String] = [
+                                            .lessThan: "<", .lessThanOrEqual: "<=", .equal: "==",
+                                            .notEqual: "!=", .greaterThan: ">", .greaterThanOrEqual: ">="]
+    private let _containmentOperators: [AppleEvents.ComparisonDescriptor.Operator: String] = [
+                                            .beginsWith: "beginsWith", .endsWith: "endsWith",
+                                            .contains: "contains", .isIn: "isIn"]
     
     func formatComparisonTest(_ specifier: ComparisonTest) -> String {
         let operand1 = self.formatValue(specifier.operand1), operand2 = self.formatValue(specifier.operand2)
         if let name = self._comparisonOperators[specifier.operatorType] {
             return "\(operand1) \(name) \(operand2)"
-        } else if let name = self._logicalOperators[specifier.operatorType] {
+        } else if let name = self._containmentOperators[specifier.operatorType] {
             return "\(operand1).\(name)(\(operand2))"
         }
-        return "<\(type(of: specifier))(relo:\(specifier.operatorType),obj1:\(self.formatValue(operand1)),obj2:\(self.formatValue(operand2)))>"
+        return "<\(type(of: specifier))(relo:\(specifier.operatorType),obj1:\(self.formatValue(operand1)),obj2:\(self.formatValue(operand2)))>" // malformed
     }
     
     func formatLogicalTest(_ specifier: LogicalTest) -> String {
         let operands = specifier.operands.map({self.formatValue($0)})
-        if let name = [kAEAND: "&&", kAEOR: "||"][specifier.operatorType] {
-            if operands.count > 1 {
-                return operands.joined(separator: " \(name) ")
-            }
-        } else if specifier.operatorType == kAENOT && operands.count == 1 {
+        switch specifier.operatorType {
+        case .AND where operands.count > 1:
+            return operands.joined(separator: "&&")
+        case .OR where operands.count > 1:
+            return operands.joined(separator: "||")
+        case .NOT where operands.count == 1:
             return "!(\(operands[0]))"
+        default: // malformed
+            return "<\(type(of: specifier))(logc:\(specifier.operatorType),term:\(self.formatValue(operands)))>"
         }
-        return "<\(type(of: specifier))(logc:\(specifier.operatorType),term:\(self.formatValue(operands)))>"
     }
 
     // general formatting functions

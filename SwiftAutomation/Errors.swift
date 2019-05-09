@@ -4,14 +4,13 @@
 //
 
 import Foundation
-import Carbon
+import AppleEvents
 
 
 // TO DO: currently Errors are mostly opaque to client code (even inits are internal only); what (if any) properties should be made public?
 
 // TO DO: simplify? use struct/enum for internal/all errors?
 
-// TO DO: memory management for AEDescs
 
 /******************************************************************************/
 // error descriptions from ASLG/MacErrors.h
@@ -198,20 +197,16 @@ public class UnpackError: AutomationError {
     
     let type: Any.Type
     let appData: AppData
-    let desc: AEDesc
+    let desc: Descriptor
     
-    public init(appData: AppData, desc: AEDesc, type: Any.Type, message: String? = nil, cause: Error? = nil) { // this takes ownership of AEDesc
+    public init(appData: AppData, desc: Descriptor, type: Any.Type, message: String? = nil, cause: Error? = nil) {
         self.appData = appData
         self.desc = desc
         self.type = type
         super.init(code: unpackErrorCode, message: message, cause: cause)
     }
     
-    deinit {
-        self.desc.dispose()
-    }
-    
-    var descriptor: AppleEventDescriptor { return AppleEventDescriptor(desc: self.desc.copy()) }
+    var descriptor: Descriptor { return self.desc }
     
     // TO DO: worth including a method for trying to unpack desc as Any; this should be used when constructing full error message (might also be useful to caller); or what about a var that returns the type it would unpack as? (caveat: that probably won't work so well for AEList/AERecord descs due to their complexity and the obvious challenges of fabricating generic type objects on the fly)
     
@@ -219,7 +214,7 @@ public class UnpackError: AutomationError {
         var value: Any = self.desc
         var string = "Can't unpack value as \(self.type)"
         do {
-            value = try self.appData.unpackAsAny(self.desc.copy())
+            value = try self.appData.unpackAsAny(self.desc)
         } catch {
             string = "Can't unpack malformed descriptor" // TO DO:
         }
@@ -236,11 +231,11 @@ public class CommandError: AutomationError { // raised whenever an application c
     
     let commandInfo: CommandDescription // TO DO: this should always be given
     let appData: AppData
-    private let event: AEDesc? // non-nil if event was built and sent
-    private let reply: AEDesc? // non-nil if reply event was received
+    private let event: AppleEventDescriptor? // non-nil if event was built and sent
+    private let reply: ReplyEventDescriptor? // non-nil if reply event was received
     
     public init(commandInfo: CommandDescription, appData: AppData,
-                event: AEDesc? = nil, reply: AEDesc? = nil, cause: Error? = nil) {
+                event: AppleEventDescriptor? = nil, reply: ReplyEventDescriptor? = nil, cause: Error? = nil) {
         self.appData = appData
         self.event = event
         self.reply = reply
@@ -256,22 +251,16 @@ public class CommandError: AutomationError { // raised whenever an application c
         super.init(code: (errorNumber == 0 ? defaultErrorCode : errorNumber), cause: cause)
     }
     
-    deinit {
-        self.event?.dispose()
-        self.reply?.dispose()
-    }
-    
     public override var message: String? {
-        if let reply = self.reply, let desc = (try? reply.parameter(keyErrorString))
-            ?? (try? reply.parameter(AEKeyword(kOSAErrorBriefMessage))) {
-            defer { desc.dispose() }
-            if let result = try? desc.string() { return result }
+        if let desc = self.reply?.parameter(AEKeyword(AppleEvents.keyErrorString))
+                    ?? self.reply?.parameter(AEKeyword(kOSAErrorBriefMessage)) { // TO DO: get rid of this?
+            if let result = try? unpackAsString(desc) { return result }
         }
         return descriptionForError[self._code]
     }
     
     public var expectedType: Symbol? {
-        if let desc = try? self.reply?.parameter(AEKeyword(kOSAErrorExpectedType)) {
+        if let desc = self.reply?.parameter(AEKeyword(kOSAErrorExpectedType)) {
             return try? self.appData.unpack(desc) as Symbol
         } else {
             return nil
@@ -279,7 +268,7 @@ public class CommandError: AutomationError { // raised whenever an application c
     }
     
     public var offendingObject: Any? {
-        if let desc = try? self.reply?.parameter(AEKeyword(kOSAErrorOffendingObject)) {
+        if let desc = self.reply?.parameter(AEKeyword(kOSAErrorOffendingObject)) {
             return try? self.appData.unpack(desc) as Any
         } else {
             return nil
@@ -287,7 +276,7 @@ public class CommandError: AutomationError { // raised whenever an application c
     }
     
     public var partialResult: Any? {
-        if let desc = try? self.reply?.parameter(AEKeyword(kOSAErrorPartialResult)) {
+        if let desc = self.reply?.parameter(AEKeyword(kOSAErrorPartialResult)) {
             return try? self.appData.unpack(desc) as Any
         } else {
             return nil
