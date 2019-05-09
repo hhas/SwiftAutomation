@@ -72,7 +72,7 @@ do {
     let state: ITU = try itunes.playerState.get()
     print("itunes.playerState.get() -> \(state)")
     try ITunes().play()
-    print(try itunes.currentTrack.name.get())
+    print("Current track:", try itunes.currentTrack.name.get())
     
     
 //    print("// Specifier.description: \(TEDApp.documents[1].text)")
@@ -84,12 +84,18 @@ do {
     //print(result)
 
     
+    print(try TextEdit().documents.text.get())
+    
+/*
     print("TEST: make new document with properties {text: \"Hello World!\"}")
     let teDoc: TEDItem = try te.make(new: TED.document, withProperties: [TED.text: "Hello World!"])
     print("=> \(teDoc)")
     print("TEST: get text of teDoc")
     print(try teDoc.text.get())
-
+*/
+    
+    
+    
     /*
 /*
     
