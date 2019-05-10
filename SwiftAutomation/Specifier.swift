@@ -77,11 +77,11 @@ open class Query: CustomStringConvertible, CustomDebugStringConvertible, CustomR
     // note: Equatable isn't implemented here as 1. it's rarely necessary to compare two specifiers, and 2. only the target app can know if two queries identify the same object or not, e.g. `Finder().folders["foo"]`, `Finder().desktop.folders["FOO"]`, and `Finder().home.folders["Desktop:Foo"]` all refer to same object (a folder named "foo" on user's desktop) while `Finder.disks["Bar"]` and `Finder.disks["bar"]` do not (since disk names are case-sensitive)
     
     public let appData: AppData
-    internal private(set) var _cachedDescriptor: AppleEvents.QueryDescriptor? // TO DO: caching AppleEvents.QueryDescriptor descriptor doesn't provide much benefit as Query.data property is calculated on each call; would be better to capture result of Query.appendTo(), which is flattened representation ready for appending to parent descriptor's params data
+    internal private(set) var _cachedDescriptor: QueryDescriptor? // TO DO: caching QueryDescriptor descriptor doesn't provide much benefit as Query.data property is calculated on each call; would be better to capture result of Query.appendTo(), which is flattened representation ready for appending to parent descriptor's params data
     
     init(appData: AppData, descriptor: Descriptor?) { // descriptor is supplied on unpacking
         self.appData = appData
-        self._cachedDescriptor = descriptor as? AppleEvents.QueryDescriptor
+        self._cachedDescriptor = descriptor as? QueryDescriptor
     }
     
     // unpacking
@@ -91,7 +91,7 @@ open class Query: CustomStringConvertible, CustomDebugStringConvertible, CustomR
     // packing
     
     public func SwiftAutomation_packSelf(_ appData: AppData) throws -> Descriptor {
-        if self._cachedDescriptor == nil { self._cachedDescriptor = try self._packSelf() as? AppleEvents.QueryDescriptor }
+        if self._cachedDescriptor == nil { self._cachedDescriptor = try self._packSelf() as? QueryDescriptor }
         return self._cachedDescriptor! // caller takes ownership of returned desc, so copy cached desc
     }
     
@@ -177,21 +177,21 @@ open class Specifier: Query, SpecifierProtocol {
     
     // convenience methods for sending Apple events using four-char codes (either OSTypes or Strings)
     
-    public func sendAppleEvent<T>(_ eventClass: OSType, _ eventID: OSType, _ parameters: [OSType:Any] = [:],
+    public func sendAppleEvent<T>(_ event: EventIdentifier, _ parameters: [OSType:Any] = [:],
                                   requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
                                   withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(eventClass: eventClass, eventID: eventID,
+        return try self.appData.sendAppleEvent(event: event,
                                                parentSpecifier: self, parameters: parameters,
                                                requestedType: requestedType, waitReply: waitReply,
                                                sendOptions: sendOptions, withTimeout: withTimeout, considering: considering)
     }
     
-    public func sendAppleEvent<T>(_ eventClass: String, _ eventID: String, _ parameters: [String:Any] = [:],
+    public func sendAppleEvent<T>(_ event: String, _ parameters: [String:Any] = [:],
                                   requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
                                   withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
         var params = [UInt32:Any]()
         for (k, v) in parameters { params[try parseFourCharCode(k)] = v }
-        return try self.appData.sendAppleEvent(eventClass: try parseFourCharCode(eventClass), eventID: try parseFourCharCode(eventID),
+        return try self.appData.sendAppleEvent(event: try parseEightCharCode(event),
                                                parentSpecifier: self, parameters: params,
                                                requestedType: requestedType, waitReply: waitReply,
                                                sendOptions: sendOptions, withTimeout: withTimeout, considering: considering)
@@ -199,21 +199,21 @@ open class Specifier: Query, SpecifierProtocol {
     
     // non-generic versions of the above methods; these are bound when T can't be inferred (either because caller doesn't use the return value or didn't declare a specific type for it, e.g. `let result = cmd.call()`), in which case Any is used
     
-    @discardableResult public func sendAppleEvent(_ eventClass: OSType, _ eventID: OSType, _ parameters: [OSType:Any] = [:],
+    @discardableResult public func sendAppleEvent(_ event: EventIdentifier, _ parameters: [OSType:Any] = [:],
                                                   requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
                                                   withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(eventClass: eventClass, eventID: eventID,
+        return try self.appData.sendAppleEvent(event: event,
                                                parentSpecifier: self, parameters: parameters,
                                                requestedType: requestedType, waitReply: waitReply,
                                                sendOptions: sendOptions, withTimeout: withTimeout, considering: considering)
     }
     
-    @discardableResult public func sendAppleEvent(_ eventClass: String, _ eventID: String, _ parameters: [String:Any] = [:],
+    @discardableResult public func sendAppleEvent(_ event: String, _ parameters: [String:Any] = [:],
                                                   requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
                                                   withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
         var params = [UInt32:Any]()
         for (k, v) in parameters { params[try parseFourCharCode(k)] = v }
-        return try self.appData.sendAppleEvent(eventClass: try parseFourCharCode(eventClass), eventID: try parseFourCharCode(eventID),
+        return try self.appData.sendAppleEvent(event: try parseEightCharCode(event),
                                                parentSpecifier: self, parameters: params,
                                                requestedType: requestedType, waitReply: waitReply,
                                                sendOptions: sendOptions, withTimeout: withTimeout, considering: considering)
@@ -226,7 +226,7 @@ open class Specifier: Query, SpecifierProtocol {
 
 open class InsertionSpecifier: Specifier { // SwiftAutomation_packSelf
     
-    public typealias Position = AppleEvents.InsertionLocation.Position
+    public typealias Position = InsertionLocationDescriptor.Position
     
     public let position: Position
     
@@ -238,8 +238,8 @@ open class InsertionSpecifier: Specifier { // SwiftAutomation_packSelf
     }
     
     override func _packSelf() throws -> Descriptor {
-        return InsertionLocation(position: self.position,
-                                 from: try self.parentQuery.SwiftAutomation_packSelf(self.appData) as! AppleEvents.QueryDescriptor) // TO DO
+        return InsertionLocationDescriptor(position: self.position,
+                                           from: try self.parentQuery.SwiftAutomation_packSelf(self.appData) as! QueryDescriptor) // TO DO
     }
 }
 
@@ -250,7 +250,7 @@ open class InsertionSpecifier: Specifier { // SwiftAutomation_packSelf
 
 public protocol ObjectSpecifierProtocol: SpecifierProtocol {
     
-    typealias Form = AppleEvents.ObjectSpecifier.Form
+    typealias Form = ObjectSpecifierDescriptor.Form
     
     var wantType: DescType {get}
     var selectorForm: Form {get}
@@ -273,11 +273,11 @@ open class ObjectSpecifier: Specifier, ObjectSpecifierProtocol { // represents p
     }
     
     override func _packSelf() throws -> Descriptor {
-        guard let container = try self.parentQuery.SwiftAutomation_packSelf(self.appData) as? AppleEvents.QueryDescriptor else {
+        guard let container = try self.parentQuery.SwiftAutomation_packSelf(self.appData) as? QueryDescriptor else {
             throw AppleEventError(code: 1) // TO DO
         }
         let keyData = try self.appData.pack(self.selectorData)
-        return AppleEvents.ObjectSpecifier(want: self.wantType, form: self.selectorForm, seld: keyData, from: container) // TO DO: cache this desc?
+        return ObjectSpecifierDescriptor(want: self.wantType, form: self.selectorForm, seld: keyData, from: container) // TO DO: cache this desc?
     }
 
     // Comparison test constructors
@@ -344,22 +344,22 @@ struct RangeSelector: SelfPacking { // holds data for by-range selectors
         self.wantType = wantType
     }
     
-    private func packSelector(_ selectorData: Any, appData: AppData) throws -> AppleEvents.QueryDescriptor {
+    private func packSelector(_ selectorData: Any, appData: AppData) throws -> QueryDescriptor {
         switch selectorData {
-        case let desc as AppleEvents.QueryDescriptor: // TO DO: is this needed?
+        case let desc as QueryDescriptor: // TO DO: is this needed?
             return desc
         case let specifier as Specifier: // technically, only ObjectSpecifier makes sense here, tho AS prob. doesn't prevent insertion loc or multi-element specifier being passed instead
-            return try specifier.SwiftAutomation_packSelf(appData) as! AppleEvents.QueryDescriptor
+            return try specifier.SwiftAutomation_packSelf(appData) as! QueryDescriptor
         default: // pack anything else as a by-name or by-index specifier
             let form: ObjectSpecifier.Form = selectorData is String ? .name : .absolutePosition
             let seld = try appData.pack(selectorData) // TO DO: disposal
-            return AppleEvents.ObjectSpecifier(want: self.wantType, form: form, seld: seld, from: AppleEvents.RootSpecifier.con)
+            return ObjectSpecifierDescriptor(want: self.wantType, form: form, seld: seld, from: RootSpecifierDescriptor.con)
         }
     }
     
     func SwiftAutomation_packSelf(_ appData: AppData) throws -> Descriptor {
         // note: the returned desc will be cached by the MultipleObjectSpecifier, so no need to cache it here
-        return AppleEvents.ObjectSpecifier.RangeDescriptor(start:try self.packSelector(self.start, appData: appData),
+        return ObjectSpecifierDescriptor.RangeDescriptor(start:try self.packSelector(self.start, appData: appData),
                                                            stop: try self.packSelector(self.stop, appData: appData))
     }
 }
@@ -403,7 +403,7 @@ public class ComparisonTest: TestClause {
     }
     
     override func _packSelf() throws -> Descriptor {
-        return AppleEvents.ComparisonDescriptor(object: try self.appData.pack(self.operand1) as! AppleEvents.QueryDescriptor,
+        return AppleEvents.ComparisonDescriptor(object: try self.appData.pack(self.operand1) as! QueryDescriptor,
                                                 comparison: self.operatorType,
                                                 value: try self.appData.pack(self.operand2))
     }

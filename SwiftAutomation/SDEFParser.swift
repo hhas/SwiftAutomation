@@ -42,9 +42,9 @@ public class SDEFParser: ApplicationTerminology {
     
     // parse an OSType given as 4/8-character "MacRoman" string, or 10/18-character hex string
     
-    func parse(fourCharCode string: NSString) throws -> OSType { // class, property, enum, param, etc. code
-        if string.length == 10 && (string.hasPrefix("0x") || string.hasPrefix("0X")) { // e.g. "0x00000001"
-            guard let result = UInt32(string.substring(with: NSRange(location: 2, length: 8)), radix: 16) else {
+    func parse(fourCharCode string: String) throws -> OSType { // class, property, enum, param, etc. code
+        if string.count == 10 && (string.hasPrefix("0x") || string.hasPrefix("0X")) { // e.g. "0x00000001"
+            guard let result = UInt32(string.dropFirst(2), radix: 16) else {
                 throw AutomationError(code: 1, message: "Invalid four-char code (bad representation): \(string.debugDescription)")
             }
             return result
@@ -53,15 +53,14 @@ public class SDEFParser: ApplicationTerminology {
         }
     }
     
-    func parse(appleEventCode string: NSString) throws -> (OSType, OSType) { // eventClass and eventID code
-        if string.length == 8 {
-            return (try parseFourCharCode(string.substring(to: 4)), try parseFourCharCode(string.substring(from: 4)))
-        } else if string.length == 18 && (string.hasPrefix("0x") || string.hasPrefix("0X")) { // e.g. "0x0123456701234567"
-            guard let eventClass = UInt32(string.substring(with: NSRange(location: 2, length: 8)), radix: 16),
-                let eventID = UInt32(string.substring(with: NSRange(location: 10, length: 8)), radix: 16) else {
+    func parse(appleEventCode string: String) throws -> EventIdentifier {
+        if string.count == 8 {
+            return try parseEightCharCode(string)
+        } else if string.count == 18 && (string.hasPrefix("0x") || string.hasPrefix("0X")) { // e.g. "0x0123456789ABCDEF" // caution: this does not allow for underscores within literal number
+            guard let event = UInt64(string.dropFirst(2), radix: 16) else {
                     throw AutomationError(code: 1, message: "Invalid eight-char code (bad representation): \(string.debugDescription)")
             }
-            return (eventClass, eventID)
+            return event
         } else {
             throw AutomationError(code: 1, message: "Invalid eight-char code (wrong length): \((string as String).debugDescription)")
         }
@@ -77,15 +76,14 @@ public class SDEFParser: ApplicationTerminology {
         guard let name = self.attribute("name", of: element), let codeString = self.attribute("code", of: element), name != "" else {
             throw TerminologyError("Missing 'name'/'code' attribute.")
         }
-        return (name, try self.parse(fourCharCode: codeString as NSString))
+        return (name, try self.parse(fourCharCode: codeString))
     }
     
-    private func parse(commandElement element: XMLElement) throws -> (String, OSType, OSType) {
+    private func parse(commandElement element: XMLElement) throws -> (String, EventIdentifier) {
         guard let name = self.attribute("name", of: element), let codeString = self.attribute("code", of: element), name != "" else {
             throw TerminologyError("Missing 'name'/'code' attribute.")
         }
-        let (eventClass, eventID) = try self.parse(appleEventCode: codeString as NSString)
-        return (name, eventClass, eventID)
+        return (name, try self.parse(appleEventCode: codeString))
     }
     
     //
@@ -130,21 +128,21 @@ public class SDEFParser: ApplicationTerminology {
                     self.enumerators.append(KeywordTerm(name: self.keywordConverter.convertSpecifierName(name), code: code))
                 }
             case "command", "event":
-                let (name, eventClass, eventID) = try self.parse(commandElement: element)
+                let (name, eventIdentifier) = try self.parse(commandElement: element)
                 // Note: overlapping command definitions (e.g. 'path to') should be processed as follows:
                 // - If their names and codes are the same, only the last definition is used; other definitions are ignored
                 //   and will not compile.
                 // - If their names are the same but their codes are different, only the first definition is used; other
                 //   definitions are ignored and will not compile.
                 let previousDef = self.commandsDict[name]
-                if previousDef == nil || (previousDef!.eventClass == eventClass && previousDef!.eventID == eventID) {
+                if previousDef == nil || (previousDef!.event == eventIdentifier) {
                     var parameters = [KeywordTerm]()
                     for element in element.elements(forName: "parameter") {
                         let (paramName, paramCode) = try self.parse(keywordElement: element)
                         parameters.append(KeywordTerm(name: self.keywordConverter.convertParameterName(paramName), code: paramCode))
                     }
                     self.commandsDict[name] = CommandTerm(name: self.keywordConverter.convertSpecifierName(name),
-                                                          eventClass: eventClass, eventID: eventID, parameters: parameters)
+                                                          event: eventIdentifier, parameters: parameters)
                 } // else ignore duplicate declaration
             default: ()
             }

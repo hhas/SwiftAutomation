@@ -245,7 +245,7 @@ extension Dictionary: SelfPacking, SelfUnpacking, SelfFormatting {
                     } else if symbol.code == AppleEvents.pClass, let cls = try? unpackAsType(desc) {
                         type = cls
                     } else {
-                        result += packUInt32(symbol.code)
+                        result += encodeUInt32(symbol.code)
                         desc.appendTo(containerData: &result)
                         count += 1
                     }
@@ -261,7 +261,7 @@ extension Dictionary: SelfPacking, SelfUnpacking, SelfFormatting {
             }
         }
         if userPropertyCount > 0 {
-            result += packUInt32(AppleEvents.keyASUserRecordFields)
+            result += encodeUInt32(AppleEvents.keyASUserRecordFields)
             ListDescriptor(count: userPropertyCount, data: userProperties).appendTo(containerData: &result)
         }
         return RecordDescriptor(type: type, count: count, data: result)

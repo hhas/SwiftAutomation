@@ -24,26 +24,26 @@ import AppleEvents
 // and in Application initializers to create targeted AppData instances.
 
 private let _specifierFormatter = «SWIFTAE»SpecifierFormatter(
-                                        applicationClassName: "«APPLICATION_CLASS_NAME»",
-                                        classNamePrefix: "«PREFIX»",
-                                        typeNames: [«+TYPE_FORMATTER»
-                                                    «CODE»: "«NAME»", // «CODE_STR»«-TYPE_FORMATTER»
-                                        ],
-                                        propertyNames: [«+PROPERTY_FORMATTER»
-                                                        «CODE»: "«NAME»", // «CODE_STR»«-PROPERTY_FORMATTER»
-                                        ],
-                                        elementsNames: [«+ELEMENTS_FORMATTER»
-                                                        «CODE»: ("«SINGULAR_NAME»", "«PLURAL_NAME»"), // «CODE_STR»«-ELEMENTS_FORMATTER»
-                                        ])
+        applicationClassName: "«APPLICATION_CLASS_NAME»",
+        classNamePrefix: "«PREFIX»",
+        typeNames: [«+TYPE_FORMATTER»
+                «CODE»: "«NAME»", // «CODE_STR»«-TYPE_FORMATTER»
+        ],
+        propertyNames: [«+PROPERTY_FORMATTER»
+                «CODE»: "«NAME»", // «CODE_STR»«-PROPERTY_FORMATTER»
+        ],
+        elementsNames: [«+ELEMENTS_FORMATTER»
+                «CODE»: ("«SINGULAR_NAME»", "«PLURAL_NAME»"), // «CODE_STR»«-ELEMENTS_FORMATTER»
+        ])
 
 private let _glueClasses = «SWIFTAE»GlueClasses(
-                                        insertionSpecifierType: «PREFIX»Insertion.self,
-                                        objectSpecifierType: «PREFIX»Item.self,
-                                        multiObjectSpecifierType: «PREFIX»Items.self,
-                                        rootSpecifierType: «PREFIX»Root.self,
-                                        applicationType: «APPLICATION_CLASS_NAME».self,
-                                        symbolType: «PREFIX»Symbol.self,
-                                        formatter: _specifierFormatter)
+                                                insertionSpecifierType: «PREFIX»Insertion.self,
+                                                objectSpecifierType: «PREFIX»Item.self,
+                                                multiObjectSpecifierType: «PREFIX»Items.self,
+                                                rootSpecifierType: «PREFIX»Root.self,
+                                                applicationType: «APPLICATION_CLASS_NAME».self,
+                                                symbolType: «PREFIX»Symbol.self,
+                                                formatter: _specifierFormatter)
 
 private let _untargetedAppData = «SWIFTAE»AppData(glueClasses: _glueClasses)
 
@@ -55,7 +55,7 @@ public class «PREFIX»Symbol: «SWIFTAE»Symbol {
 
     override public var typeAliasName: String {return "«PREFIX»"}
 
-    public override class func symbol(code: OSType, type: OSType = typeType, descriptor: Descriptor? = nil) -> «PREFIX»Symbol {
+    public override class func symbol(code: OSType, type: OSType = AppleEvents.typeType, descriptor: ScalarDescriptor? = nil) -> «PREFIX»Symbol {
         switch (code) {«+SYMBOL_SWITCH»
         case «CODE»: return self.«NAME» // «CODE_STR»«-SYMBOL_SWITCH»
         default: return super.symbol(code: code, type: type, descriptor: descriptor) as! «PREFIX»Symbol
@@ -84,7 +84,7 @@ extension «PREFIX»Command {«+COMMAND»
             «NAME»: Any = «SWIFTAE»NoParameter,«-PARAMETER»
             requestedType: «SWIFTAE»Symbol? = nil, waitReply: Bool = true, sendOptions: «SWIFTAE»SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: «SWIFTAE»ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "«COMMAND_NAME»", eventClass: «EVENT_CLASS», eventID: «EVENT_ID», // «EVENT_CLASS_STR»/«EVENT_ID_STR»
+        return try self.appData.sendAppleEvent(name: "«COMMAND_NAME»", event: «EVENT_IDENTIFIER», // «EVENT_IDENTIFIER_STR»
                 parentSpecifier: (self as! «SWIFTAE»Specifier), directParameter: directParameter, keywordParameters: [«+PARAMETER»
                     ("«NAME»", «CODE», «NAME»), // «CODE_STR»«-PARAMETER»
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
@@ -94,7 +94,7 @@ extension «PREFIX»Command {«+COMMAND»
             «NAME»: Any = «SWIFTAE»NoParameter,«-PARAMETER»
             requestedType: «SWIFTAE»Symbol? = nil, waitReply: Bool = true, sendOptions: «SWIFTAE»SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: «SWIFTAE»ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "«COMMAND_NAME»", eventClass: «EVENT_CLASS», eventID: «EVENT_ID», // «EVENT_CLASS_STR»/«EVENT_ID_STR»
+        return try self.appData.sendAppleEvent(name: "«COMMAND_NAME»", event: «EVENT_IDENTIFIER», // «EVENT_IDENTIFIER_STR»
                 parentSpecifier: (self as! «SWIFTAE»Specifier), directParameter: directParameter, keywordParameters: [«+PARAMETER»
                     ("«NAME»", «CODE», «NAME»), // «CODE_STR»«-PARAMETER»
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,

@@ -51,7 +51,7 @@ extension NSWorkspace {
 
 
 /******************************************************************************/
-// logging
+// logging // TO DO: currently used by SDEF parser to log malformed SDEF elements, but should be replaced with more robust reporting
 
 
 struct StderrStream: TextOutputStream {
@@ -63,42 +63,35 @@ var errStream = StderrStream()
 /******************************************************************************/
 // convert between 4-character strings and OSTypes (use these instead of calling UTGetOSTypeFromString/UTCopyStringFromOSType directly)
 
-// TO DO: any value in making the following functions public?
+// TO DO: move these support functions to AppleEvents?
 
 func parseFourCharCode(_ string: String) throws -> OSType {
     // convert four-character string containing MacOSRoman characters to OSType
     // (this is safer than using UTGetOSTypeFromString, which silently fails if string is malformed)
-    guard let data = string.data(using: .macOSRoman) else {
-        throw AutomationError(code: 1, message: "Invalid four-char code (bad encoding): \(string.debugDescription)")
+    guard let data = string.data(using: .macOSRoman), let result = try? decodeUInt32(data) else {
+        throw AutomationError(code: 1, message: "Invalid four-char code: \(string.debugDescription)")
     }
-    if (data.count != 4) {
-        throw AutomationError(code: 1, message: "Invalid four-char code (wrong length): \(string.debugDescription)")
+    return result
+}
+
+func parseEightCharCode(_ string: String) throws -> EventIdentifier {
+    // convert eight-character string containing MacOSRoman characters to OSType
+    // (this is safer than using UTGetOSTypeFromString, which silently fails if string is malformed)
+    guard let data = string.data(using: .macOSRoman), let result = try? decodeUInt64(data) else {
+        throw AutomationError(code: 1, message: "Invalid eight-char code: \(string.debugDescription)")
     }
-    var tmp: UInt32 = 0
-    (data as NSData).getBytes(&tmp, length: 4)
-    return CFSwapInt32HostToBig(tmp)
+    return result
 }
 
 func formatFourCharCode(_ code: OSType) -> String {
-    // convert an OSType to four-character string containing MacOSRoman characters
-    return UTCreateStringForOSType(code).takeRetainedValue() as String
+    return String(data: encodeUInt32(code), encoding: .macOSRoman)!
+}
+
+func formatEightCharCode(_ code: EventIdentifier) -> String {
+    return String(data: encodeUInt64(code), encoding: .macOSRoman)!
 }
 
 
-// convert an OSType to its String literal representation, e.g. 'docu' -> "\"docu\"", or to a hexadecimal integer if it contains any problematic characters
-func formatFourCharCodeLiteral(_ code: OSType) -> String {
-    var bigCode = CFSwapInt32HostToBig(code)
-    var result = ""
-    for _ in 0..<MemoryLayout.size(ofValue: code) {
-        let c = bigCode % 256
-        if c < 32 || c > 126 || c == 0x27 || c == 0x5c { // backslash, single quote
-            return String(format: "0x%08x", code)
-        }
-        result += String(format: "%c", c)
-        bigCode >>= 8
-    }
-    return "\"\(result)\""
-}
 
 
 // the following AEDesc types will be mapped to Symbol instances
@@ -401,15 +394,15 @@ public func fileURLForLocalApplication(_ name: String) -> URL? {
 
 // root descriptor for all absolute object specifiers that do not have a custom root
 // e.g. `document 1 of «typeNull»`
-public let AppRootDesc = AppleEvents.RootSpecifier.app
+public let AppRootDesc = RootSpecifierDescriptor.app
 
 // root descriptor for an object specifier describing start or end of a range of elements in a by-range specifier
 // e.g. `folder (folder 2 of «typeCurrentContainer») thru (folder -1 of «typeCurrentContainer»)`
-public let ConRootDesc = AppleEvents.RootSpecifier.con
+public let ConRootDesc = RootSpecifierDescriptor.con
 
 // root descriptor for an object specifier describing an element whose state is being compared in a by-test specifier
 // e.g. `every track where (rating of «typeObjectBeingExamined» > 50)`
-public let ItsRootDesc = AppleEvents.RootSpecifier.its
+public let ItsRootDesc = RootSpecifierDescriptor.its
 
 
 /******************************************************************************/

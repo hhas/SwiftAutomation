@@ -50,7 +50,7 @@ public class KeywordTerm: Term, Hashable, CustomStringConvertible { // type/enum
         hasher.combine(Int(self.code))
     }
     
-    public var description: String { return "<\(type(of:self)):\(self.name)=\(formatFourCharCodeLiteral(self.code))>" }
+    public var description: String { return "<\(type(of:self)):\(self.name)=\(literalFourCharCode(self.code))>" }
     
     public static func ==(lhs: KeywordTerm, rhs: KeywordTerm) -> Bool {
         return lhs.code == rhs.code && lhs.name == rhs.name
@@ -73,29 +73,26 @@ public class ClassTerm: KeywordTerm {
 
 public class CommandTerm: Term, Hashable, CustomStringConvertible {
 
-    public let eventClass: OSType
-    public let eventID: OSType
+    public let event: EventIdentifier
     public let parameters: [KeywordTerm]
 
-    public init(name: String, eventClass: OSType, eventID: OSType, parameters: [KeywordTerm]) {
-        self.eventClass = eventClass
-        self.eventID = eventID
+    public init(name: String, event: EventIdentifier, parameters: [KeywordTerm]) {
+        self.event = event
         self.parameters = parameters
         super.init(name: name)
     }
     
     public func hash(into hasher: inout Hasher) {
-        hasher.combine((Int(self.eventClass) << 32) + Int(self.eventID))
+        hasher.combine(self.event)
     }
     
     public static func ==(lhs: CommandTerm, rhs: CommandTerm) -> Bool {
-        return lhs.eventClass == rhs.eventClass && lhs.eventID == rhs.eventID
-            && lhs.name == rhs.name && lhs.parameters == rhs.parameters // TO DO: ignore parameters?
+        return lhs.event == rhs.event && lhs.name == rhs.name && lhs.parameters == rhs.parameters // TO DO: ignore parameters?
     }
     
     public var description: String {
-        let params = self.parameters.map({"\($0.name)=\(formatFourCharCodeLiteral($0.code))"}).joined(separator: ",")
-        return "<Command:\(self.name)=\(formatFourCharCodeLiteral(self.eventClass))\(formatFourCharCodeLiteral(self.eventID))(\(params))>"
+        let params = self.parameters.map({"\($0.name)=\(literalFourCharCode($0.code))"}).joined(separator: ",")
+        return "<Command:\(self.name)=\(literalEightCharCode(self.event))(\(params))>"
     }
     
     func parameter(for name: String) -> KeywordTerm? {

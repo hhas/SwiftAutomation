@@ -14,7 +14,7 @@
 
 
 import Foundation
-//import SwiftAutomation // TO DO: the `aeglue` target currently bakes everything into CLI executable; if/when Swift finally supports dynamic framework linking, use import instead
+import SwiftAutomation
 
 
 
@@ -135,6 +135,12 @@ let helpText = [
 
 
 // utility functions
+
+struct StderrStream: TextOutputStream {
+    public mutating func write(_ string: String) { fputs(string, stderr) }
+}
+var errStream = StderrStream()
+
 
 func validateOption(opt: String, arg: String?) {
     if arg == nil || arg!.hasPrefix("-") {

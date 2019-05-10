@@ -6,13 +6,11 @@
 //
 //
 
-// TO DO: this code is pretty messy; tidy up later (e.g. divide ad-hoc parsing code into lexer + LL(1) parser)
+// TO DO: replace ad-hoc text substitution with DOM builder, c.f. texttemplate
 
 // TO DO: skip any non-significant spaces in format string (currently spaces aren't allowed in format string)
 
 // TO DO: format strings should allow module and nested type names, e.g. 'Foo.Bar'
-
-// TO DO: SDEF converter needs to convert type names (simplest is probably to build dictionary of all original and converted names on first pass, then do second pass using that dictionary to map type names); Q. what about built-in types? (DefaultTerminology should now use same names as AS, simplifying re-mapping to their Swift equivalents; OTOH, not sure how much benefit that really adds - plus there's a lot of ambiguity with `text` due to its overloaded meaning)
 
 
 import Foundation
@@ -246,7 +244,7 @@ public class TypeSupportSpec { // converts custom format strings into enum/struc
     public let recordStructFormats: [String]
     public let typeAliasFormats: [String]
     
-    init(enumeratedTypeFormats: [String] = [], recordStructFormats: [String] = [], typeAliasFormats: [String] = []) {
+    public init(enumeratedTypeFormats: [String] = [], recordStructFormats: [String] = [], typeAliasFormats: [String] = []) {
         self.enumeratedTypeFormats = enumeratedTypeFormats
         self.recordStructFormats = recordStructFormats
         self.typeAliasFormats = typeAliasFormats
@@ -300,7 +298,7 @@ public class GlueSpec {
     public var bundleIdentifier: String? { return self.bundleInfo["CFBundleIdentifier"] as? String }
     // TO DO: eventually get following values from SwiftAutomation.framework bundle
     public var frameworkName: String { return "SwiftAutomation.framework" }
-    public var frameworkVersion: String { return "0.1.0" }
+    public var frameworkVersion: String { return "0.1.0" } // TO DO: fix
     
     public let typeSupportSpec: TypeSupportSpec?
     
@@ -401,7 +399,7 @@ public class StaticGlueTemplate {
     
     public func insertOSType(_ block: String, _ code: OSType) { // insert OSType as numeric and/or string literal representations (tag for the latter is name+"_STR")
         self.insertString(block, String(format: "0x%08x", code) as String)
-        self.insertString("\(block)_STR", formatFourCharCodeLiteral(code))
+        self.insertString("\(block)_STR", literalFourCharCode(code))
     }
     
     public func insertKeywords(_ block: String, _ newContents: [KeywordTerm], emptyContent: String = "") {
@@ -434,8 +432,9 @@ public class StaticGlueTemplate {
     public func insertCommands(_ block: String, _ newContents: [CommandTerm], emptyContent: String = "") {
         self.iterate(block: block, newContents: newContents, emptyContent: emptyContent) {
             $0.insertString("COMMAND_NAME", $1.name)
-            $0.insertOSType("EVENT_CLASS", $1.eventClass)
-            $0.insertOSType("EVENT_ID", $1.eventID)
+            let (eventClass, eventID) = eventIdentifier($1.event)
+            $0.insertString("EVENT_IDENTIFIER", String(format: "0x%08x_%08x", eventClass, eventID))
+            $0.insertString("EVENT_IDENTIFIER_STR", literalEightCharCode($1.event))
             $0.insertKeywords("PARAMETER", $1.parameters)
         }
     }

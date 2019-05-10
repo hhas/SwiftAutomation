@@ -180,7 +180,7 @@ Here is the equivalent Swift code using SwiftAutomation's default `AE` glue:
                        .elements("cpar")[AEIts != "\n"]
                        .elements("cha ")[1]
                        .property("ptsz")
-  try textedit.sendAppleEvent("core", "getd", ["----": specifier, "data": 24])
+  try textedit.sendAppleEvent("coregetd", ["----": specifier, "data": 24])
 
 and using glue classes generated specifically for TextEdit:
 

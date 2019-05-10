@@ -38,22 +38,22 @@ Or to quit multiple applications without saving changes to any open documents:
 
 All specifiers implement a low-level `sendAppleEvent(...)` method, allowing Apple events to be built and sent using four-char codes (a.k.a. OSTypes):
 
-  sendAppleEvent(_ eventClass: OSType/String, _ eventID: OSType/String, _ parameters: [OSType/String:Any] = [:],
+  sendAppleEvent(_ event: EventIdentifier/String, _ parameters: [OSType/String:Any] = [:],
                  requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
                  withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T/Any
 
-Four-char codes may be given as `OSType` (`UInt32`) values or as `OSType`-encodable `String` values containing exactly four MacRoman characters. Invalid strings will cause `sendAppleEvent()` to throw a `CommandError`.
+Four-char codes may be given as `OSType` (`UInt32`) values or as `OSType`-encodable `String` values containing exactly four MacRoman characters. Similarly, event identifiers are eight-char codes (`UInt64`) consisting of the event’s class and ID, e.g. `"aevtquit"`. Invalid strings will cause `sendAppleEvent()` to throw a `CommandError`.
 
 For example:
 
   // tell application id "com.apple.TextEdit" to open (POSIX file "/Users/jsmith/ReadMe.txt")
   // tell application id "com.apple.TextEdit" to «event aevtodoc» (POSIX file "/Users/jsmith/ReadMe.txt")
   let textedit = AEApplication(bundleIdentifier: "com.apple.TextEdit")
-  try textedit.sendAppleEvent("aevt", "odoc", ["----": URL(fileURLWithPath: "/Users/jsmith/ReadMe.txt")])
+  try textedit.sendAppleEvent("aevtodoc", ["----": URL(fileURLWithPath: "/Users/jsmith/ReadMe.txt")])
 
   // tell application id "com.apple.TextEdit" to quit saving no
   // tell application id "com.apple.TextEdit" to «event aevtquit» given «class savo»: «constant ****ask »
-  try textedit.sendAppleEvent("aevt", "quit", ["savo": AE.ask])
+  try textedit.sendAppleEvent("aevtquit", ["savo": AE.ask])
 
 <p class="hilitebox">While the Carbon AE headers define constants for common four-char codes, e.g. <code>cDocument</code> = <code>'docu'</code> = <code>0x646f6375</code>, as of Swift3/Xcode8/macOS10.12 some constants are incorrectly mapped to <code>Int</code> (<code>SInt64</code>) instead of <code>OSType</code> (<code>UInt32</code>), so their use is best avoided.</p>
 

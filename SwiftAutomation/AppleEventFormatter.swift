@@ -30,7 +30,7 @@ public func formatAppleEvent(descriptor event: AppleEventDescriptor, useTerminol
     //  Format an outgoing or reply AppleEvent (if the latter, only the return value/error description is displayed).
     //  Caution: if sending events to self, caller MUST use TerminologyType.SDEF or call formatAppleEvent on a background thread, otherwise formatAppleEvent will deadlock the main loop when it tries to fetch host app's AETE via ascr/gdte event.
     if event.type != AppleEvents.typeAppleEvent { // sanity check
-        return "Can't format Apple event: wrong type: \(formatFourCharCodeLiteral(event.type))."
+        return "Can't format Apple event: wrong type: \(literalFourCharCode(event.type))."
     }
     let appData: DynamicAppData
     do {
@@ -38,7 +38,7 @@ public func formatAppleEvent(descriptor event: AppleEventDescriptor, useTerminol
     } catch {
         return "Can't format Apple event: can't get terminology: \(error)"
     }
-    if event.code == eventIdentifier(AppleEvents.kCoreEventClass, AppleEvents.kAEAnswer) { // it's a reply event, so format error/return value only
+    if event.code == eventAnswer { // it's a reply event, so format error/return value only
         let errn = event.errorNumber
         if errn != 0 { // format error message
             return AutomationError(code: Int(errn), message: event.errorMessage).description // TO DO: use CommandError? (need to check it's happy with only replyEvent arg)
@@ -78,7 +78,7 @@ func applicationURL(for addressDesc: AddressDescriptor) throws -> URL {
     #if canImport(AppKit)
     // AppleScript uses old typeProcessSerialNumber, but this should coerce to modern typeKernelProcessID
     guard let pid = try? addressDesc.processIdentifier() else { // local processes are generally targeted by PID
-        throw TerminologyError("Unsupported address type: \(formatFourCharCodeLiteral(addressDesc.type))")
+        throw TerminologyError("Unsupported address type: \(literalFourCharCode(addressDesc.type))")
     }
     guard let applicationURL = NSRunningApplication(processIdentifier: pid)?.bundleURL else {
         throw TerminologyError("Can't get path to application bundle (PID: \(pid)).")
@@ -171,9 +171,7 @@ public extension CommandDescription {
             rawParameters[key] = (try? appData.unpackAsAny(desc)) ?? desc
         }
         //
-        let eventClass = event.eventClass
-        let eventID = event.eventID
-        if let commandInfo = appData.glueTable.commandsByCode[eventIdentifier(eventClass, eventID)] {
+        if let commandInfo = appData.glueTable.commandsByCode[event.code] {
             var keywordParameters = [(String, Any)]()
             for paramInfo in commandInfo.parameters { // this ignores parameters that don't have a keyword name; it should also ignore ("as",keyAERequestedType) parameter (this is probably best done by ensuring that command parsers always omit it)
                 if let value = rawParameters[paramInfo.code] {
@@ -188,10 +186,10 @@ public extension CommandDescription {
                 self.signature = .named(name: commandInfo.name, directParameter: directParameter,
                                       keywordParameters: keywordParameters, requestedType: requestedType)
             } else {
-                self.signature = .codes(eventClass: eventClass, eventID: eventID, parameters: rawParameters)
+                self.signature = .codes(event: event.code, parameters: rawParameters)
             }
         } else {
-            self.signature = .codes(eventClass: eventClass, eventID: eventID, parameters: rawParameters)
+            self.signature = .codes(event: event.code, parameters: rawParameters)
         }
         // unpack subject attribute, if given
         if let desc = try? event.attribute(AEKeyword(keySubjectAttr)) {
@@ -200,11 +198,11 @@ public extension CommandDescription {
             }
         }
         // unpack reply requested and timeout attributes (note: these attributes are unreliable since their values are passed via AESendMessage() rather than packed directly into the AppleEvent)
-        if let replyRequested: Int32 = try? event.unpackFixedSizeAttribute(keyReplyRequestedAttr, as: typeSInt32) {
+        if let replyRequested: Int32 = try? event.decodeFixedWidthValueAttribute(keyReplyRequestedAttr, as: typeSInt32) {
             // keyReplyRequestedAttr appears to be a boolean value encoded as Int32 (1=wait or queue reply; 0=no reply)
             if replyRequested == 0 { self.waitReply = false }
         }
-        if let timeoutInTicks: Int32 = try? event.unpackFixedSizeAttribute(keyTimeoutAttr, as: typeSInt32) {
+        if let timeoutInTicks: Int32 = try? event.decodeFixedWidthValueAttribute(keyTimeoutAttr, as: typeSInt32) {
             if timeoutInTicks == -2 { // NoTimeout // TO DO: ditto
                 self.withTimeout = -2
             } else if timeoutInTicks > 0 {
@@ -212,7 +210,7 @@ public extension CommandDescription {
             }
         }
         // considering/ignoring attributes
-        if let considersAndIgnores: UInt32 = try? event.unpackFixedSizeAttribute(AEKeyword(enumConsidsAndIgnores), as: typeUInt32) {
+        if let considersAndIgnores: UInt32 = try? event.decodeFixedWidthValueAttribute(AEKeyword(enumConsidsAndIgnores), as: typeUInt32) {
             if considersAndIgnores != defaultConsidersIgnoresMask {
                 for (option, _, considersFlag, ignoresFlag) in considerationsTable {
                     if option == .case {

@@ -34,14 +34,14 @@ public class DefaultTerminology: ApplicationTerminology {
         self.elements = self._elements.map{ ClassTerm(singular: keywordConverter.convertSpecifierName($0),
                                                         plural: keywordConverter.convertSpecifierName($1), code: $2) }
         self.commands = self._commands.map({
-            return CommandTerm(name: keywordConverter.convertSpecifierName($0), eventClass: $1, eventID: $2,
-                               parameters: $3.map{ KeywordTerm(name: keywordConverter.convertParameterName($0), code: $1) })
+            return CommandTerm(name: keywordConverter.convertSpecifierName($0), event: $1,
+                               parameters: $2.map{ KeywordTerm(name: keywordConverter.convertParameterName($0), code: $1) })
         })
     }
     
     private typealias Keywords = [(String, OSType)]
     private typealias Elements = [(String, String, OSType)]
-    private typealias Commands = [(String, OSType, OSType, [(String, OSType)])]
+    private typealias Commands = [(String, EventIdentifier, [(String, OSType)])]
 
     // note: AppleScript-style keyword names are automatically converted to the required format using the given keyword converter
     
@@ -162,19 +162,18 @@ public class DefaultTerminology: ApplicationTerminology {
     private let _elements: Elements = [("item", "items", AppleEvents.cObject),
     								   // what about ("text",cText)?
     ]
-    private let _commands: Commands = [("run", AppleEvents.kCoreEventClass, AppleEvents.kAEOpenApplication, []),
-                                       ("open", AppleEvents.kCoreEventClass, AppleEvents.kAEOpenDocuments, []),
-                                       ("print", AppleEvents.kCoreEventClass, AppleEvents.kAEPrintDocuments, []),
-                                       ("quit", AppleEvents.kCoreEventClass, AppleEvents.kAEQuitApplication, [("saving", AppleEvents.keyAESaveOptions)]),
-                                       ("reopen", AppleEvents.kCoreEventClass, AppleEvents.kAEReopenApplication, []),
+    private let _commands: Commands = [("run", AppleEvents.eventOpenApplication, []),
+                                       ("open", AppleEvents.eventOpenDocuments, []),
+                                       ("print", AppleEvents.eventPrintDocuments, []),
+                                       ("quit", AppleEvents.eventQuitApplication, [("saving", AppleEvents.keyAESaveOptions)]),
+                                       ("reopen", AppleEvents.eventReopenApplication, []),
                                        //("launch", _kASAppleScriptSuite, _kASLaunchEvent, []), // this is a hardcoded method
-                                       ("activate", AppleEvents.kAEMiscStandards, AppleEvents.kAEActivate, []),
-                                       ("open location", _GURL, _GURL, [("window", _WIND)]),
-                                       ("get", AppleEvents.kAECoreSuite, AppleEvents.kAEGetData, []),
-                                       ("set", AppleEvents.kAECoreSuite, AppleEvents.kAESetData, [("to", AppleEvents.keyAEData)]),
+                                       ("activate", AppleEvents.miscEventActivate, []),
+                                       ("open location", AppleEvents.miscEventGetURL, [("window", _WIND)]),
+                                       ("get", AppleEvents.coreEventGetData, []),
+                                       ("set", AppleEvents.coreEventSetData, [("to", AppleEvents.keyAEData)]),
     ]
     
-    private static let _GURL = try! parseFourCharCode("GURL")
     private static let _WIND = try! parseFourCharCode("WIND")
     private static let _pALL = try! parseFourCharCode("pALL")
 }

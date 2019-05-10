@@ -391,7 +391,7 @@ extension AECommand {
     @discardableResult public func activate(_ directParameter: Any = NoParameter,
                                             requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
                                             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "activate", eventClass: 0x6d697363, eventID: 0x61637476, // "misc"/"actv"
+        return try self.appData.sendAppleEvent(name: "activate", event: 0x6d697363_61637476, // "misc"/"actv"
             parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
             ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                withTimeout: withTimeout, considering: considering)
@@ -399,7 +399,7 @@ extension AECommand {
     public func activate<T>(_ directParameter: Any = NoParameter,
                             requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
                             withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "activate", eventClass: 0x6d697363, eventID: 0x61637476, // "misc"/"actv"
+        return try self.appData.sendAppleEvent(name: "activate", event: 0x6d697363_61637476, // "misc"/"actv"
             parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
             ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                withTimeout: withTimeout, considering: considering)
@@ -407,7 +407,7 @@ extension AECommand {
     @discardableResult public func get(_ directParameter: Any = NoParameter,
                                        requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
                                        withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "get", eventClass: 0x636f7265, eventID: 0x67657464, // "core"/"getd"
+        return try self.appData.sendAppleEvent(name: "get", event: 0x636f7265_67657464, // "core"/"getd"
             parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
             ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                withTimeout: withTimeout, considering: considering)
@@ -415,7 +415,7 @@ extension AECommand {
     public func get<T>(_ directParameter: Any = NoParameter,
                        requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
                        withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "get", eventClass: 0x636f7265, eventID: 0x67657464, // "core"/"getd"
+        return try self.appData.sendAppleEvent(name: "get", event: 0x636f7265_67657464, // "core"/"getd"
             parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
             ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                withTimeout: withTimeout, considering: considering)
@@ -423,7 +423,7 @@ extension AECommand {
     @discardableResult public func open(_ directParameter: Any = NoParameter,
                                         requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
                                         withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "open", eventClass: 0x61657674, eventID: 0x6f646f63, // "aevt"/"odoc"
+        return try self.appData.sendAppleEvent(name: "open", event: 0x61657674_6f646f63, // "aevt"/"odoc"
             parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
             ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                withTimeout: withTimeout, considering: considering)
@@ -431,7 +431,7 @@ extension AECommand {
     public func open<T>(_ directParameter: Any = NoParameter,
                         requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
                         withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "open", eventClass: 0x61657674, eventID: 0x6f646f63, // "aevt"/"odoc"
+        return try self.appData.sendAppleEvent(name: "open", event: 0x61657674_6f646f63, // "aevt"/"odoc"
             parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
             ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                withTimeout: withTimeout, considering: considering)
@@ -440,7 +440,7 @@ extension AECommand {
                                                 window: Any = NoParameter,
                                                 requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
                                                 withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "openLocation", eventClass: 0x4755524c, eventID: 0x4755524c, // "GURL"/"GURL"
+        return try self.appData.sendAppleEvent(name: "openLocation", event: 0x4755524c_4755524c, // "GURL"/"GURL"
             parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ("window", 0x57494e44, window), // "WIND"
             ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
@@ -450,7 +450,7 @@ extension AECommand {
                                 window: Any = NoParameter,
                                 requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
                                 withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "openLocation", eventClass: 0x4755524c, eventID: 0x4755524c, // "GURL"/"GURL"
+        return try self.appData.sendAppleEvent(name: "openLocation", event: 0x4755524c_4755524c, // "GURL"/"GURL"
             parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ("window", 0x57494e44, window), // "WIND"
             ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
@@ -459,7 +459,7 @@ extension AECommand {
     @discardableResult public func print(_ directParameter: Any = NoParameter,
                                          requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
                                          withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "print", eventClass: 0x61657674, eventID: 0x70646f63, // "aevt"/"pdoc"
+        return try self.appData.sendAppleEvent(name: "print", event: 0x61657674_70646f63, // "aevt"/"pdoc"
             parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
             ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                withTimeout: withTimeout, considering: considering)
@@ -467,7 +467,7 @@ extension AECommand {
     public func print<T>(_ directParameter: Any = NoParameter,
                          requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
                          withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "print", eventClass: 0x61657674, eventID: 0x70646f63, // "aevt"/"pdoc"
+        return try self.appData.sendAppleEvent(name: "print", event: 0x61657674_70646f63, // "aevt"/"pdoc"
             parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
             ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                withTimeout: withTimeout, considering: considering)
@@ -476,7 +476,7 @@ extension AECommand {
                                         saving: Any = NoParameter,
                                         requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
                                         withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "quit", eventClass: 0x61657674, eventID: 0x71756974, // "aevt"/"quit"
+        return try self.appData.sendAppleEvent(name: "quit", event: 0x61657674_71756974, // "aevt"/"quit"
             parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ("saving", 0x7361766f, saving), // "savo"
             ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
@@ -486,7 +486,7 @@ extension AECommand {
                         saving: Any = NoParameter,
                         requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
                         withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "quit", eventClass: 0x61657674, eventID: 0x71756974, // "aevt"/"quit"
+        return try self.appData.sendAppleEvent(name: "quit", event: 0x61657674_71756974, // "aevt"/"quit"
             parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ("saving", 0x7361766f, saving), // "savo"
             ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
@@ -495,7 +495,7 @@ extension AECommand {
     @discardableResult public func reopen(_ directParameter: Any = NoParameter,
                                           requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
                                           withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "reopen", eventClass: 0x61657674, eventID: 0x72617070, // "aevt"/"rapp"
+        return try self.appData.sendAppleEvent(name: "reopen", event: 0x61657674_72617070, // "aevt"/"rapp"
             parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
             ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                withTimeout: withTimeout, considering: considering)
@@ -503,7 +503,7 @@ extension AECommand {
     public func reopen<T>(_ directParameter: Any = NoParameter,
                           requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
                           withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "reopen", eventClass: 0x61657674, eventID: 0x72617070, // "aevt"/"rapp"
+        return try self.appData.sendAppleEvent(name: "reopen", event: 0x61657674_72617070, // "aevt"/"rapp"
             parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
             ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                withTimeout: withTimeout, considering: considering)
@@ -511,7 +511,7 @@ extension AECommand {
     @discardableResult public func run(_ directParameter: Any = NoParameter,
                                        requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
                                        withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "run", eventClass: 0x61657674, eventID: 0x6f617070, // "aevt"/"oapp"
+        return try self.appData.sendAppleEvent(name: "run", event: 0x61657674_6f617070, // "aevt"/"oapp"
             parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
             ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                withTimeout: withTimeout, considering: considering)
@@ -519,7 +519,7 @@ extension AECommand {
     public func run<T>(_ directParameter: Any = NoParameter,
                        requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
                        withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "run", eventClass: 0x61657674, eventID: 0x6f617070, // "aevt"/"oapp"
+        return try self.appData.sendAppleEvent(name: "run", event: 0x61657674_6f617070, // "aevt"/"oapp"
             parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
             ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                withTimeout: withTimeout, considering: considering)
@@ -528,7 +528,7 @@ extension AECommand {
                                        to: Any = NoParameter,
                                        requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
                                        withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "set", eventClass: 0x636f7265, eventID: 0x73657464, // "core"/"setd"
+        return try self.appData.sendAppleEvent(name: "set", event: 0x636f7265_73657464, // "core"/"setd"
             parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ("to", 0x64617461, to), // "data"
             ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
@@ -538,7 +538,7 @@ extension AECommand {
                        to: Any = NoParameter,
                        requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
                        withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "set", eventClass: 0x636f7265, eventID: 0x73657464, // "core"/"setd"
+        return try self.appData.sendAppleEvent(name: "set", event: 0x636f7265_73657464, // "core"/"setd"
             parentSpecifier: (self as! Specifier), directParameter: directParameter, keywordParameters: [
                 ("to", 0x64617461, to), // "data"
             ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,

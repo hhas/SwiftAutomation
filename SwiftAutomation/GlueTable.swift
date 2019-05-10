@@ -26,7 +26,7 @@ public class GlueTable {
     // note: dictionary structures are optimized for dynamic bridges, but are also usable
     // by static glue generators (which aren't performance-sensitive anyway)
     
-    public private(set) var typesByName:      [String:Descriptor] = [:] // Symbol members (properties, types, and enums)
+    public private(set) var typesByName:      [String:Descriptor]  = [:] // Symbol members (properties, types, and enums)
     public private(set) var typesByCode:      [OSType:String]      = [:]
     
     public private(set) var elementsByName:   [String:KeywordTerm] = [:]
@@ -36,7 +36,7 @@ public class GlueTable {
     public private(set) var propertiesByCode: [OSType:String]      = [:]
     
     public private(set) var commandsByName:   [String:CommandTerm] = [:]
-    public private(set) var commandsByCode:   [UInt64:CommandTerm] = [:] // key is eventClass<<32|eventID
+    public private(set) var commandsByCode:   [EventIdentifier:CommandTerm] = [:]
     
     private var _specifiersByName:            [String:Term]?
     
@@ -206,20 +206,19 @@ public class GlueTable {
         for i in 0..<len {
             // to handle synonyms, if two commands have same name but different codes, only the first definition should be used (iterating array in reverse ensures this)
             let term = commands[len - 1 - i]
-            var name = term.name;
-            let eventClass = term.eventClass
-            let eventID = term.eventID
+            var name = term.name
+            let event = term.event
             // Avoid collisions between default commands and application-defined commands with same name
             // but different code (e.g. 'get' and 'set' in InDesign CS2):
             if let existingCommandDef = self.defaultCommandsByName[name] {
-                if existingCommandDef.eventClass != eventClass || existingCommandDef.eventID != eventID {
+                if existingCommandDef.event != event {
                     term.name = keywordConverter.escapeName(name)
                     name = term.name
                 }
             }
             // add item
             self.commandsByName[name] = term
-            self.commandsByCode[eventIdentifier(eventClass, eventID)] = term
+            self.commandsByCode[event] = term
         }
     }
 

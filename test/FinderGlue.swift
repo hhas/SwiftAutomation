@@ -2,7 +2,7 @@
 //  FinderGlue.swift
 //  Finder.app 10.14.4
 //  SwiftAutomation.framework 0.1.0
-//  `aeglue -S 'Finder.app'`
+//  `aeglue 'Finder.app'`
 //
 
 
@@ -15,509 +15,511 @@ import SwiftAutomation
 // Create an untargeted AppData instance for use in App, Con, Its roots,
 // and in Application initializers to create targeted AppData instances.
 
-private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(applicationClassName: "Finder",
-                                                     classNamePrefix: "FIN",
-                                                     typeNames: [
-                                                                     0x69736162: "acceptsHighLevelEvents", // "isab"
-                                                                     0x72657674: "acceptsRemoteEvents", // "revt"
-                                                                     0x70616476: "AdvancedPreferencesPanel", // "padv"
-                                                                     0x616c6973: "alias", // "alis"
-                                                                     0x616c6961: "aliasFile", // "alia"
-                                                                     0x616c7374: "aliasList", // "alst"
-                                                                     0x70736e78: "allNameExtensionsShowing", // "psnx"
-                                                                     0x2a2a2a2a: "anything", // "****"
-                                                                     0x64666170: "APFSFormat", // "dfap"
-                                                                     0x64667068: "ApplePhotoFormat", // "dfph"
-                                                                     0x64666173: "AppleShareFormat", // "dfas"
-                                                                     0x63617070: "application", // "capp"
-                                                                     0x62756e64: "applicationBundleID", // "bund"
-                                                                     0x61707066: "applicationFile", // "appf"
-                                                                     0x61706e6c: "ApplicationPanel", // "apnl"
-                                                                     0x70636170: "applicationProcess", // "pcap"
-                                                                     0x7369676e: "applicationSignature", // "sign"
-                                                                     0x6170726c: "applicationURL", // "aprl"
-                                                                     0x61707220: "April", // "apr\0x20"
-                                                                     0x63647461: "arrangedByCreationDate", // "cdta"
-                                                                     0x6b696e61: "arrangedByKind", // "kina"
-                                                                     0x6c616261: "arrangedByLabel", // "laba"
-                                                                     0x6d647461: "arrangedByModificationDate", // "mdta"
-                                                                     0x6e616d61: "arrangedByName", // "nama"
-                                                                     0x73697a61: "arrangedBySize", // "siza"
-                                                                     0x69617272: "arrangement", // "iarr"
-                                                                     0x61736b20: "ask", // "ask\0x20"
-                                                                     0x64666175: "audioFormat", // "dfau"
-                                                                     0x61756720: "August", // "aug\0x20"
-                                                                     0x636f6c72: "backgroundColor", // "colr"
-                                                                     0x69626b67: "backgroundPicture", // "ibkg"
-                                                                     0x62657374: "best", // "best"
-                                                                     0x626d726b: "bookmarkData", // "bmrk"
-                                                                     0x626f6f6c: "boolean", // "bool"
-                                                                     0x6c626f74: "bottom", // "lbot"
-                                                                     0x71647274: "boundingRectangle", // "qdrt"
-                                                                     0x70626e64: "bounds", // "pbnd"
-                                                                     0x62706e6c: "BurningPanel", // "bpnl"
-                                                                     0x7366737a: "calculatesFolderSizes", // "sfsz"
-                                                                     0x63617061: "capacity", // "capa"
-                                                                     0x63617365: "case_", // "case"
-                                                                     0x70636c73: "class_", // "pcls"
-                                                                     0x70636c69: "clipboard", // "pcli"
-                                                                     0x636c7066: "clipping", // "clpf"
-                                                                     0x6c776e64: "clippingWindow", // "lwnd"
-                                                                     0x68636c62: "closeable", // "hclb"
-                                                                     0x77736864: "collapsed", // "wshd"
-                                                                     0x636c7274: "colorTable", // "clrt"
-                                                                     0x6c76636c: "column", // "lvcl"
-                                                                     0x636c7677: "columnView", // "clvw"
-                                                                     0x63766f70: "columnViewOptions", // "cvop"
-                                                                     0x636f6d74: "comment", // "comt"
-                                                                     0x656c7343: "commentColumn", // "elsC"
-                                                                     0x63706e6c: "CommentsPanel", // "cpnl"
-                                                                     0x70657863: "completelyExpanded", // "pexc"
-                                                                     0x70636d70: "computerContainer", // "pcmp"
-                                                                     0x63636d70: "computerObject", // "ccmp"
-                                                                     0x656e756d: "constant", // "enum"
-                                                                     0x63746e72: "container", // "ctnr"
-                                                                     0x63776e64: "containerWindow", // "cwnd"
-                                                                     0x63696e6c: "ContentIndexPanel", // "cinl"
-                                                                     0x61736364: "creationDate", // "ascd"
-                                                                     0x656c7363: "creationDateColumn", // "elsc"
-                                                                     0x66637274: "creatorType", // "fcrt"
-                                                                     0x70616e6c: "currentPanel", // "panl"
-                                                                     0x70766577: "currentView", // "pvew"
-                                                                     0x74646173: "dashStyle", // "tdas"
-                                                                     0x74647461: "data", // "tdta"
-                                                                     0x6c647420: "date", // "ldt\0x20"
-                                                                     0x64656320: "December", // "dec\0x20"
-                                                                     0x6465636d: "decimalStruct", // "decm"
-                                                                     0x64656c61: "delayBeforeSpringing", // "dela"
-                                                                     0x64736372: "description_", // "dscr"
-                                                                     0x64616669: "deskAccessoryFile", // "dafi"
-                                                                     0x70636461: "deskAccessoryProcess", // "pcda"
-                                                                     0x6465736b: "desktop", // "desk"
-                                                                     0x6364736b: "desktopObject", // "cdsk"
-                                                                     0x64706963: "desktopPicture", // "dpic"
-                                                                     0x64706f73: "desktopPosition", // "dpos"
-                                                                     0x70647376: "desktopShowsConnectedServers", // "pdsv"
-                                                                     0x70656864: "desktopShowsExternalHardDisks", // "pehd"
-                                                                     0x70646864: "desktopShowsHardDisks", // "pdhd"
-                                                                     0x7064726d: "desktopShowsRemovableMedia", // "pdrm"
-                                                                     0x646b7477: "desktopWindow", // "dktw"
-                                                                     0x64696163: "diacriticals", // "diac"
-                                                                     0x64737072: "disclosesPreviewPane", // "dspr"
-                                                                     0x63646973: "disk", // "cdis"
-                                                                     0x646e616d: "displayedName", // "dnam"
-                                                                     0x646f6366: "documentFile", // "docf"
-                                                                     0x636f6d70: "doubleInteger", // "comp"
-                                                                     0x6973656a: "ejectable", // "isej"
-                                                                     0x656e6373: "encodedString", // "encs"
-                                                                     0x65637473: "entireContents", // "ects"
-                                                                     0x45505320: "EPSPicture", // "EPS\0x20"
-                                                                     0x67737470: "everyonesPrivileges", // "gstp"
-                                                                     0x64667866: "ExFATFormat", // "dfxf"
-                                                                     0x70657861: "expandable", // "pexa"
-                                                                     0x70657870: "expanded", // "pexp"
-                                                                     0x65787061: "expansion", // "expa"
-                                                                     0x68696478: "extensionHidden", // "hidx"
-                                                                     0x66656220: "February", // "feb\0x20"
-                                                                     0x66696c65: "file", // "file"
-                                                                     0x66737266: "fileRef", // "fsrf"
-                                                                     0x61737479: "fileType", // "asty"
-                                                                     0x6675726c: "fileURL", // "furl"
-                                                                     0x70667270: "FinderPreferences", // "pfrp"
-                                                                     0x62726f77: "FinderWindow", // "brow"
-                                                                     0x66697864: "fixed", // "fixd"
-                                                                     0x66706e74: "fixedPoint", // "fpnt"
-                                                                     0x66726374: "fixedRectangle", // "frct"
-                                                                     0x6973666c: "floating", // "isfl"
-                                                                     0x666c7677: "flowView", // "flvw"
-                                                                     0x63666f6c: "folder", // "cfol"
-                                                                     0x706f6e74: "foldersOpenInNewTabs", // "pont"
-                                                                     0x706f6e77: "foldersOpenInNewWindows", // "ponw"
-                                                                     0x73707267: "foldersSpringOpen", // "sprg"
-                                                                     0x64666d74: "format", // "dfmt"
-                                                                     0x66727370: "freeSpace", // "frsp"
-                                                                     0x66726920: "Friday", // "fri\0x20"
-                                                                     0x70697366: "frontmost", // "pisf"
-                                                                     0x64666674: "FTPFormat", // "dfft"
-                                                                     0x67706e6c: "GeneralInformationPanel", // "gpnl"
-                                                                     0x70676e70: "GeneralPreferencesPanel", // "pgnp"
-                                                                     0x47494666: "GIFPicture", // "GIFf"
-                                                                     0x63677478: "graphicText", // "cgtx"
-                                                                     0x73677270: "group", // "sgrp"
-                                                                     0x67707072: "groupPrivileges", // "gppr"
-                                                                     0x68736372: "hasScriptingTerminology", // "hscr"
-                                                                     0x64666873: "HighSierraFormat", // "dfhs"
-                                                                     0x686f6d65: "home", // "home"
-                                                                     0x68797068: "hyphens", // "hyph"
-                                                                     0x69636c34: "icl4", // "icl4"
-                                                                     0x69636c38: "icl8", // "icl8"
-                                                                     0x49434e23: "ICN_U0023_", // "ICN#"
-                                                                     0x69696d67: "icon", // "iimg"
-                                                                     0x6966616d: "iconFamily", // "ifam"
-                                                                     0x6c766973: "iconSize", // "lvis"
-                                                                     0x69636e76: "iconView", // "icnv"
-                                                                     0x69636f70: "iconViewOptions", // "icop"
-                                                                     0x69637334: "ics4", // "ics4"
-                                                                     0x69637338: "ics8", // "ics8"
-                                                                     0x69637323: "ics_U0023_", // "ics#"
-                                                                     0x49442020: "id", // "ID\0x20\0x20"
-                                                                     0x69677072: "ignorePrivileges", // "igpr"
-                                                                     0x696c3332: "il32", // "il32"
-                                                                     0x70696478: "index", // "pidx"
-                                                                     0x69776e64: "informationWindow", // "iwnd"
-                                                                     0x70696e73: "insertionLocation", // "pins"
-                                                                     0x6c6f6e67: "integer", // "long"
-                                                                     0x69747874: "internationalText", // "itxt"
-                                                                     0x696e746c: "internationalWritingCode", // "intl"
-                                                                     0x696e6c66: "internetLocationFile", // "inlf"
-                                                                     0x69733332: "is32", // "is32"
-                                                                     0x64663936: "ISO9660Format", // "df96"
-                                                                     0x636f626a: "item", // "cobj"
-                                                                     0x6a616e20: "January", // "jan\0x20"
-                                                                     0x4a726e6c: "journalingEnabled", // "Jrnl"
-                                                                     0x4a504547: "JPEGPicture", // "JPEG"
-                                                                     0x6a756c20: "July", // "jul\0x20"
-                                                                     0x6a756e20: "June", // "jun\0x20"
-                                                                     0x6b706964: "kernelProcessID", // "kpid"
-                                                                     0x6b696e64: "kind", // "kind"
-                                                                     0x656c736b: "kindColumn", // "elsk"
-                                                                     0x6c386d6b: "l8mk", // "l8mk"
-                                                                     0x636c626c: "label", // "clbl"
-                                                                     0x656c736c: "labelColumn", // "elsl"
-                                                                     0x6c616269: "labelIndex", // "labi"
-                                                                     0x6c706f73: "labelPosition", // "lpos"
-                                                                     0x706c6270: "LabelPreferencesPanel", // "plbp"
-                                                                     0x706b6c67: "LanguagesPanel", // "pklg"
-                                                                     0x6c676963: "large", // "lgic"
-                                                                     0x6c64626c: "largeReal", // "ldbl"
-                                                                     0x6c697374: "list", // "list"
-                                                                     0x6c737677: "listView", // "lsvw"
-                                                                     0x6c766f70: "listViewOptions", // "lvop"
-                                                                     0x69737276: "localVolume", // "isrv"
-                                                                     0x696c6f63: "location", // "iloc"
-                                                                     0x696e736c: "locationReference", // "insl"
-                                                                     0x61736c6b: "locked", // "aslk"
-                                                                     0x6c667864: "longFixed", // "lfxd"
-                                                                     0x6c667074: "longFixedPoint", // "lfpt"
-                                                                     0x6c667263: "longFixedRectangle", // "lfrc"
-                                                                     0x6c706e74: "longPoint", // "lpnt"
-                                                                     0x6c726374: "longRectangle", // "lrct"
-                                                                     0x6d616368: "machine", // "mach"
-                                                                     0x6d4c6f63: "machineLocation", // "mLoc"
-                                                                     0x706f7274: "machPort", // "port"
-                                                                     0x6466682b: "MacOSExtendedFormat", // "dfh+"
-                                                                     0x64666866: "MacOSFormat", // "dfhf"
-                                                                     0x6d617220: "March", // "mar\0x20"
-                                                                     0x636c776d: "maximumWidth", // "clwm"
-                                                                     0x6d617920: "May", // "may\0x20"
-                                                                     0x6d706e6c: "MemoryPanel", // "mpnl"
-                                                                     0x6d696963: "mini", // "miic"
-                                                                     0x6d707274: "minimumSize", // "mprt"
-                                                                     0x636c776e: "minimumWidth", // "clwn"
-                                                                     0x706d6f64: "modal", // "pmod"
-                                                                     0x61736d6f: "modificationDate", // "asmo"
-                                                                     0x656c736d: "modificationDateColumn", // "elsm"
-                                                                     0x6d6f6e20: "Monday", // "mon\0x20"
-                                                                     0x6d696e6c: "MoreInfoPanel", // "minl"
-                                                                     0x64666d73: "MSDOSFormat", // "dfms"
-                                                                     0x706e616d: "name", // "pnam"
-                                                                     0x6e706e6c: "NameAndExtensionPanel", // "npnl"
-                                                                     0x656c736e: "nameColumn", // "elsn"
-                                                                     0x6e6d7874: "nameExtension", // "nmxt"
-                                                                     0x706f6376: "newWindowsOpenInColumnView", // "pocv"
-                                                                     0x706e7774: "newWindowTarget", // "pnwt"
-                                                                     0x64666e66: "NFSFormat", // "dfnf"
-                                                                     0x6e6f2020: "no", // "no\0x20\0x20"
-                                                                     0x6e6f6e65: "none", // "none"
-                                                                     0x736e726d: "normal", // "snrm"
-                                                                     0x6e617272: "notArranged", // "narr"
-                                                                     0x6e6f7620: "November", // "nov\0x20"
-                                                                     0x64666e74: "NTFSFormat", // "dfnt"
-                                                                     0x6e756c6c: "null", // "null"
-                                                                     0x6e756d65: "numericStrings", // "nume"
-                                                                     0x6f637420: "October", // "oct\0x20"
-                                                                     0x436c7363: "opensInClassic", // "Clsc"
-                                                                     0x6f726967: "originalItem", // "orig"
-                                                                     0x736f776e: "owner", // "sown"
-                                                                     0x6f776e72: "ownerPrivileges", // "ownr"
-                                                                     0x7061636b: "package", // "pack"
-                                                                     0x64667075: "PacketWrittenUDFFormat", // "dfpu"
-                                                                     0x70757364: "partitionSpaceUsed", // "pusd"
-                                                                     0x50494354: "PICTPicture", // "PICT"
-                                                                     0x74706d6d: "pixelMapRecord", // "tpmm"
-                                                                     0x706b7067: "PluginsPanel", // "pkpg"
-                                                                     0x51447074: "point", // "QDpt"
-                                                                     0x706f736e: "position", // "posn"
-                                                                     0x63707266: "preferences", // "cprf"
-                                                                     0x70776e64: "preferencesWindow", // "pwnd"
-                                                                     0x76706e6c: "PreviewPanel", // "vpnl"
-                                                                     0x70726373: "process", // "prcs"
-                                                                     0x70736e20: "processSerialNumber", // "psn\0x20"
-                                                                     0x64667072: "ProDOSFormat", // "dfpr"
-                                                                     0x76657232: "productVersion", // "ver2"
-                                                                     0x70414c4c: "properties", // "pALL"
-                                                                     0x70726f70: "property_", // "prop"
-                                                                     0x70756e63: "punctuation", // "punc"
-                                                                     0x64667174: "QuickTakeFormat", // "dfqt"
-                                                                     0x72656164: "readOnly", // "read"
-                                                                     0x72647772: "readWrite", // "rdwr"
-                                                                     0x646f7562: "real", // "doub"
-                                                                     0x7265636f: "record", // "reco"
-                                                                     0x6f626a20: "reference", // "obj\0x20"
-                                                                     0x7072737a: "resizable", // "prsz"
-                                                                     0x73727673: "reversed", // "srvs"
-                                                                     0x74723136: "RGB16Color", // "tr16"
-                                                                     0x74723936: "RGB96Color", // "tr96"
-                                                                     0x63524742: "RGBColor", // "cRGB"
-                                                                     0x6c726774: "right", // "lrgt"
-                                                                     0x74726f74: "rotation", // "trot"
-                                                                     0x73386d6b: "s8mk", // "s8mk"
-                                                                     0x73617420: "Saturday", // "sat\0x20"
-                                                                     0x73637074: "script", // "scpt"
-                                                                     0x73656c65: "selection", // "sele"
-                                                                     0x73657020: "September", // "sep\0x20"
-                                                                     0x73706e6c: "SharingPanel", // "spnl"
-                                                                     0x73686f72: "shortInteger", // "shor"
-                                                                     0x73686963: "showsIcon", // "shic"
-                                                                     0x70727677: "showsIconPreview", // "prvw"
-                                                                     0x6d6e666f: "showsItemInfo", // "mnfo"
-                                                                     0x73687072: "showsPreviewColumn", // "shpr"
-                                                                     0x70736964: "SidebarPreferencesPanel", // "psid"
-                                                                     0x73627769: "sidebarWidth", // "sbwi"
-                                                                     0x73686e6c: "SimpleHeaderPanel", // "shnl"
-                                                                     0x7074737a: "size", // "ptsz"
-                                                                     0x70687973: "size", // "phys"
-                                                                     0x656c7373: "sizeColumn", // "elss"
-                                                                     0x736d6963: "small", // "smic"
-                                                                     0x73696e67: "smallReal", // "sing"
-                                                                     0x6466736d: "SMBFormat", // "dfsm"
-                                                                     0x67726461: "snapToGrid", // "grda"
-                                                                     0x73727463: "sortColumn", // "srtc"
-                                                                     0x736f7264: "sortDirection", // "sord"
-                                                                     0x69737464: "startup", // "istd"
-                                                                     0x7364736b: "startupDisk", // "sdsk"
-                                                                     0x70737064: "stationery", // "pspd"
-                                                                     0x73747669: "statusbarVisible", // "stvi"
-                                                                     0x54455854: "string", // "TEXT"
-                                                                     0x7374796c: "styledClipboardText", // "styl"
-                                                                     0x53545854: "styledText", // "STXT"
-                                                                     0x73707274: "suggestedSize", // "sprt"
-                                                                     0x73756e20: "Sunday", // "sun\0x20"
-                                                                     0x66767467: "target", // "fvtg"
-                                                                     0x6673697a: "textSize", // "fsiz"
-                                                                     0x74737479: "textStyleInfo", // "tsty"
-                                                                     0x74687520: "Thursday", // "thu\0x20"
-                                                                     0x54494646: "TIFFPicture", // "TIFF"
-                                                                     0x70746974: "titled", // "ptit"
-                                                                     0x74627669: "toolbarVisible", // "tbvi"
-                                                                     0x61707074: "totalPartitionSize", // "appt"
-                                                                     0x74727368: "trash", // "trsh"
-                                                                     0x63747273: "trashObject", // "ctrs"
-                                                                     0x74756520: "Tuesday", // "tue\0x20"
-                                                                     0x74797065: "typeClass", // "type"
-                                                                     0x64667564: "UDFFormat", // "dfud"
-                                                                     0x64667566: "UFSFormat", // "dfuf"
-                                                                     0x75747874: "UnicodeText", // "utxt"
-                                                                     0x64663f3f: "unknownFormat", // "df??"
-                                                                     0x75636f6d: "unsignedDoubleInteger", // "ucom"
-                                                                     0x6d61676e: "unsignedInteger", // "magn"
-                                                                     0x75736872: "unsignedShortInteger", // "ushr"
-                                                                     0x7055524c: "URL", // "pURL"
-                                                                     0x75726474: "usesRelativeDates", // "urdt"
-                                                                     0x75743136: "UTF16Text", // "ut16"
-                                                                     0x75746638: "UTF8Text", // "utf8"
-                                                                     0x76657273: "version", // "vers"
-                                                                     0x656c7376: "versionColumn", // "elsv"
-                                                                     0x70766973: "visible", // "pvis"
-                                                                     0x7761726e: "warnsBeforeEmptying", // "warn"
-                                                                     0x64667764: "WebDAVFormat", // "dfwd"
-                                                                     0x77656420: "Wednesday", // "wed\0x20"
-                                                                     0x77686974: "whitespace", // "whit"
-                                                                     0x636c7764: "width", // "clwd"
-                                                                     0x6377696e: "window", // "cwin"
-                                                                     0x77726974: "writeOnly", // "writ"
-                                                                     0x70736374: "writingCode", // "psct"
-                                                                     0x64666163: "XsanFormat", // "dfac"
-                                                                     0x79657320: "yes", // "yes\0x20"
-                                                                     0x69737a6d: "zoomable", // "iszm"
-                                                                     0x707a756d: "zoomed", // "pzum"
-                                                     ],
-                                                     propertyNames: [
-                                                                     0x69736162: "acceptsHighLevelEvents", // "isab"
-                                                                     0x72657674: "acceptsRemoteEvents", // "revt"
-                                                                     0x70736e78: "allNameExtensionsShowing", // "psnx"
-                                                                     0x61707066: "applicationFile", // "appf"
-                                                                     0x69617272: "arrangement", // "iarr"
-                                                                     0x636f6c72: "backgroundColor", // "colr"
-                                                                     0x69626b67: "backgroundPicture", // "ibkg"
-                                                                     0x70626e64: "bounds", // "pbnd"
-                                                                     0x7366737a: "calculatesFolderSizes", // "sfsz"
-                                                                     0x63617061: "capacity", // "capa"
-                                                                     0x70636c73: "class_", // "pcls"
-                                                                     0x70636c69: "clipboard", // "pcli"
-                                                                     0x6c776e64: "clippingWindow", // "lwnd"
-                                                                     0x68636c62: "closeable", // "hclb"
-                                                                     0x77736864: "collapsed", // "wshd"
-                                                                     0x63766f70: "columnViewOptions", // "cvop"
-                                                                     0x636f6d74: "comment", // "comt"
-                                                                     0x70657863: "completelyExpanded", // "pexc"
-                                                                     0x70636d70: "computerContainer", // "pcmp"
-                                                                     0x63746e72: "container", // "ctnr"
-                                                                     0x63776e64: "containerWindow", // "cwnd"
-                                                                     0x61736364: "creationDate", // "ascd"
-                                                                     0x66637274: "creatorType", // "fcrt"
-                                                                     0x70616e6c: "currentPanel", // "panl"
-                                                                     0x70766577: "currentView", // "pvew"
-                                                                     0x64656c61: "delayBeforeSpringing", // "dela"
-                                                                     0x64736372: "description_", // "dscr"
-                                                                     0x64616669: "deskAccessoryFile", // "dafi"
-                                                                     0x6465736b: "desktop", // "desk"
-                                                                     0x64706963: "desktopPicture", // "dpic"
-                                                                     0x64706f73: "desktopPosition", // "dpos"
-                                                                     0x70647376: "desktopShowsConnectedServers", // "pdsv"
-                                                                     0x70656864: "desktopShowsExternalHardDisks", // "pehd"
-                                                                     0x70646864: "desktopShowsHardDisks", // "pdhd"
-                                                                     0x7064726d: "desktopShowsRemovableMedia", // "pdrm"
-                                                                     0x64737072: "disclosesPreviewPane", // "dspr"
-                                                                     0x63646973: "disk", // "cdis"
-                                                                     0x646e616d: "displayedName", // "dnam"
-                                                                     0x6973656a: "ejectable", // "isej"
-                                                                     0x65637473: "entireContents", // "ects"
-                                                                     0x67737470: "everyonesPrivileges", // "gstp"
-                                                                     0x70657861: "expandable", // "pexa"
-                                                                     0x70657870: "expanded", // "pexp"
-                                                                     0x68696478: "extensionHidden", // "hidx"
-                                                                     0x66696c65: "file", // "file"
-                                                                     0x61737479: "fileType", // "asty"
-                                                                     0x70667270: "FinderPreferences", // "pfrp"
-                                                                     0x6973666c: "floating", // "isfl"
-                                                                     0x706f6e74: "foldersOpenInNewTabs", // "pont"
-                                                                     0x706f6e77: "foldersOpenInNewWindows", // "ponw"
-                                                                     0x73707267: "foldersSpringOpen", // "sprg"
-                                                                     0x64666d74: "format", // "dfmt"
-                                                                     0x66727370: "freeSpace", // "frsp"
-                                                                     0x70697366: "frontmost", // "pisf"
-                                                                     0x73677270: "group", // "sgrp"
-                                                                     0x67707072: "groupPrivileges", // "gppr"
-                                                                     0x68736372: "hasScriptingTerminology", // "hscr"
-                                                                     0x686f6d65: "home", // "home"
-                                                                     0x69696d67: "icon", // "iimg"
-                                                                     0x6c766973: "iconSize", // "lvis"
-                                                                     0x69636f70: "iconViewOptions", // "icop"
-                                                                     0x49442020: "id", // "ID\0x20\0x20"
-                                                                     0x69677072: "ignorePrivileges", // "igpr"
-                                                                     0x70696478: "index", // "pidx"
-                                                                     0x69776e64: "informationWindow", // "iwnd"
-                                                                     0x70696e73: "insertionLocation", // "pins"
-                                                                     0x636f626a: "item", // "cobj"
-                                                                     0x4a726e6c: "journalingEnabled", // "Jrnl"
-                                                                     0x6b696e64: "kind", // "kind"
-                                                                     0x6c616269: "labelIndex", // "labi"
-                                                                     0x6c706f73: "labelPosition", // "lpos"
-                                                                     0x696c3332: "large32BitIcon", // "il32"
-                                                                     0x69636c34: "large4BitIcon", // "icl4"
-                                                                     0x69636c38: "large8BitIcon", // "icl8"
-                                                                     0x6c386d6b: "large8BitMask", // "l8mk"
-                                                                     0x49434e23: "largeMonochromeIconAndMask", // "ICN#"
-                                                                     0x6c766f70: "listViewOptions", // "lvop"
-                                                                     0x69737276: "localVolume", // "isrv"
-                                                                     0x696c6f63: "location", // "iloc"
-                                                                     0x61736c6b: "locked", // "aslk"
-                                                                     0x636c776d: "maximumWidth", // "clwm"
-                                                                     0x6d707274: "minimumSize", // "mprt"
-                                                                     0x636c776e: "minimumWidth", // "clwn"
-                                                                     0x706d6f64: "modal", // "pmod"
-                                                                     0x61736d6f: "modificationDate", // "asmo"
-                                                                     0x706e616d: "name", // "pnam"
-                                                                     0x6e6d7874: "nameExtension", // "nmxt"
-                                                                     0x706f6376: "newWindowsOpenInColumnView", // "pocv"
-                                                                     0x706e7774: "newWindowTarget", // "pnwt"
-                                                                     0x436c7363: "opensInClassic", // "Clsc"
-                                                                     0x6f726967: "originalItem", // "orig"
-                                                                     0x736f776e: "owner", // "sown"
-                                                                     0x6f776e72: "ownerPrivileges", // "ownr"
-                                                                     0x70757364: "partitionSpaceUsed", // "pusd"
-                                                                     0x70687973: "physicalSize", // "phys"
-                                                                     0x706f736e: "position", // "posn"
-                                                                     0x76657232: "productVersion", // "ver2"
-                                                                     0x70414c4c: "properties", // "pALL"
-                                                                     0x7072737a: "resizable", // "prsz"
-                                                                     0x73656c65: "selection", // "sele"
-                                                                     0x73686963: "showsIcon", // "shic"
-                                                                     0x70727677: "showsIconPreview", // "prvw"
-                                                                     0x6d6e666f: "showsItemInfo", // "mnfo"
-                                                                     0x73687072: "showsPreviewColumn", // "shpr"
-                                                                     0x73627769: "sidebarWidth", // "sbwi"
-                                                                     0x7074737a: "size", // "ptsz"
-                                                                     0x69733332: "small32BitIcon", // "is32"
-                                                                     0x69637334: "small4BitIcon", // "ics4"
-                                                                     0x69637338: "small8BitIcon", // "ics8"
-                                                                     0x69637323: "smallMonochromeIconAndMask", // "ics#"
-                                                                     0x73727463: "sortColumn", // "srtc"
-                                                                     0x736f7264: "sortDirection", // "sord"
-                                                                     0x69737464: "startup", // "istd"
-                                                                     0x7364736b: "startupDisk", // "sdsk"
-                                                                     0x70737064: "stationery", // "pspd"
-                                                                     0x73747669: "statusbarVisible", // "stvi"
-                                                                     0x73707274: "suggestedSize", // "sprt"
-                                                                     0x66767467: "target", // "fvtg"
-                                                                     0x6673697a: "textSize", // "fsiz"
-                                                                     0x70746974: "titled", // "ptit"
-                                                                     0x74627669: "toolbarVisible", // "tbvi"
-                                                                     0x61707074: "totalPartitionSize", // "appt"
-                                                                     0x74727368: "trash", // "trsh"
-                                                                     0x7055524c: "URL", // "pURL"
-                                                                     0x75726474: "usesRelativeDates", // "urdt"
-                                                                     0x76657273: "version", // "vers"
-                                                                     0x70766973: "visible", // "pvis"
-                                                                     0x7761726e: "warnsBeforeEmptying", // "warn"
-                                                                     0x636c7764: "width", // "clwd"
-                                                                     0x6377696e: "window", // "cwin"
-                                                                     0x69737a6d: "zoomable", // "iszm"
-                                                                     0x707a756d: "zoomed", // "pzum"
-                                                     ],
-                                                     elementsNames: [
-                                                                     0x616c6961: ("aliasFile", "aliasFiles"), // "alia"
-                                                                     0x616c7374: ("aliasList", "aliasLists"), // "alst"
-                                                                     0x61707066: ("applicationFile", "applicationFiles"), // "appf"
-                                                                     0x70636170: ("applicationProcess", "applicationProcesses"), // "pcap"
-                                                                     0x63617070: ("application", "applications"), // "capp"
-                                                                     0x636c7066: ("clipping", "clippings"), // "clpf"
-                                                                     0x6c776e64: ("clippingWindow", "clippingWindows"), // "lwnd"
-                                                                     0x6c76636c: ("column", "columns"), // "lvcl"
-                                                                     0x63766f70: ("columnViewOptions", "columnViewOptions"), // "cvop"
-                                                                     0x63636d70: ("computerObject", "computerObjects"), // "ccmp"
-                                                                     0x63746e72: ("container", "containers"), // "ctnr"
-                                                                     0x70636461: ("deskAccessoryProcess", "deskAccessoryProcesses"), // "pcda"
-                                                                     0x6364736b: ("desktopObject", "desktopObjects"), // "cdsk"
-                                                                     0x646b7477: ("desktopWindow", "desktopWindows"), // "dktw"
-                                                                     0x63646973: ("disk", "disks"), // "cdis"
-                                                                     0x646f6366: ("documentFile", "documentFiles"), // "docf"
-                                                                     0x66696c65: ("file", "files"), // "file"
-                                                                     0x62726f77: ("FinderWindow", "FinderWindows"), // "brow"
-                                                                     0x63666f6c: ("folder", "folders"), // "cfol"
-                                                                     0x6966616d: ("iconFamily", "iconFamilys"), // "ifam"
-                                                                     0x69636f70: ("iconViewOptions", "iconViewOptions"), // "icop"
-                                                                     0x69776e64: ("informationWindow", "informationWindows"), // "iwnd"
-                                                                     0x696e6c66: ("internetLocationFile", "internetLocationFiles"), // "inlf"
-                                                                     0x636f626a: ("item", "items"), // "cobj"
-                                                                     0x636c626c: ("label", "labels"), // "clbl"
-                                                                     0x6c766f70: ("listViewOptions", "listViewOptions"), // "lvop"
-                                                                     0x7061636b: ("package", "packages"), // "pack"
-                                                                     0x63707266: ("preferences", "preferences"), // "cprf"
-                                                                     0x70776e64: ("preferencesWindow", "preferencesWindows"), // "pwnd"
-                                                                     0x70726373: ("process", "processes"), // "prcs"
-                                                                     0x63747273: ("trashObject", "trashObjects"), // "ctrs"
-                                                                     0x6377696e: ("window", "windows"), // "cwin"
-                                                     ])
+private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(
+        applicationClassName: "Finder",
+        classNamePrefix: "FIN",
+        typeNames: [
+                0x69736162: "acceptsHighLevelEvents", // "isab"
+                0x72657674: "acceptsRemoteEvents", // "revt"
+                0x70616476: "AdvancedPreferencesPanel", // "padv"
+                0x616c6973: "alias", // "alis"
+                0x616c6961: "aliasFile", // "alia"
+                0x616c7374: "aliasList", // "alst"
+                0x70736e78: "allNameExtensionsShowing", // "psnx"
+                0x2a2a2a2a: "anything", // "****"
+                0x64666170: "APFSFormat", // "dfap"
+                0x64667068: "ApplePhotoFormat", // "dfph"
+                0x64666173: "AppleShareFormat", // "dfas"
+                0x63617070: "application", // "capp"
+                0x62756e64: "applicationBundleID", // "bund"
+                0x61707066: "applicationFile", // "appf"
+                0x61706e6c: "ApplicationPanel", // "apnl"
+                0x70636170: "applicationProcess", // "pcap"
+                0x7369676e: "applicationSignature", // "sign"
+                0x6170726c: "applicationURL", // "aprl"
+                0x61707220: "April", // "apr "
+                0x63647461: "arrangedByCreationDate", // "cdta"
+                0x6b696e61: "arrangedByKind", // "kina"
+                0x6c616261: "arrangedByLabel", // "laba"
+                0x6d647461: "arrangedByModificationDate", // "mdta"
+                0x6e616d61: "arrangedByName", // "nama"
+                0x73697a61: "arrangedBySize", // "siza"
+                0x69617272: "arrangement", // "iarr"
+                0x61736b20: "ask", // "ask "
+                0x64666175: "audioFormat", // "dfau"
+                0x61756720: "August", // "aug "
+                0x636f6c72: "backgroundColor", // "colr"
+                0x69626b67: "backgroundPicture", // "ibkg"
+                0x62657374: "best", // "best"
+                0x626d726b: "bookmarkData", // "bmrk"
+                0x626f6f6c: "boolean", // "bool"
+                0x6c626f74: "bottom", // "lbot"
+                0x71647274: "boundingRectangle", // "qdrt"
+                0x70626e64: "bounds", // "pbnd"
+                0x62706e6c: "BurningPanel", // "bpnl"
+                0x7366737a: "calculatesFolderSizes", // "sfsz"
+                0x63617061: "capacity", // "capa"
+                0x63617365: "case_", // "case"
+                0x70636c73: "class_", // "pcls"
+                0x70636c69: "clipboard", // "pcli"
+                0x636c7066: "clipping", // "clpf"
+                0x6c776e64: "clippingWindow", // "lwnd"
+                0x68636c62: "closeable", // "hclb"
+                0x77736864: "collapsed", // "wshd"
+                0x636c7274: "colorTable", // "clrt"
+                0x6c76636c: "column", // "lvcl"
+                0x636c7677: "columnView", // "clvw"
+                0x63766f70: "columnViewOptions", // "cvop"
+                0x636f6d74: "comment", // "comt"
+                0x656c7343: "commentColumn", // "elsC"
+                0x63706e6c: "CommentsPanel", // "cpnl"
+                0x70657863: "completelyExpanded", // "pexc"
+                0x70636d70: "computerContainer", // "pcmp"
+                0x63636d70: "computerObject", // "ccmp"
+                0x656e756d: "constant", // "enum"
+                0x63746e72: "container", // "ctnr"
+                0x63776e64: "containerWindow", // "cwnd"
+                0x63696e6c: "ContentIndexPanel", // "cinl"
+                0x61736364: "creationDate", // "ascd"
+                0x656c7363: "creationDateColumn", // "elsc"
+                0x66637274: "creatorType", // "fcrt"
+                0x70616e6c: "currentPanel", // "panl"
+                0x70766577: "currentView", // "pvew"
+                0x74646173: "dashStyle", // "tdas"
+                0x74647461: "data", // "tdta"
+                0x6c647420: "date", // "ldt "
+                0x64656320: "December", // "dec "
+                0x6465636d: "decimalStruct", // "decm"
+                0x64656c61: "delayBeforeSpringing", // "dela"
+                0x64736372: "description_", // "dscr"
+                0x64616669: "deskAccessoryFile", // "dafi"
+                0x70636461: "deskAccessoryProcess", // "pcda"
+                0x6465736b: "desktop", // "desk"
+                0x6364736b: "desktopObject", // "cdsk"
+                0x64706963: "desktopPicture", // "dpic"
+                0x64706f73: "desktopPosition", // "dpos"
+                0x70647376: "desktopShowsConnectedServers", // "pdsv"
+                0x70656864: "desktopShowsExternalHardDisks", // "pehd"
+                0x70646864: "desktopShowsHardDisks", // "pdhd"
+                0x7064726d: "desktopShowsRemovableMedia", // "pdrm"
+                0x646b7477: "desktopWindow", // "dktw"
+                0x64696163: "diacriticals", // "diac"
+                0x64737072: "disclosesPreviewPane", // "dspr"
+                0x63646973: "disk", // "cdis"
+                0x646e616d: "displayedName", // "dnam"
+                0x646f6366: "documentFile", // "docf"
+                0x636f6d70: "doubleInteger", // "comp"
+                0x6973656a: "ejectable", // "isej"
+                0x656e6373: "encodedString", // "encs"
+                0x65637473: "entireContents", // "ects"
+                0x45505320: "EPSPicture", // "EPS "
+                0x67737470: "everyonesPrivileges", // "gstp"
+                0x64667866: "ExFATFormat", // "dfxf"
+                0x70657861: "expandable", // "pexa"
+                0x70657870: "expanded", // "pexp"
+                0x65787061: "expansion", // "expa"
+                0x68696478: "extensionHidden", // "hidx"
+                0x66656220: "February", // "feb "
+                0x66696c65: "file", // "file"
+                0x66737266: "fileRef", // "fsrf"
+                0x61737479: "fileType", // "asty"
+                0x6675726c: "fileURL", // "furl"
+                0x70667270: "FinderPreferences", // "pfrp"
+                0x62726f77: "FinderWindow", // "brow"
+                0x66697864: "fixed", // "fixd"
+                0x66706e74: "fixedPoint", // "fpnt"
+                0x66726374: "fixedRectangle", // "frct"
+                0x6973666c: "floating", // "isfl"
+                0x666c7677: "flowView", // "flvw"
+                0x63666f6c: "folder", // "cfol"
+                0x706f6e74: "foldersOpenInNewTabs", // "pont"
+                0x706f6e77: "foldersOpenInNewWindows", // "ponw"
+                0x73707267: "foldersSpringOpen", // "sprg"
+                0x64666d74: "format", // "dfmt"
+                0x66727370: "freeSpace", // "frsp"
+                0x66726920: "Friday", // "fri "
+                0x70697366: "frontmost", // "pisf"
+                0x64666674: "FTPFormat", // "dfft"
+                0x67706e6c: "GeneralInformationPanel", // "gpnl"
+                0x70676e70: "GeneralPreferencesPanel", // "pgnp"
+                0x47494666: "GIFPicture", // "GIFf"
+                0x63677478: "graphicText", // "cgtx"
+                0x73677270: "group", // "sgrp"
+                0x67707072: "groupPrivileges", // "gppr"
+                0x68736372: "hasScriptingTerminology", // "hscr"
+                0x64666873: "HighSierraFormat", // "dfhs"
+                0x686f6d65: "home", // "home"
+                0x68797068: "hyphens", // "hyph"
+                0x69636c34: "icl4", // "icl4"
+                0x69636c38: "icl8", // "icl8"
+                0x49434e23: "ICN_U0023_", // "ICN#"
+                0x69696d67: "icon", // "iimg"
+                0x6966616d: "iconFamily", // "ifam"
+                0x6c766973: "iconSize", // "lvis"
+                0x69636e76: "iconView", // "icnv"
+                0x69636f70: "iconViewOptions", // "icop"
+                0x69637334: "ics4", // "ics4"
+                0x69637338: "ics8", // "ics8"
+                0x69637323: "ics_U0023_", // "ics#"
+                0x49442020: "id", // "ID  "
+                0x69677072: "ignorePrivileges", // "igpr"
+                0x696c3332: "il32", // "il32"
+                0x70696478: "index", // "pidx"
+                0x69776e64: "informationWindow", // "iwnd"
+                0x70696e73: "insertionLocation", // "pins"
+                0x6c6f6e67: "integer", // "long"
+                0x69747874: "internationalText", // "itxt"
+                0x696e746c: "internationalWritingCode", // "intl"
+                0x696e6c66: "internetLocationFile", // "inlf"
+                0x69733332: "is32", // "is32"
+                0x64663936: "ISO9660Format", // "df96"
+                0x636f626a: "item", // "cobj"
+                0x6a616e20: "January", // "jan "
+                0x4a726e6c: "journalingEnabled", // "Jrnl"
+                0x4a504547: "JPEGPicture", // "JPEG"
+                0x6a756c20: "July", // "jul "
+                0x6a756e20: "June", // "jun "
+                0x6b706964: "kernelProcessID", // "kpid"
+                0x6b696e64: "kind", // "kind"
+                0x656c736b: "kindColumn", // "elsk"
+                0x6c386d6b: "l8mk", // "l8mk"
+                0x636c626c: "label", // "clbl"
+                0x656c736c: "labelColumn", // "elsl"
+                0x6c616269: "labelIndex", // "labi"
+                0x6c706f73: "labelPosition", // "lpos"
+                0x706c6270: "LabelPreferencesPanel", // "plbp"
+                0x706b6c67: "LanguagesPanel", // "pklg"
+                0x6c676963: "large", // "lgic"
+                0x6c64626c: "largeReal", // "ldbl"
+                0x6c697374: "list", // "list"
+                0x6c737677: "listView", // "lsvw"
+                0x6c766f70: "listViewOptions", // "lvop"
+                0x69737276: "localVolume", // "isrv"
+                0x696c6f63: "location", // "iloc"
+                0x696e736c: "locationReference", // "insl"
+                0x61736c6b: "locked", // "aslk"
+                0x6c667864: "longFixed", // "lfxd"
+                0x6c667074: "longFixedPoint", // "lfpt"
+                0x6c667263: "longFixedRectangle", // "lfrc"
+                0x6c706e74: "longPoint", // "lpnt"
+                0x6c726374: "longRectangle", // "lrct"
+                0x6d616368: "machine", // "mach"
+                0x6d4c6f63: "machineLocation", // "mLoc"
+                0x706f7274: "machPort", // "port"
+                0x6466682b: "MacOSExtendedFormat", // "dfh+"
+                0x64666866: "MacOSFormat", // "dfhf"
+                0x6d617220: "March", // "mar "
+                0x636c776d: "maximumWidth", // "clwm"
+                0x6d617920: "May", // "may "
+                0x6d706e6c: "MemoryPanel", // "mpnl"
+                0x6d696963: "mini", // "miic"
+                0x6d707274: "minimumSize", // "mprt"
+                0x636c776e: "minimumWidth", // "clwn"
+                0x706d6f64: "modal", // "pmod"
+                0x61736d6f: "modificationDate", // "asmo"
+                0x656c736d: "modificationDateColumn", // "elsm"
+                0x6d6f6e20: "Monday", // "mon "
+                0x6d696e6c: "MoreInfoPanel", // "minl"
+                0x64666d73: "MSDOSFormat", // "dfms"
+                0x706e616d: "name", // "pnam"
+                0x6e706e6c: "NameAndExtensionPanel", // "npnl"
+                0x656c736e: "nameColumn", // "elsn"
+                0x6e6d7874: "nameExtension", // "nmxt"
+                0x706f6376: "newWindowsOpenInColumnView", // "pocv"
+                0x706e7774: "newWindowTarget", // "pnwt"
+                0x64666e66: "NFSFormat", // "dfnf"
+                0x6e6f2020: "no", // "no  "
+                0x6e6f6e65: "none", // "none"
+                0x736e726d: "normal", // "snrm"
+                0x6e617272: "notArranged", // "narr"
+                0x6e6f7620: "November", // "nov "
+                0x64666e74: "NTFSFormat", // "dfnt"
+                0x6e756c6c: "null", // "null"
+                0x6e756d65: "numericStrings", // "nume"
+                0x6f637420: "October", // "oct "
+                0x436c7363: "opensInClassic", // "Clsc"
+                0x6f726967: "originalItem", // "orig"
+                0x736f776e: "owner", // "sown"
+                0x6f776e72: "ownerPrivileges", // "ownr"
+                0x7061636b: "package", // "pack"
+                0x64667075: "PacketWrittenUDFFormat", // "dfpu"
+                0x70757364: "partitionSpaceUsed", // "pusd"
+                0x50494354: "PICTPicture", // "PICT"
+                0x74706d6d: "pixelMapRecord", // "tpmm"
+                0x706b7067: "PluginsPanel", // "pkpg"
+                0x51447074: "point", // "QDpt"
+                0x706f736e: "position", // "posn"
+                0x63707266: "preferences", // "cprf"
+                0x70776e64: "preferencesWindow", // "pwnd"
+                0x76706e6c: "PreviewPanel", // "vpnl"
+                0x70726373: "process", // "prcs"
+                0x70736e20: "processSerialNumber", // "psn "
+                0x64667072: "ProDOSFormat", // "dfpr"
+                0x76657232: "productVersion", // "ver2"
+                0x70414c4c: "properties", // "pALL"
+                0x70726f70: "property_", // "prop"
+                0x70756e63: "punctuation", // "punc"
+                0x64667174: "QuickTakeFormat", // "dfqt"
+                0x72656164: "readOnly", // "read"
+                0x72647772: "readWrite", // "rdwr"
+                0x646f7562: "real", // "doub"
+                0x7265636f: "record", // "reco"
+                0x6f626a20: "reference", // "obj "
+                0x7072737a: "resizable", // "prsz"
+                0x73727673: "reversed", // "srvs"
+                0x74723136: "RGB16Color", // "tr16"
+                0x74723936: "RGB96Color", // "tr96"
+                0x63524742: "RGBColor", // "cRGB"
+                0x6c726774: "right", // "lrgt"
+                0x74726f74: "rotation", // "trot"
+                0x73386d6b: "s8mk", // "s8mk"
+                0x73617420: "Saturday", // "sat "
+                0x73637074: "script", // "scpt"
+                0x73656c65: "selection", // "sele"
+                0x73657020: "September", // "sep "
+                0x73706e6c: "SharingPanel", // "spnl"
+                0x73686f72: "shortInteger", // "shor"
+                0x73686963: "showsIcon", // "shic"
+                0x70727677: "showsIconPreview", // "prvw"
+                0x6d6e666f: "showsItemInfo", // "mnfo"
+                0x73687072: "showsPreviewColumn", // "shpr"
+                0x70736964: "SidebarPreferencesPanel", // "psid"
+                0x73627769: "sidebarWidth", // "sbwi"
+                0x73686e6c: "SimpleHeaderPanel", // "shnl"
+                0x70687973: "size", // "phys"
+                0x7074737a: "size", // "ptsz"
+                0x656c7373: "sizeColumn", // "elss"
+                0x736d6963: "small", // "smic"
+                0x73696e67: "smallReal", // "sing"
+                0x6466736d: "SMBFormat", // "dfsm"
+                0x67726461: "snapToGrid", // "grda"
+                0x73727463: "sortColumn", // "srtc"
+                0x736f7264: "sortDirection", // "sord"
+                0x69737464: "startup", // "istd"
+                0x7364736b: "startupDisk", // "sdsk"
+                0x70737064: "stationery", // "pspd"
+                0x73747669: "statusbarVisible", // "stvi"
+                0x54455854: "string", // "TEXT"
+                0x7374796c: "styledClipboardText", // "styl"
+                0x53545854: "styledText", // "STXT"
+                0x73707274: "suggestedSize", // "sprt"
+                0x73756e20: "Sunday", // "sun "
+                0x66767467: "target", // "fvtg"
+                0x6673697a: "textSize", // "fsiz"
+                0x74737479: "textStyleInfo", // "tsty"
+                0x74687520: "Thursday", // "thu "
+                0x54494646: "TIFFPicture", // "TIFF"
+                0x70746974: "titled", // "ptit"
+                0x74627669: "toolbarVisible", // "tbvi"
+                0x61707074: "totalPartitionSize", // "appt"
+                0x74727368: "trash", // "trsh"
+                0x63747273: "trashObject", // "ctrs"
+                0x74756520: "Tuesday", // "tue "
+                0x74797065: "typeClass", // "type"
+                0x64667564: "UDFFormat", // "dfud"
+                0x64667566: "UFSFormat", // "dfuf"
+                0x75747874: "UnicodeText", // "utxt"
+                0x64663f3f: "unknownFormat", // "df??"
+                0x75636f6d: "unsignedDoubleInteger", // "ucom"
+                0x6d61676e: "unsignedInteger", // "magn"
+                0x75736872: "unsignedShortInteger", // "ushr"
+                0x7055524c: "URL", // "pURL"
+                0x75726474: "usesRelativeDates", // "urdt"
+                0x75743136: "UTF16Text", // "ut16"
+                0x75746638: "UTF8Text", // "utf8"
+                0x76657273: "version", // "vers"
+                0x656c7376: "versionColumn", // "elsv"
+                0x70766973: "visible", // "pvis"
+                0x7761726e: "warnsBeforeEmptying", // "warn"
+                0x64667764: "WebDAVFormat", // "dfwd"
+                0x77656420: "Wednesday", // "wed "
+                0x77686974: "whitespace", // "whit"
+                0x636c7764: "width", // "clwd"
+                0x6377696e: "window", // "cwin"
+                0x77726974: "writeOnly", // "writ"
+                0x70736374: "writingCode", // "psct"
+                0x64666163: "XsanFormat", // "dfac"
+                0x79657320: "yes", // "yes "
+                0x69737a6d: "zoomable", // "iszm"
+                0x707a756d: "zoomed", // "pzum"
+        ],
+        propertyNames: [
+                0x69736162: "acceptsHighLevelEvents", // "isab"
+                0x72657674: "acceptsRemoteEvents", // "revt"
+                0x70736e78: "allNameExtensionsShowing", // "psnx"
+                0x61707066: "applicationFile", // "appf"
+                0x69617272: "arrangement", // "iarr"
+                0x636f6c72: "backgroundColor", // "colr"
+                0x69626b67: "backgroundPicture", // "ibkg"
+                0x70626e64: "bounds", // "pbnd"
+                0x7366737a: "calculatesFolderSizes", // "sfsz"
+                0x63617061: "capacity", // "capa"
+                0x70636c73: "class_", // "pcls"
+                0x70636c69: "clipboard", // "pcli"
+                0x6c776e64: "clippingWindow", // "lwnd"
+                0x68636c62: "closeable", // "hclb"
+                0x77736864: "collapsed", // "wshd"
+                0x63766f70: "columnViewOptions", // "cvop"
+                0x636f6d74: "comment", // "comt"
+                0x70657863: "completelyExpanded", // "pexc"
+                0x70636d70: "computerContainer", // "pcmp"
+                0x63746e72: "container", // "ctnr"
+                0x63776e64: "containerWindow", // "cwnd"
+                0x61736364: "creationDate", // "ascd"
+                0x66637274: "creatorType", // "fcrt"
+                0x70616e6c: "currentPanel", // "panl"
+                0x70766577: "currentView", // "pvew"
+                0x64656c61: "delayBeforeSpringing", // "dela"
+                0x64736372: "description_", // "dscr"
+                0x64616669: "deskAccessoryFile", // "dafi"
+                0x6465736b: "desktop", // "desk"
+                0x64706963: "desktopPicture", // "dpic"
+                0x64706f73: "desktopPosition", // "dpos"
+                0x70647376: "desktopShowsConnectedServers", // "pdsv"
+                0x70656864: "desktopShowsExternalHardDisks", // "pehd"
+                0x70646864: "desktopShowsHardDisks", // "pdhd"
+                0x7064726d: "desktopShowsRemovableMedia", // "pdrm"
+                0x64737072: "disclosesPreviewPane", // "dspr"
+                0x63646973: "disk", // "cdis"
+                0x646e616d: "displayedName", // "dnam"
+                0x6973656a: "ejectable", // "isej"
+                0x65637473: "entireContents", // "ects"
+                0x67737470: "everyonesPrivileges", // "gstp"
+                0x70657861: "expandable", // "pexa"
+                0x70657870: "expanded", // "pexp"
+                0x68696478: "extensionHidden", // "hidx"
+                0x66696c65: "file", // "file"
+                0x61737479: "fileType", // "asty"
+                0x70667270: "FinderPreferences", // "pfrp"
+                0x6973666c: "floating", // "isfl"
+                0x706f6e74: "foldersOpenInNewTabs", // "pont"
+                0x706f6e77: "foldersOpenInNewWindows", // "ponw"
+                0x73707267: "foldersSpringOpen", // "sprg"
+                0x64666d74: "format", // "dfmt"
+                0x66727370: "freeSpace", // "frsp"
+                0x70697366: "frontmost", // "pisf"
+                0x73677270: "group", // "sgrp"
+                0x67707072: "groupPrivileges", // "gppr"
+                0x68736372: "hasScriptingTerminology", // "hscr"
+                0x686f6d65: "home", // "home"
+                0x69696d67: "icon", // "iimg"
+                0x6c766973: "iconSize", // "lvis"
+                0x69636f70: "iconViewOptions", // "icop"
+                0x49442020: "id", // "ID  "
+                0x69677072: "ignorePrivileges", // "igpr"
+                0x70696478: "index", // "pidx"
+                0x69776e64: "informationWindow", // "iwnd"
+                0x70696e73: "insertionLocation", // "pins"
+                0x636f626a: "item", // "cobj"
+                0x4a726e6c: "journalingEnabled", // "Jrnl"
+                0x6b696e64: "kind", // "kind"
+                0x6c616269: "labelIndex", // "labi"
+                0x6c706f73: "labelPosition", // "lpos"
+                0x696c3332: "large32BitIcon", // "il32"
+                0x69636c34: "large4BitIcon", // "icl4"
+                0x69636c38: "large8BitIcon", // "icl8"
+                0x6c386d6b: "large8BitMask", // "l8mk"
+                0x49434e23: "largeMonochromeIconAndMask", // "ICN#"
+                0x6c766f70: "listViewOptions", // "lvop"
+                0x69737276: "localVolume", // "isrv"
+                0x696c6f63: "location", // "iloc"
+                0x61736c6b: "locked", // "aslk"
+                0x636c776d: "maximumWidth", // "clwm"
+                0x6d707274: "minimumSize", // "mprt"
+                0x636c776e: "minimumWidth", // "clwn"
+                0x706d6f64: "modal", // "pmod"
+                0x61736d6f: "modificationDate", // "asmo"
+                0x706e616d: "name", // "pnam"
+                0x6e6d7874: "nameExtension", // "nmxt"
+                0x706f6376: "newWindowsOpenInColumnView", // "pocv"
+                0x706e7774: "newWindowTarget", // "pnwt"
+                0x436c7363: "opensInClassic", // "Clsc"
+                0x6f726967: "originalItem", // "orig"
+                0x736f776e: "owner", // "sown"
+                0x6f776e72: "ownerPrivileges", // "ownr"
+                0x70757364: "partitionSpaceUsed", // "pusd"
+                0x70687973: "physicalSize", // "phys"
+                0x706f736e: "position", // "posn"
+                0x76657232: "productVersion", // "ver2"
+                0x70414c4c: "properties", // "pALL"
+                0x7072737a: "resizable", // "prsz"
+                0x73656c65: "selection", // "sele"
+                0x73686963: "showsIcon", // "shic"
+                0x70727677: "showsIconPreview", // "prvw"
+                0x6d6e666f: "showsItemInfo", // "mnfo"
+                0x73687072: "showsPreviewColumn", // "shpr"
+                0x73627769: "sidebarWidth", // "sbwi"
+                0x7074737a: "size", // "ptsz"
+                0x69733332: "small32BitIcon", // "is32"
+                0x69637334: "small4BitIcon", // "ics4"
+                0x69637338: "small8BitIcon", // "ics8"
+                0x69637323: "smallMonochromeIconAndMask", // "ics#"
+                0x73727463: "sortColumn", // "srtc"
+                0x736f7264: "sortDirection", // "sord"
+                0x69737464: "startup", // "istd"
+                0x7364736b: "startupDisk", // "sdsk"
+                0x70737064: "stationery", // "pspd"
+                0x73747669: "statusbarVisible", // "stvi"
+                0x73707274: "suggestedSize", // "sprt"
+                0x66767467: "target", // "fvtg"
+                0x6673697a: "textSize", // "fsiz"
+                0x70746974: "titled", // "ptit"
+                0x74627669: "toolbarVisible", // "tbvi"
+                0x61707074: "totalPartitionSize", // "appt"
+                0x74727368: "trash", // "trsh"
+                0x7055524c: "URL", // "pURL"
+                0x75726474: "usesRelativeDates", // "urdt"
+                0x76657273: "version", // "vers"
+                0x70766973: "visible", // "pvis"
+                0x7761726e: "warnsBeforeEmptying", // "warn"
+                0x636c7764: "width", // "clwd"
+                0x6377696e: "window", // "cwin"
+                0x69737a6d: "zoomable", // "iszm"
+                0x707a756d: "zoomed", // "pzum"
+        ],
+        elementsNames: [
+                0x616c6961: ("aliasFile", "aliasFiles"), // "alia"
+                0x616c7374: ("aliasList", "aliasLists"), // "alst"
+                0x61707066: ("applicationFile", "applicationFiles"), // "appf"
+                0x70636170: ("applicationProcess", "applicationProcesses"), // "pcap"
+                0x63617070: ("application", "applications"), // "capp"
+                0x636c7066: ("clipping", "clippings"), // "clpf"
+                0x6c776e64: ("clippingWindow", "clippingWindows"), // "lwnd"
+                0x6c76636c: ("column", "columns"), // "lvcl"
+                0x63766f70: ("columnViewOptions", "columnViewOptions"), // "cvop"
+                0x63636d70: ("computerObject", "computerObjects"), // "ccmp"
+                0x63746e72: ("container", "containers"), // "ctnr"
+                0x70636461: ("deskAccessoryProcess", "deskAccessoryProcesses"), // "pcda"
+                0x6364736b: ("desktopObject", "desktopObjects"), // "cdsk"
+                0x646b7477: ("desktopWindow", "desktopWindows"), // "dktw"
+                0x63646973: ("disk", "disks"), // "cdis"
+                0x646f6366: ("documentFile", "documentFiles"), // "docf"
+                0x66696c65: ("file", "files"), // "file"
+                0x62726f77: ("FinderWindow", "FinderWindows"), // "brow"
+                0x63666f6c: ("folder", "folders"), // "cfol"
+                0x6966616d: ("iconFamily", "iconFamilys"), // "ifam"
+                0x69636f70: ("iconViewOptions", "iconViewOptions"), // "icop"
+                0x69776e64: ("informationWindow", "informationWindows"), // "iwnd"
+                0x696e6c66: ("internetLocationFile", "internetLocationFiles"), // "inlf"
+                0x636f626a: ("item", "items"), // "cobj"
+                0x636c626c: ("label", "labels"), // "clbl"
+                0x6c766f70: ("listViewOptions", "listViewOptions"), // "lvop"
+                0x7061636b: ("package", "packages"), // "pack"
+                0x63707266: ("preferences", "preferences"), // "cprf"
+                0x70776e64: ("preferencesWindow", "preferencesWindows"), // "pwnd"
+                0x70726373: ("process", "processes"), // "prcs"
+                0x63747273: ("trashObject", "trashObjects"), // "ctrs"
+                0x6377696e: ("window", "windows"), // "cwin"
+        ])
 
-private let _glueClasses = SwiftAutomation.GlueClasses(insertionSpecifierType: FINInsertion.self,
-                                       objectSpecifierType: FINItem.self,
-                                       multiObjectSpecifierType: FINItems.self,
-                                       rootSpecifierType: FINRoot.self,
-                                       applicationType: Finder.self,
-                                       symbolType: FINSymbol.self,
-                                       formatter: _specifierFormatter)
+private let _glueClasses = SwiftAutomation.GlueClasses(
+                                                insertionSpecifierType: FINInsertion.self,
+                                                objectSpecifierType: FINItem.self,
+                                                multiObjectSpecifierType: FINItems.self,
+                                                rootSpecifierType: FINRoot.self,
+                                                applicationType: Finder.self,
+                                                symbolType: FINSymbol.self,
+                                                formatter: _specifierFormatter)
 
 private let _untargetedAppData = SwiftAutomation.AppData(glueClasses: _glueClasses)
 
@@ -549,7 +551,7 @@ public class FINSymbol: SwiftAutomation.Symbol {
         case 0x70636170: return self.applicationProcess // "pcap"
         case 0x7369676e: return self.applicationSignature // "sign"
         case 0x6170726c: return self.applicationURL // "aprl"
-        case 0x61707220: return self.April // "apr\0x20"
+        case 0x61707220: return self.April // "apr "
         case 0x63647461: return self.arrangedByCreationDate // "cdta"
         case 0x6b696e61: return self.arrangedByKind // "kina"
         case 0x6c616261: return self.arrangedByLabel // "laba"
@@ -557,9 +559,9 @@ public class FINSymbol: SwiftAutomation.Symbol {
         case 0x6e616d61: return self.arrangedByName // "nama"
         case 0x73697a61: return self.arrangedBySize // "siza"
         case 0x69617272: return self.arrangement // "iarr"
-        case 0x61736b20: return self.ask // "ask\0x20"
+        case 0x61736b20: return self.ask // "ask "
         case 0x64666175: return self.audioFormat // "dfau"
-        case 0x61756720: return self.August // "aug\0x20"
+        case 0x61756720: return self.August // "aug "
         case 0x636f6c72: return self.backgroundColor // "colr"
         case 0x69626b67: return self.backgroundPicture // "ibkg"
         case 0x62657374: return self.best // "best"
@@ -599,8 +601,8 @@ public class FINSymbol: SwiftAutomation.Symbol {
         case 0x70766577: return self.currentView // "pvew"
         case 0x74646173: return self.dashStyle // "tdas"
         case 0x74647461: return self.data // "tdta"
-        case 0x6c647420: return self.date // "ldt\0x20"
-        case 0x64656320: return self.December // "dec\0x20"
+        case 0x6c647420: return self.date // "ldt "
+        case 0x64656320: return self.December // "dec "
         case 0x6465636d: return self.decimalStruct // "decm"
         case 0x64656c61: return self.delayBeforeSpringing // "dela"
         case 0x64736372: return self.description_ // "dscr"
@@ -624,14 +626,14 @@ public class FINSymbol: SwiftAutomation.Symbol {
         case 0x6973656a: return self.ejectable // "isej"
         case 0x656e6373: return self.encodedString // "encs"
         case 0x65637473: return self.entireContents // "ects"
-        case 0x45505320: return self.EPSPicture // "EPS\0x20"
+        case 0x45505320: return self.EPSPicture // "EPS "
         case 0x67737470: return self.everyonesPrivileges // "gstp"
         case 0x64667866: return self.ExFATFormat // "dfxf"
         case 0x70657861: return self.expandable // "pexa"
         case 0x70657870: return self.expanded // "pexp"
         case 0x65787061: return self.expansion // "expa"
         case 0x68696478: return self.extensionHidden // "hidx"
-        case 0x66656220: return self.February // "feb\0x20"
+        case 0x66656220: return self.February // "feb "
         case 0x66696c65: return self.file // "file"
         case 0x66737266: return self.fileRef // "fsrf"
         case 0x61737479: return self.fileType // "asty"
@@ -649,7 +651,7 @@ public class FINSymbol: SwiftAutomation.Symbol {
         case 0x73707267: return self.foldersSpringOpen // "sprg"
         case 0x64666d74: return self.format // "dfmt"
         case 0x66727370: return self.freeSpace // "frsp"
-        case 0x66726920: return self.Friday // "fri\0x20"
+        case 0x66726920: return self.Friday // "fri "
         case 0x70697366: return self.frontmost // "pisf"
         case 0x64666674: return self.FTPFormat // "dfft"
         case 0x67706e6c: return self.GeneralInformationPanel // "gpnl"
@@ -673,7 +675,7 @@ public class FINSymbol: SwiftAutomation.Symbol {
         case 0x69637334: return self.ics4 // "ics4"
         case 0x69637338: return self.ics8 // "ics8"
         case 0x69637323: return self.ics_U0023_ // "ics#"
-        case 0x49442020: return self.id // "ID\0x20\0x20"
+        case 0x49442020: return self.id // "ID  "
         case 0x69677072: return self.ignorePrivileges // "igpr"
         case 0x696c3332: return self.il32 // "il32"
         case 0x70696478: return self.index // "pidx"
@@ -686,11 +688,11 @@ public class FINSymbol: SwiftAutomation.Symbol {
         case 0x69733332: return self.is32 // "is32"
         case 0x64663936: return self.ISO9660Format // "df96"
         case 0x636f626a: return self.item // "cobj"
-        case 0x6a616e20: return self.January // "jan\0x20"
+        case 0x6a616e20: return self.January // "jan "
         case 0x4a726e6c: return self.journalingEnabled // "Jrnl"
         case 0x4a504547: return self.JPEGPicture // "JPEG"
-        case 0x6a756c20: return self.July // "jul\0x20"
-        case 0x6a756e20: return self.June // "jun\0x20"
+        case 0x6a756c20: return self.July // "jul "
+        case 0x6a756e20: return self.June // "jun "
         case 0x6b706964: return self.kernelProcessID // "kpid"
         case 0x6b696e64: return self.kind // "kind"
         case 0x656c736b: return self.kindColumn // "elsk"
@@ -720,9 +722,9 @@ public class FINSymbol: SwiftAutomation.Symbol {
         case 0x706f7274: return self.machPort // "port"
         case 0x6466682b: return self.MacOSExtendedFormat // "dfh+"
         case 0x64666866: return self.MacOSFormat // "dfhf"
-        case 0x6d617220: return self.March // "mar\0x20"
+        case 0x6d617220: return self.March // "mar "
         case 0x636c776d: return self.maximumWidth // "clwm"
-        case 0x6d617920: return self.May // "may\0x20"
+        case 0x6d617920: return self.May // "may "
         case 0x6d706e6c: return self.MemoryPanel // "mpnl"
         case 0x6d696963: return self.mini // "miic"
         case 0x6d707274: return self.minimumSize // "mprt"
@@ -730,7 +732,7 @@ public class FINSymbol: SwiftAutomation.Symbol {
         case 0x706d6f64: return self.modal // "pmod"
         case 0x61736d6f: return self.modificationDate // "asmo"
         case 0x656c736d: return self.modificationDateColumn // "elsm"
-        case 0x6d6f6e20: return self.Monday // "mon\0x20"
+        case 0x6d6f6e20: return self.Monday // "mon "
         case 0x6d696e6c: return self.MoreInfoPanel // "minl"
         case 0x64666d73: return self.MSDOSFormat // "dfms"
         case 0x706e616d: return self.name // "pnam"
@@ -740,15 +742,15 @@ public class FINSymbol: SwiftAutomation.Symbol {
         case 0x706f6376: return self.newWindowsOpenInColumnView // "pocv"
         case 0x706e7774: return self.newWindowTarget // "pnwt"
         case 0x64666e66: return self.NFSFormat // "dfnf"
-        case 0x6e6f2020: return self.no // "no\0x20\0x20"
+        case 0x6e6f2020: return self.no // "no  "
         case 0x6e6f6e65: return self.none // "none"
         case 0x736e726d: return self.normal // "snrm"
         case 0x6e617272: return self.notArranged // "narr"
-        case 0x6e6f7620: return self.November // "nov\0x20"
+        case 0x6e6f7620: return self.November // "nov "
         case 0x64666e74: return self.NTFSFormat // "dfnt"
         case 0x6e756c6c: return self.null // "null"
         case 0x6e756d65: return self.numericStrings // "nume"
-        case 0x6f637420: return self.October // "oct\0x20"
+        case 0x6f637420: return self.October // "oct "
         case 0x436c7363: return self.opensInClassic // "Clsc"
         case 0x6f726967: return self.originalItem // "orig"
         case 0x736f776e: return self.owner // "sown"
@@ -765,7 +767,7 @@ public class FINSymbol: SwiftAutomation.Symbol {
         case 0x70776e64: return self.preferencesWindow // "pwnd"
         case 0x76706e6c: return self.PreviewPanel // "vpnl"
         case 0x70726373: return self.process // "prcs"
-        case 0x70736e20: return self.processSerialNumber // "psn\0x20"
+        case 0x70736e20: return self.processSerialNumber // "psn "
         case 0x64667072: return self.ProDOSFormat // "dfpr"
         case 0x76657232: return self.productVersion // "ver2"
         case 0x70414c4c: return self.properties // "pALL"
@@ -776,7 +778,7 @@ public class FINSymbol: SwiftAutomation.Symbol {
         case 0x72647772: return self.readWrite // "rdwr"
         case 0x646f7562: return self.real // "doub"
         case 0x7265636f: return self.record // "reco"
-        case 0x6f626a20: return self.reference // "obj\0x20"
+        case 0x6f626a20: return self.reference // "obj "
         case 0x7072737a: return self.resizable // "prsz"
         case 0x73727673: return self.reversed // "srvs"
         case 0x74723136: return self.RGB16Color // "tr16"
@@ -785,10 +787,10 @@ public class FINSymbol: SwiftAutomation.Symbol {
         case 0x6c726774: return self.right // "lrgt"
         case 0x74726f74: return self.rotation // "trot"
         case 0x73386d6b: return self.s8mk // "s8mk"
-        case 0x73617420: return self.Saturday // "sat\0x20"
+        case 0x73617420: return self.Saturday // "sat "
         case 0x73637074: return self.script // "scpt"
         case 0x73656c65: return self.selection // "sele"
-        case 0x73657020: return self.September // "sep\0x20"
+        case 0x73657020: return self.September // "sep "
         case 0x73706e6c: return self.SharingPanel // "spnl"
         case 0x73686f72: return self.shortInteger // "shor"
         case 0x73686963: return self.showsIcon // "shic"
@@ -798,8 +800,8 @@ public class FINSymbol: SwiftAutomation.Symbol {
         case 0x70736964: return self.SidebarPreferencesPanel // "psid"
         case 0x73627769: return self.sidebarWidth // "sbwi"
         case 0x73686e6c: return self.SimpleHeaderPanel // "shnl"
-        case 0x7074737a: return self.size // "ptsz"
         case 0x70687973: return self.size // "phys"
+        case 0x7074737a: return self.size // "ptsz"
         case 0x656c7373: return self.sizeColumn // "elss"
         case 0x736d6963: return self.small // "smic"
         case 0x73696e67: return self.smallReal // "sing"
@@ -815,18 +817,18 @@ public class FINSymbol: SwiftAutomation.Symbol {
         case 0x7374796c: return self.styledClipboardText // "styl"
         case 0x53545854: return self.styledText // "STXT"
         case 0x73707274: return self.suggestedSize // "sprt"
-        case 0x73756e20: return self.Sunday // "sun\0x20"
+        case 0x73756e20: return self.Sunday // "sun "
         case 0x66767467: return self.target // "fvtg"
         case 0x6673697a: return self.textSize // "fsiz"
         case 0x74737479: return self.textStyleInfo // "tsty"
-        case 0x74687520: return self.Thursday // "thu\0x20"
+        case 0x74687520: return self.Thursday // "thu "
         case 0x54494646: return self.TIFFPicture // "TIFF"
         case 0x70746974: return self.titled // "ptit"
         case 0x74627669: return self.toolbarVisible // "tbvi"
         case 0x61707074: return self.totalPartitionSize // "appt"
         case 0x74727368: return self.trash // "trsh"
         case 0x63747273: return self.trashObject // "ctrs"
-        case 0x74756520: return self.Tuesday // "tue\0x20"
+        case 0x74756520: return self.Tuesday // "tue "
         case 0x74797065: return self.typeClass // "type"
         case 0x64667564: return self.UDFFormat // "dfud"
         case 0x64667566: return self.UFSFormat // "dfuf"
@@ -844,14 +846,14 @@ public class FINSymbol: SwiftAutomation.Symbol {
         case 0x70766973: return self.visible // "pvis"
         case 0x7761726e: return self.warnsBeforeEmptying // "warn"
         case 0x64667764: return self.WebDAVFormat // "dfwd"
-        case 0x77656420: return self.Wednesday // "wed\0x20"
+        case 0x77656420: return self.Wednesday // "wed "
         case 0x77686974: return self.whitespace // "whit"
         case 0x636c7764: return self.width // "clwd"
         case 0x6377696e: return self.window // "cwin"
         case 0x77726974: return self.writeOnly // "writ"
         case 0x70736374: return self.writingCode // "psct"
         case 0x64666163: return self.XsanFormat // "dfac"
-        case 0x79657320: return self.yes // "yes\0x20"
+        case 0x79657320: return self.yes // "yes "
         case 0x69737a6d: return self.zoomable // "iszm"
         case 0x707a756d: return self.zoomed // "pzum"
         default: return super.symbol(code: code, type: type, descriptor: descriptor) as! FINSymbol
@@ -872,9 +874,9 @@ public class FINSymbol: SwiftAutomation.Symbol {
     public static let applicationProcess = FINSymbol(name: "applicationProcess", code: 0x70636170, type: AppleEvents.typeType) // "pcap"
     public static let applicationSignature = FINSymbol(name: "applicationSignature", code: 0x7369676e, type: AppleEvents.typeType) // "sign"
     public static let applicationURL = FINSymbol(name: "applicationURL", code: 0x6170726c, type: AppleEvents.typeType) // "aprl"
-    public static let April = FINSymbol(name: "April", code: 0x61707220, type: AppleEvents.typeType) // "apr\0x20"
+    public static let April = FINSymbol(name: "April", code: 0x61707220, type: AppleEvents.typeType) // "apr "
     public static let arrangement = FINSymbol(name: "arrangement", code: 0x69617272, type: AppleEvents.typeType) // "iarr"
-    public static let August = FINSymbol(name: "August", code: 0x61756720, type: AppleEvents.typeType) // "aug\0x20"
+    public static let August = FINSymbol(name: "August", code: 0x61756720, type: AppleEvents.typeType) // "aug "
     public static let backgroundColor = FINSymbol(name: "backgroundColor", code: 0x636f6c72, type: AppleEvents.typeType) // "colr"
     public static let backgroundPicture = FINSymbol(name: "backgroundPicture", code: 0x69626b67, type: AppleEvents.typeType) // "ibkg"
     public static let best = FINSymbol(name: "best", code: 0x62657374, type: AppleEvents.typeType) // "best"
@@ -905,8 +907,8 @@ public class FINSymbol: SwiftAutomation.Symbol {
     public static let currentView = FINSymbol(name: "currentView", code: 0x70766577, type: AppleEvents.typeType) // "pvew"
     public static let dashStyle = FINSymbol(name: "dashStyle", code: 0x74646173, type: AppleEvents.typeType) // "tdas"
     public static let data = FINSymbol(name: "data", code: 0x74647461, type: AppleEvents.typeType) // "tdta"
-    public static let date = FINSymbol(name: "date", code: 0x6c647420, type: AppleEvents.typeType) // "ldt\0x20"
-    public static let December = FINSymbol(name: "December", code: 0x64656320, type: AppleEvents.typeType) // "dec\0x20"
+    public static let date = FINSymbol(name: "date", code: 0x6c647420, type: AppleEvents.typeType) // "ldt "
+    public static let December = FINSymbol(name: "December", code: 0x64656320, type: AppleEvents.typeType) // "dec "
     public static let decimalStruct = FINSymbol(name: "decimalStruct", code: 0x6465636d, type: AppleEvents.typeType) // "decm"
     public static let delayBeforeSpringing = FINSymbol(name: "delayBeforeSpringing", code: 0x64656c61, type: AppleEvents.typeType) // "dela"
     public static let description_ = FINSymbol(name: "description_", code: 0x64736372, type: AppleEvents.typeType) // "dscr"
@@ -929,12 +931,12 @@ public class FINSymbol: SwiftAutomation.Symbol {
     public static let ejectable = FINSymbol(name: "ejectable", code: 0x6973656a, type: AppleEvents.typeType) // "isej"
     public static let encodedString = FINSymbol(name: "encodedString", code: 0x656e6373, type: AppleEvents.typeType) // "encs"
     public static let entireContents = FINSymbol(name: "entireContents", code: 0x65637473, type: AppleEvents.typeType) // "ects"
-    public static let EPSPicture = FINSymbol(name: "EPSPicture", code: 0x45505320, type: AppleEvents.typeType) // "EPS\0x20"
+    public static let EPSPicture = FINSymbol(name: "EPSPicture", code: 0x45505320, type: AppleEvents.typeType) // "EPS "
     public static let everyonesPrivileges = FINSymbol(name: "everyonesPrivileges", code: 0x67737470, type: AppleEvents.typeType) // "gstp"
     public static let expandable = FINSymbol(name: "expandable", code: 0x70657861, type: AppleEvents.typeType) // "pexa"
     public static let expanded = FINSymbol(name: "expanded", code: 0x70657870, type: AppleEvents.typeType) // "pexp"
     public static let extensionHidden = FINSymbol(name: "extensionHidden", code: 0x68696478, type: AppleEvents.typeType) // "hidx"
-    public static let February = FINSymbol(name: "February", code: 0x66656220, type: AppleEvents.typeType) // "feb\0x20"
+    public static let February = FINSymbol(name: "February", code: 0x66656220, type: AppleEvents.typeType) // "feb "
     public static let file = FINSymbol(name: "file", code: 0x66696c65, type: AppleEvents.typeType) // "file"
     public static let fileRef = FINSymbol(name: "fileRef", code: 0x66737266, type: AppleEvents.typeType) // "fsrf"
     public static let fileType = FINSymbol(name: "fileType", code: 0x61737479, type: AppleEvents.typeType) // "asty"
@@ -951,7 +953,7 @@ public class FINSymbol: SwiftAutomation.Symbol {
     public static let foldersSpringOpen = FINSymbol(name: "foldersSpringOpen", code: 0x73707267, type: AppleEvents.typeType) // "sprg"
     public static let format = FINSymbol(name: "format", code: 0x64666d74, type: AppleEvents.typeType) // "dfmt"
     public static let freeSpace = FINSymbol(name: "freeSpace", code: 0x66727370, type: AppleEvents.typeType) // "frsp"
-    public static let Friday = FINSymbol(name: "Friday", code: 0x66726920, type: AppleEvents.typeType) // "fri\0x20"
+    public static let Friday = FINSymbol(name: "Friday", code: 0x66726920, type: AppleEvents.typeType) // "fri "
     public static let frontmost = FINSymbol(name: "frontmost", code: 0x70697366, type: AppleEvents.typeType) // "pisf"
     public static let GIFPicture = FINSymbol(name: "GIFPicture", code: 0x47494666, type: AppleEvents.typeType) // "GIFf"
     public static let graphicText = FINSymbol(name: "graphicText", code: 0x63677478, type: AppleEvents.typeType) // "cgtx"
@@ -969,7 +971,7 @@ public class FINSymbol: SwiftAutomation.Symbol {
     public static let ics4 = FINSymbol(name: "ics4", code: 0x69637334, type: AppleEvents.typeType) // "ics4"
     public static let ics8 = FINSymbol(name: "ics8", code: 0x69637338, type: AppleEvents.typeType) // "ics8"
     public static let ics_U0023_ = FINSymbol(name: "ics_U0023_", code: 0x69637323, type: AppleEvents.typeType) // "ics#"
-    public static let id = FINSymbol(name: "id", code: 0x49442020, type: AppleEvents.typeType) // "ID\0x20\0x20"
+    public static let id = FINSymbol(name: "id", code: 0x49442020, type: AppleEvents.typeType) // "ID  "
     public static let ignorePrivileges = FINSymbol(name: "ignorePrivileges", code: 0x69677072, type: AppleEvents.typeType) // "igpr"
     public static let il32 = FINSymbol(name: "il32", code: 0x696c3332, type: AppleEvents.typeType) // "il32"
     public static let index = FINSymbol(name: "index", code: 0x70696478, type: AppleEvents.typeType) // "pidx"
@@ -981,11 +983,11 @@ public class FINSymbol: SwiftAutomation.Symbol {
     public static let internetLocationFile = FINSymbol(name: "internetLocationFile", code: 0x696e6c66, type: AppleEvents.typeType) // "inlf"
     public static let is32 = FINSymbol(name: "is32", code: 0x69733332, type: AppleEvents.typeType) // "is32"
     public static let item = FINSymbol(name: "item", code: 0x636f626a, type: AppleEvents.typeType) // "cobj"
-    public static let January = FINSymbol(name: "January", code: 0x6a616e20, type: AppleEvents.typeType) // "jan\0x20"
+    public static let January = FINSymbol(name: "January", code: 0x6a616e20, type: AppleEvents.typeType) // "jan "
     public static let journalingEnabled = FINSymbol(name: "journalingEnabled", code: 0x4a726e6c, type: AppleEvents.typeType) // "Jrnl"
     public static let JPEGPicture = FINSymbol(name: "JPEGPicture", code: 0x4a504547, type: AppleEvents.typeType) // "JPEG"
-    public static let July = FINSymbol(name: "July", code: 0x6a756c20, type: AppleEvents.typeType) // "jul\0x20"
-    public static let June = FINSymbol(name: "June", code: 0x6a756e20, type: AppleEvents.typeType) // "jun\0x20"
+    public static let July = FINSymbol(name: "July", code: 0x6a756c20, type: AppleEvents.typeType) // "jul "
+    public static let June = FINSymbol(name: "June", code: 0x6a756e20, type: AppleEvents.typeType) // "jun "
     public static let kernelProcessID = FINSymbol(name: "kernelProcessID", code: 0x6b706964, type: AppleEvents.typeType) // "kpid"
     public static let l8mk = FINSymbol(name: "l8mk", code: 0x6c386d6b, type: AppleEvents.typeType) // "l8mk"
     public static let label = FINSymbol(name: "label", code: 0x636c626c, type: AppleEvents.typeType) // "clbl"
@@ -1010,19 +1012,19 @@ public class FINSymbol: SwiftAutomation.Symbol {
     public static let machine = FINSymbol(name: "machine", code: 0x6d616368, type: AppleEvents.typeType) // "mach"
     public static let machineLocation = FINSymbol(name: "machineLocation", code: 0x6d4c6f63, type: AppleEvents.typeType) // "mLoc"
     public static let machPort = FINSymbol(name: "machPort", code: 0x706f7274, type: AppleEvents.typeType) // "port"
-    public static let March = FINSymbol(name: "March", code: 0x6d617220, type: AppleEvents.typeType) // "mar\0x20"
+    public static let March = FINSymbol(name: "March", code: 0x6d617220, type: AppleEvents.typeType) // "mar "
     public static let maximumWidth = FINSymbol(name: "maximumWidth", code: 0x636c776d, type: AppleEvents.typeType) // "clwm"
-    public static let May = FINSymbol(name: "May", code: 0x6d617920, type: AppleEvents.typeType) // "may\0x20"
+    public static let May = FINSymbol(name: "May", code: 0x6d617920, type: AppleEvents.typeType) // "may "
     public static let minimumSize = FINSymbol(name: "minimumSize", code: 0x6d707274, type: AppleEvents.typeType) // "mprt"
     public static let minimumWidth = FINSymbol(name: "minimumWidth", code: 0x636c776e, type: AppleEvents.typeType) // "clwn"
     public static let modal = FINSymbol(name: "modal", code: 0x706d6f64, type: AppleEvents.typeType) // "pmod"
-    public static let Monday = FINSymbol(name: "Monday", code: 0x6d6f6e20, type: AppleEvents.typeType) // "mon\0x20"
+    public static let Monday = FINSymbol(name: "Monday", code: 0x6d6f6e20, type: AppleEvents.typeType) // "mon "
     public static let nameExtension = FINSymbol(name: "nameExtension", code: 0x6e6d7874, type: AppleEvents.typeType) // "nmxt"
     public static let newWindowsOpenInColumnView = FINSymbol(name: "newWindowsOpenInColumnView", code: 0x706f6376, type: AppleEvents.typeType) // "pocv"
     public static let newWindowTarget = FINSymbol(name: "newWindowTarget", code: 0x706e7774, type: AppleEvents.typeType) // "pnwt"
-    public static let November = FINSymbol(name: "November", code: 0x6e6f7620, type: AppleEvents.typeType) // "nov\0x20"
+    public static let November = FINSymbol(name: "November", code: 0x6e6f7620, type: AppleEvents.typeType) // "nov "
     public static let null = FINSymbol(name: "null", code: 0x6e756c6c, type: AppleEvents.typeType) // "null"
-    public static let October = FINSymbol(name: "October", code: 0x6f637420, type: AppleEvents.typeType) // "oct\0x20"
+    public static let October = FINSymbol(name: "October", code: 0x6f637420, type: AppleEvents.typeType) // "oct "
     public static let opensInClassic = FINSymbol(name: "opensInClassic", code: 0x436c7363, type: AppleEvents.typeType) // "Clsc"
     public static let originalItem = FINSymbol(name: "originalItem", code: 0x6f726967, type: AppleEvents.typeType) // "orig"
     public static let owner = FINSymbol(name: "owner", code: 0x736f776e, type: AppleEvents.typeType) // "sown"
@@ -1038,23 +1040,23 @@ public class FINSymbol: SwiftAutomation.Symbol {
     public static let preferencesWindow = FINSymbol(name: "preferencesWindow", code: 0x70776e64, type: AppleEvents.typeType) // "pwnd"
     public static let preferredSize = FINSymbol(name: "preferredSize", code: 0x61707074, type: AppleEvents.typeType) // "appt"
     public static let process = FINSymbol(name: "process", code: 0x70726373, type: AppleEvents.typeType) // "prcs"
-    public static let processSerialNumber = FINSymbol(name: "processSerialNumber", code: 0x70736e20, type: AppleEvents.typeType) // "psn\0x20"
+    public static let processSerialNumber = FINSymbol(name: "processSerialNumber", code: 0x70736e20, type: AppleEvents.typeType) // "psn "
     public static let productVersion = FINSymbol(name: "productVersion", code: 0x76657232, type: AppleEvents.typeType) // "ver2"
     public static let properties = FINSymbol(name: "properties", code: 0x70414c4c, type: AppleEvents.typeType) // "pALL"
     public static let property_ = FINSymbol(name: "property_", code: 0x70726f70, type: AppleEvents.typeType) // "prop"
     public static let real = FINSymbol(name: "real", code: 0x646f7562, type: AppleEvents.typeType) // "doub"
     public static let record = FINSymbol(name: "record", code: 0x7265636f, type: AppleEvents.typeType) // "reco"
-    public static let reference = FINSymbol(name: "reference", code: 0x6f626a20, type: AppleEvents.typeType) // "obj\0x20"
+    public static let reference = FINSymbol(name: "reference", code: 0x6f626a20, type: AppleEvents.typeType) // "obj "
     public static let resizable = FINSymbol(name: "resizable", code: 0x7072737a, type: AppleEvents.typeType) // "prsz"
     public static let RGB16Color = FINSymbol(name: "RGB16Color", code: 0x74723136, type: AppleEvents.typeType) // "tr16"
     public static let RGB96Color = FINSymbol(name: "RGB96Color", code: 0x74723936, type: AppleEvents.typeType) // "tr96"
     public static let RGBColor = FINSymbol(name: "RGBColor", code: 0x63524742, type: AppleEvents.typeType) // "cRGB"
     public static let rotation = FINSymbol(name: "rotation", code: 0x74726f74, type: AppleEvents.typeType) // "trot"
     public static let s8mk = FINSymbol(name: "s8mk", code: 0x73386d6b, type: AppleEvents.typeType) // "s8mk"
-    public static let Saturday = FINSymbol(name: "Saturday", code: 0x73617420, type: AppleEvents.typeType) // "sat\0x20"
+    public static let Saturday = FINSymbol(name: "Saturday", code: 0x73617420, type: AppleEvents.typeType) // "sat "
     public static let script = FINSymbol(name: "script", code: 0x73637074, type: AppleEvents.typeType) // "scpt"
     public static let selection = FINSymbol(name: "selection", code: 0x73656c65, type: AppleEvents.typeType) // "sele"
-    public static let September = FINSymbol(name: "September", code: 0x73657020, type: AppleEvents.typeType) // "sep\0x20"
+    public static let September = FINSymbol(name: "September", code: 0x73657020, type: AppleEvents.typeType) // "sep "
     public static let shortInteger = FINSymbol(name: "shortInteger", code: 0x73686f72, type: AppleEvents.typeType) // "shor"
     public static let showsIcon = FINSymbol(name: "showsIcon", code: 0x73686963, type: AppleEvents.typeType) // "shic"
     public static let showsIconPreview = FINSymbol(name: "showsIconPreview", code: 0x70727677, type: AppleEvents.typeType) // "prvw"
@@ -1077,18 +1079,18 @@ public class FINSymbol: SwiftAutomation.Symbol {
     public static let styledClipboardText = FINSymbol(name: "styledClipboardText", code: 0x7374796c, type: AppleEvents.typeType) // "styl"
     public static let styledText = FINSymbol(name: "styledText", code: 0x53545854, type: AppleEvents.typeType) // "STXT"
     public static let suggestedSize = FINSymbol(name: "suggestedSize", code: 0x73707274, type: AppleEvents.typeType) // "sprt"
-    public static let Sunday = FINSymbol(name: "Sunday", code: 0x73756e20, type: AppleEvents.typeType) // "sun\0x20"
+    public static let Sunday = FINSymbol(name: "Sunday", code: 0x73756e20, type: AppleEvents.typeType) // "sun "
     public static let target = FINSymbol(name: "target", code: 0x66767467, type: AppleEvents.typeType) // "fvtg"
     public static let textSize = FINSymbol(name: "textSize", code: 0x6673697a, type: AppleEvents.typeType) // "fsiz"
     public static let textStyleInfo = FINSymbol(name: "textStyleInfo", code: 0x74737479, type: AppleEvents.typeType) // "tsty"
-    public static let Thursday = FINSymbol(name: "Thursday", code: 0x74687520, type: AppleEvents.typeType) // "thu\0x20"
+    public static let Thursday = FINSymbol(name: "Thursday", code: 0x74687520, type: AppleEvents.typeType) // "thu "
     public static let TIFFPicture = FINSymbol(name: "TIFFPicture", code: 0x54494646, type: AppleEvents.typeType) // "TIFF"
     public static let titled = FINSymbol(name: "titled", code: 0x70746974, type: AppleEvents.typeType) // "ptit"
     public static let toolbarVisible = FINSymbol(name: "toolbarVisible", code: 0x74627669, type: AppleEvents.typeType) // "tbvi"
     public static let totalPartitionSize = FINSymbol(name: "totalPartitionSize", code: 0x61707074, type: AppleEvents.typeType) // "appt"
     public static let trash = FINSymbol(name: "trash", code: 0x74727368, type: AppleEvents.typeType) // "trsh"
     public static let trashObject = FINSymbol(name: "trashObject", code: 0x63747273, type: AppleEvents.typeType) // "ctrs"
-    public static let Tuesday = FINSymbol(name: "Tuesday", code: 0x74756520, type: AppleEvents.typeType) // "tue\0x20"
+    public static let Tuesday = FINSymbol(name: "Tuesday", code: 0x74756520, type: AppleEvents.typeType) // "tue "
     public static let typeClass = FINSymbol(name: "typeClass", code: 0x74797065, type: AppleEvents.typeType) // "type"
     public static let UnicodeText = FINSymbol(name: "UnicodeText", code: 0x75747874, type: AppleEvents.typeType) // "utxt"
     public static let unsignedDoubleInteger = FINSymbol(name: "unsignedDoubleInteger", code: 0x75636f6d, type: AppleEvents.typeType) // "ucom"
@@ -1100,7 +1102,7 @@ public class FINSymbol: SwiftAutomation.Symbol {
     public static let UTF8Text = FINSymbol(name: "UTF8Text", code: 0x75746638, type: AppleEvents.typeType) // "utf8"
     public static let visible = FINSymbol(name: "visible", code: 0x70766973, type: AppleEvents.typeType) // "pvis"
     public static let warnsBeforeEmptying = FINSymbol(name: "warnsBeforeEmptying", code: 0x7761726e, type: AppleEvents.typeType) // "warn"
-    public static let Wednesday = FINSymbol(name: "Wednesday", code: 0x77656420, type: AppleEvents.typeType) // "wed\0x20"
+    public static let Wednesday = FINSymbol(name: "Wednesday", code: 0x77656420, type: AppleEvents.typeType) // "wed "
     public static let width = FINSymbol(name: "width", code: 0x636c7764, type: AppleEvents.typeType) // "clwd"
     public static let window = FINSymbol(name: "window", code: 0x6377696e, type: AppleEvents.typeType) // "cwin"
     public static let writingCode = FINSymbol(name: "writingCode", code: 0x70736374, type: AppleEvents.typeType) // "psct"
@@ -1119,7 +1121,7 @@ public class FINSymbol: SwiftAutomation.Symbol {
     public static let arrangedByModificationDate = FINSymbol(name: "arrangedByModificationDate", code: 0x6d647461, type: AppleEvents.typeEnumerated) // "mdta"
     public static let arrangedByName = FINSymbol(name: "arrangedByName", code: 0x6e616d61, type: AppleEvents.typeEnumerated) // "nama"
     public static let arrangedBySize = FINSymbol(name: "arrangedBySize", code: 0x73697a61, type: AppleEvents.typeEnumerated) // "siza"
-    public static let ask = FINSymbol(name: "ask", code: 0x61736b20, type: AppleEvents.typeEnumerated) // "ask\0x20"
+    public static let ask = FINSymbol(name: "ask", code: 0x61736b20, type: AppleEvents.typeEnumerated) // "ask "
     public static let audioFormat = FINSymbol(name: "audioFormat", code: 0x64666175, type: AppleEvents.typeEnumerated) // "dfau"
     public static let bottom = FINSymbol(name: "bottom", code: 0x6c626f74, type: AppleEvents.typeEnumerated) // "lbot"
     public static let BurningPanel = FINSymbol(name: "BurningPanel", code: 0x62706e6c, type: AppleEvents.typeEnumerated) // "bpnl"
@@ -1164,7 +1166,7 @@ public class FINSymbol: SwiftAutomation.Symbol {
     public static let NameAndExtensionPanel = FINSymbol(name: "NameAndExtensionPanel", code: 0x6e706e6c, type: AppleEvents.typeEnumerated) // "npnl"
     public static let nameColumn = FINSymbol(name: "nameColumn", code: 0x656c736e, type: AppleEvents.typeEnumerated) // "elsn"
     public static let NFSFormat = FINSymbol(name: "NFSFormat", code: 0x64666e66, type: AppleEvents.typeEnumerated) // "dfnf"
-    public static let no = FINSymbol(name: "no", code: 0x6e6f2020, type: AppleEvents.typeEnumerated) // "no\0x20\0x20"
+    public static let no = FINSymbol(name: "no", code: 0x6e6f2020, type: AppleEvents.typeEnumerated) // "no  "
     public static let none = FINSymbol(name: "none", code: 0x6e6f6e65, type: AppleEvents.typeEnumerated) // "none"
     public static let normal = FINSymbol(name: "normal", code: 0x736e726d, type: AppleEvents.typeEnumerated) // "snrm"
     public static let notArranged = FINSymbol(name: "notArranged", code: 0x6e617272, type: AppleEvents.typeEnumerated) // "narr"
@@ -1198,7 +1200,7 @@ public class FINSymbol: SwiftAutomation.Symbol {
     public static let whitespace = FINSymbol(name: "whitespace", code: 0x77686974, type: AppleEvents.typeEnumerated) // "whit"
     public static let writeOnly = FINSymbol(name: "writeOnly", code: 0x77726974, type: AppleEvents.typeEnumerated) // "writ"
     public static let XsanFormat = FINSymbol(name: "XsanFormat", code: 0x64666163, type: AppleEvents.typeEnumerated) // "dfac"
-    public static let yes = FINSymbol(name: "yes", code: 0x79657320, type: AppleEvents.typeEnumerated) // "yes\0x20"
+    public static let yes = FINSymbol(name: "yes", code: 0x79657320, type: AppleEvents.typeEnumerated) // "yes "
 }
 
 public typealias FIN = FINSymbol // allows symbols to be written as (e.g.) FIN.name instead of FINSymbol.name
@@ -1215,7 +1217,7 @@ extension FINCommand {
     @discardableResult public func activate(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "activate", eventClass: 0x6d697363, eventID: 0x61637476, // "misc"/"actv"
+        return try self.appData.sendAppleEvent(name: "activate", event: 0x6d697363_61637476, // "miscactv"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1223,7 +1225,7 @@ extension FINCommand {
     public func activate<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "activate", eventClass: 0x6d697363, eventID: 0x61637476, // "misc"/"actv"
+        return try self.appData.sendAppleEvent(name: "activate", event: 0x6d697363_61637476, // "miscactv"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1232,9 +1234,9 @@ extension FINCommand {
             by: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "cleanUp", eventClass: 0x666e6472, eventID: 0x66636c75, // "fndr"/"fclu"
+        return try self.appData.sendAppleEvent(name: "cleanUp", event: 0x666e6472_66636c75, // "fndrfclu"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
-                    ("by", 0x62792020, by), // "by\0x20\0x20"
+                    ("by", 0x62792020, by), // "by  "
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
@@ -1242,16 +1244,16 @@ extension FINCommand {
             by: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "cleanUp", eventClass: 0x666e6472, eventID: 0x66636c75, // "fndr"/"fclu"
+        return try self.appData.sendAppleEvent(name: "cleanUp", event: 0x666e6472_66636c75, // "fndrfclu"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
-                    ("by", 0x62792020, by), // "by\0x20\0x20"
+                    ("by", 0x62792020, by), // "by  "
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
     @discardableResult public func close(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "close", eventClass: 0x636f7265, eventID: 0x636c6f73, // "core"/"clos"
+        return try self.appData.sendAppleEvent(name: "close", event: 0x636f7265_636c6f73, // "coreclos"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1259,7 +1261,7 @@ extension FINCommand {
     public func close<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "close", eventClass: 0x636f7265, eventID: 0x636c6f73, // "core"/"clos"
+        return try self.appData.sendAppleEvent(name: "close", event: 0x636f7265_636c6f73, // "coreclos"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1267,7 +1269,7 @@ extension FINCommand {
     @discardableResult public func copy(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "copy", eventClass: 0x6d697363, eventID: 0x636f7079, // "misc"/"copy"
+        return try self.appData.sendAppleEvent(name: "copy", event: 0x6d697363_636f7079, // "misccopy"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1275,7 +1277,7 @@ extension FINCommand {
     public func copy<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "copy", eventClass: 0x6d697363, eventID: 0x636f7079, // "misc"/"copy"
+        return try self.appData.sendAppleEvent(name: "copy", event: 0x6d697363_636f7079, // "misccopy"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1284,7 +1286,7 @@ extension FINCommand {
             each: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "count", eventClass: 0x636f7265, eventID: 0x636e7465, // "core"/"cnte"
+        return try self.appData.sendAppleEvent(name: "count", event: 0x636f7265_636e7465, // "corecnte"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                     ("each", 0x6b6f636c, each), // "kocl"
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
@@ -1294,7 +1296,7 @@ extension FINCommand {
             each: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "count", eventClass: 0x636f7265, eventID: 0x636e7465, // "core"/"cnte"
+        return try self.appData.sendAppleEvent(name: "count", event: 0x636f7265_636e7465, // "corecnte"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                     ("each", 0x6b6f636c, each), // "kocl"
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
@@ -1304,7 +1306,7 @@ extension FINCommand {
             as_: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "dataSize", eventClass: 0x636f7265, eventID: 0x6473697a, // "core"/"dsiz"
+        return try self.appData.sendAppleEvent(name: "dataSize", event: 0x636f7265_6473697a, // "coredsiz"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                     ("as_", 0x72747970, as_), // "rtyp"
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
@@ -1314,7 +1316,7 @@ extension FINCommand {
             as_: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "dataSize", eventClass: 0x636f7265, eventID: 0x6473697a, // "core"/"dsiz"
+        return try self.appData.sendAppleEvent(name: "dataSize", event: 0x636f7265_6473697a, // "coredsiz"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                     ("as_", 0x72747970, as_), // "rtyp"
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
@@ -1323,7 +1325,7 @@ extension FINCommand {
     @discardableResult public func delete(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "delete", eventClass: 0x636f7265, eventID: 0x64656c6f, // "core"/"delo"
+        return try self.appData.sendAppleEvent(name: "delete", event: 0x636f7265_64656c6f, // "coredelo"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1331,7 +1333,7 @@ extension FINCommand {
     public func delete<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "delete", eventClass: 0x636f7265, eventID: 0x64656c6f, // "core"/"delo"
+        return try self.appData.sendAppleEvent(name: "delete", event: 0x636f7265_64656c6f, // "coredelo"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1343,7 +1345,7 @@ extension FINCommand {
             exactCopy: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "duplicate", eventClass: 0x636f7265, eventID: 0x636c6f6e, // "core"/"clon"
+        return try self.appData.sendAppleEvent(name: "duplicate", event: 0x636f7265_636c6f6e, // "coreclon"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                     ("to", 0x696e7368, to), // "insh"
                     ("replacing", 0x616c7270, replacing), // "alrp"
@@ -1359,7 +1361,7 @@ extension FINCommand {
             exactCopy: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "duplicate", eventClass: 0x636f7265, eventID: 0x636c6f6e, // "core"/"clon"
+        return try self.appData.sendAppleEvent(name: "duplicate", event: 0x636f7265_636c6f6e, // "coreclon"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                     ("to", 0x696e7368, to), // "insh"
                     ("replacing", 0x616c7270, replacing), // "alrp"
@@ -1371,7 +1373,7 @@ extension FINCommand {
     @discardableResult public func eject(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "eject", eventClass: 0x666e6472, eventID: 0x656a6374, // "fndr"/"ejct"
+        return try self.appData.sendAppleEvent(name: "eject", event: 0x666e6472_656a6374, // "fndrejct"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1379,7 +1381,7 @@ extension FINCommand {
     public func eject<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "eject", eventClass: 0x666e6472, eventID: 0x656a6374, // "fndr"/"ejct"
+        return try self.appData.sendAppleEvent(name: "eject", event: 0x666e6472_656a6374, // "fndrejct"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1388,7 +1390,7 @@ extension FINCommand {
             security: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "empty", eventClass: 0x666e6472, eventID: 0x656d7074, // "fndr"/"empt"
+        return try self.appData.sendAppleEvent(name: "empty", event: 0x666e6472_656d7074, // "fndrempt"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                     ("security", 0x7365633f, security), // "sec?"
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
@@ -1398,7 +1400,7 @@ extension FINCommand {
             security: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "empty", eventClass: 0x666e6472, eventID: 0x656d7074, // "fndr"/"empt"
+        return try self.appData.sendAppleEvent(name: "empty", event: 0x666e6472_656d7074, // "fndrempt"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                     ("security", 0x7365633f, security), // "sec?"
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
@@ -1407,7 +1409,7 @@ extension FINCommand {
     @discardableResult public func erase(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "erase", eventClass: 0x666e6472, eventID: 0x66657261, // "fndr"/"fera"
+        return try self.appData.sendAppleEvent(name: "erase", event: 0x666e6472_66657261, // "fndrfera"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1415,7 +1417,7 @@ extension FINCommand {
     public func erase<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "erase", eventClass: 0x666e6472, eventID: 0x66657261, // "fndr"/"fera"
+        return try self.appData.sendAppleEvent(name: "erase", event: 0x666e6472_66657261, // "fndrfera"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1423,7 +1425,7 @@ extension FINCommand {
     @discardableResult public func exists(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "exists", eventClass: 0x636f7265, eventID: 0x646f6578, // "core"/"doex"
+        return try self.appData.sendAppleEvent(name: "exists", event: 0x636f7265_646f6578, // "coredoex"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1431,7 +1433,7 @@ extension FINCommand {
     public func exists<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "exists", eventClass: 0x636f7265, eventID: 0x646f6578, // "core"/"doex"
+        return try self.appData.sendAppleEvent(name: "exists", event: 0x636f7265_646f6578, // "coredoex"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1439,7 +1441,7 @@ extension FINCommand {
     @discardableResult public func get(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "get", eventClass: 0x636f7265, eventID: 0x67657464, // "core"/"getd"
+        return try self.appData.sendAppleEvent(name: "get", event: 0x636f7265_67657464, // "coregetd"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1447,7 +1449,7 @@ extension FINCommand {
     public func get<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "get", eventClass: 0x636f7265, eventID: 0x67657464, // "core"/"getd"
+        return try self.appData.sendAppleEvent(name: "get", event: 0x636f7265_67657464, // "coregetd"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1459,11 +1461,11 @@ extension FINCommand {
             withProperties: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "make", eventClass: 0x636f7265, eventID: 0x6372656c, // "core"/"crel"
+        return try self.appData.sendAppleEvent(name: "make", event: 0x636f7265_6372656c, // "corecrel"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                     ("new", 0x6b6f636c, new), // "kocl"
                     ("at", 0x696e7368, at), // "insh"
-                    ("to", 0x746f2020, to), // "to\0x20\0x20"
+                    ("to", 0x746f2020, to), // "to  "
                     ("withProperties", 0x70726474, withProperties), // "prdt"
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1475,11 +1477,11 @@ extension FINCommand {
             withProperties: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "make", eventClass: 0x636f7265, eventID: 0x6372656c, // "core"/"crel"
+        return try self.appData.sendAppleEvent(name: "make", event: 0x636f7265_6372656c, // "corecrel"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                     ("new", 0x6b6f636c, new), // "kocl"
                     ("at", 0x696e7368, at), // "insh"
-                    ("to", 0x746f2020, to), // "to\0x20\0x20"
+                    ("to", 0x746f2020, to), // "to  "
                     ("withProperties", 0x70726474, withProperties), // "prdt"
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1491,7 +1493,7 @@ extension FINCommand {
             routingSuppressed: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "move", eventClass: 0x636f7265, eventID: 0x6d6f7665, // "core"/"move"
+        return try self.appData.sendAppleEvent(name: "move", event: 0x636f7265_6d6f7665, // "coremove"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                     ("to", 0x696e7368, to), // "insh"
                     ("replacing", 0x616c7270, replacing), // "alrp"
@@ -1507,7 +1509,7 @@ extension FINCommand {
             routingSuppressed: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "move", eventClass: 0x636f7265, eventID: 0x6d6f7665, // "core"/"move"
+        return try self.appData.sendAppleEvent(name: "move", event: 0x636f7265_6d6f7665, // "coremove"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                     ("to", 0x696e7368, to), // "insh"
                     ("replacing", 0x616c7270, replacing), // "alrp"
@@ -1521,7 +1523,7 @@ extension FINCommand {
             withProperties: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "open", eventClass: 0x61657674, eventID: 0x6f646f63, // "aevt"/"odoc"
+        return try self.appData.sendAppleEvent(name: "open", event: 0x61657674_6f646f63, // "aevtodoc"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                     ("using", 0x7573696e, using), // "usin"
                     ("withProperties", 0x70726474, withProperties), // "prdt"
@@ -1533,7 +1535,7 @@ extension FINCommand {
             withProperties: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "open", eventClass: 0x61657674, eventID: 0x6f646f63, // "aevt"/"odoc"
+        return try self.appData.sendAppleEvent(name: "open", event: 0x61657674_6f646f63, // "aevtodoc"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                     ("using", 0x7573696e, using), // "usin"
                     ("withProperties", 0x70726474, withProperties), // "prdt"
@@ -1544,7 +1546,7 @@ extension FINCommand {
             window: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "openLocation", eventClass: 0x4755524c, eventID: 0x4755524c, // "GURL"/"GURL"
+        return try self.appData.sendAppleEvent(name: "openLocation", event: 0x4755524c_4755524c, // "GURLGURL"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                     ("window", 0x57494e44, window), // "WIND"
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
@@ -1554,7 +1556,7 @@ extension FINCommand {
             window: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "openLocation", eventClass: 0x4755524c, eventID: 0x4755524c, // "GURL"/"GURL"
+        return try self.appData.sendAppleEvent(name: "openLocation", event: 0x4755524c_4755524c, // "GURLGURL"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                     ("window", 0x57494e44, window), // "WIND"
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
@@ -1563,7 +1565,7 @@ extension FINCommand {
     @discardableResult public func openVirtualLocation(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "openVirtualLocation", eventClass: 0x666e6472, eventID: 0x6f766972, // "fndr"/"ovir"
+        return try self.appData.sendAppleEvent(name: "openVirtualLocation", event: 0x666e6472_6f766972, // "fndrovir"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1571,7 +1573,7 @@ extension FINCommand {
     public func openVirtualLocation<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "openVirtualLocation", eventClass: 0x666e6472, eventID: 0x6f766972, // "fndr"/"ovir"
+        return try self.appData.sendAppleEvent(name: "openVirtualLocation", event: 0x666e6472_6f766972, // "fndrovir"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1580,7 +1582,7 @@ extension FINCommand {
             withProperties: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "print", eventClass: 0x61657674, eventID: 0x70646f63, // "aevt"/"pdoc"
+        return try self.appData.sendAppleEvent(name: "print", event: 0x61657674_70646f63, // "aevtpdoc"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                     ("withProperties", 0x70726474, withProperties), // "prdt"
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
@@ -1590,7 +1592,7 @@ extension FINCommand {
             withProperties: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "print", eventClass: 0x61657674, eventID: 0x70646f63, // "aevt"/"pdoc"
+        return try self.appData.sendAppleEvent(name: "print", event: 0x61657674_70646f63, // "aevtpdoc"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                     ("withProperties", 0x70726474, withProperties), // "prdt"
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
@@ -1599,7 +1601,7 @@ extension FINCommand {
     @discardableResult public func quit(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "quit", eventClass: 0x61657674, eventID: 0x71756974, // "aevt"/"quit"
+        return try self.appData.sendAppleEvent(name: "quit", event: 0x61657674_71756974, // "aevtquit"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1607,7 +1609,7 @@ extension FINCommand {
     public func quit<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "quit", eventClass: 0x61657674, eventID: 0x71756974, // "aevt"/"quit"
+        return try self.appData.sendAppleEvent(name: "quit", event: 0x61657674_71756974, // "aevtquit"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1615,7 +1617,7 @@ extension FINCommand {
     @discardableResult public func reopen(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "reopen", eventClass: 0x61657674, eventID: 0x72617070, // "aevt"/"rapp"
+        return try self.appData.sendAppleEvent(name: "reopen", event: 0x61657674_72617070, // "aevtrapp"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1623,7 +1625,7 @@ extension FINCommand {
     public func reopen<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "reopen", eventClass: 0x61657674, eventID: 0x72617070, // "aevt"/"rapp"
+        return try self.appData.sendAppleEvent(name: "reopen", event: 0x61657674_72617070, // "aevtrapp"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1631,7 +1633,7 @@ extension FINCommand {
     @discardableResult public func restart(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "restart", eventClass: 0x666e6472, eventID: 0x72657374, // "fndr"/"rest"
+        return try self.appData.sendAppleEvent(name: "restart", event: 0x666e6472_72657374, // "fndrrest"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1639,7 +1641,7 @@ extension FINCommand {
     public func restart<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "restart", eventClass: 0x666e6472, eventID: 0x72657374, // "fndr"/"rest"
+        return try self.appData.sendAppleEvent(name: "restart", event: 0x666e6472_72657374, // "fndrrest"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1647,7 +1649,7 @@ extension FINCommand {
     @discardableResult public func reveal(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "reveal", eventClass: 0x6d697363, eventID: 0x6d766973, // "misc"/"mvis"
+        return try self.appData.sendAppleEvent(name: "reveal", event: 0x6d697363_6d766973, // "miscmvis"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1655,7 +1657,7 @@ extension FINCommand {
     public func reveal<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "reveal", eventClass: 0x6d697363, eventID: 0x6d766973, // "misc"/"mvis"
+        return try self.appData.sendAppleEvent(name: "reveal", event: 0x6d697363_6d766973, // "miscmvis"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1663,7 +1665,7 @@ extension FINCommand {
     @discardableResult public func run(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "run", eventClass: 0x61657674, eventID: 0x6f617070, // "aevt"/"oapp"
+        return try self.appData.sendAppleEvent(name: "run", event: 0x61657674_6f617070, // "aevtoapp"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1671,7 +1673,7 @@ extension FINCommand {
     public func run<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "run", eventClass: 0x61657674, eventID: 0x6f617070, // "aevt"/"oapp"
+        return try self.appData.sendAppleEvent(name: "run", event: 0x61657674_6f617070, // "aevtoapp"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1679,7 +1681,7 @@ extension FINCommand {
     @discardableResult public func select(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "select", eventClass: 0x6d697363, eventID: 0x736c6374, // "misc"/"slct"
+        return try self.appData.sendAppleEvent(name: "select", event: 0x6d697363_736c6374, // "miscslct"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1687,7 +1689,7 @@ extension FINCommand {
     public func select<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "select", eventClass: 0x6d697363, eventID: 0x736c6374, // "misc"/"slct"
+        return try self.appData.sendAppleEvent(name: "select", event: 0x6d697363_736c6374, // "miscslct"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1696,7 +1698,7 @@ extension FINCommand {
             to: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "set", eventClass: 0x636f7265, eventID: 0x73657464, // "core"/"setd"
+        return try self.appData.sendAppleEvent(name: "set", event: 0x636f7265_73657464, // "coresetd"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                     ("to", 0x64617461, to), // "data"
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
@@ -1706,7 +1708,7 @@ extension FINCommand {
             to: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "set", eventClass: 0x636f7265, eventID: 0x73657464, // "core"/"setd"
+        return try self.appData.sendAppleEvent(name: "set", event: 0x636f7265_73657464, // "coresetd"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                     ("to", 0x64617461, to), // "data"
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
@@ -1715,7 +1717,7 @@ extension FINCommand {
     @discardableResult public func shutDown(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "shutDown", eventClass: 0x666e6472, eventID: 0x73687574, // "fndr"/"shut"
+        return try self.appData.sendAppleEvent(name: "shutDown", event: 0x666e6472_73687574, // "fndrshut"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1723,7 +1725,7 @@ extension FINCommand {
     public func shutDown<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "shutDown", eventClass: 0x666e6472, eventID: 0x73687574, // "fndr"/"shut"
+        return try self.appData.sendAppleEvent(name: "shutDown", event: 0x666e6472_73687574, // "fndrshut"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1731,7 +1733,7 @@ extension FINCommand {
     @discardableResult public func sleep(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "sleep", eventClass: 0x666e6472, eventID: 0x736c6570, // "fndr"/"slep"
+        return try self.appData.sendAppleEvent(name: "sleep", event: 0x666e6472_736c6570, // "fndrslep"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1739,7 +1741,7 @@ extension FINCommand {
     public func sleep<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "sleep", eventClass: 0x666e6472, eventID: 0x736c6570, // "fndr"/"slep"
+        return try self.appData.sendAppleEvent(name: "sleep", event: 0x666e6472_736c6570, // "fndrslep"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1748,9 +1750,9 @@ extension FINCommand {
             by: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "sort", eventClass: 0x44415441, eventID: 0x534f5254, // "DATA"/"SORT"
+        return try self.appData.sendAppleEvent(name: "sort", event: 0x44415441_534f5254, // "DATASORT"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
-                    ("by", 0x62792020, by), // "by\0x20\0x20"
+                    ("by", 0x62792020, by), // "by  "
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
@@ -1758,9 +1760,9 @@ extension FINCommand {
             by: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "sort", eventClass: 0x44415441, eventID: 0x534f5254, // "DATA"/"SORT"
+        return try self.appData.sendAppleEvent(name: "sort", event: 0x44415441_534f5254, // "DATASORT"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
-                    ("by", 0x62792020, by), // "by\0x20\0x20"
+                    ("by", 0x62792020, by), // "by  "
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
@@ -1769,7 +1771,7 @@ extension FINCommand {
             registeringApplications: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "update", eventClass: 0x666e6472, eventID: 0x66757064, // "fndr"/"fupd"
+        return try self.appData.sendAppleEvent(name: "update", event: 0x666e6472_66757064, // "fndrfupd"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                     ("necessity", 0x6e65633f, necessity), // "nec?"
                     ("registeringApplications", 0x7265673f, registeringApplications), // "reg?"
@@ -1781,7 +1783,7 @@ extension FINCommand {
             registeringApplications: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "update", eventClass: 0x666e6472, eventID: 0x66757064, // "fndr"/"fupd"
+        return try self.appData.sendAppleEvent(name: "update", event: 0x666e6472_66757064, // "fndrfupd"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                     ("necessity", 0x6e65633f, necessity), // "nec?"
                     ("registeringApplications", 0x7265673f, registeringApplications), // "reg?"
@@ -1794,7 +1796,7 @@ extension FINCommand {
 public protocol FINObject: SwiftAutomation.ObjectSpecifierExtension, FINCommand {} // provides vars and methods for constructing specifiers
 
 extension FINObject {
-    
+
     // Properties
     public var acceptsHighLevelEvents: FINItem {return self.property(0x69736162) as! FINItem} // "isab"
     public var acceptsRemoteEvents: FINItem {return self.property(0x72657674) as! FINItem} // "revt"
@@ -1858,7 +1860,7 @@ extension FINObject {
     public var icon: FINItem {return self.property(0x69696d67) as! FINItem} // "iimg"
     public var iconSize: FINItem {return self.property(0x6c766973) as! FINItem} // "lvis"
     public var iconViewOptions: FINItem {return self.property(0x69636f70) as! FINItem} // "icop"
-    public var id: FINItem {return self.property(0x49442020) as! FINItem} // "ID\0x20\0x20"
+    public var id: FINItem {return self.property(0x49442020) as! FINItem} // "ID  "
     public var ignorePrivileges: FINItem {return self.property(0x69677072) as! FINItem} // "igpr"
     public var index: FINItem {return self.property(0x70696478) as! FINItem} // "pidx"
     public var informationWindow: FINItem {return self.property(0x69776e64) as! FINItem} // "iwnd"
@@ -2009,7 +2011,6 @@ public let FINIts = _untargetedAppData.its as! FINRoot
 // Static types
 
 public typealias FINRecord = [FINSymbol:Any] // default Swift type for AERecordDescs
-
 
 
 

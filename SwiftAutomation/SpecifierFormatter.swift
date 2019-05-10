@@ -81,7 +81,7 @@ public class SpecifierFormatter {
         } else if let typeName = self.typeNames[code] {
             return "\(self.classNamePrefix).\(typeName)"
         } else {
-            return "\(self.classNamePrefix)(code:\(formatFourCharCodeLiteral(code)),type:\(formatFourCharCodeLiteral(type)))"
+            return "\(self.classNamePrefix)(code:\(literalFourCharCode(code)),type:\(literalFourCharCode(type)))"
         }
     }
     
@@ -89,7 +89,7 @@ public class SpecifierFormatter {
         if let name = self.propertyNames[code] ?? self.elementsNames[code]?.plural {
             return ".\(name)"
         } else { // no code->name translation available
-            return ".property(\(formatFourCharCodeLiteral(code)))"
+            return ".property(\(literalFourCharCode(code)))"
         }
     }
     
@@ -97,7 +97,7 @@ public class SpecifierFormatter {
         if let name = self.elementsNames[code]?.plural ?? self.propertyNames[code] {
             return ".\(name)"
         } else { // no code->name translation available
-            return ".elements(\(formatFourCharCodeLiteral(code)))"
+            return ".elements(\(literalFourCharCode(code)))"
         }
     }
     
@@ -279,7 +279,7 @@ public class SpecifierFormatter {
             if description.subject != nil && isParameter(directParameter) {
                 parentSpecifier = self.format(description.subject!)
                 args.append(self.format(directParameter))
-                //} else if eventClass == kAECoreSuite && eventID == kAECreateElement { // TO DO: format make command as special case (for convenience, sendAppleEvent should allow user to call `make` directly on a specifier, in which case the specifier is used as its `at` parameter if not already given)
+            //} else if eventIdentifier == coreEventCreateElement { // TO DO: format make command as special case (for convenience, sendAppleEvent should allow user to call `make` directly on a specifier, in which case the specifier is used as its `at` parameter if not already given)
             } else if description.subject == nil && isParameter(directParameter) {
                 parentSpecifier = self.format(directParameter)
             } else if description.subject != nil && !isParameter(directParameter) {
@@ -288,12 +288,12 @@ public class SpecifierFormatter {
             parentSpecifier += ".\(name)"
             for (key, value) in keywordParameters { args.append("\(key): \(self.format(value))") }
             if let symbol = requestedType { args.append("requestedType: \(symbol)") }
-        case .codes(let eventClass, let eventID, let parameters):
+        case .codes(let event, let parameters):
             if let subject = description.subject {
                 parentSpecifier = self.format(subject)
             }
             parentSpecifier += ".sendAppleEvent"
-            args.append("\(formatFourCharCodeLiteral(eventClass)), \(formatFourCharCodeLiteral(eventID))")
+            args.append(literalEightCharCode(event))
             if parameters.count > 0 {
                 let params = parameters.map({ "\(formatFourCharCode($0)): \(self.format($1)))" }).joined(separator: ", ")
                 args.append("[\(params)]")

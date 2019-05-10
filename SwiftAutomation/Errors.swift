@@ -9,13 +9,15 @@ import AppleEvents
 
 // TO DO: currently Errors are mostly opaque to client code (even inits are internal only); what (if any) properties should be made public?
 
-// TO DO: simplify? use struct/enum for internal/all errors?
+// TO DO: simplify? use AppleEvents.AppleEventError for internal/all errors?
 
 
 /******************************************************************************/
 // error descriptions from ASLG/MacErrors.h
 
-private let descriptionForError: [Int:String] = [
+// TO DO: integrate with AppleEventError
+
+private let _descriptionForError: [Int:String] = [
         // OS errors
         -34: "Disk is full.",
         -35: "Disk wasn't found.",
@@ -148,7 +150,7 @@ public class AutomationError: Error, CustomStringConvertible {
     public var message: String? { return self._message } // TO DO: make non-optional?
     
     func description(_ previousCode: Int, separator: String = " ") -> String {
-        let msg = self.message ?? descriptionForError[self._code]
+        let msg = self.message ?? _descriptionForError[self._code]
         var string = self._code == previousCode ? "" : "Error \(self._code)\(msg == nil ? "." : ": ")"
         if let msg = msg { string += msg }
         if let error = self.cause as? AutomationError {
@@ -216,7 +218,7 @@ public class UnpackError: AutomationError {
         do {
             value = try self.appData.unpackAsAny(self.desc)
         } catch {
-            string = "Can't unpack malformed descriptor" // TO DO:
+            string = "Can't unpack malformed \(literalFourCharCode(self.desc.type)) descriptor" // TO DO: better error message
         }
         return "\(string):\n\n\t\(value)" + (self._message != nil ? "\n\n\(self._message!)" : "")
     }
@@ -256,7 +258,7 @@ public class CommandError: AutomationError { // raised whenever an application c
                     ?? self.reply?.parameter(AEKeyword(kOSAErrorBriefMessage)) { // TO DO: get rid of this?
             if let result = try? unpackAsString(desc) { return result }
         }
-        return descriptionForError[self._code]
+        return _descriptionForError[self._code]
     }
     
     public var expectedType: Symbol? {

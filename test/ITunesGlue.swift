@@ -2,7 +2,7 @@
 //  ITunesGlue.swift
 //  iTunes.app 12.9.4
 //  SwiftAutomation.framework 0.1.0
-//  `aeglue -S 'iTunes.app'`
+//  `aeglue 'iTunes.app'`
 //
 
 
@@ -15,564 +15,566 @@ import SwiftAutomation
 // Create an untargeted AppData instance for use in App, Con, Its roots,
 // and in Application initializers to create targeted AppData instances.
 
-private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(applicationClassName: "ITunes",
-                                                     classNamePrefix: "ITU",
-                                                     typeNames: [
-                                                                     0x70416374: "active", // "pAct"
-                                                                     0x7055524c: "address", // "pURL"
-                                                                     0x63415044: "AirPlayDevice", // "cAPD"
-                                                                     0x6b41504f: "AirPlayDevice", // "kAPO"
-                                                                     0x70415045: "AirPlayEnabled", // "pAPE"
-                                                                     0x6b415058: "AirPortExpress", // "kAPX"
-                                                                     0x70416c62: "album", // "pAlb"
-                                                                     0x70416c41: "albumArtist", // "pAlA"
-                                                                     0x70414874: "albumDisliked", // "pAHt"
-                                                                     0x6b416c62: "albumListing", // "kAlb"
-                                                                     0x70414c76: "albumLoved", // "pALv"
-                                                                     0x70416c52: "albumRating", // "pAlR"
-                                                                     0x7041526b: "albumRatingKind", // "pARk"
-                                                                     0x6b536841: "albums", // "kShA"
-                                                                     0x6b53724c: "albums", // "kSrL"
-                                                                     0x6b4d644c: "alertTone", // "kMdL"
-                                                                     0x616c6973: "alias", // "alis"
-                                                                     0x6b416c6c: "all_", // "kAll"
-                                                                     0x2a2a2a2a: "anything", // "****"
-                                                                     0x6b415054: "AppleTV", // "kAPT"
-                                                                     0x63617070: "application", // "capp"
-                                                                     0x62756e64: "applicationBundleID", // "bund"
-                                                                     0x7369676e: "applicationSignature", // "sign"
-                                                                     0x6170726c: "applicationURL", // "aprl"
-                                                                     0x61707220: "April", // "apr\0x20"
-                                                                     0x70417274: "artist", // "pArt"
-                                                                     0x6b537252: "artists", // "kSrR"
-                                                                     0x63417274: "artwork", // "cArt"
-                                                                     0x61736b20: "ask", // "ask\0x20"
-                                                                     0x6b4d6441: "audiobook", // "kMdA"
-                                                                     0x6b414344: "audioCD", // "kACD"
-                                                                     0x63434450: "audioCDPlaylist", // "cCDP"
-                                                                     0x63434454: "audioCDTrack", // "cCDT"
-                                                                     0x61756720: "August", // "aug\0x20"
-                                                                     0x70417661: "available", // "pAva"
-                                                                     0x70455131: "band1", // "pEQ1"
-                                                                     0x70455130: "band10", // "pEQ0"
-                                                                     0x70455132: "band2", // "pEQ2"
-                                                                     0x70455133: "band3", // "pEQ3"
-                                                                     0x70455134: "band4", // "pEQ4"
-                                                                     0x70455135: "band5", // "pEQ5"
-                                                                     0x70455136: "band6", // "pEQ6"
-                                                                     0x70455137: "band7", // "pEQ7"
-                                                                     0x70455138: "band8", // "pEQ8"
-                                                                     0x70455139: "band9", // "pEQ9"
-                                                                     0x62657374: "best", // "best"
-                                                                     0x70425274: "bitRate", // "pBRt"
-                                                                     0x6b415042: "BluetoothDevice", // "kAPB"
-                                                                     0x6b4d6442: "book", // "kMdB"
-                                                                     0x70426b74: "bookmark", // "pBkt"
-                                                                     0x70426b6d: "bookmarkable", // "pBkm"
-                                                                     0x626d726b: "bookmarkData", // "bmrk"
-                                                                     0x6b537041: "Books", // "kSpA"
-                                                                     0x626f6f6c: "boolean", // "bool"
-                                                                     0x71647274: "boundingRectangle", // "qdrt"
-                                                                     0x70626e64: "bounds", // "pbnd"
-                                                                     0x7042504d: "bpm", // "pBPM"
-                                                                     0x63427257: "browserWindow", // "cBrW"
-                                                                     0x63617061: "capacity", // "capa"
-                                                                     0x63617365: "case_", // "case"
-                                                                     0x70436174: "category", // "pCat"
-                                                                     0x6b434469: "cdInsert", // "kCDi"
-                                                                     0x70636c73: "class_", // "pcls"
-                                                                     0x68636c62: "closeable", // "hclb"
-                                                                     0x70436c53: "cloudStatus", // "pClS"
-                                                                     0x70575368: "collapseable", // "pWSh"
-                                                                     0x77736864: "collapsed", // "wshd"
-                                                                     0x6c77636c: "collating", // "lwcl"
-                                                                     0x636c7274: "colorTable", // "clrt"
-                                                                     0x70436d74: "comment", // "pCmt"
-                                                                     0x70416e74: "compilation", // "pAnt"
-                                                                     0x70436d70: "composer", // "pCmp"
-                                                                     0x6b537243: "composers", // "kSrC"
-                                                                     0x6b527443: "computed", // "kRtC"
-                                                                     0x6b415043: "computer", // "kAPC"
-                                                                     0x656e756d: "constant", // "enum"
-                                                                     0x63746e72: "container", // "ctnr"
-                                                                     0x70436e76: "converting", // "pCnv"
-                                                                     0x6c776370: "copies", // "lwcp"
-                                                                     0x70415044: "currentAirPlayDevices", // "pAPD"
-                                                                     0x70456e63: "currentEncoder", // "pEnc"
-                                                                     0x70455150: "currentEQPreset", // "pEQP"
-                                                                     0x70506c61: "currentPlaylist", // "pPla"
-                                                                     0x70537454: "currentStreamTitle", // "pStT"
-                                                                     0x70537455: "currentStreamURL", // "pStU"
-                                                                     0x7054726b: "currentTrack", // "pTrk"
-                                                                     0x70566973: "currentVisual", // "pVis"
-                                                                     0x74646173: "dashStyle", // "tdas"
-                                                                     0x74647461: "data", // "tdta"
-                                                                     0x70504354: "data_", // "pPCT"
-                                                                     0x70444944: "databaseID", // "pDID"
-                                                                     0x6c647420: "date", // "ldt\0x20"
-                                                                     0x70416464: "dateAdded", // "pAdd"
-                                                                     0x64656320: "December", // "dec\0x20"
-                                                                     0x6465636d: "decimalStruct", // "decm"
-                                                                     0x70446573: "description_", // "pDes"
-                                                                     0x6c776474: "detailed", // "lwdt"
-                                                                     0x64696163: "diacriticals", // "diac"
-                                                                     0x70447343: "discCount", // "pDsC"
-                                                                     0x7044734e: "discNumber", // "pDsN"
-                                                                     0x70486174: "disliked", // "pHat"
-                                                                     0x6b537256: "displayed", // "kSrV"
-                                                                     0x636f6d70: "doubleInteger", // "comp"
-                                                                     0x70446c41: "downloaded", // "pDlA"
-                                                                     0x70444149: "downloaderAppleID", // "pDAI"
-                                                                     0x70444e6d: "downloaderName", // "pDNm"
-                                                                     0x6b447570: "duplicate", // "kDup"
-                                                                     0x70447572: "duration", // "pDur"
-                                                                     0x656e626c: "enabled", // "enbl"
-                                                                     0x656e6373: "encodedString", // "encs"
-                                                                     0x63456e63: "encoder", // "cEnc"
-                                                                     0x6c776c70: "endingPage", // "lwlp"
-                                                                     0x70457044: "episodeID", // "pEpD"
-                                                                     0x7045704e: "episodeNumber", // "pEpN"
-                                                                     0x45505320: "EPSPicture", // "EPS\0x20"
-                                                                     0x70455170: "EQ", // "pEQp"
-                                                                     0x70455120: "EQEnabled", // "pEQ\0x20"
-                                                                     0x63455150: "EQPreset", // "cEQP"
-                                                                     0x63455157: "EQWindow", // "cEQW"
-                                                                     0x6b457272: "error", // "kErr"
-                                                                     0x6c776568: "errorHandling", // "lweh"
-                                                                     0x65787061: "expansion", // "expa"
-                                                                     0x6b505346: "fastForwarding", // "kPSF"
-                                                                     0x6661786e: "faxNumber", // "faxn"
-                                                                     0x66656220: "February", // "feb\0x20"
-                                                                     0x66737266: "fileRef", // "fsrf"
-                                                                     0x63466c54: "fileTrack", // "cFlT"
-                                                                     0x6675726c: "fileURL", // "furl"
-                                                                     0x70537470: "finish", // "pStp"
-                                                                     0x66697864: "fixed", // "fixd"
-                                                                     0x70466978: "fixedIndexing", // "pFix"
-                                                                     0x66706e74: "fixedPoint", // "fpnt"
-                                                                     0x66726374: "fixedRectangle", // "frct"
-                                                                     0x6b537046: "folder", // "kSpF"
-                                                                     0x63466f50: "folderPlaylist", // "cFoP"
-                                                                     0x70466d74: "format", // "pFmt"
-                                                                     0x66727370: "freeSpace", // "frsp"
-                                                                     0x66726920: "Friday", // "fri\0x20"
-                                                                     0x70697366: "frontmost", // "pisf"
-                                                                     0x70465363: "fullScreen", // "pFSc"
-                                                                     0x7047706c: "gapless", // "pGpl"
-                                                                     0x70476e73: "genius", // "pGns"
-                                                                     0x6b537047: "Genius", // "kSpG"
-                                                                     0x7047656e: "genre", // "pGen"
-                                                                     0x47494666: "GIFPicture", // "GIFf"
-                                                                     0x63677478: "graphicText", // "cgtx"
-                                                                     0x70477270: "grouping", // "pGrp"
-                                                                     0x6b536847: "groupings", // "kShG"
-                                                                     0x6b415048: "HomePod", // "kAPH"
-                                                                     0x6b566448: "homeVideo", // "kVdH"
-                                                                     0x68797068: "hyphens", // "hyph"
-                                                                     0x49442020: "id", // "ID\0x20\0x20"
-                                                                     0x70696478: "index", // "pidx"
-                                                                     0x6b52656a: "ineligible", // "kRej"
-                                                                     0x6c6f6e67: "integer", // "long"
-                                                                     0x69747874: "internationalText", // "itxt"
-                                                                     0x696e746c: "internationalWritingCode", // "intl"
-                                                                     0x6b506f64: "iPod", // "kPod"
-                                                                     0x636f626a: "item", // "cobj"
-                                                                     0x6b495453: "iTunesStore", // "kITS"
-                                                                     0x6b537055: "iTunesU", // "kSpU"
-                                                                     0x6b4d6449: "iTunesU", // "kMdI"
-                                                                     0x6a616e20: "January", // "jan\0x20"
-                                                                     0x4a504547: "JPEGPicture", // "JPEG"
-                                                                     0x6a756c20: "July", // "jul\0x20"
-                                                                     0x6a756e20: "June", // "jun\0x20"
-                                                                     0x6b706964: "kernelProcessID", // "kpid"
-                                                                     0x704b6e64: "kind", // "pKnd"
-                                                                     0x6b56534c: "large", // "kVSL"
-                                                                     0x6c64626c: "largeReal", // "ldbl"
-                                                                     0x6b53704c: "Library", // "kSpL"
-                                                                     0x6b4c6962: "library", // "kLib"
-                                                                     0x634c6950: "libraryPlaylist", // "cLiP"
-                                                                     0x6c697374: "list", // "list"
-                                                                     0x704c6f63: "location", // "pLoc"
-                                                                     0x696e736c: "locationReference", // "insl"
-                                                                     0x704c6473: "longDescription", // "pLds"
-                                                                     0x6c667864: "longFixed", // "lfxd"
-                                                                     0x6c667074: "longFixedPoint", // "lfpt"
-                                                                     0x6c667263: "longFixedRectangle", // "lfrc"
-                                                                     0x6c706e74: "longPoint", // "lpnt"
-                                                                     0x6c726374: "longRectangle", // "lrct"
-                                                                     0x704c6f76: "loved", // "pLov"
-                                                                     0x704c7972: "lyrics", // "pLyr"
-                                                                     0x6d616368: "machine", // "mach"
-                                                                     0x6d4c6f63: "machineLocation", // "mLoc"
-                                                                     0x706f7274: "machPort", // "port"
-                                                                     0x6d617220: "March", // "mar\0x20"
-                                                                     0x6b4d6174: "matched", // "kMat"
-                                                                     0x6d617920: "May", // "may\0x20"
-                                                                     0x704d644b: "mediaKind", // "pMdK"
-                                                                     0x6b56534d: "medium", // "kVSM"
-                                                                     0x634d5057: "miniplayerWindow", // "cMPW"
-                                                                     0x704d6f64: "modifiable", // "pMod"
-                                                                     0x61736d6f: "modificationDate", // "asmo"
-                                                                     0x6d6f6e20: "Monday", // "mon\0x20"
-                                                                     0x704d4e6d: "movement", // "pMNm"
-                                                                     0x704d7643: "movementCount", // "pMvC"
-                                                                     0x704d764e: "movementNumber", // "pMvN"
-                                                                     0x6b56644d: "movie", // "kVdM"
-                                                                     0x6b537049: "Movies", // "kSpI"
-                                                                     0x6b4d4344: "MP3CD", // "kMCD"
-                                                                     0x6b53705a: "Music", // "kSpZ"
-                                                                     0x6b566456: "musicVideo", // "kVdV"
-                                                                     0x704d7574: "mute", // "pMut"
-                                                                     0x706e616d: "name", // "pnam"
-                                                                     0x704d4143: "networkAddress", // "pMAC"
-                                                                     0x6e6f2020: "no", // "no\0x20\0x20"
-                                                                     0x6b526576: "noLongerAvailable", // "kRev"
-                                                                     0x6b4e6f6e: "none", // "kNon"
-                                                                     0x6b557050: "notUploaded", // "kUpP"
-                                                                     0x6e6f7620: "November", // "nov\0x20"
-                                                                     0x6e756c6c: "null", // "null"
-                                                                     0x6e756d65: "numericStrings", // "nume"
-                                                                     0x6f637420: "October", // "oct\0x20"
-                                                                     0x6b52704f: "off", // "kRpO"
-                                                                     0x6b527031: "one", // "kRp1"
-                                                                     0x6c776c61: "pagesAcross", // "lwla"
-                                                                     0x6c776c64: "pagesDown", // "lwld"
-                                                                     0x70506c50: "parent", // "pPlP"
-                                                                     0x6b505370: "paused", // "kPSp"
-                                                                     0x70504953: "persistentID", // "pPIS"
-                                                                     0x50494354: "picture", // "PICT"
-                                                                     0x74706d6d: "pixelMapRecord", // "tpmm"
-                                                                     0x70506c43: "playedCount", // "pPlC"
-                                                                     0x70506c44: "playedDate", // "pPlD"
-                                                                     0x70506f73: "playerPosition", // "pPos"
-                                                                     0x70506c53: "playerState", // "pPlS"
-                                                                     0x6b505350: "playing", // "kPSP"
-                                                                     0x63506c79: "playlist", // "cPly"
-                                                                     0x63506c57: "playlistWindow", // "cPlW"
-                                                                     0x6b4d6450: "podcast", // "kMdP"
-                                                                     0x6b537050: "Podcasts", // "kSpP"
-                                                                     0x51447074: "point", // "QDpt"
-                                                                     0x70706f73: "position", // "ppos"
-                                                                     0x70455141: "preamp", // "pEQA"
-                                                                     0x6c777066: "printerFeatures", // "lwpf"
-                                                                     0x70736574: "printSettings", // "pset"
-                                                                     0x70736e20: "processSerialNumber", // "psn\0x20"
-                                                                     0x70414c4c: "properties", // "pALL"
-                                                                     0x70726f70: "property_", // "prop"
-                                                                     0x7050726f: "protected", // "pPro"
-                                                                     0x70756e63: "punctuation", // "punc"
-                                                                     0x6b507572: "purchased", // "kPur"
-                                                                     0x6b53704d: "PurchasedMusic", // "kSpM"
-                                                                     0x70504149: "purchaserAppleID", // "pPAI"
-                                                                     0x70504e6d: "purchaserName", // "pPNm"
-                                                                     0x6b54756e: "radioTuner", // "kTun"
-                                                                     0x63525450: "radioTunerPlaylist", // "cRTP"
-                                                                     0x70527465: "rating", // "pRte"
-                                                                     0x7052746b: "ratingKind", // "pRtk"
-                                                                     0x70526177: "rawData", // "pRaw"
-                                                                     0x646f7562: "real", // "doub"
-                                                                     0x7265636f: "record", // "reco"
-                                                                     0x6f626a20: "reference", // "obj\0x20"
-                                                                     0x70526c44: "releaseDate", // "pRlD"
-                                                                     0x6b52656d: "removed", // "kRem"
-                                                                     0x6c777174: "requestedPrintTime", // "lwqt"
-                                                                     0x7072737a: "resizable", // "prsz"
-                                                                     0x6b505352: "rewinding", // "kPSR"
-                                                                     0x74723136: "RGB16Color", // "tr16"
-                                                                     0x74723936: "RGB96Color", // "tr96"
-                                                                     0x63524742: "RGBColor", // "cRGB"
-                                                                     0x6b4d6452: "ringtone", // "kMdR"
-                                                                     0x74726f74: "rotation", // "trot"
-                                                                     0x70535274: "sampleRate", // "pSRt"
-                                                                     0x73617420: "Saturday", // "sat\0x20"
-                                                                     0x73637074: "script", // "scpt"
-                                                                     0x7053654e: "seasonNumber", // "pSeN"
-                                                                     0x73656c63: "selected", // "selc"
-                                                                     0x73656c65: "selection", // "sele"
-                                                                     0x73657020: "September", // "sep\0x20"
-                                                                     0x70536872: "shared", // "pShr"
-                                                                     0x6b536864: "sharedLibrary", // "kShd"
-                                                                     0x63536854: "sharedTrack", // "cShT"
-                                                                     0x73686f72: "shortInteger", // "shor"
-                                                                     0x70536877: "show", // "pShw"
-                                                                     0x70536661: "shufflable", // "pSfa"
-                                                                     0x70536866: "shuffle", // "pShf"
-                                                                     0x70536845: "shuffleEnabled", // "pShE"
-                                                                     0x7053684d: "shuffleMode", // "pShM"
-                                                                     0x7053697a: "size", // "pSiz"
-                                                                     0x70536b43: "skippedCount", // "pSkC"
-                                                                     0x70536b44: "skippedDate", // "pSkD"
-                                                                     0x6b565353: "small", // "kVSS"
-                                                                     0x73696e67: "smallReal", // "sing"
-                                                                     0x70536d74: "smart", // "pSmt"
-                                                                     0x6b4d6453: "song", // "kMdS"
-                                                                     0x70527074: "songRepeat", // "pRpt"
-                                                                     0x6b537253: "songs", // "kSrS"
-                                                                     0x6b536853: "songs", // "kShS"
-                                                                     0x7053416c: "sortAlbum", // "pSAl"
-                                                                     0x70534141: "sortAlbumArtist", // "pSAA"
-                                                                     0x70534172: "sortArtist", // "pSAr"
-                                                                     0x7053436d: "sortComposer", // "pSCm"
-                                                                     0x70534e6d: "sortName", // "pSNm"
-                                                                     0x7053534e: "sortShow", // "pSSN"
-                                                                     0x70566f6c: "soundVolume", // "pVol"
-                                                                     0x63537263: "source", // "cSrc"
-                                                                     0x7053704b: "specialKind", // "pSpK"
-                                                                     0x6c777374: "standard", // "lwst"
-                                                                     0x70537472: "start", // "pStr"
-                                                                     0x6c776670: "startingPage", // "lwfp"
-                                                                     0x6b505353: "stopped", // "kPSS"
-                                                                     0x54455854: "string", // "TEXT"
-                                                                     0x7374796c: "styledClipboardText", // "styl"
-                                                                     0x53545854: "styledText", // "STXT"
-                                                                     0x6b537562: "subscription", // "kSub"
-                                                                     0x63537550: "subscriptionPlaylist", // "cSuP"
-                                                                     0x73756e20: "Sunday", // "sun\0x20"
-                                                                     0x70417564: "supportsAudio", // "pAud"
-                                                                     0x70566964: "supportsVideo", // "pVid"
-                                                                     0x74727072: "targetPrinter", // "trpr"
-                                                                     0x74737479: "textStyleInfo", // "tsty"
-                                                                     0x74687520: "Thursday", // "thu\0x20"
-                                                                     0x54494646: "TIFFPicture", // "TIFF"
-                                                                     0x7054696d: "time", // "pTim"
-                                                                     0x6354726b: "track", // "cTrk"
-                                                                     0x70547243: "trackCount", // "pTrC"
-                                                                     0x6b54726b: "trackListing", // "kTrk"
-                                                                     0x7054724e: "trackNumber", // "pTrN"
-                                                                     0x74756520: "Tuesday", // "tue\0x20"
-                                                                     0x6b566454: "TVShow", // "kVdT"
-                                                                     0x6b537054: "TVShows", // "kSpT"
-                                                                     0x74797065: "typeClass", // "type"
-                                                                     0x75747874: "UnicodeText", // "utxt"
-                                                                     0x6b415055: "unknown", // "kAPU"
-                                                                     0x6b556e6b: "unknown", // "kUnk"
-                                                                     0x70556e70: "unplayed", // "pUnp"
-                                                                     0x75636f6d: "unsignedDoubleInteger", // "ucom"
-                                                                     0x6d61676e: "unsignedInteger", // "magn"
-                                                                     0x75736872: "unsignedShortInteger", // "ushr"
-                                                                     0x70555443: "updateTracks", // "pUTC"
-                                                                     0x6b55706c: "uploaded", // "kUpl"
-                                                                     0x63555254: "URLTrack", // "cURT"
-                                                                     0x6b527455: "user", // "kRtU"
-                                                                     0x63557350: "userPlaylist", // "cUsP"
-                                                                     0x75743136: "UTF16Text", // "ut16"
-                                                                     0x75746638: "UTF8Text", // "utf8"
-                                                                     0x76657273: "version", // "vers"
-                                                                     0x7056644b: "videoKind", // "pVdK"
-                                                                     0x634e5057: "videoWindow", // "cNPW"
-                                                                     0x70506c79: "view", // "pPly"
-                                                                     0x70766973: "visible", // "pvis"
-                                                                     0x63566973: "visual", // "cVis"
-                                                                     0x70567345: "visualsEnabled", // "pVsE"
-                                                                     0x7056537a: "visualSize", // "pVSz"
-                                                                     0x6b4d644f: "voiceMemo", // "kMdO"
-                                                                     0x7041646a: "volumeAdjustment", // "pAdj"
-                                                                     0x77656420: "Wednesday", // "wed\0x20"
-                                                                     0x77686974: "whitespace", // "whit"
-                                                                     0x6377696e: "window", // "cwin"
-                                                                     0x7057726b: "work", // "pWrk"
-                                                                     0x70736374: "writingCode", // "psct"
-                                                                     0x70597220: "year", // "pYr\0x20"
-                                                                     0x79657320: "yes", // "yes\0x20"
-                                                                     0x69737a6d: "zoomable", // "iszm"
-                                                                     0x707a756d: "zoomed", // "pzum"
-                                                     ],
-                                                     propertyNames: [
-                                                                     0x70416374: "active", // "pAct"
-                                                                     0x7055524c: "address", // "pURL"
-                                                                     0x70415045: "AirPlayEnabled", // "pAPE"
-                                                                     0x70416c62: "album", // "pAlb"
-                                                                     0x70416c41: "albumArtist", // "pAlA"
-                                                                     0x70414874: "albumDisliked", // "pAHt"
-                                                                     0x70414c76: "albumLoved", // "pALv"
-                                                                     0x70416c52: "albumRating", // "pAlR"
-                                                                     0x7041526b: "albumRatingKind", // "pARk"
-                                                                     0x70417274: "artist", // "pArt"
-                                                                     0x70417661: "available", // "pAva"
-                                                                     0x70455131: "band1", // "pEQ1"
-                                                                     0x70455130: "band10", // "pEQ0"
-                                                                     0x70455132: "band2", // "pEQ2"
-                                                                     0x70455133: "band3", // "pEQ3"
-                                                                     0x70455134: "band4", // "pEQ4"
-                                                                     0x70455135: "band5", // "pEQ5"
-                                                                     0x70455136: "band6", // "pEQ6"
-                                                                     0x70455137: "band7", // "pEQ7"
-                                                                     0x70455138: "band8", // "pEQ8"
-                                                                     0x70455139: "band9", // "pEQ9"
-                                                                     0x70425274: "bitRate", // "pBRt"
-                                                                     0x70426b74: "bookmark", // "pBkt"
-                                                                     0x70426b6d: "bookmarkable", // "pBkm"
-                                                                     0x70626e64: "bounds", // "pbnd"
-                                                                     0x7042504d: "bpm", // "pBPM"
-                                                                     0x63617061: "capacity", // "capa"
-                                                                     0x70436174: "category", // "pCat"
-                                                                     0x70636c73: "class_", // "pcls"
-                                                                     0x68636c62: "closeable", // "hclb"
-                                                                     0x70436c53: "cloudStatus", // "pClS"
-                                                                     0x70575368: "collapseable", // "pWSh"
-                                                                     0x77736864: "collapsed", // "wshd"
-                                                                     0x6c77636c: "collating", // "lwcl"
-                                                                     0x70436d74: "comment", // "pCmt"
-                                                                     0x70416e74: "compilation", // "pAnt"
-                                                                     0x70436d70: "composer", // "pCmp"
-                                                                     0x63746e72: "container", // "ctnr"
-                                                                     0x70436e76: "converting", // "pCnv"
-                                                                     0x6c776370: "copies", // "lwcp"
-                                                                     0x70415044: "currentAirPlayDevices", // "pAPD"
-                                                                     0x70456e63: "currentEncoder", // "pEnc"
-                                                                     0x70455150: "currentEQPreset", // "pEQP"
-                                                                     0x70506c61: "currentPlaylist", // "pPla"
-                                                                     0x70537454: "currentStreamTitle", // "pStT"
-                                                                     0x70537455: "currentStreamURL", // "pStU"
-                                                                     0x7054726b: "currentTrack", // "pTrk"
-                                                                     0x70566973: "currentVisual", // "pVis"
-                                                                     0x70504354: "data_", // "pPCT"
-                                                                     0x70444944: "databaseID", // "pDID"
-                                                                     0x70416464: "dateAdded", // "pAdd"
-                                                                     0x70446573: "description_", // "pDes"
-                                                                     0x70447343: "discCount", // "pDsC"
-                                                                     0x7044734e: "discNumber", // "pDsN"
-                                                                     0x70486174: "disliked", // "pHat"
-                                                                     0x70446c41: "downloaded", // "pDlA"
-                                                                     0x70444149: "downloaderAppleID", // "pDAI"
-                                                                     0x70444e6d: "downloaderName", // "pDNm"
-                                                                     0x70447572: "duration", // "pDur"
-                                                                     0x656e626c: "enabled", // "enbl"
-                                                                     0x6c776c70: "endingPage", // "lwlp"
-                                                                     0x70457044: "episodeID", // "pEpD"
-                                                                     0x7045704e: "episodeNumber", // "pEpN"
-                                                                     0x70455170: "EQ", // "pEQp"
-                                                                     0x70455120: "EQEnabled", // "pEQ\0x20"
-                                                                     0x6c776568: "errorHandling", // "lweh"
-                                                                     0x6661786e: "faxNumber", // "faxn"
-                                                                     0x70537470: "finish", // "pStp"
-                                                                     0x70466978: "fixedIndexing", // "pFix"
-                                                                     0x70466d74: "format", // "pFmt"
-                                                                     0x66727370: "freeSpace", // "frsp"
-                                                                     0x70697366: "frontmost", // "pisf"
-                                                                     0x70465363: "fullScreen", // "pFSc"
-                                                                     0x7047706c: "gapless", // "pGpl"
-                                                                     0x70476e73: "genius", // "pGns"
-                                                                     0x7047656e: "genre", // "pGen"
-                                                                     0x70477270: "grouping", // "pGrp"
-                                                                     0x49442020: "id", // "ID\0x20\0x20"
-                                                                     0x70696478: "index", // "pidx"
-                                                                     0x704b6e64: "kind", // "pKnd"
-                                                                     0x704c6f63: "location", // "pLoc"
-                                                                     0x704c6473: "longDescription", // "pLds"
-                                                                     0x704c6f76: "loved", // "pLov"
-                                                                     0x704c7972: "lyrics", // "pLyr"
-                                                                     0x704d644b: "mediaKind", // "pMdK"
-                                                                     0x704d6f64: "modifiable", // "pMod"
-                                                                     0x61736d6f: "modificationDate", // "asmo"
-                                                                     0x704d4e6d: "movement", // "pMNm"
-                                                                     0x704d7643: "movementCount", // "pMvC"
-                                                                     0x704d764e: "movementNumber", // "pMvN"
-                                                                     0x704d7574: "mute", // "pMut"
-                                                                     0x706e616d: "name", // "pnam"
-                                                                     0x704d4143: "networkAddress", // "pMAC"
-                                                                     0x6c776c61: "pagesAcross", // "lwla"
-                                                                     0x6c776c64: "pagesDown", // "lwld"
-                                                                     0x70506c50: "parent", // "pPlP"
-                                                                     0x70504953: "persistentID", // "pPIS"
-                                                                     0x70506c43: "playedCount", // "pPlC"
-                                                                     0x70506c44: "playedDate", // "pPlD"
-                                                                     0x70506f73: "playerPosition", // "pPos"
-                                                                     0x70506c53: "playerState", // "pPlS"
-                                                                     0x70706f73: "position", // "ppos"
-                                                                     0x70455141: "preamp", // "pEQA"
-                                                                     0x6c777066: "printerFeatures", // "lwpf"
-                                                                     0x70414c4c: "properties", // "pALL"
-                                                                     0x7050726f: "protected", // "pPro"
-                                                                     0x70504149: "purchaserAppleID", // "pPAI"
-                                                                     0x70504e6d: "purchaserName", // "pPNm"
-                                                                     0x70527465: "rating", // "pRte"
-                                                                     0x7052746b: "ratingKind", // "pRtk"
-                                                                     0x70526177: "rawData", // "pRaw"
-                                                                     0x70526c44: "releaseDate", // "pRlD"
-                                                                     0x6c777174: "requestedPrintTime", // "lwqt"
-                                                                     0x7072737a: "resizable", // "prsz"
-                                                                     0x70535274: "sampleRate", // "pSRt"
-                                                                     0x7053654e: "seasonNumber", // "pSeN"
-                                                                     0x73656c63: "selected", // "selc"
-                                                                     0x73656c65: "selection", // "sele"
-                                                                     0x70536872: "shared", // "pShr"
-                                                                     0x70536877: "show", // "pShw"
-                                                                     0x70536661: "shufflable", // "pSfa"
-                                                                     0x70536866: "shuffle", // "pShf"
-                                                                     0x70536845: "shuffleEnabled", // "pShE"
-                                                                     0x7053684d: "shuffleMode", // "pShM"
-                                                                     0x7053697a: "size", // "pSiz"
-                                                                     0x70536b43: "skippedCount", // "pSkC"
-                                                                     0x70536b44: "skippedDate", // "pSkD"
-                                                                     0x70536d74: "smart", // "pSmt"
-                                                                     0x70527074: "songRepeat", // "pRpt"
-                                                                     0x7053416c: "sortAlbum", // "pSAl"
-                                                                     0x70534141: "sortAlbumArtist", // "pSAA"
-                                                                     0x70534172: "sortArtist", // "pSAr"
-                                                                     0x7053436d: "sortComposer", // "pSCm"
-                                                                     0x70534e6d: "sortName", // "pSNm"
-                                                                     0x7053534e: "sortShow", // "pSSN"
-                                                                     0x70566f6c: "soundVolume", // "pVol"
-                                                                     0x7053704b: "specialKind", // "pSpK"
-                                                                     0x70537472: "start", // "pStr"
-                                                                     0x6c776670: "startingPage", // "lwfp"
-                                                                     0x70417564: "supportsAudio", // "pAud"
-                                                                     0x70566964: "supportsVideo", // "pVid"
-                                                                     0x74727072: "targetPrinter", // "trpr"
-                                                                     0x7054696d: "time", // "pTim"
-                                                                     0x70547243: "trackCount", // "pTrC"
-                                                                     0x7054724e: "trackNumber", // "pTrN"
-                                                                     0x70556e70: "unplayed", // "pUnp"
-                                                                     0x70555443: "updateTracks", // "pUTC"
-                                                                     0x76657273: "version", // "vers"
-                                                                     0x7056644b: "videoKind", // "pVdK"
-                                                                     0x70506c79: "view", // "pPly"
-                                                                     0x70766973: "visible", // "pvis"
-                                                                     0x70567345: "visualsEnabled", // "pVsE"
-                                                                     0x7056537a: "visualSize", // "pVSz"
-                                                                     0x7041646a: "volumeAdjustment", // "pAdj"
-                                                                     0x7057726b: "work", // "pWrk"
-                                                                     0x70597220: "year", // "pYr\0x20"
-                                                                     0x69737a6d: "zoomable", // "iszm"
-                                                                     0x707a756d: "zoomed", // "pzum"
-                                                     ],
-                                                     elementsNames: [
-                                                                     0x63415044: ("AirPlayDevice", "AirPlayDevices"), // "cAPD"
-                                                                     0x63617070: ("application", "applications"), // "capp"
-                                                                     0x63417274: ("artwork", "artworks"), // "cArt"
-                                                                     0x63434450: ("audioCDPlaylist", "audioCDPlaylists"), // "cCDP"
-                                                                     0x63434454: ("audioCDTrack", "audioCDTracks"), // "cCDT"
-                                                                     0x63427257: ("browserWindow", "browserWindows"), // "cBrW"
-                                                                     0x63456e63: ("encoder", "encoders"), // "cEnc"
-                                                                     0x63455150: ("EQPreset", "EQPresets"), // "cEQP"
-                                                                     0x63455157: ("EQWindow", "EQWindows"), // "cEQW"
-                                                                     0x63466c54: ("fileTrack", "fileTracks"), // "cFlT"
-                                                                     0x63466f50: ("folderPlaylist", "folderPlaylists"), // "cFoP"
-                                                                     0x636f626a: ("item", "items"), // "cobj"
-                                                                     0x634c6950: ("libraryPlaylist", "libraryPlaylists"), // "cLiP"
-                                                                     0x634d5057: ("miniplayerWindow", "miniplayerWindows"), // "cMPW"
-                                                                     0x63506c79: ("playlist", "playlists"), // "cPly"
-                                                                     0x63506c57: ("playlistWindow", "playlistWindows"), // "cPlW"
-                                                                     0x63525450: ("radioTunerPlaylist", "radioTunerPlaylists"), // "cRTP"
-                                                                     0x63536854: ("sharedTrack", "sharedTracks"), // "cShT"
-                                                                     0x63537263: ("source", "sources"), // "cSrc"
-                                                                     0x63537550: ("subscriptionPlaylist", "subscriptionPlaylists"), // "cSuP"
-                                                                     0x6354726b: ("track", "tracks"), // "cTrk"
-                                                                     0x63555254: ("URLTrack", "URLTracks"), // "cURT"
-                                                                     0x63557350: ("userPlaylist", "userPlaylists"), // "cUsP"
-                                                                     0x634e5057: ("videoWindow", "videoWindows"), // "cNPW"
-                                                                     0x63566973: ("visual", "visuals"), // "cVis"
-                                                                     0x6377696e: ("window", "windows"), // "cwin"
-                                                     ])
+private let _specifierFormatter = SwiftAutomation.SpecifierFormatter(
+        applicationClassName: "ITunes",
+        classNamePrefix: "ITU",
+        typeNames: [
+                0x70416374: "active", // "pAct"
+                0x7055524c: "address", // "pURL"
+                0x6b41504f: "AirPlayDevice", // "kAPO"
+                0x63415044: "AirPlayDevice", // "cAPD"
+                0x70415045: "AirPlayEnabled", // "pAPE"
+                0x6b415058: "AirPortExpress", // "kAPX"
+                0x70416c62: "album", // "pAlb"
+                0x70416c41: "albumArtist", // "pAlA"
+                0x70414874: "albumDisliked", // "pAHt"
+                0x6b416c62: "albumListing", // "kAlb"
+                0x70414c76: "albumLoved", // "pALv"
+                0x70416c52: "albumRating", // "pAlR"
+                0x7041526b: "albumRatingKind", // "pARk"
+                0x6b536841: "albums", // "kShA"
+                0x6b53724c: "albums", // "kSrL"
+                0x6b4d644c: "alertTone", // "kMdL"
+                0x616c6973: "alias", // "alis"
+                0x6b416c6c: "all_", // "kAll"
+                0x2a2a2a2a: "anything", // "****"
+                0x6b415054: "AppleTV", // "kAPT"
+                0x63617070: "application", // "capp"
+                0x62756e64: "applicationBundleID", // "bund"
+                0x7369676e: "applicationSignature", // "sign"
+                0x6170726c: "applicationURL", // "aprl"
+                0x61707220: "April", // "apr "
+                0x70417274: "artist", // "pArt"
+                0x6b537252: "artists", // "kSrR"
+                0x63417274: "artwork", // "cArt"
+                0x61736b20: "ask", // "ask "
+                0x6b4d6441: "audiobook", // "kMdA"
+                0x6b414344: "audioCD", // "kACD"
+                0x63434450: "audioCDPlaylist", // "cCDP"
+                0x63434454: "audioCDTrack", // "cCDT"
+                0x61756720: "August", // "aug "
+                0x70417661: "available", // "pAva"
+                0x70455131: "band1", // "pEQ1"
+                0x70455130: "band10", // "pEQ0"
+                0x70455132: "band2", // "pEQ2"
+                0x70455133: "band3", // "pEQ3"
+                0x70455134: "band4", // "pEQ4"
+                0x70455135: "band5", // "pEQ5"
+                0x70455136: "band6", // "pEQ6"
+                0x70455137: "band7", // "pEQ7"
+                0x70455138: "band8", // "pEQ8"
+                0x70455139: "band9", // "pEQ9"
+                0x62657374: "best", // "best"
+                0x70425274: "bitRate", // "pBRt"
+                0x6b415042: "BluetoothDevice", // "kAPB"
+                0x6b4d6442: "book", // "kMdB"
+                0x70426b74: "bookmark", // "pBkt"
+                0x70426b6d: "bookmarkable", // "pBkm"
+                0x626d726b: "bookmarkData", // "bmrk"
+                0x6b537041: "Books", // "kSpA"
+                0x626f6f6c: "boolean", // "bool"
+                0x71647274: "boundingRectangle", // "qdrt"
+                0x70626e64: "bounds", // "pbnd"
+                0x7042504d: "bpm", // "pBPM"
+                0x63427257: "browserWindow", // "cBrW"
+                0x63617061: "capacity", // "capa"
+                0x63617365: "case_", // "case"
+                0x70436174: "category", // "pCat"
+                0x6b434469: "cdInsert", // "kCDi"
+                0x70636c73: "class_", // "pcls"
+                0x68636c62: "closeable", // "hclb"
+                0x70436c53: "cloudStatus", // "pClS"
+                0x70575368: "collapseable", // "pWSh"
+                0x77736864: "collapsed", // "wshd"
+                0x6c77636c: "collating", // "lwcl"
+                0x636c7274: "colorTable", // "clrt"
+                0x70436d74: "comment", // "pCmt"
+                0x70416e74: "compilation", // "pAnt"
+                0x70436d70: "composer", // "pCmp"
+                0x6b537243: "composers", // "kSrC"
+                0x6b527443: "computed", // "kRtC"
+                0x6b415043: "computer", // "kAPC"
+                0x656e756d: "constant", // "enum"
+                0x63746e72: "container", // "ctnr"
+                0x70436e76: "converting", // "pCnv"
+                0x6c776370: "copies", // "lwcp"
+                0x70415044: "currentAirPlayDevices", // "pAPD"
+                0x70456e63: "currentEncoder", // "pEnc"
+                0x70455150: "currentEQPreset", // "pEQP"
+                0x70506c61: "currentPlaylist", // "pPla"
+                0x70537454: "currentStreamTitle", // "pStT"
+                0x70537455: "currentStreamURL", // "pStU"
+                0x7054726b: "currentTrack", // "pTrk"
+                0x70566973: "currentVisual", // "pVis"
+                0x74646173: "dashStyle", // "tdas"
+                0x74647461: "data", // "tdta"
+                0x70504354: "data_", // "pPCT"
+                0x70444944: "databaseID", // "pDID"
+                0x6c647420: "date", // "ldt "
+                0x70416464: "dateAdded", // "pAdd"
+                0x64656320: "December", // "dec "
+                0x6465636d: "decimalStruct", // "decm"
+                0x70446573: "description_", // "pDes"
+                0x6c776474: "detailed", // "lwdt"
+                0x64696163: "diacriticals", // "diac"
+                0x70447343: "discCount", // "pDsC"
+                0x7044734e: "discNumber", // "pDsN"
+                0x70486174: "disliked", // "pHat"
+                0x6b537256: "displayed", // "kSrV"
+                0x636f6d70: "doubleInteger", // "comp"
+                0x70446c41: "downloaded", // "pDlA"
+                0x70444149: "downloaderAppleID", // "pDAI"
+                0x70444e6d: "downloaderName", // "pDNm"
+                0x6b447570: "duplicate", // "kDup"
+                0x70447572: "duration", // "pDur"
+                0x656e626c: "enabled", // "enbl"
+                0x656e6373: "encodedString", // "encs"
+                0x63456e63: "encoder", // "cEnc"
+                0x6c776c70: "endingPage", // "lwlp"
+                0x70457044: "episodeID", // "pEpD"
+                0x7045704e: "episodeNumber", // "pEpN"
+                0x45505320: "EPSPicture", // "EPS "
+                0x70455170: "EQ", // "pEQp"
+                0x70455120: "EQEnabled", // "pEQ "
+                0x63455150: "EQPreset", // "cEQP"
+                0x63455157: "EQWindow", // "cEQW"
+                0x6b457272: "error", // "kErr"
+                0x6c776568: "errorHandling", // "lweh"
+                0x65787061: "expansion", // "expa"
+                0x6b505346: "fastForwarding", // "kPSF"
+                0x6661786e: "faxNumber", // "faxn"
+                0x66656220: "February", // "feb "
+                0x66737266: "fileRef", // "fsrf"
+                0x63466c54: "fileTrack", // "cFlT"
+                0x6675726c: "fileURL", // "furl"
+                0x70537470: "finish", // "pStp"
+                0x66697864: "fixed", // "fixd"
+                0x70466978: "fixedIndexing", // "pFix"
+                0x66706e74: "fixedPoint", // "fpnt"
+                0x66726374: "fixedRectangle", // "frct"
+                0x6b537046: "folder", // "kSpF"
+                0x63466f50: "folderPlaylist", // "cFoP"
+                0x70466d74: "format", // "pFmt"
+                0x66727370: "freeSpace", // "frsp"
+                0x66726920: "Friday", // "fri "
+                0x70697366: "frontmost", // "pisf"
+                0x70465363: "fullScreen", // "pFSc"
+                0x7047706c: "gapless", // "pGpl"
+                0x6b537047: "Genius", // "kSpG"
+                0x70476e73: "genius", // "pGns"
+                0x7047656e: "genre", // "pGen"
+                0x47494666: "GIFPicture", // "GIFf"
+                0x63677478: "graphicText", // "cgtx"
+                0x70477270: "grouping", // "pGrp"
+                0x6b536847: "groupings", // "kShG"
+                0x6b415048: "HomePod", // "kAPH"
+                0x6b566448: "homeVideo", // "kVdH"
+                0x68797068: "hyphens", // "hyph"
+                0x49442020: "id", // "ID  "
+                0x70696478: "index", // "pidx"
+                0x6b52656a: "ineligible", // "kRej"
+                0x6c6f6e67: "integer", // "long"
+                0x69747874: "internationalText", // "itxt"
+                0x696e746c: "internationalWritingCode", // "intl"
+                0x6b506f64: "iPod", // "kPod"
+                0x636f626a: "item", // "cobj"
+                0x6b495453: "iTunesStore", // "kITS"
+                0x6b537055: "iTunesU", // "kSpU"
+                0x6b4d6449: "iTunesU", // "kMdI"
+                0x6a616e20: "January", // "jan "
+                0x4a504547: "JPEGPicture", // "JPEG"
+                0x6a756c20: "July", // "jul "
+                0x6a756e20: "June", // "jun "
+                0x6b706964: "kernelProcessID", // "kpid"
+                0x704b6e64: "kind", // "pKnd"
+                0x6b56534c: "large", // "kVSL"
+                0x6c64626c: "largeReal", // "ldbl"
+                0x6b53704c: "Library", // "kSpL"
+                0x6b4c6962: "library", // "kLib"
+                0x634c6950: "libraryPlaylist", // "cLiP"
+                0x6c697374: "list", // "list"
+                0x704c6f63: "location", // "pLoc"
+                0x696e736c: "locationReference", // "insl"
+                0x704c6473: "longDescription", // "pLds"
+                0x6c667864: "longFixed", // "lfxd"
+                0x6c667074: "longFixedPoint", // "lfpt"
+                0x6c667263: "longFixedRectangle", // "lfrc"
+                0x6c706e74: "longPoint", // "lpnt"
+                0x6c726374: "longRectangle", // "lrct"
+                0x704c6f76: "loved", // "pLov"
+                0x704c7972: "lyrics", // "pLyr"
+                0x6d616368: "machine", // "mach"
+                0x6d4c6f63: "machineLocation", // "mLoc"
+                0x706f7274: "machPort", // "port"
+                0x6d617220: "March", // "mar "
+                0x6b4d6174: "matched", // "kMat"
+                0x6d617920: "May", // "may "
+                0x704d644b: "mediaKind", // "pMdK"
+                0x6b56534d: "medium", // "kVSM"
+                0x634d5057: "miniplayerWindow", // "cMPW"
+                0x704d6f64: "modifiable", // "pMod"
+                0x61736d6f: "modificationDate", // "asmo"
+                0x6d6f6e20: "Monday", // "mon "
+                0x704d4e6d: "movement", // "pMNm"
+                0x704d7643: "movementCount", // "pMvC"
+                0x704d764e: "movementNumber", // "pMvN"
+                0x6b56644d: "movie", // "kVdM"
+                0x6b537049: "Movies", // "kSpI"
+                0x6b4d4344: "MP3CD", // "kMCD"
+                0x6b53705a: "Music", // "kSpZ"
+                0x6b566456: "musicVideo", // "kVdV"
+                0x704d7574: "mute", // "pMut"
+                0x706e616d: "name", // "pnam"
+                0x704d4143: "networkAddress", // "pMAC"
+                0x6e6f2020: "no", // "no  "
+                0x6b526576: "noLongerAvailable", // "kRev"
+                0x6b4e6f6e: "none", // "kNon"
+                0x6b557050: "notUploaded", // "kUpP"
+                0x6e6f7620: "November", // "nov "
+                0x6e756c6c: "null", // "null"
+                0x6e756d65: "numericStrings", // "nume"
+                0x6f637420: "October", // "oct "
+                0x6b52704f: "off", // "kRpO"
+                0x6b527031: "one", // "kRp1"
+                0x6c776c61: "pagesAcross", // "lwla"
+                0x6c776c64: "pagesDown", // "lwld"
+                0x70506c50: "parent", // "pPlP"
+                0x6b505370: "paused", // "kPSp"
+                0x70504953: "persistentID", // "pPIS"
+                0x50494354: "picture", // "PICT"
+                0x74706d6d: "pixelMapRecord", // "tpmm"
+                0x70506c43: "playedCount", // "pPlC"
+                0x70506c44: "playedDate", // "pPlD"
+                0x70506f73: "playerPosition", // "pPos"
+                0x70506c53: "playerState", // "pPlS"
+                0x6b505350: "playing", // "kPSP"
+                0x63506c79: "playlist", // "cPly"
+                0x63506c57: "playlistWindow", // "cPlW"
+                0x6b4d6450: "podcast", // "kMdP"
+                0x6b537050: "Podcasts", // "kSpP"
+                0x51447074: "point", // "QDpt"
+                0x70706f73: "position", // "ppos"
+                0x70455141: "preamp", // "pEQA"
+                0x6c777066: "printerFeatures", // "lwpf"
+                0x70736574: "printSettings", // "pset"
+                0x70736e20: "processSerialNumber", // "psn "
+                0x70414c4c: "properties", // "pALL"
+                0x70726f70: "property_", // "prop"
+                0x7050726f: "protected", // "pPro"
+                0x70756e63: "punctuation", // "punc"
+                0x6b507572: "purchased", // "kPur"
+                0x6b53704d: "PurchasedMusic", // "kSpM"
+                0x70504149: "purchaserAppleID", // "pPAI"
+                0x70504e6d: "purchaserName", // "pPNm"
+                0x6b54756e: "radioTuner", // "kTun"
+                0x63525450: "radioTunerPlaylist", // "cRTP"
+                0x70527465: "rating", // "pRte"
+                0x7052746b: "ratingKind", // "pRtk"
+                0x70526177: "rawData", // "pRaw"
+                0x646f7562: "real", // "doub"
+                0x7265636f: "record", // "reco"
+                0x6f626a20: "reference", // "obj "
+                0x70526c44: "releaseDate", // "pRlD"
+                0x6b52656d: "removed", // "kRem"
+                0x6c777174: "requestedPrintTime", // "lwqt"
+                0x7072737a: "resizable", // "prsz"
+                0x6b505352: "rewinding", // "kPSR"
+                0x74723136: "RGB16Color", // "tr16"
+                0x74723936: "RGB96Color", // "tr96"
+                0x63524742: "RGBColor", // "cRGB"
+                0x6b4d6452: "ringtone", // "kMdR"
+                0x74726f74: "rotation", // "trot"
+                0x70535274: "sampleRate", // "pSRt"
+                0x73617420: "Saturday", // "sat "
+                0x73637074: "script", // "scpt"
+                0x7053654e: "seasonNumber", // "pSeN"
+                0x73656c63: "selected", // "selc"
+                0x73656c65: "selection", // "sele"
+                0x73657020: "September", // "sep "
+                0x70536872: "shared", // "pShr"
+                0x6b536864: "sharedLibrary", // "kShd"
+                0x63536854: "sharedTrack", // "cShT"
+                0x73686f72: "shortInteger", // "shor"
+                0x70536877: "show", // "pShw"
+                0x70536661: "shufflable", // "pSfa"
+                0x70536866: "shuffle", // "pShf"
+                0x70536845: "shuffleEnabled", // "pShE"
+                0x7053684d: "shuffleMode", // "pShM"
+                0x7053697a: "size", // "pSiz"
+                0x70536b43: "skippedCount", // "pSkC"
+                0x70536b44: "skippedDate", // "pSkD"
+                0x6b565353: "small", // "kVSS"
+                0x73696e67: "smallReal", // "sing"
+                0x70536d74: "smart", // "pSmt"
+                0x6b4d6453: "song", // "kMdS"
+                0x70527074: "songRepeat", // "pRpt"
+                0x6b536853: "songs", // "kShS"
+                0x6b537253: "songs", // "kSrS"
+                0x7053416c: "sortAlbum", // "pSAl"
+                0x70534141: "sortAlbumArtist", // "pSAA"
+                0x70534172: "sortArtist", // "pSAr"
+                0x7053436d: "sortComposer", // "pSCm"
+                0x70534e6d: "sortName", // "pSNm"
+                0x7053534e: "sortShow", // "pSSN"
+                0x70566f6c: "soundVolume", // "pVol"
+                0x63537263: "source", // "cSrc"
+                0x7053704b: "specialKind", // "pSpK"
+                0x6c777374: "standard", // "lwst"
+                0x70537472: "start", // "pStr"
+                0x6c776670: "startingPage", // "lwfp"
+                0x6b505353: "stopped", // "kPSS"
+                0x54455854: "string", // "TEXT"
+                0x7374796c: "styledClipboardText", // "styl"
+                0x53545854: "styledText", // "STXT"
+                0x6b537562: "subscription", // "kSub"
+                0x63537550: "subscriptionPlaylist", // "cSuP"
+                0x73756e20: "Sunday", // "sun "
+                0x70417564: "supportsAudio", // "pAud"
+                0x70566964: "supportsVideo", // "pVid"
+                0x74727072: "targetPrinter", // "trpr"
+                0x74737479: "textStyleInfo", // "tsty"
+                0x74687520: "Thursday", // "thu "
+                0x54494646: "TIFFPicture", // "TIFF"
+                0x7054696d: "time", // "pTim"
+                0x6354726b: "track", // "cTrk"
+                0x70547243: "trackCount", // "pTrC"
+                0x6b54726b: "trackListing", // "kTrk"
+                0x7054724e: "trackNumber", // "pTrN"
+                0x74756520: "Tuesday", // "tue "
+                0x6b566454: "TVShow", // "kVdT"
+                0x6b537054: "TVShows", // "kSpT"
+                0x74797065: "typeClass", // "type"
+                0x75747874: "UnicodeText", // "utxt"
+                0x6b415055: "unknown", // "kAPU"
+                0x6b556e6b: "unknown", // "kUnk"
+                0x70556e70: "unplayed", // "pUnp"
+                0x75636f6d: "unsignedDoubleInteger", // "ucom"
+                0x6d61676e: "unsignedInteger", // "magn"
+                0x75736872: "unsignedShortInteger", // "ushr"
+                0x70555443: "updateTracks", // "pUTC"
+                0x6b55706c: "uploaded", // "kUpl"
+                0x63555254: "URLTrack", // "cURT"
+                0x6b527455: "user", // "kRtU"
+                0x63557350: "userPlaylist", // "cUsP"
+                0x75743136: "UTF16Text", // "ut16"
+                0x75746638: "UTF8Text", // "utf8"
+                0x76657273: "version", // "vers"
+                0x7056644b: "videoKind", // "pVdK"
+                0x634e5057: "videoWindow", // "cNPW"
+                0x70506c79: "view", // "pPly"
+                0x70766973: "visible", // "pvis"
+                0x63566973: "visual", // "cVis"
+                0x70567345: "visualsEnabled", // "pVsE"
+                0x7056537a: "visualSize", // "pVSz"
+                0x6b4d644f: "voiceMemo", // "kMdO"
+                0x7041646a: "volumeAdjustment", // "pAdj"
+                0x77656420: "Wednesday", // "wed "
+                0x77686974: "whitespace", // "whit"
+                0x6377696e: "window", // "cwin"
+                0x7057726b: "work", // "pWrk"
+                0x70736374: "writingCode", // "psct"
+                0x70597220: "year", // "pYr "
+                0x79657320: "yes", // "yes "
+                0x69737a6d: "zoomable", // "iszm"
+                0x707a756d: "zoomed", // "pzum"
+        ],
+        propertyNames: [
+                0x70416374: "active", // "pAct"
+                0x7055524c: "address", // "pURL"
+                0x70415045: "AirPlayEnabled", // "pAPE"
+                0x70416c62: "album", // "pAlb"
+                0x70416c41: "albumArtist", // "pAlA"
+                0x70414874: "albumDisliked", // "pAHt"
+                0x70414c76: "albumLoved", // "pALv"
+                0x70416c52: "albumRating", // "pAlR"
+                0x7041526b: "albumRatingKind", // "pARk"
+                0x70417274: "artist", // "pArt"
+                0x70417661: "available", // "pAva"
+                0x70455131: "band1", // "pEQ1"
+                0x70455130: "band10", // "pEQ0"
+                0x70455132: "band2", // "pEQ2"
+                0x70455133: "band3", // "pEQ3"
+                0x70455134: "band4", // "pEQ4"
+                0x70455135: "band5", // "pEQ5"
+                0x70455136: "band6", // "pEQ6"
+                0x70455137: "band7", // "pEQ7"
+                0x70455138: "band8", // "pEQ8"
+                0x70455139: "band9", // "pEQ9"
+                0x70425274: "bitRate", // "pBRt"
+                0x70426b74: "bookmark", // "pBkt"
+                0x70426b6d: "bookmarkable", // "pBkm"
+                0x70626e64: "bounds", // "pbnd"
+                0x7042504d: "bpm", // "pBPM"
+                0x63617061: "capacity", // "capa"
+                0x70436174: "category", // "pCat"
+                0x70636c73: "class_", // "pcls"
+                0x68636c62: "closeable", // "hclb"
+                0x70436c53: "cloudStatus", // "pClS"
+                0x70575368: "collapseable", // "pWSh"
+                0x77736864: "collapsed", // "wshd"
+                0x6c77636c: "collating", // "lwcl"
+                0x70436d74: "comment", // "pCmt"
+                0x70416e74: "compilation", // "pAnt"
+                0x70436d70: "composer", // "pCmp"
+                0x63746e72: "container", // "ctnr"
+                0x70436e76: "converting", // "pCnv"
+                0x6c776370: "copies", // "lwcp"
+                0x70415044: "currentAirPlayDevices", // "pAPD"
+                0x70456e63: "currentEncoder", // "pEnc"
+                0x70455150: "currentEQPreset", // "pEQP"
+                0x70506c61: "currentPlaylist", // "pPla"
+                0x70537454: "currentStreamTitle", // "pStT"
+                0x70537455: "currentStreamURL", // "pStU"
+                0x7054726b: "currentTrack", // "pTrk"
+                0x70566973: "currentVisual", // "pVis"
+                0x70504354: "data_", // "pPCT"
+                0x70444944: "databaseID", // "pDID"
+                0x70416464: "dateAdded", // "pAdd"
+                0x70446573: "description_", // "pDes"
+                0x70447343: "discCount", // "pDsC"
+                0x7044734e: "discNumber", // "pDsN"
+                0x70486174: "disliked", // "pHat"
+                0x70446c41: "downloaded", // "pDlA"
+                0x70444149: "downloaderAppleID", // "pDAI"
+                0x70444e6d: "downloaderName", // "pDNm"
+                0x70447572: "duration", // "pDur"
+                0x656e626c: "enabled", // "enbl"
+                0x6c776c70: "endingPage", // "lwlp"
+                0x70457044: "episodeID", // "pEpD"
+                0x7045704e: "episodeNumber", // "pEpN"
+                0x70455170: "EQ", // "pEQp"
+                0x70455120: "EQEnabled", // "pEQ "
+                0x6c776568: "errorHandling", // "lweh"
+                0x6661786e: "faxNumber", // "faxn"
+                0x70537470: "finish", // "pStp"
+                0x70466978: "fixedIndexing", // "pFix"
+                0x70466d74: "format", // "pFmt"
+                0x66727370: "freeSpace", // "frsp"
+                0x70697366: "frontmost", // "pisf"
+                0x70465363: "fullScreen", // "pFSc"
+                0x7047706c: "gapless", // "pGpl"
+                0x70476e73: "genius", // "pGns"
+                0x7047656e: "genre", // "pGen"
+                0x70477270: "grouping", // "pGrp"
+                0x49442020: "id", // "ID  "
+                0x70696478: "index", // "pidx"
+                0x704b6e64: "kind", // "pKnd"
+                0x704c6f63: "location", // "pLoc"
+                0x704c6473: "longDescription", // "pLds"
+                0x704c6f76: "loved", // "pLov"
+                0x704c7972: "lyrics", // "pLyr"
+                0x704d644b: "mediaKind", // "pMdK"
+                0x704d6f64: "modifiable", // "pMod"
+                0x61736d6f: "modificationDate", // "asmo"
+                0x704d4e6d: "movement", // "pMNm"
+                0x704d7643: "movementCount", // "pMvC"
+                0x704d764e: "movementNumber", // "pMvN"
+                0x704d7574: "mute", // "pMut"
+                0x706e616d: "name", // "pnam"
+                0x704d4143: "networkAddress", // "pMAC"
+                0x6c776c61: "pagesAcross", // "lwla"
+                0x6c776c64: "pagesDown", // "lwld"
+                0x70506c50: "parent", // "pPlP"
+                0x70504953: "persistentID", // "pPIS"
+                0x70506c43: "playedCount", // "pPlC"
+                0x70506c44: "playedDate", // "pPlD"
+                0x70506f73: "playerPosition", // "pPos"
+                0x70506c53: "playerState", // "pPlS"
+                0x70706f73: "position", // "ppos"
+                0x70455141: "preamp", // "pEQA"
+                0x6c777066: "printerFeatures", // "lwpf"
+                0x70414c4c: "properties", // "pALL"
+                0x7050726f: "protected", // "pPro"
+                0x70504149: "purchaserAppleID", // "pPAI"
+                0x70504e6d: "purchaserName", // "pPNm"
+                0x70527465: "rating", // "pRte"
+                0x7052746b: "ratingKind", // "pRtk"
+                0x70526177: "rawData", // "pRaw"
+                0x70526c44: "releaseDate", // "pRlD"
+                0x6c777174: "requestedPrintTime", // "lwqt"
+                0x7072737a: "resizable", // "prsz"
+                0x70535274: "sampleRate", // "pSRt"
+                0x7053654e: "seasonNumber", // "pSeN"
+                0x73656c63: "selected", // "selc"
+                0x73656c65: "selection", // "sele"
+                0x70536872: "shared", // "pShr"
+                0x70536877: "show", // "pShw"
+                0x70536661: "shufflable", // "pSfa"
+                0x70536866: "shuffle", // "pShf"
+                0x70536845: "shuffleEnabled", // "pShE"
+                0x7053684d: "shuffleMode", // "pShM"
+                0x7053697a: "size", // "pSiz"
+                0x70536b43: "skippedCount", // "pSkC"
+                0x70536b44: "skippedDate", // "pSkD"
+                0x70536d74: "smart", // "pSmt"
+                0x70527074: "songRepeat", // "pRpt"
+                0x7053416c: "sortAlbum", // "pSAl"
+                0x70534141: "sortAlbumArtist", // "pSAA"
+                0x70534172: "sortArtist", // "pSAr"
+                0x7053436d: "sortComposer", // "pSCm"
+                0x70534e6d: "sortName", // "pSNm"
+                0x7053534e: "sortShow", // "pSSN"
+                0x70566f6c: "soundVolume", // "pVol"
+                0x7053704b: "specialKind", // "pSpK"
+                0x70537472: "start", // "pStr"
+                0x6c776670: "startingPage", // "lwfp"
+                0x70417564: "supportsAudio", // "pAud"
+                0x70566964: "supportsVideo", // "pVid"
+                0x74727072: "targetPrinter", // "trpr"
+                0x7054696d: "time", // "pTim"
+                0x70547243: "trackCount", // "pTrC"
+                0x7054724e: "trackNumber", // "pTrN"
+                0x70556e70: "unplayed", // "pUnp"
+                0x70555443: "updateTracks", // "pUTC"
+                0x76657273: "version", // "vers"
+                0x7056644b: "videoKind", // "pVdK"
+                0x70506c79: "view", // "pPly"
+                0x70766973: "visible", // "pvis"
+                0x70567345: "visualsEnabled", // "pVsE"
+                0x7056537a: "visualSize", // "pVSz"
+                0x7041646a: "volumeAdjustment", // "pAdj"
+                0x7057726b: "work", // "pWrk"
+                0x70597220: "year", // "pYr "
+                0x69737a6d: "zoomable", // "iszm"
+                0x707a756d: "zoomed", // "pzum"
+        ],
+        elementsNames: [
+                0x63415044: ("AirPlayDevice", "AirPlayDevices"), // "cAPD"
+                0x63617070: ("application", "applications"), // "capp"
+                0x63417274: ("artwork", "artworks"), // "cArt"
+                0x63434450: ("audioCDPlaylist", "audioCDPlaylists"), // "cCDP"
+                0x63434454: ("audioCDTrack", "audioCDTracks"), // "cCDT"
+                0x63427257: ("browserWindow", "browserWindows"), // "cBrW"
+                0x63456e63: ("encoder", "encoders"), // "cEnc"
+                0x63455150: ("EQPreset", "EQPresets"), // "cEQP"
+                0x63455157: ("EQWindow", "EQWindows"), // "cEQW"
+                0x63466c54: ("fileTrack", "fileTracks"), // "cFlT"
+                0x63466f50: ("folderPlaylist", "folderPlaylists"), // "cFoP"
+                0x636f626a: ("item", "items"), // "cobj"
+                0x634c6950: ("libraryPlaylist", "libraryPlaylists"), // "cLiP"
+                0x634d5057: ("miniplayerWindow", "miniplayerWindows"), // "cMPW"
+                0x63506c79: ("playlist", "playlists"), // "cPly"
+                0x63506c57: ("playlistWindow", "playlistWindows"), // "cPlW"
+                0x63525450: ("radioTunerPlaylist", "radioTunerPlaylists"), // "cRTP"
+                0x63536854: ("sharedTrack", "sharedTracks"), // "cShT"
+                0x63537263: ("source", "sources"), // "cSrc"
+                0x63537550: ("subscriptionPlaylist", "subscriptionPlaylists"), // "cSuP"
+                0x6354726b: ("track", "tracks"), // "cTrk"
+                0x63555254: ("URLTrack", "URLTracks"), // "cURT"
+                0x63557350: ("userPlaylist", "userPlaylists"), // "cUsP"
+                0x634e5057: ("videoWindow", "videoWindows"), // "cNPW"
+                0x63566973: ("visual", "visuals"), // "cVis"
+                0x6377696e: ("window", "windows"), // "cwin"
+        ])
 
-private let _glueClasses = SwiftAutomation.GlueClasses(insertionSpecifierType: ITUInsertion.self,
-                                       objectSpecifierType: ITUItem.self,
-                                       multiObjectSpecifierType: ITUItems.self,
-                                       rootSpecifierType: ITURoot.self,
-                                       applicationType: ITunes.self,
-                                       symbolType: ITUSymbol.self,
-                                       formatter: _specifierFormatter)
+private let _glueClasses = SwiftAutomation.GlueClasses(
+                                                insertionSpecifierType: ITUInsertion.self,
+                                                objectSpecifierType: ITUItem.self,
+                                                multiObjectSpecifierType: ITUItems.self,
+                                                rootSpecifierType: ITURoot.self,
+                                                applicationType: ITunes.self,
+                                                symbolType: ITUSymbol.self,
+                                                formatter: _specifierFormatter)
 
 private let _untargetedAppData = SwiftAutomation.AppData(glueClasses: _glueClasses)
 
@@ -588,8 +590,8 @@ public class ITUSymbol: SwiftAutomation.Symbol {
         switch (code) {
         case 0x70416374: return self.active // "pAct"
         case 0x7055524c: return self.address // "pURL"
-        case 0x63415044: return self.AirPlayDevice // "cAPD"
         case 0x6b41504f: return self.AirPlayDevice // "kAPO"
+        case 0x63415044: return self.AirPlayDevice // "cAPD"
         case 0x70415045: return self.AirPlayEnabled // "pAPE"
         case 0x6b415058: return self.AirPortExpress // "kAPX"
         case 0x70416c62: return self.album // "pAlb"
@@ -610,16 +612,16 @@ public class ITUSymbol: SwiftAutomation.Symbol {
         case 0x62756e64: return self.applicationBundleID // "bund"
         case 0x7369676e: return self.applicationSignature // "sign"
         case 0x6170726c: return self.applicationURL // "aprl"
-        case 0x61707220: return self.April // "apr\0x20"
+        case 0x61707220: return self.April // "apr "
         case 0x70417274: return self.artist // "pArt"
         case 0x6b537252: return self.artists // "kSrR"
         case 0x63417274: return self.artwork // "cArt"
-        case 0x61736b20: return self.ask // "ask\0x20"
+        case 0x61736b20: return self.ask // "ask "
         case 0x6b4d6441: return self.audiobook // "kMdA"
         case 0x6b414344: return self.audioCD // "kACD"
         case 0x63434450: return self.audioCDPlaylist // "cCDP"
         case 0x63434454: return self.audioCDTrack // "cCDT"
-        case 0x61756720: return self.August // "aug\0x20"
+        case 0x61756720: return self.August // "aug "
         case 0x70417661: return self.available // "pAva"
         case 0x70455131: return self.band1 // "pEQ1"
         case 0x70455130: return self.band10 // "pEQ0"
@@ -677,9 +679,9 @@ public class ITUSymbol: SwiftAutomation.Symbol {
         case 0x74647461: return self.data // "tdta"
         case 0x70504354: return self.data_ // "pPCT"
         case 0x70444944: return self.databaseID // "pDID"
-        case 0x6c647420: return self.date // "ldt\0x20"
+        case 0x6c647420: return self.date // "ldt "
         case 0x70416464: return self.dateAdded // "pAdd"
-        case 0x64656320: return self.December // "dec\0x20"
+        case 0x64656320: return self.December // "dec "
         case 0x6465636d: return self.decimalStruct // "decm"
         case 0x70446573: return self.description_ // "pDes"
         case 0x6c776474: return self.detailed // "lwdt"
@@ -700,9 +702,9 @@ public class ITUSymbol: SwiftAutomation.Symbol {
         case 0x6c776c70: return self.endingPage // "lwlp"
         case 0x70457044: return self.episodeID // "pEpD"
         case 0x7045704e: return self.episodeNumber // "pEpN"
-        case 0x45505320: return self.EPSPicture // "EPS\0x20"
+        case 0x45505320: return self.EPSPicture // "EPS "
         case 0x70455170: return self.EQ // "pEQp"
-        case 0x70455120: return self.EQEnabled // "pEQ\0x20"
+        case 0x70455120: return self.EQEnabled // "pEQ "
         case 0x63455150: return self.EQPreset // "cEQP"
         case 0x63455157: return self.EQWindow // "cEQW"
         case 0x6b457272: return self.error // "kErr"
@@ -710,7 +712,7 @@ public class ITUSymbol: SwiftAutomation.Symbol {
         case 0x65787061: return self.expansion // "expa"
         case 0x6b505346: return self.fastForwarding // "kPSF"
         case 0x6661786e: return self.faxNumber // "faxn"
-        case 0x66656220: return self.February // "feb\0x20"
+        case 0x66656220: return self.February // "feb "
         case 0x66737266: return self.fileRef // "fsrf"
         case 0x63466c54: return self.fileTrack // "cFlT"
         case 0x6675726c: return self.fileURL // "furl"
@@ -723,12 +725,12 @@ public class ITUSymbol: SwiftAutomation.Symbol {
         case 0x63466f50: return self.folderPlaylist // "cFoP"
         case 0x70466d74: return self.format // "pFmt"
         case 0x66727370: return self.freeSpace // "frsp"
-        case 0x66726920: return self.Friday // "fri\0x20"
+        case 0x66726920: return self.Friday // "fri "
         case 0x70697366: return self.frontmost // "pisf"
         case 0x70465363: return self.fullScreen // "pFSc"
         case 0x7047706c: return self.gapless // "pGpl"
-        case 0x70476e73: return self.genius // "pGns"
         case 0x6b537047: return self.Genius // "kSpG"
+        case 0x70476e73: return self.genius // "pGns"
         case 0x7047656e: return self.genre // "pGen"
         case 0x47494666: return self.GIFPicture // "GIFf"
         case 0x63677478: return self.graphicText // "cgtx"
@@ -737,7 +739,7 @@ public class ITUSymbol: SwiftAutomation.Symbol {
         case 0x6b415048: return self.HomePod // "kAPH"
         case 0x6b566448: return self.homeVideo // "kVdH"
         case 0x68797068: return self.hyphens // "hyph"
-        case 0x49442020: return self.id // "ID\0x20\0x20"
+        case 0x49442020: return self.id // "ID  "
         case 0x70696478: return self.index // "pidx"
         case 0x6b52656a: return self.ineligible // "kRej"
         case 0x6c6f6e67: return self.integer // "long"
@@ -748,10 +750,10 @@ public class ITUSymbol: SwiftAutomation.Symbol {
         case 0x6b495453: return self.iTunesStore // "kITS"
         case 0x6b537055: return self.iTunesU // "kSpU"
         case 0x6b4d6449: return self.iTunesU // "kMdI"
-        case 0x6a616e20: return self.January // "jan\0x20"
+        case 0x6a616e20: return self.January // "jan "
         case 0x4a504547: return self.JPEGPicture // "JPEG"
-        case 0x6a756c20: return self.July // "jul\0x20"
-        case 0x6a756e20: return self.June // "jun\0x20"
+        case 0x6a756c20: return self.July // "jul "
+        case 0x6a756e20: return self.June // "jun "
         case 0x6b706964: return self.kernelProcessID // "kpid"
         case 0x704b6e64: return self.kind // "pKnd"
         case 0x6b56534c: return self.large // "kVSL"
@@ -773,15 +775,15 @@ public class ITUSymbol: SwiftAutomation.Symbol {
         case 0x6d616368: return self.machine // "mach"
         case 0x6d4c6f63: return self.machineLocation // "mLoc"
         case 0x706f7274: return self.machPort // "port"
-        case 0x6d617220: return self.March // "mar\0x20"
+        case 0x6d617220: return self.March // "mar "
         case 0x6b4d6174: return self.matched // "kMat"
-        case 0x6d617920: return self.May // "may\0x20"
+        case 0x6d617920: return self.May // "may "
         case 0x704d644b: return self.mediaKind // "pMdK"
         case 0x6b56534d: return self.medium // "kVSM"
         case 0x634d5057: return self.miniplayerWindow // "cMPW"
         case 0x704d6f64: return self.modifiable // "pMod"
         case 0x61736d6f: return self.modificationDate // "asmo"
-        case 0x6d6f6e20: return self.Monday // "mon\0x20"
+        case 0x6d6f6e20: return self.Monday // "mon "
         case 0x704d4e6d: return self.movement // "pMNm"
         case 0x704d7643: return self.movementCount // "pMvC"
         case 0x704d764e: return self.movementNumber // "pMvN"
@@ -793,14 +795,14 @@ public class ITUSymbol: SwiftAutomation.Symbol {
         case 0x704d7574: return self.mute // "pMut"
         case 0x706e616d: return self.name // "pnam"
         case 0x704d4143: return self.networkAddress // "pMAC"
-        case 0x6e6f2020: return self.no // "no\0x20\0x20"
+        case 0x6e6f2020: return self.no // "no  "
         case 0x6b526576: return self.noLongerAvailable // "kRev"
         case 0x6b4e6f6e: return self.none // "kNon"
         case 0x6b557050: return self.notUploaded // "kUpP"
-        case 0x6e6f7620: return self.November // "nov\0x20"
+        case 0x6e6f7620: return self.November // "nov "
         case 0x6e756c6c: return self.null // "null"
         case 0x6e756d65: return self.numericStrings // "nume"
-        case 0x6f637420: return self.October // "oct\0x20"
+        case 0x6f637420: return self.October // "oct "
         case 0x6b52704f: return self.off // "kRpO"
         case 0x6b527031: return self.one // "kRp1"
         case 0x6c776c61: return self.pagesAcross // "lwla"
@@ -824,7 +826,7 @@ public class ITUSymbol: SwiftAutomation.Symbol {
         case 0x70455141: return self.preamp // "pEQA"
         case 0x6c777066: return self.printerFeatures // "lwpf"
         case 0x70736574: return self.printSettings // "pset"
-        case 0x70736e20: return self.processSerialNumber // "psn\0x20"
+        case 0x70736e20: return self.processSerialNumber // "psn "
         case 0x70414c4c: return self.properties // "pALL"
         case 0x70726f70: return self.property_ // "prop"
         case 0x7050726f: return self.protected // "pPro"
@@ -840,7 +842,7 @@ public class ITUSymbol: SwiftAutomation.Symbol {
         case 0x70526177: return self.rawData // "pRaw"
         case 0x646f7562: return self.real // "doub"
         case 0x7265636f: return self.record // "reco"
-        case 0x6f626a20: return self.reference // "obj\0x20"
+        case 0x6f626a20: return self.reference // "obj "
         case 0x70526c44: return self.releaseDate // "pRlD"
         case 0x6b52656d: return self.removed // "kRem"
         case 0x6c777174: return self.requestedPrintTime // "lwqt"
@@ -852,12 +854,12 @@ public class ITUSymbol: SwiftAutomation.Symbol {
         case 0x6b4d6452: return self.ringtone // "kMdR"
         case 0x74726f74: return self.rotation // "trot"
         case 0x70535274: return self.sampleRate // "pSRt"
-        case 0x73617420: return self.Saturday // "sat\0x20"
+        case 0x73617420: return self.Saturday // "sat "
         case 0x73637074: return self.script // "scpt"
         case 0x7053654e: return self.seasonNumber // "pSeN"
         case 0x73656c63: return self.selected // "selc"
         case 0x73656c65: return self.selection // "sele"
-        case 0x73657020: return self.September // "sep\0x20"
+        case 0x73657020: return self.September // "sep "
         case 0x70536872: return self.shared // "pShr"
         case 0x6b536864: return self.sharedLibrary // "kShd"
         case 0x63536854: return self.sharedTrack // "cShT"
@@ -875,8 +877,8 @@ public class ITUSymbol: SwiftAutomation.Symbol {
         case 0x70536d74: return self.smart // "pSmt"
         case 0x6b4d6453: return self.song // "kMdS"
         case 0x70527074: return self.songRepeat // "pRpt"
-        case 0x6b537253: return self.songs // "kSrS"
         case 0x6b536853: return self.songs // "kShS"
+        case 0x6b537253: return self.songs // "kSrS"
         case 0x7053416c: return self.sortAlbum // "pSAl"
         case 0x70534141: return self.sortAlbumArtist // "pSAA"
         case 0x70534172: return self.sortArtist // "pSAr"
@@ -895,19 +897,19 @@ public class ITUSymbol: SwiftAutomation.Symbol {
         case 0x53545854: return self.styledText // "STXT"
         case 0x6b537562: return self.subscription // "kSub"
         case 0x63537550: return self.subscriptionPlaylist // "cSuP"
-        case 0x73756e20: return self.Sunday // "sun\0x20"
+        case 0x73756e20: return self.Sunday // "sun "
         case 0x70417564: return self.supportsAudio // "pAud"
         case 0x70566964: return self.supportsVideo // "pVid"
         case 0x74727072: return self.targetPrinter // "trpr"
         case 0x74737479: return self.textStyleInfo // "tsty"
-        case 0x74687520: return self.Thursday // "thu\0x20"
+        case 0x74687520: return self.Thursday // "thu "
         case 0x54494646: return self.TIFFPicture // "TIFF"
         case 0x7054696d: return self.time // "pTim"
         case 0x6354726b: return self.track // "cTrk"
         case 0x70547243: return self.trackCount // "pTrC"
         case 0x6b54726b: return self.trackListing // "kTrk"
         case 0x7054724e: return self.trackNumber // "pTrN"
-        case 0x74756520: return self.Tuesday // "tue\0x20"
+        case 0x74756520: return self.Tuesday // "tue "
         case 0x6b566454: return self.TVShow // "kVdT"
         case 0x6b537054: return self.TVShows // "kSpT"
         case 0x74797065: return self.typeClass // "type"
@@ -935,13 +937,13 @@ public class ITUSymbol: SwiftAutomation.Symbol {
         case 0x7056537a: return self.visualSize // "pVSz"
         case 0x6b4d644f: return self.voiceMemo // "kMdO"
         case 0x7041646a: return self.volumeAdjustment // "pAdj"
-        case 0x77656420: return self.Wednesday // "wed\0x20"
+        case 0x77656420: return self.Wednesday // "wed "
         case 0x77686974: return self.whitespace // "whit"
         case 0x6377696e: return self.window // "cwin"
         case 0x7057726b: return self.work // "pWrk"
         case 0x70736374: return self.writingCode // "psct"
-        case 0x70597220: return self.year // "pYr\0x20"
-        case 0x79657320: return self.yes // "yes\0x20"
+        case 0x70597220: return self.year // "pYr "
+        case 0x79657320: return self.yes // "yes "
         case 0x69737a6d: return self.zoomable // "iszm"
         case 0x707a756d: return self.zoomed // "pzum"
         default: return super.symbol(code: code, type: type, descriptor: descriptor) as! ITUSymbol
@@ -965,12 +967,12 @@ public class ITUSymbol: SwiftAutomation.Symbol {
     public static let applicationBundleID = ITUSymbol(name: "applicationBundleID", code: 0x62756e64, type: AppleEvents.typeType) // "bund"
     public static let applicationSignature = ITUSymbol(name: "applicationSignature", code: 0x7369676e, type: AppleEvents.typeType) // "sign"
     public static let applicationURL = ITUSymbol(name: "applicationURL", code: 0x6170726c, type: AppleEvents.typeType) // "aprl"
-    public static let April = ITUSymbol(name: "April", code: 0x61707220, type: AppleEvents.typeType) // "apr\0x20"
+    public static let April = ITUSymbol(name: "April", code: 0x61707220, type: AppleEvents.typeType) // "apr "
     public static let artist = ITUSymbol(name: "artist", code: 0x70417274, type: AppleEvents.typeType) // "pArt"
     public static let artwork = ITUSymbol(name: "artwork", code: 0x63417274, type: AppleEvents.typeType) // "cArt"
     public static let audioCDPlaylist = ITUSymbol(name: "audioCDPlaylist", code: 0x63434450, type: AppleEvents.typeType) // "cCDP"
     public static let audioCDTrack = ITUSymbol(name: "audioCDTrack", code: 0x63434454, type: AppleEvents.typeType) // "cCDT"
-    public static let August = ITUSymbol(name: "August", code: 0x61756720, type: AppleEvents.typeType) // "aug\0x20"
+    public static let August = ITUSymbol(name: "August", code: 0x61756720, type: AppleEvents.typeType) // "aug "
     public static let available = ITUSymbol(name: "available", code: 0x70417661, type: AppleEvents.typeType) // "pAva"
     public static let band1 = ITUSymbol(name: "band1", code: 0x70455131, type: AppleEvents.typeType) // "pEQ1"
     public static let band10 = ITUSymbol(name: "band10", code: 0x70455130, type: AppleEvents.typeType) // "pEQ0"
@@ -1020,9 +1022,9 @@ public class ITUSymbol: SwiftAutomation.Symbol {
     public static let data = ITUSymbol(name: "data", code: 0x74647461, type: AppleEvents.typeType) // "tdta"
     public static let data_ = ITUSymbol(name: "data_", code: 0x70504354, type: AppleEvents.typeType) // "pPCT"
     public static let databaseID = ITUSymbol(name: "databaseID", code: 0x70444944, type: AppleEvents.typeType) // "pDID"
-    public static let date = ITUSymbol(name: "date", code: 0x6c647420, type: AppleEvents.typeType) // "ldt\0x20"
+    public static let date = ITUSymbol(name: "date", code: 0x6c647420, type: AppleEvents.typeType) // "ldt "
     public static let dateAdded = ITUSymbol(name: "dateAdded", code: 0x70416464, type: AppleEvents.typeType) // "pAdd"
-    public static let December = ITUSymbol(name: "December", code: 0x64656320, type: AppleEvents.typeType) // "dec\0x20"
+    public static let December = ITUSymbol(name: "December", code: 0x64656320, type: AppleEvents.typeType) // "dec "
     public static let decimalStruct = ITUSymbol(name: "decimalStruct", code: 0x6465636d, type: AppleEvents.typeType) // "decm"
     public static let description_ = ITUSymbol(name: "description_", code: 0x70446573, type: AppleEvents.typeType) // "pDes"
     public static let discCount = ITUSymbol(name: "discCount", code: 0x70447343, type: AppleEvents.typeType) // "pDsC"
@@ -1039,14 +1041,14 @@ public class ITUSymbol: SwiftAutomation.Symbol {
     public static let endingPage = ITUSymbol(name: "endingPage", code: 0x6c776c70, type: AppleEvents.typeType) // "lwlp"
     public static let episodeID = ITUSymbol(name: "episodeID", code: 0x70457044, type: AppleEvents.typeType) // "pEpD"
     public static let episodeNumber = ITUSymbol(name: "episodeNumber", code: 0x7045704e, type: AppleEvents.typeType) // "pEpN"
-    public static let EPSPicture = ITUSymbol(name: "EPSPicture", code: 0x45505320, type: AppleEvents.typeType) // "EPS\0x20"
+    public static let EPSPicture = ITUSymbol(name: "EPSPicture", code: 0x45505320, type: AppleEvents.typeType) // "EPS "
     public static let EQ = ITUSymbol(name: "EQ", code: 0x70455170, type: AppleEvents.typeType) // "pEQp"
-    public static let EQEnabled = ITUSymbol(name: "EQEnabled", code: 0x70455120, type: AppleEvents.typeType) // "pEQ\0x20"
+    public static let EQEnabled = ITUSymbol(name: "EQEnabled", code: 0x70455120, type: AppleEvents.typeType) // "pEQ "
     public static let EQPreset = ITUSymbol(name: "EQPreset", code: 0x63455150, type: AppleEvents.typeType) // "cEQP"
     public static let EQWindow = ITUSymbol(name: "EQWindow", code: 0x63455157, type: AppleEvents.typeType) // "cEQW"
     public static let errorHandling = ITUSymbol(name: "errorHandling", code: 0x6c776568, type: AppleEvents.typeType) // "lweh"
     public static let faxNumber = ITUSymbol(name: "faxNumber", code: 0x6661786e, type: AppleEvents.typeType) // "faxn"
-    public static let February = ITUSymbol(name: "February", code: 0x66656220, type: AppleEvents.typeType) // "feb\0x20"
+    public static let February = ITUSymbol(name: "February", code: 0x66656220, type: AppleEvents.typeType) // "feb "
     public static let fileRef = ITUSymbol(name: "fileRef", code: 0x66737266, type: AppleEvents.typeType) // "fsrf"
     public static let fileTrack = ITUSymbol(name: "fileTrack", code: 0x63466c54, type: AppleEvents.typeType) // "cFlT"
     public static let fileURL = ITUSymbol(name: "fileURL", code: 0x6675726c, type: AppleEvents.typeType) // "furl"
@@ -1058,7 +1060,7 @@ public class ITUSymbol: SwiftAutomation.Symbol {
     public static let folderPlaylist = ITUSymbol(name: "folderPlaylist", code: 0x63466f50, type: AppleEvents.typeType) // "cFoP"
     public static let format = ITUSymbol(name: "format", code: 0x70466d74, type: AppleEvents.typeType) // "pFmt"
     public static let freeSpace = ITUSymbol(name: "freeSpace", code: 0x66727370, type: AppleEvents.typeType) // "frsp"
-    public static let Friday = ITUSymbol(name: "Friday", code: 0x66726920, type: AppleEvents.typeType) // "fri\0x20"
+    public static let Friday = ITUSymbol(name: "Friday", code: 0x66726920, type: AppleEvents.typeType) // "fri "
     public static let frontmost = ITUSymbol(name: "frontmost", code: 0x70697366, type: AppleEvents.typeType) // "pisf"
     public static let fullScreen = ITUSymbol(name: "fullScreen", code: 0x70465363, type: AppleEvents.typeType) // "pFSc"
     public static let gapless = ITUSymbol(name: "gapless", code: 0x7047706c, type: AppleEvents.typeType) // "pGpl"
@@ -1067,16 +1069,16 @@ public class ITUSymbol: SwiftAutomation.Symbol {
     public static let GIFPicture = ITUSymbol(name: "GIFPicture", code: 0x47494666, type: AppleEvents.typeType) // "GIFf"
     public static let graphicText = ITUSymbol(name: "graphicText", code: 0x63677478, type: AppleEvents.typeType) // "cgtx"
     public static let grouping = ITUSymbol(name: "grouping", code: 0x70477270, type: AppleEvents.typeType) // "pGrp"
-    public static let id = ITUSymbol(name: "id", code: 0x49442020, type: AppleEvents.typeType) // "ID\0x20\0x20"
+    public static let id = ITUSymbol(name: "id", code: 0x49442020, type: AppleEvents.typeType) // "ID  "
     public static let index = ITUSymbol(name: "index", code: 0x70696478, type: AppleEvents.typeType) // "pidx"
     public static let integer = ITUSymbol(name: "integer", code: 0x6c6f6e67, type: AppleEvents.typeType) // "long"
     public static let internationalText = ITUSymbol(name: "internationalText", code: 0x69747874, type: AppleEvents.typeType) // "itxt"
     public static let internationalWritingCode = ITUSymbol(name: "internationalWritingCode", code: 0x696e746c, type: AppleEvents.typeType) // "intl"
     public static let item = ITUSymbol(name: "item", code: 0x636f626a, type: AppleEvents.typeType) // "cobj"
-    public static let January = ITUSymbol(name: "January", code: 0x6a616e20, type: AppleEvents.typeType) // "jan\0x20"
+    public static let January = ITUSymbol(name: "January", code: 0x6a616e20, type: AppleEvents.typeType) // "jan "
     public static let JPEGPicture = ITUSymbol(name: "JPEGPicture", code: 0x4a504547, type: AppleEvents.typeType) // "JPEG"
-    public static let July = ITUSymbol(name: "July", code: 0x6a756c20, type: AppleEvents.typeType) // "jul\0x20"
-    public static let June = ITUSymbol(name: "June", code: 0x6a756e20, type: AppleEvents.typeType) // "jun\0x20"
+    public static let July = ITUSymbol(name: "July", code: 0x6a756c20, type: AppleEvents.typeType) // "jul "
+    public static let June = ITUSymbol(name: "June", code: 0x6a756e20, type: AppleEvents.typeType) // "jun "
     public static let kernelProcessID = ITUSymbol(name: "kernelProcessID", code: 0x6b706964, type: AppleEvents.typeType) // "kpid"
     public static let kind = ITUSymbol(name: "kind", code: 0x704b6e64, type: AppleEvents.typeType) // "pKnd"
     public static let largeReal = ITUSymbol(name: "largeReal", code: 0x6c64626c, type: AppleEvents.typeType) // "ldbl"
@@ -1095,22 +1097,22 @@ public class ITUSymbol: SwiftAutomation.Symbol {
     public static let machine = ITUSymbol(name: "machine", code: 0x6d616368, type: AppleEvents.typeType) // "mach"
     public static let machineLocation = ITUSymbol(name: "machineLocation", code: 0x6d4c6f63, type: AppleEvents.typeType) // "mLoc"
     public static let machPort = ITUSymbol(name: "machPort", code: 0x706f7274, type: AppleEvents.typeType) // "port"
-    public static let March = ITUSymbol(name: "March", code: 0x6d617220, type: AppleEvents.typeType) // "mar\0x20"
-    public static let May = ITUSymbol(name: "May", code: 0x6d617920, type: AppleEvents.typeType) // "may\0x20"
+    public static let March = ITUSymbol(name: "March", code: 0x6d617220, type: AppleEvents.typeType) // "mar "
+    public static let May = ITUSymbol(name: "May", code: 0x6d617920, type: AppleEvents.typeType) // "may "
     public static let mediaKind = ITUSymbol(name: "mediaKind", code: 0x704d644b, type: AppleEvents.typeType) // "pMdK"
     public static let miniplayerWindow = ITUSymbol(name: "miniplayerWindow", code: 0x634d5057, type: AppleEvents.typeType) // "cMPW"
     public static let modifiable = ITUSymbol(name: "modifiable", code: 0x704d6f64, type: AppleEvents.typeType) // "pMod"
     public static let modificationDate = ITUSymbol(name: "modificationDate", code: 0x61736d6f, type: AppleEvents.typeType) // "asmo"
-    public static let Monday = ITUSymbol(name: "Monday", code: 0x6d6f6e20, type: AppleEvents.typeType) // "mon\0x20"
+    public static let Monday = ITUSymbol(name: "Monday", code: 0x6d6f6e20, type: AppleEvents.typeType) // "mon "
     public static let movement = ITUSymbol(name: "movement", code: 0x704d4e6d, type: AppleEvents.typeType) // "pMNm"
     public static let movementCount = ITUSymbol(name: "movementCount", code: 0x704d7643, type: AppleEvents.typeType) // "pMvC"
     public static let movementNumber = ITUSymbol(name: "movementNumber", code: 0x704d764e, type: AppleEvents.typeType) // "pMvN"
     public static let mute = ITUSymbol(name: "mute", code: 0x704d7574, type: AppleEvents.typeType) // "pMut"
     public static let name = ITUSymbol(name: "name", code: 0x706e616d, type: AppleEvents.typeType) // "pnam"
     public static let networkAddress = ITUSymbol(name: "networkAddress", code: 0x704d4143, type: AppleEvents.typeType) // "pMAC"
-    public static let November = ITUSymbol(name: "November", code: 0x6e6f7620, type: AppleEvents.typeType) // "nov\0x20"
+    public static let November = ITUSymbol(name: "November", code: 0x6e6f7620, type: AppleEvents.typeType) // "nov "
     public static let null = ITUSymbol(name: "null", code: 0x6e756c6c, type: AppleEvents.typeType) // "null"
-    public static let October = ITUSymbol(name: "October", code: 0x6f637420, type: AppleEvents.typeType) // "oct\0x20"
+    public static let October = ITUSymbol(name: "October", code: 0x6f637420, type: AppleEvents.typeType) // "oct "
     public static let pagesAcross = ITUSymbol(name: "pagesAcross", code: 0x6c776c61, type: AppleEvents.typeType) // "lwla"
     public static let pagesDown = ITUSymbol(name: "pagesDown", code: 0x6c776c64, type: AppleEvents.typeType) // "lwld"
     public static let parent = ITUSymbol(name: "parent", code: 0x70506c50, type: AppleEvents.typeType) // "pPlP"
@@ -1129,7 +1131,7 @@ public class ITUSymbol: SwiftAutomation.Symbol {
     public static let preamp = ITUSymbol(name: "preamp", code: 0x70455141, type: AppleEvents.typeType) // "pEQA"
     public static let printerFeatures = ITUSymbol(name: "printerFeatures", code: 0x6c777066, type: AppleEvents.typeType) // "lwpf"
     public static let printSettings = ITUSymbol(name: "printSettings", code: 0x70736574, type: AppleEvents.typeType) // "pset"
-    public static let processSerialNumber = ITUSymbol(name: "processSerialNumber", code: 0x70736e20, type: AppleEvents.typeType) // "psn\0x20"
+    public static let processSerialNumber = ITUSymbol(name: "processSerialNumber", code: 0x70736e20, type: AppleEvents.typeType) // "psn "
     public static let properties = ITUSymbol(name: "properties", code: 0x70414c4c, type: AppleEvents.typeType) // "pALL"
     public static let property_ = ITUSymbol(name: "property_", code: 0x70726f70, type: AppleEvents.typeType) // "prop"
     public static let protected = ITUSymbol(name: "protected", code: 0x7050726f, type: AppleEvents.typeType) // "pPro"
@@ -1141,7 +1143,7 @@ public class ITUSymbol: SwiftAutomation.Symbol {
     public static let rawData = ITUSymbol(name: "rawData", code: 0x70526177, type: AppleEvents.typeType) // "pRaw"
     public static let real = ITUSymbol(name: "real", code: 0x646f7562, type: AppleEvents.typeType) // "doub"
     public static let record = ITUSymbol(name: "record", code: 0x7265636f, type: AppleEvents.typeType) // "reco"
-    public static let reference = ITUSymbol(name: "reference", code: 0x6f626a20, type: AppleEvents.typeType) // "obj\0x20"
+    public static let reference = ITUSymbol(name: "reference", code: 0x6f626a20, type: AppleEvents.typeType) // "obj "
     public static let releaseDate = ITUSymbol(name: "releaseDate", code: 0x70526c44, type: AppleEvents.typeType) // "pRlD"
     public static let requestedPrintTime = ITUSymbol(name: "requestedPrintTime", code: 0x6c777174, type: AppleEvents.typeType) // "lwqt"
     public static let resizable = ITUSymbol(name: "resizable", code: 0x7072737a, type: AppleEvents.typeType) // "prsz"
@@ -1150,12 +1152,12 @@ public class ITUSymbol: SwiftAutomation.Symbol {
     public static let RGBColor = ITUSymbol(name: "RGBColor", code: 0x63524742, type: AppleEvents.typeType) // "cRGB"
     public static let rotation = ITUSymbol(name: "rotation", code: 0x74726f74, type: AppleEvents.typeType) // "trot"
     public static let sampleRate = ITUSymbol(name: "sampleRate", code: 0x70535274, type: AppleEvents.typeType) // "pSRt"
-    public static let Saturday = ITUSymbol(name: "Saturday", code: 0x73617420, type: AppleEvents.typeType) // "sat\0x20"
+    public static let Saturday = ITUSymbol(name: "Saturday", code: 0x73617420, type: AppleEvents.typeType) // "sat "
     public static let script = ITUSymbol(name: "script", code: 0x73637074, type: AppleEvents.typeType) // "scpt"
     public static let seasonNumber = ITUSymbol(name: "seasonNumber", code: 0x7053654e, type: AppleEvents.typeType) // "pSeN"
     public static let selected = ITUSymbol(name: "selected", code: 0x73656c63, type: AppleEvents.typeType) // "selc"
     public static let selection = ITUSymbol(name: "selection", code: 0x73656c65, type: AppleEvents.typeType) // "sele"
-    public static let September = ITUSymbol(name: "September", code: 0x73657020, type: AppleEvents.typeType) // "sep\0x20"
+    public static let September = ITUSymbol(name: "September", code: 0x73657020, type: AppleEvents.typeType) // "sep "
     public static let shared = ITUSymbol(name: "shared", code: 0x70536872, type: AppleEvents.typeType) // "pShr"
     public static let sharedTrack = ITUSymbol(name: "sharedTrack", code: 0x63536854, type: AppleEvents.typeType) // "cShT"
     public static let shortInteger = ITUSymbol(name: "shortInteger", code: 0x73686f72, type: AppleEvents.typeType) // "shor"
@@ -1185,18 +1187,18 @@ public class ITUSymbol: SwiftAutomation.Symbol {
     public static let styledClipboardText = ITUSymbol(name: "styledClipboardText", code: 0x7374796c, type: AppleEvents.typeType) // "styl"
     public static let styledText = ITUSymbol(name: "styledText", code: 0x53545854, type: AppleEvents.typeType) // "STXT"
     public static let subscriptionPlaylist = ITUSymbol(name: "subscriptionPlaylist", code: 0x63537550, type: AppleEvents.typeType) // "cSuP"
-    public static let Sunday = ITUSymbol(name: "Sunday", code: 0x73756e20, type: AppleEvents.typeType) // "sun\0x20"
+    public static let Sunday = ITUSymbol(name: "Sunday", code: 0x73756e20, type: AppleEvents.typeType) // "sun "
     public static let supportsAudio = ITUSymbol(name: "supportsAudio", code: 0x70417564, type: AppleEvents.typeType) // "pAud"
     public static let supportsVideo = ITUSymbol(name: "supportsVideo", code: 0x70566964, type: AppleEvents.typeType) // "pVid"
     public static let targetPrinter = ITUSymbol(name: "targetPrinter", code: 0x74727072, type: AppleEvents.typeType) // "trpr"
     public static let textStyleInfo = ITUSymbol(name: "textStyleInfo", code: 0x74737479, type: AppleEvents.typeType) // "tsty"
-    public static let Thursday = ITUSymbol(name: "Thursday", code: 0x74687520, type: AppleEvents.typeType) // "thu\0x20"
+    public static let Thursday = ITUSymbol(name: "Thursday", code: 0x74687520, type: AppleEvents.typeType) // "thu "
     public static let TIFFPicture = ITUSymbol(name: "TIFFPicture", code: 0x54494646, type: AppleEvents.typeType) // "TIFF"
     public static let time = ITUSymbol(name: "time", code: 0x7054696d, type: AppleEvents.typeType) // "pTim"
     public static let track = ITUSymbol(name: "track", code: 0x6354726b, type: AppleEvents.typeType) // "cTrk"
     public static let trackCount = ITUSymbol(name: "trackCount", code: 0x70547243, type: AppleEvents.typeType) // "pTrC"
     public static let trackNumber = ITUSymbol(name: "trackNumber", code: 0x7054724e, type: AppleEvents.typeType) // "pTrN"
-    public static let Tuesday = ITUSymbol(name: "Tuesday", code: 0x74756520, type: AppleEvents.typeType) // "tue\0x20"
+    public static let Tuesday = ITUSymbol(name: "Tuesday", code: 0x74756520, type: AppleEvents.typeType) // "tue "
     public static let typeClass = ITUSymbol(name: "typeClass", code: 0x74797065, type: AppleEvents.typeType) // "type"
     public static let UnicodeText = ITUSymbol(name: "UnicodeText", code: 0x75747874, type: AppleEvents.typeType) // "utxt"
     public static let unplayed = ITUSymbol(name: "unplayed", code: 0x70556e70, type: AppleEvents.typeType) // "pUnp"
@@ -1217,11 +1219,11 @@ public class ITUSymbol: SwiftAutomation.Symbol {
     public static let visualsEnabled = ITUSymbol(name: "visualsEnabled", code: 0x70567345, type: AppleEvents.typeType) // "pVsE"
     public static let visualSize = ITUSymbol(name: "visualSize", code: 0x7056537a, type: AppleEvents.typeType) // "pVSz"
     public static let volumeAdjustment = ITUSymbol(name: "volumeAdjustment", code: 0x7041646a, type: AppleEvents.typeType) // "pAdj"
-    public static let Wednesday = ITUSymbol(name: "Wednesday", code: 0x77656420, type: AppleEvents.typeType) // "wed\0x20"
+    public static let Wednesday = ITUSymbol(name: "Wednesday", code: 0x77656420, type: AppleEvents.typeType) // "wed "
     public static let window = ITUSymbol(name: "window", code: 0x6377696e, type: AppleEvents.typeType) // "cwin"
     public static let work = ITUSymbol(name: "work", code: 0x7057726b, type: AppleEvents.typeType) // "pWrk"
     public static let writingCode = ITUSymbol(name: "writingCode", code: 0x70736374, type: AppleEvents.typeType) // "psct"
-    public static let year = ITUSymbol(name: "year", code: 0x70597220, type: AppleEvents.typeType) // "pYr\0x20"
+    public static let year = ITUSymbol(name: "year", code: 0x70597220, type: AppleEvents.typeType) // "pYr "
     public static let zoomable = ITUSymbol(name: "zoomable", code: 0x69737a6d, type: AppleEvents.typeType) // "iszm"
     public static let zoomed = ITUSymbol(name: "zoomed", code: 0x707a756d, type: AppleEvents.typeType) // "pzum"
 
@@ -1233,7 +1235,7 @@ public class ITUSymbol: SwiftAutomation.Symbol {
     public static let all_ = ITUSymbol(name: "all_", code: 0x6b416c6c, type: AppleEvents.typeEnumerated) // "kAll"
     public static let AppleTV = ITUSymbol(name: "AppleTV", code: 0x6b415054, type: AppleEvents.typeEnumerated) // "kAPT"
     public static let artists = ITUSymbol(name: "artists", code: 0x6b537252, type: AppleEvents.typeEnumerated) // "kSrR"
-    public static let ask = ITUSymbol(name: "ask", code: 0x61736b20, type: AppleEvents.typeEnumerated) // "ask\0x20"
+    public static let ask = ITUSymbol(name: "ask", code: 0x61736b20, type: AppleEvents.typeEnumerated) // "ask "
     public static let audiobook = ITUSymbol(name: "audiobook", code: 0x6b4d6441, type: AppleEvents.typeEnumerated) // "kMdA"
     public static let audioCD = ITUSymbol(name: "audioCD", code: 0x6b414344, type: AppleEvents.typeEnumerated) // "kACD"
     public static let BluetoothDevice = ITUSymbol(name: "BluetoothDevice", code: 0x6b415042, type: AppleEvents.typeEnumerated) // "kAPB"
@@ -1262,8 +1264,8 @@ public class ITUSymbol: SwiftAutomation.Symbol {
     public static let iTunesStore = ITUSymbol(name: "iTunesStore", code: 0x6b495453, type: AppleEvents.typeEnumerated) // "kITS"
     public static let iTunesU = ITUSymbol(name: "iTunesU", code: 0x6b537055, type: AppleEvents.typeEnumerated) // "kSpU"
     public static let large = ITUSymbol(name: "large", code: 0x6b56534c, type: AppleEvents.typeEnumerated) // "kVSL"
-    public static let library = ITUSymbol(name: "library", code: 0x6b4c6962, type: AppleEvents.typeEnumerated) // "kLib"
     public static let Library = ITUSymbol(name: "Library", code: 0x6b53704c, type: AppleEvents.typeEnumerated) // "kSpL"
+    public static let library = ITUSymbol(name: "library", code: 0x6b4c6962, type: AppleEvents.typeEnumerated) // "kLib"
     public static let matched = ITUSymbol(name: "matched", code: 0x6b4d6174, type: AppleEvents.typeEnumerated) // "kMat"
     public static let medium = ITUSymbol(name: "medium", code: 0x6b56534d, type: AppleEvents.typeEnumerated) // "kVSM"
     public static let movie = ITUSymbol(name: "movie", code: 0x6b56644d, type: AppleEvents.typeEnumerated) // "kVdM"
@@ -1271,7 +1273,7 @@ public class ITUSymbol: SwiftAutomation.Symbol {
     public static let MP3CD = ITUSymbol(name: "MP3CD", code: 0x6b4d4344, type: AppleEvents.typeEnumerated) // "kMCD"
     public static let Music = ITUSymbol(name: "Music", code: 0x6b53705a, type: AppleEvents.typeEnumerated) // "kSpZ"
     public static let musicVideo = ITUSymbol(name: "musicVideo", code: 0x6b566456, type: AppleEvents.typeEnumerated) // "kVdV"
-    public static let no = ITUSymbol(name: "no", code: 0x6e6f2020, type: AppleEvents.typeEnumerated) // "no\0x20\0x20"
+    public static let no = ITUSymbol(name: "no", code: 0x6e6f2020, type: AppleEvents.typeEnumerated) // "no  "
     public static let noLongerAvailable = ITUSymbol(name: "noLongerAvailable", code: 0x6b526576, type: AppleEvents.typeEnumerated) // "kRev"
     public static let none = ITUSymbol(name: "none", code: 0x6b4e6f6e, type: AppleEvents.typeEnumerated) // "kNon"
     public static let notUploaded = ITUSymbol(name: "notUploaded", code: 0x6b557050, type: AppleEvents.typeEnumerated) // "kUpP"
@@ -1304,7 +1306,7 @@ public class ITUSymbol: SwiftAutomation.Symbol {
     public static let user = ITUSymbol(name: "user", code: 0x6b527455, type: AppleEvents.typeEnumerated) // "kRtU"
     public static let voiceMemo = ITUSymbol(name: "voiceMemo", code: 0x6b4d644f, type: AppleEvents.typeEnumerated) // "kMdO"
     public static let whitespace = ITUSymbol(name: "whitespace", code: 0x77686974, type: AppleEvents.typeEnumerated) // "whit"
-    public static let yes = ITUSymbol(name: "yes", code: 0x79657320, type: AppleEvents.typeEnumerated) // "yes\0x20"
+    public static let yes = ITUSymbol(name: "yes", code: 0x79657320, type: AppleEvents.typeEnumerated) // "yes "
 }
 
 public typealias ITU = ITUSymbol // allows symbols to be written as (e.g.) ITU.name instead of ITUSymbol.name
@@ -1321,7 +1323,7 @@ extension ITUCommand {
     @discardableResult public func activate(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "activate", eventClass: 0x6d697363, eventID: 0x61637476, // "misc"/"actv"
+        return try self.appData.sendAppleEvent(name: "activate", event: 0x6d697363_61637476, // "miscactv"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1329,7 +1331,7 @@ extension ITUCommand {
     public func activate<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "activate", eventClass: 0x6d697363, eventID: 0x61637476, // "misc"/"actv"
+        return try self.appData.sendAppleEvent(name: "activate", event: 0x6d697363_61637476, // "miscactv"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1338,7 +1340,7 @@ extension ITUCommand {
             to: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "add", eventClass: 0x686f6f6b, eventID: 0x41646420, // "hook"/"Add\0x20"
+        return try self.appData.sendAppleEvent(name: "add", event: 0x686f6f6b_41646420, // "hookAdd "
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                     ("to", 0x696e7368, to), // "insh"
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
@@ -1348,7 +1350,7 @@ extension ITUCommand {
             to: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "add", eventClass: 0x686f6f6b, eventID: 0x41646420, // "hook"/"Add\0x20"
+        return try self.appData.sendAppleEvent(name: "add", event: 0x686f6f6b_41646420, // "hookAdd "
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                     ("to", 0x696e7368, to), // "insh"
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
@@ -1357,7 +1359,7 @@ extension ITUCommand {
     @discardableResult public func backTrack(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "backTrack", eventClass: 0x686f6f6b, eventID: 0x4261636b, // "hook"/"Back"
+        return try self.appData.sendAppleEvent(name: "backTrack", event: 0x686f6f6b_4261636b, // "hookBack"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1365,7 +1367,7 @@ extension ITUCommand {
     public func backTrack<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "backTrack", eventClass: 0x686f6f6b, eventID: 0x4261636b, // "hook"/"Back"
+        return try self.appData.sendAppleEvent(name: "backTrack", event: 0x686f6f6b_4261636b, // "hookBack"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1373,7 +1375,7 @@ extension ITUCommand {
     @discardableResult public func close(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "close", eventClass: 0x636f7265, eventID: 0x636c6f73, // "core"/"clos"
+        return try self.appData.sendAppleEvent(name: "close", event: 0x636f7265_636c6f73, // "coreclos"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1381,7 +1383,7 @@ extension ITUCommand {
     public func close<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "close", eventClass: 0x636f7265, eventID: 0x636c6f73, // "core"/"clos"
+        return try self.appData.sendAppleEvent(name: "close", event: 0x636f7265_636c6f73, // "coreclos"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1389,7 +1391,7 @@ extension ITUCommand {
     @discardableResult public func convert(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "convert", eventClass: 0x686f6f6b, eventID: 0x436f6e76, // "hook"/"Conv"
+        return try self.appData.sendAppleEvent(name: "convert", event: 0x686f6f6b_436f6e76, // "hookConv"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1397,7 +1399,7 @@ extension ITUCommand {
     public func convert<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "convert", eventClass: 0x686f6f6b, eventID: 0x436f6e76, // "hook"/"Conv"
+        return try self.appData.sendAppleEvent(name: "convert", event: 0x686f6f6b_436f6e76, // "hookConv"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1406,7 +1408,7 @@ extension ITUCommand {
             each: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "count", eventClass: 0x636f7265, eventID: 0x636e7465, // "core"/"cnte"
+        return try self.appData.sendAppleEvent(name: "count", event: 0x636f7265_636e7465, // "corecnte"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                     ("each", 0x6b6f636c, each), // "kocl"
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
@@ -1416,7 +1418,7 @@ extension ITUCommand {
             each: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "count", eventClass: 0x636f7265, eventID: 0x636e7465, // "core"/"cnte"
+        return try self.appData.sendAppleEvent(name: "count", event: 0x636f7265_636e7465, // "corecnte"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                     ("each", 0x6b6f636c, each), // "kocl"
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
@@ -1425,7 +1427,7 @@ extension ITUCommand {
     @discardableResult public func delete(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "delete", eventClass: 0x636f7265, eventID: 0x64656c6f, // "core"/"delo"
+        return try self.appData.sendAppleEvent(name: "delete", event: 0x636f7265_64656c6f, // "coredelo"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1433,7 +1435,7 @@ extension ITUCommand {
     public func delete<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "delete", eventClass: 0x636f7265, eventID: 0x64656c6f, // "core"/"delo"
+        return try self.appData.sendAppleEvent(name: "delete", event: 0x636f7265_64656c6f, // "coredelo"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1441,7 +1443,7 @@ extension ITUCommand {
     @discardableResult public func download(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "download", eventClass: 0x686f6f6b, eventID: 0x44776e6c, // "hook"/"Dwnl"
+        return try self.appData.sendAppleEvent(name: "download", event: 0x686f6f6b_44776e6c, // "hookDwnl"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1449,7 +1451,7 @@ extension ITUCommand {
     public func download<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "download", eventClass: 0x686f6f6b, eventID: 0x44776e6c, // "hook"/"Dwnl"
+        return try self.appData.sendAppleEvent(name: "download", event: 0x686f6f6b_44776e6c, // "hookDwnl"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1458,7 +1460,7 @@ extension ITUCommand {
             to: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "duplicate", eventClass: 0x636f7265, eventID: 0x636c6f6e, // "core"/"clon"
+        return try self.appData.sendAppleEvent(name: "duplicate", event: 0x636f7265_636c6f6e, // "coreclon"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                     ("to", 0x696e7368, to), // "insh"
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
@@ -1468,7 +1470,7 @@ extension ITUCommand {
             to: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "duplicate", eventClass: 0x636f7265, eventID: 0x636c6f6e, // "core"/"clon"
+        return try self.appData.sendAppleEvent(name: "duplicate", event: 0x636f7265_636c6f6e, // "coreclon"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                     ("to", 0x696e7368, to), // "insh"
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
@@ -1477,7 +1479,7 @@ extension ITUCommand {
     @discardableResult public func eject(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "eject", eventClass: 0x686f6f6b, eventID: 0x456a6374, // "hook"/"Ejct"
+        return try self.appData.sendAppleEvent(name: "eject", event: 0x686f6f6b_456a6374, // "hookEjct"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1485,7 +1487,7 @@ extension ITUCommand {
     public func eject<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "eject", eventClass: 0x686f6f6b, eventID: 0x456a6374, // "hook"/"Ejct"
+        return try self.appData.sendAppleEvent(name: "eject", event: 0x686f6f6b_456a6374, // "hookEjct"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1493,7 +1495,7 @@ extension ITUCommand {
     @discardableResult public func exists(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "exists", eventClass: 0x636f7265, eventID: 0x646f6578, // "core"/"doex"
+        return try self.appData.sendAppleEvent(name: "exists", event: 0x636f7265_646f6578, // "coredoex"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1501,7 +1503,7 @@ extension ITUCommand {
     public func exists<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "exists", eventClass: 0x636f7265, eventID: 0x646f6578, // "core"/"doex"
+        return try self.appData.sendAppleEvent(name: "exists", event: 0x636f7265_646f6578, // "coredoex"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1509,7 +1511,7 @@ extension ITUCommand {
     @discardableResult public func fastForward(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "fastForward", eventClass: 0x686f6f6b, eventID: 0x46617374, // "hook"/"Fast"
+        return try self.appData.sendAppleEvent(name: "fastForward", event: 0x686f6f6b_46617374, // "hookFast"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1517,7 +1519,7 @@ extension ITUCommand {
     public func fastForward<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "fastForward", eventClass: 0x686f6f6b, eventID: 0x46617374, // "hook"/"Fast"
+        return try self.appData.sendAppleEvent(name: "fastForward", event: 0x686f6f6b_46617374, // "hookFast"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1525,7 +1527,7 @@ extension ITUCommand {
     @discardableResult public func get(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "get", eventClass: 0x636f7265, eventID: 0x67657464, // "core"/"getd"
+        return try self.appData.sendAppleEvent(name: "get", event: 0x636f7265_67657464, // "coregetd"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1533,7 +1535,7 @@ extension ITUCommand {
     public func get<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "get", eventClass: 0x636f7265, eventID: 0x67657464, // "core"/"getd"
+        return try self.appData.sendAppleEvent(name: "get", event: 0x636f7265_67657464, // "coregetd"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1544,7 +1546,7 @@ extension ITUCommand {
             withProperties: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "make", eventClass: 0x636f7265, eventID: 0x6372656c, // "core"/"crel"
+        return try self.appData.sendAppleEvent(name: "make", event: 0x636f7265_6372656c, // "corecrel"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                     ("new", 0x6b6f636c, new), // "kocl"
                     ("at", 0x696e7368, at), // "insh"
@@ -1558,7 +1560,7 @@ extension ITUCommand {
             withProperties: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "make", eventClass: 0x636f7265, eventID: 0x6372656c, // "core"/"crel"
+        return try self.appData.sendAppleEvent(name: "make", event: 0x636f7265_6372656c, // "corecrel"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                     ("new", 0x6b6f636c, new), // "kocl"
                     ("at", 0x696e7368, at), // "insh"
@@ -1570,7 +1572,7 @@ extension ITUCommand {
             to: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "move", eventClass: 0x636f7265, eventID: 0x6d6f7665, // "core"/"move"
+        return try self.appData.sendAppleEvent(name: "move", event: 0x636f7265_6d6f7665, // "coremove"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                     ("to", 0x696e7368, to), // "insh"
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
@@ -1580,7 +1582,7 @@ extension ITUCommand {
             to: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "move", eventClass: 0x636f7265, eventID: 0x6d6f7665, // "core"/"move"
+        return try self.appData.sendAppleEvent(name: "move", event: 0x636f7265_6d6f7665, // "coremove"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                     ("to", 0x696e7368, to), // "insh"
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
@@ -1589,7 +1591,7 @@ extension ITUCommand {
     @discardableResult public func nextTrack(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "nextTrack", eventClass: 0x686f6f6b, eventID: 0x4e657874, // "hook"/"Next"
+        return try self.appData.sendAppleEvent(name: "nextTrack", event: 0x686f6f6b_4e657874, // "hookNext"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1597,7 +1599,7 @@ extension ITUCommand {
     public func nextTrack<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "nextTrack", eventClass: 0x686f6f6b, eventID: 0x4e657874, // "hook"/"Next"
+        return try self.appData.sendAppleEvent(name: "nextTrack", event: 0x686f6f6b_4e657874, // "hookNext"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1605,7 +1607,7 @@ extension ITUCommand {
     @discardableResult public func open(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "open", eventClass: 0x61657674, eventID: 0x6f646f63, // "aevt"/"odoc"
+        return try self.appData.sendAppleEvent(name: "open", event: 0x61657674_6f646f63, // "aevtodoc"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1613,7 +1615,7 @@ extension ITUCommand {
     public func open<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "open", eventClass: 0x61657674, eventID: 0x6f646f63, // "aevt"/"odoc"
+        return try self.appData.sendAppleEvent(name: "open", event: 0x61657674_6f646f63, // "aevtodoc"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1621,7 +1623,7 @@ extension ITUCommand {
     @discardableResult public func openLocation(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "openLocation", eventClass: 0x4755524c, eventID: 0x4755524c, // "GURL"/"GURL"
+        return try self.appData.sendAppleEvent(name: "openLocation", event: 0x4755524c_4755524c, // "GURLGURL"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1629,7 +1631,7 @@ extension ITUCommand {
     public func openLocation<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "openLocation", eventClass: 0x4755524c, eventID: 0x4755524c, // "GURL"/"GURL"
+        return try self.appData.sendAppleEvent(name: "openLocation", event: 0x4755524c_4755524c, // "GURLGURL"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1637,7 +1639,7 @@ extension ITUCommand {
     @discardableResult public func pause(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "pause", eventClass: 0x686f6f6b, eventID: 0x50617573, // "hook"/"Paus"
+        return try self.appData.sendAppleEvent(name: "pause", event: 0x686f6f6b_50617573, // "hookPaus"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1645,7 +1647,7 @@ extension ITUCommand {
     public func pause<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "pause", eventClass: 0x686f6f6b, eventID: 0x50617573, // "hook"/"Paus"
+        return try self.appData.sendAppleEvent(name: "pause", event: 0x686f6f6b_50617573, // "hookPaus"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1654,7 +1656,7 @@ extension ITUCommand {
             once: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "play", eventClass: 0x686f6f6b, eventID: 0x506c6179, // "hook"/"Play"
+        return try self.appData.sendAppleEvent(name: "play", event: 0x686f6f6b_506c6179, // "hookPlay"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                     ("once", 0x504f6e65, once), // "POne"
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
@@ -1664,7 +1666,7 @@ extension ITUCommand {
             once: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "play", eventClass: 0x686f6f6b, eventID: 0x506c6179, // "hook"/"Play"
+        return try self.appData.sendAppleEvent(name: "play", event: 0x686f6f6b_506c6179, // "hookPlay"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                     ("once", 0x504f6e65, once), // "POne"
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
@@ -1673,7 +1675,7 @@ extension ITUCommand {
     @discardableResult public func playpause(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "playpause", eventClass: 0x686f6f6b, eventID: 0x506c5073, // "hook"/"PlPs"
+        return try self.appData.sendAppleEvent(name: "playpause", event: 0x686f6f6b_506c5073, // "hookPlPs"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1681,7 +1683,7 @@ extension ITUCommand {
     public func playpause<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "playpause", eventClass: 0x686f6f6b, eventID: 0x506c5073, // "hook"/"PlPs"
+        return try self.appData.sendAppleEvent(name: "playpause", event: 0x686f6f6b_506c5073, // "hookPlPs"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1689,7 +1691,7 @@ extension ITUCommand {
     @discardableResult public func previousTrack(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "previousTrack", eventClass: 0x686f6f6b, eventID: 0x50726576, // "hook"/"Prev"
+        return try self.appData.sendAppleEvent(name: "previousTrack", event: 0x686f6f6b_50726576, // "hookPrev"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1697,7 +1699,7 @@ extension ITUCommand {
     public func previousTrack<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "previousTrack", eventClass: 0x686f6f6b, eventID: 0x50726576, // "hook"/"Prev"
+        return try self.appData.sendAppleEvent(name: "previousTrack", event: 0x686f6f6b_50726576, // "hookPrev"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1709,7 +1711,7 @@ extension ITUCommand {
             theme: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "print", eventClass: 0x61657674, eventID: 0x70646f63, // "aevt"/"pdoc"
+        return try self.appData.sendAppleEvent(name: "print", event: 0x61657674_70646f63, // "aevtpdoc"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                     ("printDialog", 0x70646c67, printDialog), // "pdlg"
                     ("withProperties", 0x70726474, withProperties), // "prdt"
@@ -1725,7 +1727,7 @@ extension ITUCommand {
             theme: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "print", eventClass: 0x61657674, eventID: 0x70646f63, // "aevt"/"pdoc"
+        return try self.appData.sendAppleEvent(name: "print", event: 0x61657674_70646f63, // "aevtpdoc"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                     ("printDialog", 0x70646c67, printDialog), // "pdlg"
                     ("withProperties", 0x70726474, withProperties), // "prdt"
@@ -1737,7 +1739,7 @@ extension ITUCommand {
     @discardableResult public func quit(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "quit", eventClass: 0x61657674, eventID: 0x71756974, // "aevt"/"quit"
+        return try self.appData.sendAppleEvent(name: "quit", event: 0x61657674_71756974, // "aevtquit"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1745,7 +1747,7 @@ extension ITUCommand {
     public func quit<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "quit", eventClass: 0x61657674, eventID: 0x71756974, // "aevt"/"quit"
+        return try self.appData.sendAppleEvent(name: "quit", event: 0x61657674_71756974, // "aevtquit"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1753,7 +1755,7 @@ extension ITUCommand {
     @discardableResult public func refresh(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "refresh", eventClass: 0x686f6f6b, eventID: 0x52667273, // "hook"/"Rfrs"
+        return try self.appData.sendAppleEvent(name: "refresh", event: 0x686f6f6b_52667273, // "hookRfrs"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1761,7 +1763,7 @@ extension ITUCommand {
     public func refresh<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "refresh", eventClass: 0x686f6f6b, eventID: 0x52667273, // "hook"/"Rfrs"
+        return try self.appData.sendAppleEvent(name: "refresh", event: 0x686f6f6b_52667273, // "hookRfrs"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1769,7 +1771,7 @@ extension ITUCommand {
     @discardableResult public func reopen(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "reopen", eventClass: 0x61657674, eventID: 0x72617070, // "aevt"/"rapp"
+        return try self.appData.sendAppleEvent(name: "reopen", event: 0x61657674_72617070, // "aevtrapp"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1777,7 +1779,7 @@ extension ITUCommand {
     public func reopen<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "reopen", eventClass: 0x61657674, eventID: 0x72617070, // "aevt"/"rapp"
+        return try self.appData.sendAppleEvent(name: "reopen", event: 0x61657674_72617070, // "aevtrapp"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1785,7 +1787,7 @@ extension ITUCommand {
     @discardableResult public func resume(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "resume", eventClass: 0x686f6f6b, eventID: 0x52657375, // "hook"/"Resu"
+        return try self.appData.sendAppleEvent(name: "resume", event: 0x686f6f6b_52657375, // "hookResu"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1793,7 +1795,7 @@ extension ITUCommand {
     public func resume<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "resume", eventClass: 0x686f6f6b, eventID: 0x52657375, // "hook"/"Resu"
+        return try self.appData.sendAppleEvent(name: "resume", event: 0x686f6f6b_52657375, // "hookResu"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1801,7 +1803,7 @@ extension ITUCommand {
     @discardableResult public func reveal(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "reveal", eventClass: 0x686f6f6b, eventID: 0x5265766c, // "hook"/"Revl"
+        return try self.appData.sendAppleEvent(name: "reveal", event: 0x686f6f6b_5265766c, // "hookRevl"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1809,7 +1811,7 @@ extension ITUCommand {
     public func reveal<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "reveal", eventClass: 0x686f6f6b, eventID: 0x5265766c, // "hook"/"Revl"
+        return try self.appData.sendAppleEvent(name: "reveal", event: 0x686f6f6b_5265766c, // "hookRevl"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1817,7 +1819,7 @@ extension ITUCommand {
     @discardableResult public func rewind(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "rewind", eventClass: 0x686f6f6b, eventID: 0x52776e64, // "hook"/"Rwnd"
+        return try self.appData.sendAppleEvent(name: "rewind", event: 0x686f6f6b_52776e64, // "hookRwnd"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1825,7 +1827,7 @@ extension ITUCommand {
     public func rewind<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "rewind", eventClass: 0x686f6f6b, eventID: 0x52776e64, // "hook"/"Rwnd"
+        return try self.appData.sendAppleEvent(name: "rewind", event: 0x686f6f6b_52776e64, // "hookRwnd"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1833,7 +1835,7 @@ extension ITUCommand {
     @discardableResult public func run(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "run", eventClass: 0x61657674, eventID: 0x6f617070, // "aevt"/"oapp"
+        return try self.appData.sendAppleEvent(name: "run", event: 0x61657674_6f617070, // "aevtoapp"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1841,7 +1843,7 @@ extension ITUCommand {
     public func run<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "run", eventClass: 0x61657674, eventID: 0x6f617070, // "aevt"/"oapp"
+        return try self.appData.sendAppleEvent(name: "run", event: 0x61657674_6f617070, // "aevtoapp"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1849,7 +1851,7 @@ extension ITUCommand {
     @discardableResult public func save(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "save", eventClass: 0x636f7265, eventID: 0x73617665, // "core"/"save"
+        return try self.appData.sendAppleEvent(name: "save", event: 0x636f7265_73617665, // "coresave"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1857,7 +1859,7 @@ extension ITUCommand {
     public func save<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "save", eventClass: 0x636f7265, eventID: 0x73617665, // "core"/"save"
+        return try self.appData.sendAppleEvent(name: "save", event: 0x636f7265_73617665, // "coresave"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1867,7 +1869,7 @@ extension ITUCommand {
             only: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "search", eventClass: 0x686f6f6b, eventID: 0x53726368, // "hook"/"Srch"
+        return try self.appData.sendAppleEvent(name: "search", event: 0x686f6f6b_53726368, // "hookSrch"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                     ("for_", 0x7054726d, for_), // "pTrm"
                     ("only", 0x70417265, only), // "pAre"
@@ -1879,7 +1881,7 @@ extension ITUCommand {
             only: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "search", eventClass: 0x686f6f6b, eventID: 0x53726368, // "hook"/"Srch"
+        return try self.appData.sendAppleEvent(name: "search", event: 0x686f6f6b_53726368, // "hookSrch"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                     ("for_", 0x7054726d, for_), // "pTrm"
                     ("only", 0x70417265, only), // "pAre"
@@ -1889,7 +1891,7 @@ extension ITUCommand {
     @discardableResult public func select(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "select", eventClass: 0x6d697363, eventID: 0x736c6374, // "misc"/"slct"
+        return try self.appData.sendAppleEvent(name: "select", event: 0x6d697363_736c6374, // "miscslct"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1897,7 +1899,7 @@ extension ITUCommand {
     public func select<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "select", eventClass: 0x6d697363, eventID: 0x736c6374, // "misc"/"slct"
+        return try self.appData.sendAppleEvent(name: "select", event: 0x6d697363_736c6374, // "miscslct"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1906,7 +1908,7 @@ extension ITUCommand {
             to: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "set", eventClass: 0x636f7265, eventID: 0x73657464, // "core"/"setd"
+        return try self.appData.sendAppleEvent(name: "set", event: 0x636f7265_73657464, // "coresetd"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                     ("to", 0x64617461, to), // "data"
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
@@ -1916,7 +1918,7 @@ extension ITUCommand {
             to: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "set", eventClass: 0x636f7265, eventID: 0x73657464, // "core"/"setd"
+        return try self.appData.sendAppleEvent(name: "set", event: 0x636f7265_73657464, // "coresetd"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                     ("to", 0x64617461, to), // "data"
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
@@ -1925,7 +1927,7 @@ extension ITUCommand {
     @discardableResult public func stop(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "stop", eventClass: 0x686f6f6b, eventID: 0x53746f70, // "hook"/"Stop"
+        return try self.appData.sendAppleEvent(name: "stop", event: 0x686f6f6b_53746f70, // "hookStop"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1933,7 +1935,7 @@ extension ITUCommand {
     public func stop<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "stop", eventClass: 0x686f6f6b, eventID: 0x53746f70, // "hook"/"Stop"
+        return try self.appData.sendAppleEvent(name: "stop", event: 0x686f6f6b_53746f70, // "hookStop"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1941,7 +1943,7 @@ extension ITUCommand {
     @discardableResult public func subscribe(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "subscribe", eventClass: 0x686f6f6b, eventID: 0x70537562, // "hook"/"pSub"
+        return try self.appData.sendAppleEvent(name: "subscribe", event: 0x686f6f6b_70537562, // "hookpSub"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1949,7 +1951,7 @@ extension ITUCommand {
     public func subscribe<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "subscribe", eventClass: 0x686f6f6b, eventID: 0x70537562, // "hook"/"pSub"
+        return try self.appData.sendAppleEvent(name: "subscribe", event: 0x686f6f6b_70537562, // "hookpSub"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1957,7 +1959,7 @@ extension ITUCommand {
     @discardableResult public func update(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "update", eventClass: 0x686f6f6b, eventID: 0x55706474, // "hook"/"Updt"
+        return try self.appData.sendAppleEvent(name: "update", event: 0x686f6f6b_55706474, // "hookUpdt"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1965,7 +1967,7 @@ extension ITUCommand {
     public func update<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "update", eventClass: 0x686f6f6b, eventID: 0x55706474, // "hook"/"Updt"
+        return try self.appData.sendAppleEvent(name: "update", event: 0x686f6f6b_55706474, // "hookUpdt"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1973,7 +1975,7 @@ extension ITUCommand {
     @discardableResult public func updateAllPodcasts(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "updateAllPodcasts", eventClass: 0x686f6f6b, eventID: 0x55706470, // "hook"/"Updp"
+        return try self.appData.sendAppleEvent(name: "updateAllPodcasts", event: 0x686f6f6b_55706470, // "hookUpdp"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1981,7 +1983,7 @@ extension ITUCommand {
     public func updateAllPodcasts<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "updateAllPodcasts", eventClass: 0x686f6f6b, eventID: 0x55706470, // "hook"/"Updp"
+        return try self.appData.sendAppleEvent(name: "updateAllPodcasts", event: 0x686f6f6b_55706470, // "hookUpdp"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1989,7 +1991,7 @@ extension ITUCommand {
     @discardableResult public func updatePodcast(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> Any {
-        return try self.appData.sendAppleEvent(name: "updatePodcast", eventClass: 0x686f6f6b, eventID: 0x55706431, // "hook"/"Upd1"
+        return try self.appData.sendAppleEvent(name: "updatePodcast", event: 0x686f6f6b_55706431, // "hookUpd1"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -1997,7 +1999,7 @@ extension ITUCommand {
     public func updatePodcast<T>(_ directParameter: Any = SwiftAutomation.NoParameter,
             requestedType: SwiftAutomation.Symbol? = nil, waitReply: Bool = true, sendOptions: SwiftAutomation.SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: SwiftAutomation.ConsideringOptions? = nil) throws -> T {
-        return try self.appData.sendAppleEvent(name: "updatePodcast", eventClass: 0x686f6f6b, eventID: 0x55706431, // "hook"/"Upd1"
+        return try self.appData.sendAppleEvent(name: "updatePodcast", event: 0x686f6f6b_55706431, // "hookUpd1"
                 parentSpecifier: (self as! SwiftAutomation.Specifier), directParameter: directParameter, keywordParameters: [
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
@@ -2008,7 +2010,7 @@ extension ITUCommand {
 public protocol ITUObject: SwiftAutomation.ObjectSpecifierExtension, ITUCommand {} // provides vars and methods for constructing specifiers
 
 extension ITUObject {
-    
+
     // Properties
     public var active: ITUItem {return self.property(0x70416374) as! ITUItem} // "pAct"
     public var address: ITUItem {return self.property(0x7055524c) as! ITUItem} // "pURL"
@@ -2074,7 +2076,7 @@ extension ITUObject {
     public var episodeID: ITUItem {return self.property(0x70457044) as! ITUItem} // "pEpD"
     public var episodeNumber: ITUItem {return self.property(0x7045704e) as! ITUItem} // "pEpN"
     public var EQ: ITUItem {return self.property(0x70455170) as! ITUItem} // "pEQp"
-    public var EQEnabled: ITUItem {return self.property(0x70455120) as! ITUItem} // "pEQ\0x20"
+    public var EQEnabled: ITUItem {return self.property(0x70455120) as! ITUItem} // "pEQ "
     public var errorHandling: ITUItem {return self.property(0x6c776568) as! ITUItem} // "lweh"
     public var faxNumber: ITUItem {return self.property(0x6661786e) as! ITUItem} // "faxn"
     public var finish: ITUItem {return self.property(0x70537470) as! ITUItem} // "pStp"
@@ -2087,7 +2089,7 @@ extension ITUObject {
     public var genius: ITUItem {return self.property(0x70476e73) as! ITUItem} // "pGns"
     public var genre: ITUItem {return self.property(0x7047656e) as! ITUItem} // "pGen"
     public var grouping: ITUItem {return self.property(0x70477270) as! ITUItem} // "pGrp"
-    public var id: ITUItem {return self.property(0x49442020) as! ITUItem} // "ID\0x20\0x20"
+    public var id: ITUItem {return self.property(0x49442020) as! ITUItem} // "ID  "
     public var index: ITUItem {return self.property(0x70696478) as! ITUItem} // "pidx"
     public var kind: ITUItem {return self.property(0x704b6e64) as! ITUItem} // "pKnd"
     public var location: ITUItem {return self.property(0x704c6f63) as! ITUItem} // "pLoc"
@@ -2165,7 +2167,7 @@ extension ITUObject {
     public var visualSize: ITUItem {return self.property(0x7056537a) as! ITUItem} // "pVSz"
     public var volumeAdjustment: ITUItem {return self.property(0x7041646a) as! ITUItem} // "pAdj"
     public var work: ITUItem {return self.property(0x7057726b) as! ITUItem} // "pWrk"
-    public var year: ITUItem {return self.property(0x70597220) as! ITUItem} // "pYr\0x20"
+    public var year: ITUItem {return self.property(0x70597220) as! ITUItem} // "pYr "
     public var zoomable: ITUItem {return self.property(0x69737a6d) as! ITUItem} // "iszm"
     public var zoomed: ITUItem {return self.property(0x707a756d) as! ITUItem} // "pzum"
 
@@ -2243,7 +2245,6 @@ public let ITUIts = _untargetedAppData.its as! ITURoot
 // Static types
 
 public typealias ITURecord = [ITUSymbol:Any] // default Swift type for AERecordDescs
-
 
 
 

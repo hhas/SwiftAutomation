@@ -26,9 +26,9 @@ func sendEvent(_ event: AppleEventDescriptor) -> (ReplyEventDescriptor?, Int) {
         let err = Int(AEUnflattenDesc(ptr.baseAddress, &event))
         if err != 0 { fatalError("AEUnflattenDesc error \(err), presumably caused by malformed Descriptor.flatten() output.") }
         let err2 = Int(AESendMessage(&event, &reply, 0x73, 120*60))
-        let nsdesc = NSAppleEventDescriptor(aeDescNoCopy: &event)
-        print("TO PROCESS:", nsdesc.attributeDescriptor(forKeyword: AppleEvents.keyAddressAttr) as Any)
-        print("SENT EVENT:", nsdesc)
+//        let nsdesc = NSAppleEventDescriptor(aeDescNoCopy: &event)
+//        print("TO PROCESS:", nsdesc.attributeDescriptor(forKeyword: AppleEvents.keyAddressAttr) as Any)
+//        print("SENT EVENT:", nsdesc)
         return err2
     }
     if err != 0 {
@@ -42,8 +42,8 @@ func sendEvent(_ event: AppleEventDescriptor) -> (ReplyEventDescriptor?, Int) {
     let data2 = Data(bytesNoCopy: ptr, count: size, deallocator: .none)
     //dumpFourCharData(data2)
     if reply.descriptorType == AppleEvents.typeNull { return (nil, 0) } // TO DO: if kAENoReply is used then null descriptor is returned
-    print("REPLY EVENT:", NSAppleEventDescriptor(aeDescNoCopy: &reply))
-    return ((unflattenDescriptor(data2) as! ReplyEventDescriptor), 0) // unflattenDescriptor currently raises fatalError if it fails
+//    print("REPLY EVENT:", NSAppleEventDescriptor(aeDescNoCopy: &reply))
+    return ((AppleEvents.unflattenDescriptor(data2) as! ReplyEventDescriptor), 0) // unflattenDescriptor currently raises fatalError if it fails
 }
 
 
@@ -299,7 +299,7 @@ open class AppData {
         }
         // desc couldn't be coerced to the specified type
         let symbol = self.glueClasses.symbolType.symbol(code: desc.type)
-        let typeName = symbol.name ?? formatFourCharCodeLiteral(symbol.code)
+        let typeName = symbol.name ?? literalFourCharCode(symbol.code)
         throw UnpackError(appData: self, desc: desc, type: T.self, message: "Can't coerce \(typeName) descriptor to \(T.self).")
     }
     
@@ -307,7 +307,7 @@ open class AppData {
     /******************************************************************************/
     // Convert an Apple event descriptor to its preferred Swift type, as determined by its descriptorType
     
-    open func unpackAsAny(_ desc: Descriptor) throws -> Any { // note: this never returns Optionals (i.e. cMissingValue AEDescs always unpack as MissingValue when return type is Any) to avoid dropping user into Optional<T>.some(Optional<U>.none) hell.
+    open func unpackAsAny(_ desc: AppleEvents.Descriptor) throws -> Any { // note: this never returns Optionals (i.e. cMissingValue AEDescs always unpack as MissingValue when return type is Any) to avoid dropping user into Optional<T>.some(Optional<U>.none) hell.
         switch desc.type {
         case AppleEvents.typeAERecord:
             return try Dictionary.SwiftAutomation_unpackSelf(desc, appData: self) as [Symbol:Any]
@@ -359,7 +359,7 @@ open class AppData {
     }
     
     func unpackAsInsertionLoc(_ desc: Descriptor) throws -> Specifier {
-        guard let descriptor = desc as? AppleEvents.InsertionLocation else {
+        guard let descriptor = desc as? InsertionLocationDescriptor else {
             throw UnpackError(appData: self, desc: desc, type: self.glueClasses.insertionSpecifierType,
                               message: "Can't unpack malformed insertion specifier.")
         }
@@ -374,7 +374,7 @@ open class AppData {
     
     
     func unpackAsObjectSpecifier(_ desc: Descriptor) throws -> Specifier {
-        guard let descriptor = desc as? AppleEvents.ObjectSpecifier else {
+        guard let descriptor = desc as? ObjectSpecifierDescriptor else {
             throw UnpackError(appData: self, desc: desc, type: self.glueClasses.objectSpecifierType,
                               message: "Can't unpack malformed object specifier.")
         }
@@ -409,7 +409,7 @@ open class AppData {
             case .range: // by-range = one-to-many relationship
                 objectSpecifierClass = self.glueClasses.multiObjectSpecifierType
                 guard selectorDesc.type == AppleEvents.typeRangeDescriptor,
-                    let rangeDesc = selectorDesc as? AppleEvents.ObjectSpecifier.RangeDescriptor else {
+                    let rangeDesc = selectorDesc as? ObjectSpecifierDescriptor.RangeDescriptor else {
                         throw UnpackError(appData: self, desc: desc, type: RangeSelector.self,
                                           message: "Malformed selector in by-range specifier.")
                 }
@@ -473,14 +473,18 @@ open class AppData {
         return self._targetDescriptor
     }
     
-    public func permissionToAutomate(eventClass: AEEventClass, eventID: AEEventID, askUserIfNeeded: Bool = true) -> Int {
+    public func permissionToAutomate(event: EventIdentifier, askUserIfNeeded: Bool = true) -> Int { // in theory, eventClass or eventID could be a wildcard, but we're really only interested in the events we send, which are EventIdentifiers
+        #if canImport(AppKit)
         if #available(OSX 10.14, *) {
-            // TO DO: AEDeterminePermissionToAutomateTarget?
+            // TO DO: convert AddressDescriptor to AEAddressDesc
             //guard var desc = self._targetDescriptor else { return procNotFound }
             return 0 // return Int(AEDeterminePermissionToAutomateTarget(&desc, eventClass, eventID, askUserIfNeeded))
         } else {
             return 0
         }
+        #else
+        return 0
+        #endif
     }
     
     /******************************************************************************/
@@ -491,10 +495,9 @@ open class AppData {
     let nullReplyEvent = AppleEvents.ReplyEventDescriptor(code:0) // TO DO: this is not ideal; it'd be safer to return something completely immutable
     
     // if target process is no longer running, Apple Event Manager will return an error when an event is sent to it
-    let RelaunchableErrorCodes: Set<Int> = [-600, -609]
-    // if relaunchMode = .Limited, only 'launch' and 'run' are allowed to restart a local application that's been quit
-    let LimitedRelaunchEvents: [(OSType,OSType)] = [(AppleEvents.kCoreEventClass, AppleEvents.kAEOpenApplication),
-                                                    (AppleEvents.kASAppleScriptSuite, AppleEvents.kASLaunchEvent)]
+    let relaunchableErrors: Set<Int> = [-600, -609]
+    // if relaunchMode = .limited, only 'launch' and 'run' are allowed to restart a local application that's been quit
+    let relaunchableEvents: Set<EventIdentifier> = [AppleEvents.eventOpenApplication, AppleEvents.miscEventLaunch]
     
     private func send(event: AppleEventDescriptor, sendMode: SendOptions, timeout: TimeInterval) throws -> ReplyEventDescriptor { // used by sendAppleEvent()
         
@@ -512,28 +515,27 @@ open class AppData {
     }
     
     
-    public func sendAppleEvent<T>(name: String?, eventClass: OSType, eventID: OSType,
+    public func sendAppleEvent<T>(name: String?, event eventIdentifier: EventIdentifier,
                                   parentSpecifier: Specifier, // the Specifier on which the command method was called; see special-case packing logic below
-        directParameter: Any = NoParameter, // the first (unnamed) parameter to the command method; see special-case packing logic below
-        keywordParameters: [KeywordParameter] = [], // the remaining named parameters
-        requestedType: Symbol? = nil, // event's `as` parameter, if any (note: while a `keyAERequestedType` parameter can be supplied via `keywordParameters:`, it will be ignored if `requestedType:` is given)
-        waitReply: Bool = true, // wait for application to respond before returning?
-        sendOptions: SendOptions? = nil, // raw send options (these are rarely needed); if given, `waitReply:` is ignored
-        withTimeout: TimeInterval? = nil, // no. of seconds to wait before raising timeout error (-1712); may also be default/never
-        considering: ConsideringOptions? = nil) throws -> T { // coerce and unpack result as this type or return raw reply event if T is NSDescriptor; default is Any
+                                  directParameter: Any = NoParameter, // the first (unnamed) parameter to the command method; see special-case packing logic below
+                                  keywordParameters: [KeywordParameter] = [], // the remaining named parameters
+                                  requestedType: Symbol? = nil, // event's `as` parameter, if any (note: while a `keyAERequestedType` parameter can be supplied via `keywordParameters:`, it will be ignored if `requestedType:` is given)
+                                  waitReply: Bool = true, // wait for application to respond before returning?
+                                  sendOptions: SendOptions? = nil, // raw send options (these are rarely needed); if given, `waitReply:` is ignored
+                                  withTimeout: TimeInterval? = nil, // no. of seconds to wait before raising timeout error (-1712); may also be default/never
+                                  considering: ConsideringOptions? = nil) throws -> T { // coerce and unpack result as this type or return raw reply event if T is NSDescriptor; default is Any
         // note: human-readable command and parameter names are only used (if known) in error messages
         // note: all errors occurring within this method are caught and rethrown as CommandError, allowing error message to provide a description of the failed command as well as the error itself
         var sentEvent: AppleEventDescriptor?, repliedEvent: ReplyEventDescriptor?
         do {
             // Create a new AppleEvent descriptor (throws ConnectionError if target app isn't found)
-            var event = AppleEventDescriptor(code: eventIdentifier(eventClass, eventID),
-                                             target: try self.targetDescriptor())
+            var event = AppleEventDescriptor(code: eventIdentifier, target: try self.targetDescriptor())
             // pack its keyword parameters
             for (paramName, code, value) in keywordParameters where isParameter(value) {
                 do {
                     event.setParameter(code, to: try self.pack(value))
                 } catch {
-                    throw AutomationError(code: error._code, message: "Invalid \(paramName ?? formatFourCharCodeLiteral(code)) parameter.", cause: error)
+                    throw AutomationError(code: error._code, message: "Invalid \(paramName ?? literalFourCharCode(code)) parameter.", cause: error)
                 }
             }
             // pack event's direct parameter and/or subject attribute
@@ -542,22 +544,22 @@ open class AppData {
                 event.setParameter(AppleEvents.keyDirectObject, to: try self.pack(directParameter))
             }
             // if command method was called on root Application (null) object, the event's subject is also null...
-            var subjectDesc: AppleEvents.QueryDescriptor = AppRootDesc
+            var subjectDesc: QueryDescriptor = AppRootDesc
             // ... but if the command was called on a Specifier, decide if that specifier should be packed as event's subject
             // or, as a special case, used as event's keyDirectObject/keyAEInsertHere parameter for user's convenience
             if !(parentSpecifier is RootSpecifier) { // technically Application, but there isn't an explicit class for that
-                if eventClass == AppleEvents.kAECoreSuite && eventID == AppleEvents.kAECreateElement { // for user's convenience, `make` command is treated as a special case
+                if eventIdentifier == AppleEvents.coreEventCreateElement { // for user's convenience, `make` command is treated as a special case
                     // if `make` command is called on a specifier, use that specifier as event's `at` parameter if not already given
                     if event.parameter(AppleEvents.keyAEInsertHere) != nil { // an `at` parameter was already given, so pack parent specifier as event's subject attribute
                         let desc = try self.pack(parentSpecifier)
-                        subjectDesc = (desc as? AppleEvents.QueryDescriptor) ?? AppleEvents.RootSpecifier(desc)
+                        subjectDesc = (desc as? QueryDescriptor) ?? RootSpecifierDescriptor(desc)
                     } else { // else pack parent specifier as event's `at` parameter and use null as event's subject attribute
                         event.setParameter(AppleEvents.keyAEInsertHere, to: try self.pack(parentSpecifier))
                     }
                 } else { // for all other commands, check if a direct parameter was already given
                     if hasDirectParameter { // pack the parent specifier as the event's subject attribute
                         let desc = try self.pack(parentSpecifier)
-                        subjectDesc = (desc as? AppleEvents.QueryDescriptor) ?? AppleEvents.RootSpecifier(desc)
+                        subjectDesc = (desc as? QueryDescriptor) ?? RootSpecifierDescriptor(desc)
                     } else { // else pack parent specifier as event's direct parameter and use null as event's subject attribute
                         event.setParameter(AppleEvents.keyDirectObject, to: try self.pack(parentSpecifier))
                     }
@@ -582,11 +584,12 @@ open class AppData {
             do {
                 replyEvent = try self.send(event: event, sendMode: sendMode, timeout: timeout) // throws on AEM error
             } catch { // handle errors raised by Apple Event Manager (e.g. timeout, process not found)
-                if RelaunchableErrorCodes.contains(error._code) && self.target.isRelaunchable && (self.relaunchMode == .always
-                    || (self.relaunchMode == .limited && LimitedRelaunchEvents.contains(where: {$0.0 == eventClass && $0.1 == eventID}))) {
+                if relaunchableErrors.contains(error._code) && self.target.isRelaunchable &&
+                    (self.relaunchMode == .always || (self.relaunchMode == .limited && relaunchableEvents.contains(eventIdentifier))) {
                     // event failed as target process has quit since previous event; recreate AppleEvent with new address and resend
                     self._targetDescriptor = nil
-                    event.setAttribute(AppleEvents.keyAddressAttr, to: try self.targetDescriptor()!)
+                    guard let target = try self.targetDescriptor() else { throw error }
+                    event.target = target
                     replyEvent = try self.send(event: event, sendMode: sendMode, timeout: timeout)
                 } else {
                     throw error
@@ -615,7 +618,7 @@ open class AppData {
             }
             throw AutomationError(code: defaultErrorCode, message: "Caller requested \(T.self) result but application didn't return anything.")
         } catch {
-            let commandDescription = CommandDescription(name: name, eventClass: eventClass, eventID: eventID,
+            let commandDescription = CommandDescription(name: name, event: eventIdentifier,
                                                         parentSpecifier: parentSpecifier,
                                                         directParameter: directParameter,
                                                         keywordParameters: keywordParameters,
@@ -628,13 +631,13 @@ open class AppData {
     
     // convenience shortcut for dispatching events using raw OSType codes only (the above method also requires human-readable command and parameter names to be supplied for error reporting purposes); users should call this via one of the `sendAppleEvent` methods on `AEApplication`/`AEItem`
     
-    public func sendAppleEvent<T>(eventClass: OSType, eventID: OSType, parentSpecifier: Specifier, parameters: [OSType:Any] = [:],
+    public func sendAppleEvent<T>(event: EventIdentifier, parentSpecifier: Specifier, parameters: [OSType:Any] = [:],
                                   requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
                                   withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
         var parameters = parameters
         let directParameter = parameters.removeValue(forKey: AppleEvents.keyDirectObject) ?? NoParameter
         let keywordParameters: [KeywordParameter] = parameters.map({(name: nil, code: $0, value: $1)})
-        return try self.sendAppleEvent(name: nil, eventClass: eventClass, eventID: eventID, parentSpecifier: parentSpecifier,
+        return try self.sendAppleEvent(name: nil, event: event, parentSpecifier: parentSpecifier,
                                        directParameter: directParameter, keywordParameters: keywordParameters,
                                        requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                                        withTimeout: withTimeout, considering: considering)
@@ -656,7 +659,7 @@ open class AppData {
             pthread_mutex_destroy(&mutex)
         }
         assert(self._transactionID == AETransactionID(kAnyTransactionID), "Transaction \(self._transactionID) already active.")
-        self._transactionID = try self.sendAppleEvent(name: nil, eventClass: AppleEvents.kAEMiscStandards, eventID: AppleEvents.kAEBeginTransaction,
+        self._transactionID = try self.sendAppleEvent(name: nil, event: AppleEvents.miscEventBeginTransaction,
                                                       parentSpecifier: AEApp, directParameter: session as Any) as AETransactionID
         defer {
             self._transactionID = AETransactionID(kAnyTransactionID)
@@ -665,11 +668,11 @@ open class AppData {
         do {
             result = try closure()
         } catch { // abort transaction, then rethrow closure error
-            let _ = try? self.sendAppleEvent(name: nil, eventClass: AppleEvents.kAEMiscStandards, eventID: AppleEvents.kAETransactionTerminated,
+            let _ = try? self.sendAppleEvent(name: nil, event: AppleEvents.miscEventTransactionTerminated,
                                              parentSpecifier: AEApp) as Any
             throw error
         } // else end transaction
-        let _ = try self.sendAppleEvent(name: nil, eventClass: AppleEvents.kAEMiscStandards, eventID: AppleEvents.kAEEndTransaction,
+        let _ = try self.sendAppleEvent(name: nil, event: AppleEvents.miscEventEndTransaction,
                                         parentSpecifier: AEApp) as Any
         return result
     }
@@ -720,7 +723,7 @@ public struct CommandDescription {
     // note: even when terminology data is available, there's still no guarantee that a command won't have to use raw codes instead (typically due to dodgy terminology; while AS allows mixing of keyword and raw chevron syntax in the same command, it's such a rare defect it's best to stick solely to one or the other)
     public enum Signature {
         case named(name: String, directParameter: Any, keywordParameters: [(String, Any)], requestedType: Symbol?)
-        case codes(eventClass: OSType, eventID: OSType, parameters: [OSType:Any])
+        case codes(event: EventIdentifier, parameters: [OSType:Any])
     }
     
     // name and parameters
@@ -735,7 +738,7 @@ public struct CommandDescription {
     
     
     // called by sendAppleEvent with a failed command's details
-    public init(name: String?, eventClass: OSType, eventID: OSType, parentSpecifier: Any?,
+    public init(name: String?, event: EventIdentifier, parentSpecifier: Any?,
                 directParameter: Any, keywordParameters: [KeywordParameter],
                 requestedType: Symbol?, waitReply: Bool, withTimeout: TimeInterval?, considering: ConsideringOptions?) {
         if let commandName = name {
@@ -746,7 +749,7 @@ public struct CommandDescription {
             if isParameter(directParameter) { parameters[AppleEvents.keyDirectObject] = directParameter }
             for (_, code, value) in keywordParameters where isParameter(value) { parameters[code] = value }
             if let symbol = requestedType { parameters[AppleEvents.keyAERequestedType] = symbol }
-            self.signature = .codes(eventClass: eventClass, eventID: eventID, parameters: parameters)
+            self.signature = .codes(event: event, parameters: parameters)
         }
         self.waitReply = waitReply
         self.subject = parentSpecifier

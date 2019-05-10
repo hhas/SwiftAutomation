@@ -13,15 +13,6 @@ import AppleEvents
 
 /**********************************************************************/
 
-// kAEInheritedProperties isn't defined in OpenScripting.h
-private let kAEInheritedProperties: OSType = 0x6340235e // 'c@#^'
-
-
-
-internal func unpackFixedSize<T>(_ data: Data) -> T {
-    return data.withUnsafeBytes{ $0.baseAddress!.assumingMemoryBound(to: T.self).pointee } // TO DO: use bindMemory(to:capacity:)? (see also AppleEvents implementation)
-}
-
 
 public class AETEParser: ApplicationTerminology {
     
@@ -77,7 +68,7 @@ public class AETEParser: ApplicationTerminology {
                 try self.parse(item)
             }
         default:
-            throw TerminologyError("An error occurred while parsing AETE. Unsupported descriptor type: \(formatFourCharCodeLiteral(desc.type))")
+            throw TerminologyError("An error occurred while parsing AETE. Unsupported descriptor type: \(literalFourCharCode(desc.type))")
         }
     }
     
@@ -91,19 +82,23 @@ public class AETEParser: ApplicationTerminology {
     
     // read data methods
     
-    private func readFixedSize<T>() -> T {
+    private func readInteger<T: FixedWidthInteger>() -> T {
         let size = MemoryLayout<T>.size
-        let value: T = unpackFixedSize(self.aeteData[self.cursor..<(self.cursor+size)])
+        let value: T = try! decodeFixedWidthInteger(self.aeteData[self.cursor..<(self.cursor+size)])
         self.cursor += size
         return value
     }
     
+    private func byte() -> UInt8 {
+        return self.readInteger()
+    }
+    
     private func short() -> UInt16 { // unsigned short (2 bytes)
-        return self.readFixedSize()
+        return self.readInteger()
     }
     
     private func code() -> OSType { // (4 bytes)
-        return self.readFixedSize() // confirm alignment isn't an issue
+        return self.readInteger() // confirm alignment isn't an issue
         /*
         // can't use aeteData.load() to read OSType as that requires correct 4-byte alignment, but aete is 2-byte…
         let buffer = UnsafeMutableRawPointer.allocate(byteCount: MemoryLayout<OSType>.size,
@@ -117,7 +112,7 @@ public class AETEParser: ApplicationTerminology {
     }
     
     private func string() -> String { // Pascal string (first byte indicates length, followed by 0-255 MacRoman chars)
-        let size = Int(self.readFixedSize() as UInt8)
+        let size = Int(self.byte())
         if size > 0 {
             let result = String(data: self.aeteData[self.cursor..<(self.cursor+size)], encoding: .macOSRoman)!
             self.cursor += size
@@ -136,7 +131,7 @@ public class AETEParser: ApplicationTerminology {
         self.cursor += MemoryLayout<OSType>.size
     }
     private func skipString() {
-        self.cursor += Int(self.readFixedSize() as UInt8)
+        self.cursor += Int(self.byte())
     }
     private func alignCursor() { // realign aete data cursor on even byte after reading strings
         if self.cursor % 2 != 0 {
@@ -190,10 +185,9 @@ public class AETEParser: ApplicationTerminology {
             parameters.append(KeywordTerm(name: self.keywordConverter.convertParameterName(paramName), code: paramCode))
             try self.checkCursor()
         }
-        let commandDef = CommandTerm(name: name, eventClass: classCode, eventID: code, parameters: parameters)
+        let commandDef = CommandTerm(name: name, event: eventIdentifier(classCode, code), parameters: parameters)
         let otherCommandDef: CommandTerm! = self.commandsDict[name]
-        if otherCommandDef == nil || (commandDef.eventClass == otherCommandDef.eventClass
-            && commandDef.eventID == otherCommandDef.eventID) {
+        if otherCommandDef == nil || (commandDef.event == otherCommandDef.event) {
             self.commandsDict[name] = commandDef
         }
     }
@@ -307,7 +301,7 @@ public class AETEParser: ApplicationTerminology {
 extension AEApplication { // extends the built-in Application object with convenience method for getting its AETE resource
 
     public func getAETE() throws -> Descriptor { // caller takes ownership
-        return try self.sendAppleEvent(AppleEvents.kASAppleScriptSuite, AppleEvents.kGetAETE, [AppleEvents.keyDirectObject:0])
+        return try self.sendAppleEvent(AppleEvents.miscEventGetAETE, [AppleEvents.keyDirectObject:0])
     }
 }
 

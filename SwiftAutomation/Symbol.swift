@@ -14,9 +14,6 @@ import AppleEvents
 
 
 
-let noOSType: OSType = 0 // valid OSTypes should always be non-zero, so use 0 rather than nil to indicate omitted OSType, avoiding need for Optional<> boxing/unboxing
-
-
 open class Symbol: Hashable, Equatable, CustomStringConvertible, CustomDebugStringConvertible, CustomReflectable, SelfPacking {
     
     private var desc: ScalarDescriptor
@@ -68,7 +65,7 @@ open class Symbol: Hashable, Equatable, CustomStringConvertible, CustomDebugStri
         if let name = self.name {
             return self.isNameOnly ? "\(self.typeAliasName)(\(name.debugDescription))" : "\(self.typeAliasName).\(name)"
         } else {
-            return "\(self.typeAliasName)(code:\(formatFourCharCodeLiteral(self.code)),type:\(formatFourCharCodeLiteral(self.type)))"
+            return "\(self.typeAliasName)(code:\(literalFourCharCode(self.code)),type:\(literalFourCharCode(self.type)))"
         }
     }
     
