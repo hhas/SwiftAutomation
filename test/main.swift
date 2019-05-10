@@ -41,7 +41,9 @@ do {
 print("\n\n")
 */
 
+/*
 do {
+    // NSNumbers will always pack as Double as the least lossy option
     do {
         let v = try te.appData.pack(true)
         print(v, try te.appData.unpack(v))
@@ -66,7 +68,11 @@ do {
         let v = try te.appData.pack(NSNumber(value: 4.12))
         print(v,try te.appData.unpack(v))
     }
-    
+}
+*/
+
+
+do {
     
     let itunes = ITunes()
     let state: ITU = try itunes.playerState.get()
@@ -86,13 +92,13 @@ do {
     
     print(try TextEdit().documents.text.get())
     
-/*
+
     print("TEST: make new document with properties {text: \"Hello World!\"}")
     let teDoc: TEDItem = try te.make(new: TED.document, withProperties: [TED.text: "Hello World!"])
     print("=> \(teDoc)")
     print("TEST: get text of teDoc")
     print(try teDoc.text.get())
-*/
+
     
     
     

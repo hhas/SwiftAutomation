@@ -77,11 +77,11 @@ open class Query: CustomStringConvertible, CustomDebugStringConvertible, CustomR
     // note: Equatable isn't implemented here as 1. it's rarely necessary to compare two specifiers, and 2. only the target app can know if two queries identify the same object or not, e.g. `Finder().folders["foo"]`, `Finder().desktop.folders["FOO"]`, and `Finder().home.folders["Desktop:Foo"]` all refer to same object (a folder named "foo" on user's desktop) while `Finder.disks["Bar"]` and `Finder.disks["bar"]` do not (since disk names are case-sensitive)
     
     public let appData: AppData
-    internal private(set) var _cachedDescriptor: AppleEvents.Query? // TO DO: caching AppleEvents.Query descriptor doesn't provide much benefit as Query.data property is calculated on each call; would be better to capture result of Query.appendTo(), which is flattened representation ready for appending to parent descriptor's params data
+    internal private(set) var _cachedDescriptor: AppleEvents.QueryDescriptor? // TO DO: caching AppleEvents.QueryDescriptor descriptor doesn't provide much benefit as Query.data property is calculated on each call; would be better to capture result of Query.appendTo(), which is flattened representation ready for appending to parent descriptor's params data
     
     init(appData: AppData, descriptor: Descriptor?) { // descriptor is supplied on unpacking
         self.appData = appData
-        self._cachedDescriptor = descriptor as? AppleEvents.Query
+        self._cachedDescriptor = descriptor as? AppleEvents.QueryDescriptor
     }
     
     // unpacking
@@ -91,7 +91,7 @@ open class Query: CustomStringConvertible, CustomDebugStringConvertible, CustomR
     // packing
     
     public func SwiftAutomation_packSelf(_ appData: AppData) throws -> Descriptor {
-        if self._cachedDescriptor == nil { self._cachedDescriptor = try self._packSelf() as? AppleEvents.Query }
+        if self._cachedDescriptor == nil { self._cachedDescriptor = try self._packSelf() as? AppleEvents.QueryDescriptor }
         return self._cachedDescriptor! // caller takes ownership of returned desc, so copy cached desc
     }
     
@@ -239,7 +239,7 @@ open class InsertionSpecifier: Specifier { // SwiftAutomation_packSelf
     
     override func _packSelf() throws -> Descriptor {
         return InsertionLocation(position: self.position,
-                                 from: try self.parentQuery.SwiftAutomation_packSelf(self.appData) as! AppleEvents.Query) // TO DO
+                                 from: try self.parentQuery.SwiftAutomation_packSelf(self.appData) as! AppleEvents.QueryDescriptor) // TO DO
     }
 }
 
@@ -273,7 +273,7 @@ open class ObjectSpecifier: Specifier, ObjectSpecifierProtocol { // represents p
     }
     
     override func _packSelf() throws -> Descriptor {
-        guard let container = try self.parentQuery.SwiftAutomation_packSelf(self.appData) as? AppleEvents.Query else {
+        guard let container = try self.parentQuery.SwiftAutomation_packSelf(self.appData) as? AppleEvents.QueryDescriptor else {
             throw AppleEventError(code: 1) // TO DO
         }
         let keyData = try self.appData.pack(self.selectorData)
@@ -344,12 +344,12 @@ struct RangeSelector: SelfPacking { // holds data for by-range selectors
         self.wantType = wantType
     }
     
-    private func packSelector(_ selectorData: Any, appData: AppData) throws -> AppleEvents.Query {
+    private func packSelector(_ selectorData: Any, appData: AppData) throws -> AppleEvents.QueryDescriptor {
         switch selectorData {
-        case let desc as AppleEvents.Query: // TO DO: is this needed?
+        case let desc as AppleEvents.QueryDescriptor: // TO DO: is this needed?
             return desc
         case let specifier as Specifier: // technically, only ObjectSpecifier makes sense here, tho AS prob. doesn't prevent insertion loc or multi-element specifier being passed instead
-            return try specifier.SwiftAutomation_packSelf(appData) as! AppleEvents.Query
+            return try specifier.SwiftAutomation_packSelf(appData) as! AppleEvents.QueryDescriptor
         default: // pack anything else as a by-name or by-index specifier
             let form: ObjectSpecifier.Form = selectorData is String ? .name : .absolutePosition
             let seld = try appData.pack(selectorData) // TO DO: disposal
@@ -403,7 +403,7 @@ public class ComparisonTest: TestClause {
     }
     
     override func _packSelf() throws -> Descriptor {
-        return AppleEvents.ComparisonDescriptor(object: try self.appData.pack(self.operand1) as! AppleEvents.Query,
+        return AppleEvents.ComparisonDescriptor(object: try self.appData.pack(self.operand1) as! AppleEvents.QueryDescriptor,
                                                 comparison: self.operatorType,
                                                 value: try self.appData.pack(self.operand2))
     }

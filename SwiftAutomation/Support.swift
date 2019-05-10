@@ -101,12 +101,6 @@ func formatFourCharCodeLiteral(_ code: OSType) -> String {
 }
 
 
-
-func appleEventCode(_ eventClass: OSType, _ eventID: OSType) -> UInt64 {
-    // used to construct keys for GlueTable.commandsByCode dictionary
-    return UInt64(eventClass) << 32 | UInt64(eventID)
-}
-
 // the following AEDesc types will be mapped to Symbol instances
 let symbolDescriptorTypes: Set<DescType> = [AppleEvents.typeType, AppleEvents.typeEnumerated,
                                             AppleEvents.typeProperty, AppleEvents.typeKeyword]
@@ -181,7 +175,7 @@ private let ProcessNotFoundErrorNumbers: Set<Int> = [procNotFound, connectionInv
 
 private let LaunchEventSucceededErrorNumbers: Set<Int> = [Int(noErr), errAEEventNotHandled]
 
-private let LaunchEvent = AppleEventDescriptor(code: appleEventCode(kASAppleScriptSuite, kASLaunchEvent))
+private let LaunchEvent = AppleEventDescriptor(code: eventIdentifier(kASAppleScriptSuite, kASLaunchEvent))
 
 // Application initializers pass application-identifying information to AppData initializer as enum according to which initializer was called
 
@@ -229,7 +223,7 @@ public enum TargetApplication: CustomReflectable {
     #endif
     
     private func sendLaunchEvent(processDescriptor: AddressDescriptor) -> Int {
-        var event = AppleEventDescriptor(code: appleEventCode(kASAppleScriptSuite, kASLaunchEvent), target: processDescriptor)
+        var event = AppleEventDescriptor(code: eventIdentifier(kASAppleScriptSuite, kASLaunchEvent), target: processDescriptor)
         event.timeout = 30
         let (replyEvent, errorCode) = event.send()
         return errorCode != 0 ? errorCode : (replyEvent?.errorNumber ?? 0) // note: errAEEventNotHandled is normal here

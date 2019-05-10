@@ -14,8 +14,6 @@ import AppleEvents
 import AppKit
 #endif
 
-
-
 // temporary kludge; allows us to send our homegrown AEs via established Carbon AESendMessage() API; aside from confirming that our code is reading and writing AEDesc data correctly (if not quirk-for-quirk compatible with AppleScript, then at least good enough to be understood by well-behaved apps), it gives us a benchmark to compare against as we implement our own Mach-AE bridging layer
 
 import Carbon
@@ -504,7 +502,7 @@ open class AppData {
         let (replyEvent, errorCode) = sendEvent(event) // event.sendEvent(options: sendMode, timeout: timeout) // TO DO
         if errorCode == 0 {
             return replyEvent ?? nullReplyEvent
-        } else if errorCode == -1708 && event.code == appleEventCode(kASAppleScriptSuite, kASLaunchEvent) {
+        } else if errorCode == -1708 && event.code == eventIdentifier(kASAppleScriptSuite, kASLaunchEvent) {
             // TO DO: this is wrong; -1708 will be in reply event, not in AEM error; TO DO: check this
             // 'launch' events normally return 'not handled' errors, so just ignore those
             return self.nullReplyEvent // (not a full AppleEvent desc, but reply event's attributes aren't used so is equivalent to a reply event containing neither error nor result)
@@ -528,7 +526,7 @@ open class AppData {
         var sentEvent: AppleEventDescriptor?, repliedEvent: ReplyEventDescriptor?
         do {
             // Create a new AppleEvent descriptor (throws ConnectionError if target app isn't found)
-            var event = AppleEventDescriptor(code: (UInt64(eventClass)<<32) | UInt64(eventID),
+            var event = AppleEventDescriptor(code: eventIdentifier(eventClass, eventID),
                                              target: try self.targetDescriptor())
             // pack its keyword parameters
             for (paramName, code, value) in keywordParameters where isParameter(value) {
@@ -544,7 +542,7 @@ open class AppData {
                 event.setParameter(AppleEvents.keyDirectObject, to: try self.pack(directParameter))
             }
             // if command method was called on root Application (null) object, the event's subject is also null...
-            var subjectDesc: AppleEvents.Query = AppRootDesc
+            var subjectDesc: AppleEvents.QueryDescriptor = AppRootDesc
             // ... but if the command was called on a Specifier, decide if that specifier should be packed as event's subject
             // or, as a special case, used as event's keyDirectObject/keyAEInsertHere parameter for user's convenience
             if !(parentSpecifier is RootSpecifier) { // technically Application, but there isn't an explicit class for that
@@ -552,14 +550,14 @@ open class AppData {
                     // if `make` command is called on a specifier, use that specifier as event's `at` parameter if not already given
                     if event.parameter(AppleEvents.keyAEInsertHere) != nil { // an `at` parameter was already given, so pack parent specifier as event's subject attribute
                         let desc = try self.pack(parentSpecifier)
-                        subjectDesc = (desc as? AppleEvents.Query) ?? AppleEvents.RootSpecifier(desc)
+                        subjectDesc = (desc as? AppleEvents.QueryDescriptor) ?? AppleEvents.RootSpecifier(desc)
                     } else { // else pack parent specifier as event's `at` parameter and use null as event's subject attribute
                         event.setParameter(AppleEvents.keyAEInsertHere, to: try self.pack(parentSpecifier))
                     }
                 } else { // for all other commands, check if a direct parameter was already given
                     if hasDirectParameter { // pack the parent specifier as the event's subject attribute
                         let desc = try self.pack(parentSpecifier)
-                        subjectDesc = (desc as? AppleEvents.Query) ?? AppleEvents.RootSpecifier(desc)
+                        subjectDesc = (desc as? AppleEvents.QueryDescriptor) ?? AppleEvents.RootSpecifier(desc)
                     } else { // else pack parent specifier as event's direct parameter and use null as event's subject attribute
                         event.setParameter(AppleEvents.keyDirectObject, to: try self.pack(parentSpecifier))
                     }

@@ -38,7 +38,7 @@ public func formatAppleEvent(descriptor event: AppleEventDescriptor, useTerminol
     } catch {
         return "Can't format Apple event: can't get terminology: \(error)"
     }
-    if event.code == appleEventCode(AppleEvents.kCoreEventClass, AppleEvents.kAEAnswer) { // it's a reply event, so format error/return value only
+    if event.code == eventIdentifier(AppleEvents.kCoreEventClass, AppleEvents.kAEAnswer) { // it's a reply event, so format error/return value only
         let errn = event.errorNumber
         if errn != 0 { // format error message
             return AutomationError(code: Int(errn), message: event.errorMessage).description // TO DO: use CommandError? (need to check it's happy with only replyEvent arg)
@@ -173,7 +173,7 @@ public extension CommandDescription {
         //
         let eventClass = event.eventClass
         let eventID = event.eventID
-        if let commandInfo = appData.glueTable.commandsByCode[appleEventCode(eventClass, eventID)] {
+        if let commandInfo = appData.glueTable.commandsByCode[eventIdentifier(eventClass, eventID)] {
             var keywordParameters = [(String, Any)]()
             for paramInfo in commandInfo.parameters { // this ignores parameters that don't have a keyword name; it should also ignore ("as",keyAERequestedType) parameter (this is probably best done by ensuring that command parsers always omit it)
                 if let value = rawParameters[paramInfo.code] {

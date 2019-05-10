@@ -229,83 +229,77 @@ extension Dictionary: SelfPacking, SelfUnpacking, SelfFormatting {
     }
     
     public func SwiftAutomation_packSelf(_ appData: AppData) throws -> Descriptor {
-        /*
-        var recordDesc = AEDesc.record()
-        var isCustomRecordType: Bool = false
-        if let key = AESymbol(code: pClass) as? Key, let recordClass = self[key] as? Symbol { // TO DO: confirm this works
-            if !recordClass.isNameOnly {
-                recordDesc.type = recordClass.code
-                isCustomRecordType = true
-            }
-        }
-        var userProperties: AEDesc?
-        defer {
-            if let listDesc = userProperties {
-                try! recordDesc.setParameter(DescType(keyASUserRecordFields), to: listDesc)
-            }
-        }
+        var result = Data()
+        var count: UInt32 = 0
+        var type = AppleEvents.typeAERecord
+        var userPropertyCount: UInt32 = 0
+        var userProperties = Data()
         for (key, value) in self {
-            guard let keySymbol = key as? Symbol else {
-                throw PackError(object: key, message: "Can't pack non-Symbol dictionary key of type: \(type(of: key))")
-            }
-            if keySymbol.isNameOnly {
-                if userProperties == nil { userProperties = AEDesc.list() }
-                let keyDesc = try appData.pack(keySymbol)
-                try userProperties!.appendItem(keyDesc)
-                let valueDesc = try appData.pack(value)
-                try userProperties!.appendItem(valueDesc)
-            } else if !(keySymbol.code == pClass && isCustomRecordType) {
-                let tmp = try appData.pack(value)
-                try! recordDesc.setParameter(keySymbol.code, to: tmp)
+            do {
+                let desc = try appData.pack(value)
+                if let symbol = key as? Symbol {
+                    if symbol.isNameOnly, let name = symbol.name {
+                        packAsString(name).appendTo(containerData: &userProperties)
+                        desc.appendTo(containerData: &userProperties)
+                        userPropertyCount += 2
+                    } else if symbol.code == AppleEvents.pClass, let cls = try? unpackAsType(desc) {
+                        type = cls
+                    } else {
+                        result += packUInt32(symbol.code)
+                        desc.appendTo(containerData: &result)
+                        count += 1
+                    }
+                } else if let name = key as? String {
+                    packAsString(name).appendTo(containerData: &userProperties)
+                    desc.appendTo(containerData: &userProperties)
+                    userPropertyCount += 2
+                } else {
+                    throw AppleEventError.unsupportedCoercion
+                }
+            } catch {
+                throw AppleEventError(message: "Can't pack item \(key) of record.", cause: error)
             }
         }
-        return recordDesc
- */
-        throw AppleEventError(code: 1, message: "TO DO")
+        if userPropertyCount > 0 {
+            result += packUInt32(AppleEvents.keyASUserRecordFields)
+            ListDescriptor(count: userPropertyCount, data: userProperties).appendTo(containerData: &result)
+        }
+        return RecordDescriptor(type: type, count: count, data: result)
     }
     
     public static func SwiftAutomation_unpackSelf(_ desc: Descriptor, appData: AppData) throws -> [Key:Value] {
-        throw AppleEventError(code: 1, message: "TO DO")
-        /*
-        if !desc.isRecord {
+        guard let recordDesc = desc as? RecordDescriptor else { // TO DO: this is problematic as AppleEvents.unflatten() currently has no way of identifying a record descriptor with custom type, so will unpack as ScalarDescriptor, not RecordDescriptor
             throw UnpackError(appData: appData, desc: desc, type: self, message: "Not a record.")
         }
         var result = [Key:Value]()
-        if desc.type != typeAERecord {
-            if let key = appData.glueClasses.symbolType.symbol(code: pClass) as? Key,
+        if desc.type != AppleEvents.typeAERecord {
+            if let key = appData.glueClasses.symbolType.symbol(code: AppleEvents.pClass) as? Key,
                 let value = appData.glueClasses.symbolType.symbol(code: desc.type) as? Value {
                 result[key] = value
             }
         }
-        for i in 1..<(try! desc.count()+1) {
-            let (property, itemDesc) = try! desc.item(i)
-            if property == keyASUserRecordFields {
+        for (key, itemDesc) in recordDesc {
+            if key == AppleEvents.keyASUserRecordFields, let userProperties = itemDesc as? ListDescriptor, userProperties.count % 2 == 0 {
                 // unpack record properties whose keys are identifiers (represented as AEList of form: [key1,value1,key2,value2,...])
-                let userProperties = itemDesc
-                if userProperties.isList && (try! userProperties.count()) % 2 == 0 {
-                    for j in stride(from:1, to: try! userProperties.count(), by: 2) {
-                        let keyDesc = try! userProperties.item(j).value
-                        guard let keyString = try? keyDesc.string() else {
-                            throw UnpackError(appData: appData, desc: desc, type: Key.self, message: "Malformed record key.")
-                        }
-                        guard let key = appData.glueClasses.symbolType.symbol(string: keyString, descriptor: keyDesc) as? Key else {
-                            throw UnpackError(appData: appData, desc: desc, type: Key.self,
-                                              message: "Can't unpack record keys as non-Symbol type: \(Key.self)")
-                        }
-                        do {
-                            result[key] = try appData.unpack(desc.item(j+1).value) as Value
-                        } catch {
-                            throw UnpackError(appData: appData, desc: desc, type: Value.self,
-                                              message: "Can't unpack value of record's \(key) property as Swift type: \(Value.self)")
-                        }
+                var items = userProperties.makeIterator()
+                while let keyDesc = items.next(), let valueDesc = items.next() {
+                    guard let keyDesc = keyDesc as? ScalarDescriptor, let keyString = try? unpackAsString(keyDesc) else {
+                        throw UnpackError(appData: appData, desc: desc, type: Key.self, message: "Malformed record key.")
                     }
-                } else { // TO DO: not sure what AS's behavior is; does it unpack as single property or report as error? check and amend if needed (main rationale for throwing is that returned record would vary wildly in structure depending the property's value; which is not to say AS wouldn't do it, but it'd be poor design if it did; plus we already throw if odd items aren't strings)
-                    throw UnpackError(appData: appData, desc: desc, type: Value.self,
-                                      message: "Can't unpack record: malformed keyASUserRecordFields value.")
+                    guard let key = appData.glueClasses.symbolType.symbol(string: keyString, descriptor: keyDesc) as? Key else {
+                        throw UnpackError(appData: appData, desc: desc, type: Key.self,
+                                          message: "Can't unpack record keys as non-Symbol type: \(Key.self)")
+                    }
+                    do {
+                        result[key] = try appData.unpack(valueDesc) as Value
+                    } catch {
+                        throw UnpackError(appData: appData, desc: desc, type: Value.self,
+                                          message: "Can't unpack value of record's \(key) property as Swift type: \(Value.self)")
+                    }
                 }
             } else {
                 // unpack record property whose key is a four-char code (typically corresponding to a dictionary-defined property name)
-                guard let key = appData.recordKey(forCode: property) as? Key else {
+                guard let key = appData.recordKey(forCode: key) as? Key else {
                     throw UnpackError(appData: appData, desc: desc, type: Key.self,
                                       message: "Can't unpack record keys as non-Symbol type: \(Key.self)")
                 }
@@ -318,10 +312,9 @@ extension Dictionary: SelfPacking, SelfUnpacking, SelfFormatting {
             }
         }
         return result
-    */
-    }
-    
-    public static func SwiftAutomation_noValue() throws -> Dictionary<Key,Value> { return [:] }
+}
+
+public static func SwiftAutomation_noValue() throws -> Dictionary<Key,Value> { return [:] }
 }
 
 

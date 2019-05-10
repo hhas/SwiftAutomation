@@ -219,7 +219,7 @@ public class GlueTable {
             }
             // add item
             self.commandsByName[name] = term
-            self.commandsByCode[appleEventCode(eventClass, eventID)] = term
+            self.commandsByCode[eventIdentifier(eventClass, eventID)] = term
         }
     }
 
