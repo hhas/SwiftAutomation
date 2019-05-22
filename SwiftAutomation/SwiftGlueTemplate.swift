@@ -176,7 +176,7 @@ public enum «ENUM_TYPE_NAME»: «SWIFTAE»SelfPacking, «SWIFTAE»SelfUnpacking
     }
     public static func SwiftAutomation_unpackSelf(_ desc: Descriptor, appData: «SWIFTAE»AppData) throws -> «ENUM_TYPE_NAME» {«+UNPACK_CASE»
         do { return .«CASE_NAME»(try appData.unpack(desc) as «CASE_TYPE») } catch {}«-UNPACK_CASE»
-        throw «SWIFTAE»UnpackError(appData: appData, descriptor: desc, type: «ENUM_TYPE_NAME».self,
+        throw «SWIFTAE»UnpackError(appData: appData, desc: desc, type: «ENUM_TYPE_NAME».self,
                           message: "Can't coerce descriptor to Swift type: \\(«ENUM_TYPE_NAME».self)")
     }
     public static func SwiftAutomation_noValue() throws -> «ENUM_TYPE_NAME» { «ENUM_NO_VALUE» }
@@ -192,12 +192,12 @@ public struct «STRUCT_NAME»: «SWIFTAE»SelfPacking, «SWIFTAE»SelfUnpacking 
     private static func SwiftAutomation_unpackProperty<T>(_ recordDesc: Descriptor,
                                                           appData: «SWIFTAE»AppData, name: String, code: OSType) throws -> T {
         guard let desc = recordDesc.parameter(code) else {
-            throw «SWIFTAE»UnpackError(appData: appData, descriptor: recordDesc, type: self, message: "Can't find '\\(name)' property in record.")
+            throw «SWIFTAE»UnpackError(appData: appData, desc: recordDesc, type: self, message: "Can't find '\\(name)' property in record.")
         }
         do {
             return try appData.unpack(desc)
         } catch {
-            throw «SWIFTAE»UnpackError(appData: appData, descriptor: recordDesc, type: self, message: "Can't unpack record's '\\(name)' property: \\(error)")
+            throw «SWIFTAE»UnpackError(appData: appData, desc: recordDesc, type: self, message: "Can't unpack record's '\\(name)' property: \\(error)")
         }
     }
 
@@ -217,7 +217,7 @@ public struct «STRUCT_NAME»: «SWIFTAE»SelfPacking, «SWIFTAE»SelfUnpacking 
         throw AppleEventError(code: 1, message: "TO DO")
 
 //        if !desc.isRecord {
-//           throw «SWIFTAE»UnpackError(appData: appData, descriptor: desc, type: self, message: "Not a record.")
+//           throw «SWIFTAE»UnpackError(appData: appData, desc: desc, type: self, message: "Not a record.")
 //        }
 // TO DO: what if desc.type != self.class_.code? should the class property's value be changed, or an UnpackError reported? (doing nothing may be problematic as the record won't roundtrip correctly... although roundtripping isn't guaranteed to work anyway if the record doesn't include all of the properties expected by the application (as described in the original dictionary definition))
 //        return «STRUCT_NAME»(«+UNPACK_PROPERTY»

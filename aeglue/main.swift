@@ -6,7 +6,8 @@
 //
 //
 
-// TO DO: how to link to enclosing SwiftAutomation framework
+
+// TO DO: any way for SwiftAutomation to re-export `AppleEvents` symbol? currently glues must link to both frameworks, but it's easy to forget to include AppleEvents.framework in build settings (alternatively, SwiftAutomation could redefine typeType/typeEnumerated, or glues could use literal numbers instead)
 
 // TO DO: keep AETE support as undocumented -A option? (depends on what, if any, translation bugs still exist in OSACopyScriptingDefinitionFromURL's AETE-to-SDEF conversion; some Carbon apps still use AETEs, so any differences in generated glues may create compatibility problems)
 
@@ -22,116 +23,128 @@ let optionsWithArguments = Set<Character>("npeo") // this MUST contain all optio
 
 // TO DO: only include ANSI styles when writing to console; pull out char seqs into separate constants, and toggle according to stdout type
 
-let helpText = [
-    "Generate SwiftAutomation glue classes and SDEF documentation for",
-    " controlling an \"AppleScriptable\" application from Swift.",
-    "",
-    "\u{1B}[1mUSAGE\u{1B}[m", // TO DO: only use ANSI control chars if connected to tty
-    "",
-    "    aeglue [-Ddr] [-n CLASSNAME] [-p PREFIX]",
-    "           [-est FORMAT ...] [-o OUTDIR] [APPNAME ...]",
-    "    aeglue [-hv]",
-    "",
-    "APPNAME - Name or path to application. If -n and -p options are",
-    "              omitted, multiple applications may be specified.",
-    "              If APPNAME is omitted, a default glue is generated.",
-    "",
-    "On completion, the generated files' paths are written to STDOUT.",
-    "",
-    "\u{1B}[1mOPTIONS\u{1B}[m",
-    "",
-    "    -d             Do not generate an SDEF documentation file.",
-    "    -D             Do not import the SwiftAutomation framework.",
-    "    -e FORMAT      An enumerated type definition; see Type Support.",
-    "    -h             Show this help and exit.",
-    "    -n CLASSNAME   C-style identifier to use as the Application",
-    "                       class's name. Auto-generated if omitted.",
-    "    -o OUTDIR      Path to directory in which the glue files will",
-    "                       be created; if omitted, the current working",
-    "                       directory is used.",
-    "    -p PREFIX      Three-character prefix for glue's other classes.",
-    "                       Auto-generated if omitted.",
-    "    -r             Overwrite existing files.",
-    "    -s FORMAT      A record struct definition; see Type Support.",
-    "    -t FORMAT      A type alias definition; see Type Support.",
-    "    -v             Output the SwiftAutomation framework's version",
-    "                       and exit.",
-    "",
-    "\u{1B}[1mEXAMPLES\u{1B}[m",
-    "",
-    "    aeglue iTunes",
-    "",
-    "    aeglue -r Finder",
-    "",
-    "    aeglue -p TE TextEdit ~/Desktop",
-    "",
-    "\u{1B}[1mTYPE SUPPORT\u{1B}[m",
+let helpText = """
+    Generate SwiftAutomation glue classes and SDEF documentation for
+    controlling an "AppleScriptable" application from Swift.
+    
+    \u{1B}[1mUSAGE\u{1B}[m
+
+        aeglue [-Ddr] [-n CLASSNAME] [-p PREFIX]
+               [-est FORMAT ...] [-o OUTDIR] [APPNAME ...]
+        aeglue [-hv]
+
+    APPNAME - Name or path to application. If -n and -p options are
+                  omitted, multiple applications may be specified.
+                  If APPNAME is omitted, a default glue is generated.
+
+    On completion, the generated files' paths are written to STDOUT.
+
+    \u{1B}[1mOPTIONS\u{1B}[m
+
+        -d             Do not generate an SDEF documentation file.
+        -D             Do not import the SwiftAutomation framework.
+        -e FORMAT      An enumerated type definition; see Type Support.
+        -h             Show this help and exit.
+        -n CLASSNAME   C-style identifier to use as the Application
+                           class's name. Auto-generated if omitted.
+        -o OUTDIR      Path to directory in which the glue files will
+                           be created; if omitted, the current working
+                           directory is used.
+        -p PREFIX      Three-character prefix for glue's other classes.
+                           Auto-generated if omitted.
+        -r             Overwrite existing files.
+        -s FORMAT      A record struct definition; see Type Support.
+        -t FORMAT      A type alias definition; see Type Support.
+        -v             Output the SwiftAutomation framework's version
+                           and exit.
+    
+    \u{1B}[1mEXAMPLES\u{1B}[m
+
+        aeglue iTunes
+
+        aeglue -r Finder
+
+        aeglue -p TE TextEdit ~/Desktop
+
+    \u{1B}[1mBUILD REQUIREMENTS\u{1B}[m
+
+    Programs containing generated glues must link to SwiftAutomation
+    and its underlying AppleEvents frameworks.
+
+    \u{1B}[1mTYPE SUPPORT\u{1B}[m
     
     // TO DO: finish
-    // TO DO: the full details would probably be better covered in the documentation's 'Creating glues' chapter, with only the format string structures shown here
+    // TO DO: the full details would probably be better covered in
+    // the documentation's 'Creating glues' chapter, with only the
+    // format string structures shown here
     
-    "",
-    "The -e, -s, and -t options can be used to add custom Swift enums,",
-    "structs, and typealiases into the generated glue files, providing",
-    "better integration between Swift's strong, static type system and",
-    "the Apple Event Manager's weak, dynamic types. Each option may",
-    "appear any number of times and takes a format string as argument.",
-    "",
-    "\u{1B}[4mEnumerated types\u{1B}[m",
-    "",
-    "Enumerated types enable commands whose results can have multiple",
-    "types to return those values in a type-safe way.",
-    "",
-    "For example, if a command can return a Symbol \u{1B}[1mor\u{1B}[m a String, include",
-    "the following -e option in the aeglue command:",
-    "",
-    "    -e Symbol+String",
-    "",
-    "The -e option's argument must have the following format:",
-    "",
-    "    [ENUMNAME=][CASE1:]TYPE1+[CASE1:]TYPE2+...",
-    "",
-    "ENUMNAME is the name to be given to the enumerated type, e.g.",
-    "MyType. If omitted, a default name is automatically generated.",
-    "",
-    "TYPEn is the name of an existing Swift type, e.g. String or a",
-    "standard SwiftAutomation type: Symbol, Object, Insertion, Item,",
-    "or Items (the glue PREFIX will be added automatically). CASEn is",
-    "the name of the case to which values of that type are assigned.",
-    "If the TYPE is parameterized, e.g. Array<String>, the CASE name",
-    "must also be given, otherwise it can be omitted and a default",
-    "name will be derived from the TYPE name, e.g. Int -> int.",
-    "",
-    "For example, to define an enum named MASymbolOrIntOrString", // TO DO: a real-world example would be better
-    "which can represent a Symbol, Int, or String:",
-    "",
-    "    aeglue -e Symbol+Int+String -p MA 'My App'",
-    // TO DO: note that `Symbol` must come before `String`, to avoid type/enum codes being coerced to four-char-code strings (which AEM allows)
-    "",
-    "\u{1B}[4mRecord structs\u{1B}[m",
+
+    The -e, -s, and -t options can be used to add custom Swift enums,
+    structs, and typealiases into the generated glue files, providing
+    better integration between Swift's strong, static type system and
+    the Apple Event Manager's weak, dynamic types. Each option may
+    appear any number of times and takes a format string as argument.
+
+    \u{1B}[4mEnumerated types\u{1B}[m
+
+    Enumerated types enable commands whose results can have multiple
+    types to return those values in a type-safe way.
+
+    For example, if a command can return a Symbol \u{1B}[1mor\u{1B}[m a String, include
+    the following -e option in the aeglue command:
+
+        -e Symbol+String
+
+    The -e option's argument must have the following format:
+    
+        [ENUMNAME=][CASE1:]TYPE1+[CASE1:]TYPE2+...
+    
+    ENUMNAME is the name to be given to the enumerated type, e.g.
+    MyType. If omitted, a default name is automatically generated.
+
+    TYPEn is the name of an existing Swift type, e.g. String or a
+    standard SwiftAutomation type: Symbol, Object, Insertion, Item,
+    or Items (the glue PREFIX will be added automatically). CASEn is
+    the name of the case to which values of that type are assigned.
+    If the TYPE is parameterized, e.g. Array<String>, the CASE name
+    must also be given, otherwise it can be omitted and a default
+    name will be derived from the TYPE name, e.g. Int -> int.
+
+    // TO DO: a real-world example would be better
+    For example, to define an enum named MASymbolOrIntOrString
+    which can represent a Symbol, Int, or String:
+
+        aeglue -e Symbol+Int+String -p MA 'My App'
+
+    // TO DO: note that `Symbol` must come before `String`, to
+    // avoid type/enum codes being coerced to four-char-code
+    // strings (which AEM allows)
+
+    \u{1B}[4mRecord structs\u{1B}[m
+
     // TO DO: document struct and typealias format strings too
-    "",
-    "While SwiftAutomation packs and unpacks Apple event records",
-    "Dictionary<PREFIXSymbol:Any> values as standard, it is also",
-    "possible to map part or all of a specific record structures to",
-    "a Swift struct, simplifying property access and improving type ",
-    "safety.",
-    "",
-    "\u{1B}[4mType aliases\u{1B}[m",
-    "",
-    "The -t option adds a typealias to the glue file. For example,",
-    "to define a typealias for Array<String> named PREFIXStrings:",
-    "",
-    "    -t 'Strings=Array<String>'",
-    "",
-    "The -t option's format string has the following structure:",
-    "",
-    "    ALIASNAME=TYPE",
-    "",
-    "The glue's PREFIX is added automatically to ALIASNAME, and to",
-    "any reserved type names that appear within TYPE.",
-    "",
-    ""].joined(separator: "\n")
+
+    While SwiftAutomation packs and unpacks Apple event records
+    Dictionary<PREFIXSymbol:Any> values as standard, it is also
+    possible to map part or all of a specific record structures to
+    a Swift struct, simplifying property access and improving type
+    safety.
+
+    \u{1B}[4mType aliases\u{1B}[m
+
+    The -t option adds a typealias to the glue file. For example,
+    to define a typealias for Array<String> named PREFIXStrings:
+
+        -t 'Strings=Array<String>'
+
+    The -t option's format string has the following structure:
+
+        ALIASNAME=TYPE
+
+    The glue's PREFIX is added automatically to ALIASNAME, and to
+    any reserved type names that appear within TYPE.
+    
+    """
 
 
 // utility functions

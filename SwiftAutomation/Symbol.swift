@@ -21,6 +21,7 @@ open class Symbol: Hashable, Equatable, CustomStringConvertible, CustomDebugStri
     
     open var typeAliasName: String { return "Symbol" } // provides prefix used in description var; glue subclasses override this with their own strings (e.g. "FIN" for Finder)
     
+    // TO DO: check `desc` vs `descriptor` naming consistency throughout code and standardize on one or other
     public required init(name: String?, code: OSType, type: OSType = AppleEvents.typeType, descriptor: ScalarDescriptor? = nil) {
         self.name = name
         self.code = code

@@ -100,7 +100,6 @@
 		4F21AF6422861F8400A1B978 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F63C4351B7CF1C8000D74EE /* AppKit.framework */; };
 		4F21AF6C2286221400A1B978 /* libSwiftAutomation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F21AF3D22861DA400A1B978 /* libSwiftAutomation.a */; };
 		4F21AF6F2286221D00A1B978 /* libAppleEvents.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F21AF4822861DA400A1B978 /* libAppleEvents.a */; };
-		4F252BB8224F935C00888935 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F63C4371B7CF1E0000D74EE /* Carbon.framework */; };
 		4F252BB9224F936C00888935 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F63C4331B7CF1C4000D74EE /* Foundation.framework */; };
 		4F3C689E22843233002AD35C /* GlueTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39501BA9A7EA00FF2A96 /* GlueTable.swift */; };
 		4F3C68A1228432B1002AD35C /* StaticGlueBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E396D1BAA9BA700FF2A96 /* StaticGlueBuilder.swift */; };
@@ -152,6 +151,7 @@
 		4FFBE3E722959A7C00DADF30 /* aeglue in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4F0E39651BAA98A900FF2A96 /* aeglue */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		4FFBE3E82295F6D200DADF30 /* MacOSGlues.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F1A57FA1D9E81C300ACFA51 /* MacOSGlues.framework */; };
 		4FFBE3E92295F6D200DADF30 /* SwiftAutomation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4FFF5D241D899F0D008ED4F5 /* SwiftAutomation.framework */; };
+		4FFBE3EC2295FD0500DADF30 /* AppleEvents.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F1EA9E72283545F000E0A3A /* AppleEvents.framework */; };
 		4FFF5D281D899F0D008ED4F5 /* SwiftAutomation.h in Headers */ = {isa = PBXBuildFile; fileRef = 4FFF5D261D899F0D008ED4F5 /* SwiftAutomation.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4FFF5D311D899F29008ED4F5 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F63C4271B7CF06E000D74EE /* main.swift */; };
 		4FFF5D321D899F29008ED4F5 /* AppData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F63C4401B86A335000D74EE /* AppData.swift */; };
@@ -452,10 +452,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4F0E39841BAB743800FF2A96 /* Foundation.framework in Frameworks */,
 				4F21AF6F2286221D00A1B978 /* libAppleEvents.a in Frameworks */,
 				4F21AF6C2286221400A1B978 /* libSwiftAutomation.a in Frameworks */,
-				4F252BB8224F935C00888935 /* Carbon.framework in Frameworks */,
-				4F0E39841BAB743800FF2A96 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -463,8 +462,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4F1A58141D9EA09B00ACFA51 /* SwiftAutomation.framework in Frameworks */,
 				4F1A58151D9EA09B00ACFA51 /* Foundation.framework in Frameworks */,
+				4FFBE3EC2295FD0500DADF30 /* AppleEvents.framework in Frameworks */,
+				4F1A58141D9EA09B00ACFA51 /* SwiftAutomation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -483,8 +483,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				4F252BB9224F936C00888935 /* Foundation.framework in Frameworks */,
-				4FFBE3E82295F6D200DADF30 /* MacOSGlues.framework in Frameworks */,
 				4FFBE3E92295F6D200DADF30 /* SwiftAutomation.framework in Frameworks */,
+				4FFBE3E82295F6D200DADF30 /* MacOSGlues.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
