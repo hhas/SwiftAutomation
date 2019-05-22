@@ -232,33 +232,33 @@ extension Application {
     
     private init(target: TargetApplication, launchOptions: LaunchOptions, relaunchMode: RelaunchMode) {
         let appData = Self.untargetedAppData.targetedCopy(target, launchOptions: launchOptions, relaunchMode: relaunchMode)
-        self.init(rootObject: AppRootDesc, appData: appData)
+        self.init(rootObject: appRootDesc, appData: appData)
     }
     
-    public init(name: String, launchOptions: LaunchOptions = DefaultLaunchOptions, relaunchMode: RelaunchMode = DefaultRelaunchMode) {
+    public init(name: String, launchOptions: LaunchOptions = defaultLaunchOptions, relaunchMode: RelaunchMode = defaultRelaunchMode) {
         self.init(target: .name(name), launchOptions: launchOptions, relaunchMode: relaunchMode)
     }
     
-    public init(url: URL, launchOptions: LaunchOptions = DefaultLaunchOptions, relaunchMode: RelaunchMode = DefaultRelaunchMode) {
+    public init(url: URL, launchOptions: LaunchOptions = defaultLaunchOptions, relaunchMode: RelaunchMode = defaultRelaunchMode) {
         self.init(target: .url(url), launchOptions: launchOptions, relaunchMode: relaunchMode)
     }
     
-    public init(bundleIdentifier: String, launchOptions: LaunchOptions = DefaultLaunchOptions, relaunchMode: RelaunchMode = DefaultRelaunchMode) {
+    public init(bundleIdentifier: String, launchOptions: LaunchOptions = defaultLaunchOptions, relaunchMode: RelaunchMode = defaultRelaunchMode) {
         self.init(target: .bundleIdentifier(bundleIdentifier, false), launchOptions: launchOptions, relaunchMode: relaunchMode)
     }
     
-    public init(processIdentifier: pid_t, launchOptions: LaunchOptions = DefaultLaunchOptions, relaunchMode: RelaunchMode = DefaultRelaunchMode) {
+    public init(processIdentifier: pid_t, launchOptions: LaunchOptions = defaultLaunchOptions, relaunchMode: RelaunchMode = defaultRelaunchMode) {
         self.init(target: .processIdentifier(processIdentifier), launchOptions: launchOptions, relaunchMode: relaunchMode)
     }
     
-    public init(addressDescriptor: AddressDescriptor, launchOptions: LaunchOptions = DefaultLaunchOptions, relaunchMode: RelaunchMode = DefaultRelaunchMode) {
+    public init(addressDescriptor: AddressDescriptor, launchOptions: LaunchOptions = defaultLaunchOptions, relaunchMode: RelaunchMode = defaultRelaunchMode) {
         self.init(target: .Descriptor(addressDescriptor), launchOptions: launchOptions, relaunchMode: relaunchMode)
     }
     
     
     public static func currentApplication() -> Self {
-        let appData = Self.untargetedAppData.targetedCopy(.current, launchOptions: DefaultLaunchOptions, relaunchMode: DefaultRelaunchMode)
-        return self.init(rootObject: AppRootDesc, appData: appData)
+        let appData = Self.untargetedAppData.targetedCopy(.current, launchOptions: defaultLaunchOptions, relaunchMode: defaultRelaunchMode)
+        return self.init(rootObject: appRootDesc, appData: appData)
     }
     
     public func customRoot(_ object: Any) -> Self {

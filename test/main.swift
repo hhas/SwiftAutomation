@@ -12,7 +12,7 @@
 import AppKit
 import Foundation
 import SwiftAutomation
-
+import MacOSGlues
 
 
 let textedit = TextEdit()

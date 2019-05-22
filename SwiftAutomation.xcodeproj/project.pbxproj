@@ -102,7 +102,6 @@
 		4F21AF6F2286221D00A1B978 /* libAppleEvents.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F21AF4822861DA400A1B978 /* libAppleEvents.a */; };
 		4F252BB8224F935C00888935 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F63C4371B7CF1E0000D74EE /* Carbon.framework */; };
 		4F252BB9224F936C00888935 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F63C4331B7CF1C4000D74EE /* Foundation.framework */; };
-		4F252BBA224F937200888935 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F63C4371B7CF1E0000D74EE /* Carbon.framework */; };
 		4F3C689E22843233002AD35C /* GlueTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39501BA9A7EA00FF2A96 /* GlueTable.swift */; };
 		4F3C68A1228432B1002AD35C /* StaticGlueBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E396D1BAA9BA700FF2A96 /* StaticGlueBuilder.swift */; };
 		4F3C68A2228432B1002AD35C /* SwiftGlueTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FFF5D491D89A26C008ED4F5 /* SwiftGlueTemplate.swift */; };
@@ -150,9 +149,9 @@
 		4FACE28E227230D1000A04A0 /* StaticGlueBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E396D1BAA9BA700FF2A96 /* StaticGlueBuilder.swift */; };
 		4FACE28F227230D1000A04A0 /* SwiftGlueTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FFF5D491D89A26C008ED4F5 /* SwiftGlueTemplate.swift */; };
 		4FACE290227230D1000A04A0 /* AppleEventFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39951BADD58500FF2A96 /* AppleEventFormatter.swift */; };
-		4FDB20441D8ABA2E008AB470 /* FinderGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FDB20411D8ABA2E008AB470 /* FinderGlue.swift */; };
-		4FDB20451D8ABA2E008AB470 /* ITunesGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FDB20421D8ABA2E008AB470 /* ITunesGlue.swift */; };
-		4FDB20461D8ABA2E008AB470 /* TextEditGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FDB20431D8ABA2E008AB470 /* TextEditGlue.swift */; };
+		4FFBE3E722959A7C00DADF30 /* aeglue in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4F0E39651BAA98A900FF2A96 /* aeglue */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		4FFBE3E82295F6D200DADF30 /* MacOSGlues.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F1A57FA1D9E81C300ACFA51 /* MacOSGlues.framework */; };
+		4FFBE3E92295F6D200DADF30 /* SwiftAutomation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4FFF5D241D899F0D008ED4F5 /* SwiftAutomation.framework */; };
 		4FFF5D281D899F0D008ED4F5 /* SwiftAutomation.h in Headers */ = {isa = PBXBuildFile; fileRef = 4FFF5D261D899F0D008ED4F5 /* SwiftAutomation.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4FFF5D311D899F29008ED4F5 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F63C4271B7CF06E000D74EE /* main.swift */; };
 		4FFF5D321D899F29008ED4F5 /* AppData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F63C4401B86A335000D74EE /* AppData.swift */; };
@@ -230,6 +229,20 @@
 			remoteGlobalIDString = 4FFF5D231D899F0D008ED4F5;
 			remoteInfo = SwiftAutomation;
 		};
+		4FFBE3E422959A5B00DADF30 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4F63C41C1B7CF06E000D74EE /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4F0E39641BAA98A900FF2A96;
+			remoteInfo = aeglue;
+		};
+		4FFBE3EA2295F6E500DADF30 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4F63C41C1B7CF06E000D74EE /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4F1A57F91D9E81C300ACFA51;
+			remoteInfo = MacOSGlues;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -287,6 +300,7 @@
 			dstPath = bin;
 			dstSubfolderSpec = 7;
 			files = (
+				4FFBE3E722959A7C00DADF30 /* aeglue in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -425,9 +439,6 @@
 		4FACE27222723090000A04A0 /* SwiftAutomationLite.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftAutomationLite.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4FACE27422723091000A04A0 /* SwiftAutomationLite.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwiftAutomationLite.h; sourceTree = "<group>"; };
 		4FACE27522723091000A04A0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		4FDB20411D8ABA2E008AB470 /* FinderGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FinderGlue.swift; path = test/FinderGlue.swift; sourceTree = SOURCE_ROOT; };
-		4FDB20421D8ABA2E008AB470 /* ITunesGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ITunesGlue.swift; path = test/ITunesGlue.swift; sourceTree = SOURCE_ROOT; };
-		4FDB20431D8ABA2E008AB470 /* TextEditGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TextEditGlue.swift; path = test/TextEditGlue.swift; sourceTree = SOURCE_ROOT; };
 		4FDD30FD1B932C29002BA20F /* SpecifierFormatter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpecifierFormatter.swift; sourceTree = "<group>"; };
 		4FEFCF1C1B93A31E0013FFC8 /* TODO.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TODO.txt; sourceTree = "<group>"; };
 		4FFF5D241D899F0D008ED4F5 /* SwiftAutomation.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftAutomation.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -471,8 +482,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4F252BBA224F937200888935 /* Carbon.framework in Frameworks */,
 				4F252BB9224F936C00888935 /* Foundation.framework in Frameworks */,
+				4FFBE3E82295F6D200DADF30 /* MacOSGlues.framework in Frameworks */,
+				4FFBE3E92295F6D200DADF30 /* SwiftAutomation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -733,9 +745,6 @@
 			isa = PBXGroup;
 			children = (
 				4F9AFB451D5E99FC00A71890 /* main.swift */,
-				4FDB20411D8ABA2E008AB470 /* FinderGlue.swift */,
-				4FDB20421D8ABA2E008AB470 /* ITunesGlue.swift */,
-				4FDB20431D8ABA2E008AB470 /* TextEditGlue.swift */,
 			);
 			path = test;
 			sourceTree = "<group>";
@@ -854,6 +863,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				4FFBE3EB2295F6E500DADF30 /* PBXTargetDependency */,
 				4F4C1A251D943D52004F9083 /* PBXTargetDependency */,
 			);
 			name = test;
@@ -893,6 +903,7 @@
 			);
 			dependencies = (
 				4F21AF0F2286170700A1B978 /* PBXTargetDependency */,
+				4FFBE3E522959A5B00DADF30 /* PBXTargetDependency */,
 			);
 			name = SwiftAutomation;
 			productName = SwiftAutomation;
@@ -1118,9 +1129,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				4F9AFB531D5E9B4100A71890 /* main.swift in Sources */,
-				4FDB20451D8ABA2E008AB470 /* ITunesGlue.swift in Sources */,
-				4FDB20441D8ABA2E008AB470 /* FinderGlue.swift in Sources */,
-				4FDB20461D8ABA2E008AB470 /* TextEditGlue.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1208,6 +1216,16 @@
 			isa = PBXTargetDependency;
 			target = 4FFF5D231D899F0D008ED4F5 /* SwiftAutomation */;
 			targetProxy = 4F4C1A241D943D52004F9083 /* PBXContainerItemProxy */;
+		};
+		4FFBE3E522959A5B00DADF30 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4F0E39641BAA98A900FF2A96 /* aeglue */;
+			targetProxy = 4FFBE3E422959A5B00DADF30 /* PBXContainerItemProxy */;
+		};
+		4FFBE3EB2295F6E500DADF30 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4F1A57F91D9E81C300ACFA51 /* MacOSGlues */;
+			targetProxy = 4FFBE3EA2295F6E500DADF30 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

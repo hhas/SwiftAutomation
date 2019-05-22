@@ -128,12 +128,17 @@ public typealias SendOptions = UInt
 // launch and relaunch options used in Application initializers
 
 #if canImport(AppKit)
+
 public typealias LaunchOptions = NSWorkspace.LaunchOptions
-public let DefaultLaunchOptions: LaunchOptions = NSWorkspace.LaunchOptions.withoutActivation
+
+public let defaultLaunchOptions: LaunchOptions = NSWorkspace.LaunchOptions.withoutActivation
+
 #else
+
 public typealias LaunchOptions = UInt
-public let DefaultLaunchOptions: LaunchOptions = 0
-class NSRunningApplication {}
+
+public let defaultLaunchOptions: LaunchOptions = 0
+
 #endif
 
 
@@ -143,7 +148,7 @@ public enum RelaunchMode { // if [local] target process has terminated, relaunch
     case never
 }
 
-public let DefaultRelaunchMode: RelaunchMode = .limited
+public let defaultRelaunchMode: RelaunchMode = .limited
 
 
 // Indicates omitted command parameter
@@ -152,10 +157,10 @@ public enum OptionalParameter {
     case none
 }
 
-public let NoParameter = OptionalParameter.none
+public let noParameter = OptionalParameter.none
 
 func isParameter(_ value: Any) -> Bool {
-    return value as? OptionalParameter != NoParameter
+    return value as? OptionalParameter != noParameter
 }
 
 
@@ -164,11 +169,11 @@ func isParameter(_ value: Any) -> Bool {
 
 
 // AE errors indicating process unavailable // TO DO: finalize
-private let ProcessNotFoundErrorNumbers: Set<Int> = [procNotFound, connectionInvalid, localOnlyErr]
+private let processNotFoundCodes: Set<Int> = [procNotFound, connectionInvalid, localOnlyErr]
 
-private let LaunchEventSucceededErrorNumbers: Set<Int> = [Int(noErr), errAEEventNotHandled]
+private let launchEventSuccessCodes: Set<Int> = [Int(noErr), errAEEventNotHandled]
 
-private let LaunchEvent = AppleEventDescriptor(code: eventIdentifier(kASAppleScriptSuite, kASLaunchEvent))
+private let launchEvent = AppleEventDescriptor(code: miscEventLaunch)
 
 // Application initializers pass application-identifying information to AppData initializer as enum according to which initializer was called
 
@@ -215,10 +220,11 @@ public enum TargetApplication: CustomReflectable {
     
     #endif
     
+    // no-op event that can check if local/remote process is running
     private func sendLaunchEvent(processDescriptor: AddressDescriptor) -> Int {
-        var event = AppleEventDescriptor(code: eventIdentifier(kASAppleScriptSuite, kASLaunchEvent), target: processDescriptor)
+        var event = AppleEventDescriptor(code: miscEventLaunch, target: processDescriptor)
         event.timeout = 30
-        let (replyEvent, errorCode) = event.send()
+        let (errorCode, replyEvent) = event.send()
         return errorCode != 0 ? errorCode : (replyEvent?.errorNumber ?? 0) // note: errAEEventNotHandled is normal here
     }
     
@@ -239,7 +245,7 @@ public enum TargetApplication: CustomReflectable {
     private func isRunning(processDescriptor: AddressDescriptor) -> Bool {
         // check if process is running by sending it a 'noop' event; used by isRunning property
         // this assumes app is running unless it receives an AEM error that explicitly indicates it isn't (a bit crude, but when the only identifying information for the target process is an arbitrary AEAddressDesc there isn't really a better way to check if it's running other than send it an event and see what happens)
-        return !ProcessNotFoundErrorNumbers.contains(self.sendLaunchEvent(processDescriptor: processDescriptor))
+        return !processNotFoundCodes.contains(self.sendLaunchEvent(processDescriptor: processDescriptor))
     }
     
     // get info on this application
@@ -288,7 +294,7 @@ public enum TargetApplication: CustomReflectable {
     private func launch(url: URL) throws {
         #if canImport(AppKit)
         try NSWorkspace.shared.launchApplication(at: url, options: [NSWorkspace.LaunchOptions.withoutActivation],
-                                                   configuration: [NSWorkspace.LaunchConfigurationKey.appleEvent: LaunchEvent])
+                                                   configuration: [NSWorkspace.LaunchConfigurationKey.appleEvent: launchEvent])
         #else
         throw AutomationError(code: 1, message: "AppKit not available")
         #endif
@@ -301,7 +307,7 @@ public enum TargetApplication: CustomReflectable {
         // note: in principle an app _could_ implement an AE handler for this event that returns a value, but it probably isn't a good idea to do so (the event is called 'ascr'/'noop' for a reason), so even if a running process does return something (instead of throwing the expected errAEEventNotHandled) we just ignore it for sanity's sake (the flipside being that if the app _isn't_ already running then NSWorkspace.launchApplication() will launch it and pass the 'noop' descriptor as the first Apple event to handle, but doesn't return a result for that event, so to return a result at any other time would be inconsistent)
         if self.isRunning {
             let errorNumber = self.sendLaunchEvent(processDescriptor: try self.descriptor()!)
-            if !LaunchEventSucceededErrorNumbers.contains(errorNumber) {
+            if !launchEventSuccessCodes.contains(errorNumber) {
                 throw AutomationError(code: errorNumber, message: "Can't launch application.")
             }
         } else {
@@ -330,7 +336,7 @@ public enum TargetApplication: CustomReflectable {
     }
     
     // get AEAddressDesc for target application (this is typeKernelProcessID for local processes specified by name/url/bundleID/PID)
-    public func descriptor(_ launchOptions: LaunchOptions = DefaultLaunchOptions) throws -> AddressDescriptor? {
+    public func descriptor(_ launchOptions: LaunchOptions = defaultLaunchOptions) throws -> AddressDescriptor? {
         switch self {
         case .current:
             return AddressDescriptor()
@@ -394,15 +400,15 @@ public func fileURLForLocalApplication(_ name: String) -> URL? {
 
 // root descriptor for all absolute object specifiers that do not have a custom root
 // e.g. `document 1 of «typeNull»`
-public let AppRootDesc = RootSpecifierDescriptor.app
+public let appRootDesc = RootSpecifierDescriptor.app
 
 // root descriptor for an object specifier describing start or end of a range of elements in a by-range specifier
 // e.g. `folder (folder 2 of «typeCurrentContainer») thru (folder -1 of «typeCurrentContainer»)`
-public let ConRootDesc = RootSpecifierDescriptor.con
+public let conRootDesc = RootSpecifierDescriptor.con
 
 // root descriptor for an object specifier describing an element whose state is being compared in a by-test specifier
 // e.g. `every track where (rating of «typeObjectBeingExamined» > 50)`
-public let ItsRootDesc = RootSpecifierDescriptor.its
+public let itsRootDesc = RootSpecifierDescriptor.its
 
 
 /******************************************************************************/

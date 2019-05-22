@@ -80,8 +80,8 @@ public protocol «PREFIX»Command: «SWIFTAE»SpecifierProtocol {} // provides A
 // Command->Any will be bound when return type can't be inferred, else Command->T
 
 extension «PREFIX»Command {«+COMMAND»
-    @discardableResult public func «COMMAND_NAME»(_ directParameter: Any = «SWIFTAE»NoParameter,«+PARAMETER»
-            «NAME»: Any = «SWIFTAE»NoParameter,«-PARAMETER»
+    @discardableResult public func «COMMAND_NAME»(_ directParameter: Any = «SWIFTAE»noParameter,«+PARAMETER»
+            «NAME»: Any = «SWIFTAE»noParameter,«-PARAMETER»
             requestedType: «SWIFTAE»Symbol? = nil, waitReply: Bool = true, sendOptions: «SWIFTAE»SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: «SWIFTAE»ConsideringOptions? = nil) throws -> Any {
         return try self.appData.sendAppleEvent(name: "«COMMAND_NAME»", event: «EVENT_IDENTIFIER», // «EVENT_IDENTIFIER_STR»
@@ -90,8 +90,8 @@ extension «PREFIX»Command {«+COMMAND»
                 ], requestedType: requestedType, waitReply: waitReply, sendOptions: sendOptions,
                 withTimeout: withTimeout, considering: considering)
     }
-    public func «COMMAND_NAME»<T>(_ directParameter: Any = «SWIFTAE»NoParameter,«+PARAMETER»
-            «NAME»: Any = «SWIFTAE»NoParameter,«-PARAMETER»
+    public func «COMMAND_NAME»<T>(_ directParameter: Any = «SWIFTAE»noParameter,«+PARAMETER»
+            «NAME»: Any = «SWIFTAE»noParameter,«-PARAMETER»
             requestedType: «SWIFTAE»Symbol? = nil, waitReply: Bool = true, sendOptions: «SWIFTAE»SendOptions? = nil,
             withTimeout: TimeInterval? = nil, considering: «SWIFTAE»ConsideringOptions? = nil) throws -> T {
         return try self.appData.sendAppleEvent(name: "«COMMAND_NAME»", event: «EVENT_IDENTIFIER», // «EVENT_IDENTIFIER_STR»
@@ -142,8 +142,8 @@ public class «PREFIX»Root: «SWIFTAE»RootSpecifier, «PREFIX»Object, «SWIFT
 
 // Application
 public class «APPLICATION_CLASS_NAME»: «PREFIX»Root, «SWIFTAE»Application {«+DEFAULT_INIT»
-    public convenience init(launchOptions: «SWIFTAE»LaunchOptions = «SWIFTAE»DefaultLaunchOptions, relaunchMode: «SWIFTAE»RelaunchMode = «SWIFTAE»DefaultRelaunchMode) {
-        self.init(rootObject: «SWIFTAE»AppRootDesc, appData: Swift.type(of:self).untargetedAppData.targetedCopy(
+    public convenience init(launchOptions: «SWIFTAE»LaunchOptions = «SWIFTAE»defaultLaunchOptions, relaunchMode: «SWIFTAE»RelaunchMode = «SWIFTAE»defaultRelaunchMode) {
+        self.init(rootObject: «SWIFTAE»appRootDesc, appData: Swift.type(of:self).untargetedAppData.targetedCopy(
                   .bundleIdentifier("«BUNDLE_IDENTIFIER»", true), launchOptions: launchOptions, relaunchMode: relaunchMode))
     }
 «-DEFAULT_INIT»}

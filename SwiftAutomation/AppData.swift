@@ -14,41 +14,6 @@ import AppleEvents
 import AppKit
 #endif
 
-// temporary kludge; allows us to send our homegrown AEs via established Carbon AESendMessage() API; aside from confirming that our code is reading and writing AEDesc data correctly (if not quirk-for-quirk compatible with AppleScript, then at least good enough to be understood by well-behaved apps), it gives us a benchmark to compare against as we implement our own Mach-AE bridging layer
-
-import Carbon
-
-func sendEvent(_ event: AppleEventDescriptor) -> (ReplyEventDescriptor?, Int) {
-    var data = event.flatten()
-    var reply = AEDesc(descriptorType: AppleEvents.typeNull, dataHandle: nil)
-    let err = data.withUnsafeMutableBytes { (ptr: UnsafeMutableRawBufferPointer) -> Int in
-        var event = AEDesc(descriptorType: AppleEvents.typeNull, dataHandle: nil)
-        let err = Int(AEUnflattenDesc(ptr.baseAddress, &event))
-        if err != 0 { fatalError("AEUnflattenDesc error \(err), presumably caused by malformed Descriptor.flatten() output.") }
-        let err2 = Int(AESendMessage(&event, &reply, 0x73, 120*60))
-//        let nsdesc = NSAppleEventDescriptor(aeDescNoCopy: &event)
-//        print("TO PROCESS:", nsdesc.attributeDescriptor(forKeyword: AppleEvents.keyAddressAttr) as Any)
-//        print("SENT EVENT:", nsdesc)
-        return err2
-    }
-    if err != 0 {
-        print("AEM error: \(err)")
-        return (nil, err)
-    }
-    let size = AESizeOfFlattenedDesc(&reply)
-    let ptr = UnsafeMutablePointer<Int8>.allocate(capacity: size)
-    let err2 = Int(AEFlattenDesc(&reply, ptr, size, nil))
-    if err2 != 0 { fatalError("AEFlattenDesc should not fail") }
-    let data2 = Data(bytesNoCopy: ptr, count: size, deallocator: .none)
-    //dumpFourCharData(data2)
-    if reply.descriptorType == AppleEvents.typeNull { return (nil, 0) } // TO DO: if kAENoReply is used then null descriptor is returned
-//    print("REPLY EVENT:", NSAppleEventDescriptor(aeDescNoCopy: &reply))
-    return ((AppleEvents.unflattenDescriptor(data2) as! ReplyEventDescriptor), 0) // unflattenDescriptor currently raises fatalError if it fails
-}
-
-
-
-
 
 // TO DO: what about applying self-packing protocol/extension to most/all Swift types (as is already done in TypeExtensions.swift for Array, Dictionary, Set), rather than using large `switch` statement in AppData.pack()?
 
@@ -132,7 +97,7 @@ open class AppData {
     
     // create a new untargeted AppData instance for a glue file's private gUntargetedAppData constant (note: this will leak memory each time it's used so users should not call it themselves; instead, use AEApplication.untargetedAppData to return an already-created instance suitable for general programming tasks)
     public convenience init(glueClasses: GlueClasses) {
-        self.init(target: .none, launchOptions: DefaultLaunchOptions, relaunchMode: .never, glueClasses: glueClasses)
+        self.init(target: .none, launchOptions: defaultLaunchOptions, relaunchMode: .never, glueClasses: glueClasses)
     }
     
     // create a targeted copy of a [typically untargeted] AppData instance; Application inits should always use this to create targeted AppData instances
@@ -144,19 +109,19 @@ open class AppData {
     // specifier roots
     
     public var application: RootSpecifier { // returns targeted application object that can build specifiers and send commands
-        return self.glueClasses.applicationType.init(rootObject: AppRootDesc, appData: self)
+        return self.glueClasses.applicationType.init(rootObject: appRootDesc, appData: self)
     }
     
     public var app: RootSpecifier { // returns untargeted 'application' object that can build specifiers for use in other commands only
-        return self.glueClasses.rootSpecifierType.init(rootObject: AppRootDesc, appData: self)
+        return self.glueClasses.rootSpecifierType.init(rootObject: appRootDesc, appData: self)
     }
     
     public var con: RootSpecifier { // returns untargeted 'container' object used to build specifiers for use in by-range specifiers only
-        return self.glueClasses.rootSpecifierType.init(rootObject: ConRootDesc, appData: self)
+        return self.glueClasses.rootSpecifierType.init(rootObject: conRootDesc, appData: self)
     }
     
     public var its: RootSpecifier { // returns untargeted 'object-to-test' object used to build specifiers for use in by-test specifiers only
-        return self.glueClasses.rootSpecifierType.init(rootObject: ItsRootDesc, appData: self)
+        return self.glueClasses.rootSpecifierType.init(rootObject: itsRootDesc, appData: self)
     }
     
     
@@ -499,10 +464,9 @@ open class AppData {
     // if relaunchMode = .limited, only 'launch' and 'run' are allowed to restart a local application that's been quit
     let relaunchableEvents: Set<EventIdentifier> = [AppleEvents.eventOpenApplication, AppleEvents.miscEventLaunch]
     
+    
     private func send(event: AppleEventDescriptor, sendMode: SendOptions, timeout: TimeInterval) throws -> ReplyEventDescriptor { // used by sendAppleEvent()
-        
-        
-        let (replyEvent, errorCode) = sendEvent(event) // event.sendEvent(options: sendMode, timeout: timeout) // TO DO
+        let (errorCode, replyEvent) = event.send() //sendEvent(options: sendMode, timeout: timeout)) // TO DO
         if errorCode == 0 {
             return replyEvent ?? nullReplyEvent
         } else if errorCode == -1708 && event.code == eventIdentifier(kASAppleScriptSuite, kASLaunchEvent) {
@@ -517,7 +481,7 @@ open class AppData {
     
     public func sendAppleEvent<T>(name: String?, event eventIdentifier: EventIdentifier,
                                   parentSpecifier: Specifier, // the Specifier on which the command method was called; see special-case packing logic below
-                                  directParameter: Any = NoParameter, // the first (unnamed) parameter to the command method; see special-case packing logic below
+                                  directParameter: Any = noParameter, // the first (unnamed) parameter to the command method; see special-case packing logic below
                                   keywordParameters: [KeywordParameter] = [], // the remaining named parameters
                                   requestedType: Symbol? = nil, // event's `as` parameter, if any (note: while a `keyAERequestedType` parameter can be supplied via `keywordParameters:`, it will be ignored if `requestedType:` is given)
                                   waitReply: Bool = true, // wait for application to respond before returning?
@@ -544,7 +508,7 @@ open class AppData {
                 event.setParameter(AppleEvents.keyDirectObject, to: try self.pack(directParameter))
             }
             // if command method was called on root Application (null) object, the event's subject is also null...
-            var subjectDesc: QueryDescriptor = AppRootDesc
+            var subjectDesc: QueryDescriptor = appRootDesc
             // ... but if the command was called on a Specifier, decide if that specifier should be packed as event's subject
             // or, as a special case, used as event's keyDirectObject/keyAEInsertHere parameter for user's convenience
             if !(parentSpecifier is RootSpecifier) { // technically Application, but there isn't an explicit class for that
@@ -635,7 +599,7 @@ open class AppData {
                                   requestedType: Symbol? = nil, waitReply: Bool = true, sendOptions: SendOptions? = nil,
                                   withTimeout: TimeInterval? = nil, considering: ConsideringOptions? = nil) throws -> T {
         var parameters = parameters
-        let directParameter = parameters.removeValue(forKey: AppleEvents.keyDirectObject) ?? NoParameter
+        let directParameter = parameters.removeValue(forKey: AppleEvents.keyDirectObject) ?? noParameter
         let keywordParameters: [KeywordParameter] = parameters.map({(name: nil, code: $0, value: $1)})
         return try self.sendAppleEvent(name: nil, event: event, parentSpecifier: parentSpecifier,
                                        directParameter: directParameter, keywordParameters: keywordParameters,

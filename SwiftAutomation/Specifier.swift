@@ -473,7 +473,7 @@ open class RootSpecifier: ObjectSpecifier { // app, con, its, custom root (note:
     
     override public var rootSpecifier: RootSpecifier { return self }
     
-    public var rootObject: Any { return self.selectorData } // the objspec chain's terminal 'from' object; this is usually AppRootDesc/ConRootDesc/ItsRootDesc, but not always (e.g. 'fully qualified' specifiers are terminated by an AEAddressDesc)
+    public var rootObject: Any { return self.selectorData } // the objspec chain's terminal 'from' object; this is usually appRootDesc/conRootDesc/itsRootDesc, but not always (e.g. 'fully qualified' specifiers are terminated by an AEAddressDesc)
     
     override func unpackParentSpecifiers() {}
     

@@ -133,8 +133,8 @@ open class DynamicAppData: AppData { // TO DO: rename this and make `public` as 
         let glueClasses = GlueClasses(insertionSpecifierType: AEInsertion.self, objectSpecifierType: AEItem.self,
                                       multiObjectSpecifierType: AEItems.self, rootSpecifierType: AERoot.self,
                                       applicationType: AERoot.self, symbolType: Symbol.self, formatter: specifierFormatter) // TO DO: what applicationType?
-        self.init(target: TargetApplication.url(applicationURL), launchOptions: DefaultLaunchOptions,
-                  relaunchMode: DefaultRelaunchMode, glueClasses: glueClasses, glueSpec: glueSpec, glueTable: glueTable)
+        self.init(target: TargetApplication.url(applicationURL), launchOptions: defaultLaunchOptions,
+                  relaunchMode: defaultRelaunchMode, glueClasses: glueClasses, glueSpec: glueSpec, glueTable: glueTable)
     }
     
     public override func targetedCopy(_ target: TargetApplication, launchOptions: LaunchOptions, relaunchMode: RelaunchMode) -> Self {
@@ -178,7 +178,7 @@ public extension CommandDescription {
                     keywordParameters.append((paramInfo.name, value))
                 }
             }
-            let directParameter = rawParameters[keyDirectObject] ?? NoParameter
+            let directParameter = rawParameters[keyDirectObject] ?? noParameter
             let requestedType = rawParameters[keyAERequestedType] as? Symbol
             // make sure all keyword parameters have been matched to parameter names
             if rawParameters.count == keywordParameters.count + (isParameter(directParameter) ? 1 : 0)
