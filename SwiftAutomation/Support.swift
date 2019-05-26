@@ -95,8 +95,7 @@ func formatEightCharCode(_ code: EventIdentifier) -> String {
 
 
 // the following AEDesc types will be mapped to Symbol instances
-let symbolDescriptorTypes: Set<DescType> = [AppleEvents.typeType, AppleEvents.typeEnumerated,
-                                            AppleEvents.typeProperty, AppleEvents.typeKeyword]
+let symbolDescriptorTypes: Set<DescType> = [typeType, typeEnumerated, typeProperty, typeKeyword]
 
 
 /******************************************************************************/

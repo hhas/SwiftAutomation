@@ -5,6 +5,10 @@
 //  Extends Swift's generic Optional and collection types so that they pack and unpack themselves (since Swift lacks the dynamic introspection capabilities for AppData to determine how to pack and unpack them itself)
 //
 
+#if canImport(Carbon)
+import Carbon
+#endif
+
 import Foundation
 import AppleEvents
 
@@ -36,7 +40,7 @@ public protocol SelfFormatting {
 
 // note: this design is not yet finalized (ideally we'd just map cMissingValue to nil, but returning nil for commands whose return type is `Any` is a PITA as all of Swift's normal unboxing techniques break, and the only way to unbox is to cast from Any to Optional<T> first, which in turn requires that T is known in advance, in which case what's the point of returning Any in the first place?)
 
-let missingValueDesc = packAsType(cMissingValue)
+let missingValueDesc = packAsType(OSType(cMissingValue))
 
 
 // unlike Swift's `nil` (which is actually an infinite number of values since Optional<T>.none is generic), there is only ever one `MissingValue`, which means it should behave sanely when cast to and from `Any`
@@ -117,7 +121,7 @@ public enum MayBeMissing<T>: SelfPacking, SelfUnpacking { // TO DO: rename 'Miss
 
 
 func isMissingValue(_ desc: Descriptor) -> Bool { // check if the given AEDesc is the `missing value` constant
-    return desc.type == AppleEvents.typeType && (try? unpackAsType(desc)) == AppleEvents.cMissingValue
+    return desc.type == typeType && (try? unpackAsType(desc)) == OSType(cMissingValue)
 }
 
 // allow optionals to be used in place of MayBeMissing… arguably, MayBeMissing won't be needed if this works
@@ -162,7 +166,7 @@ extension Set: SelfPacking, SelfUnpacking, SelfFormatting { // note: AEM doesn't
     public static func SwiftAutomation_unpackSelf(_ desc: Descriptor, appData: AppData) throws -> Set<Element> {
         var result = Set<Element>()
         switch desc.type {
-        case AppleEvents.typeAEList:
+        case typeAEList:
             for (i, item) in (desc as! ListDescriptor).enumerated() {
                 do {
                     result.insert(try appData.unpack(item) as Element)
@@ -203,7 +207,7 @@ extension Array: SelfPacking, SelfUnpacking, SelfFormatting {
     
     public static func SwiftAutomation_unpackSelf(_ desc: Descriptor, appData: AppData) throws -> [Element] {
         switch desc.type {
-        case AppleEvents.typeAEList:
+        case typeAEList:
             return try unpackAsArray(desc, using: { try appData.unpack($0) })
 /*
         case typeQDPoint: // SInt16[2]
@@ -231,7 +235,7 @@ extension Dictionary: SelfPacking, SelfUnpacking, SelfFormatting {
     public func SwiftAutomation_packSelf(_ appData: AppData) throws -> Descriptor {
         var result = Data()
         var count: UInt32 = 0
-        var type = AppleEvents.typeAERecord
+        var type = typeAERecord
         var userPropertyCount: UInt32 = 0
         var userProperties = Data()
         for (key, value) in self {
@@ -242,7 +246,7 @@ extension Dictionary: SelfPacking, SelfUnpacking, SelfFormatting {
                         packAsString(name).appendTo(containerData: &userProperties)
                         desc.appendTo(containerData: &userProperties)
                         userPropertyCount += 2
-                    } else if symbol.code == AppleEvents.pClass, let cls = try? unpackAsType(desc) {
+                    } else if symbol.code == pClass, let cls = try? unpackAsType(desc) {
                         type = cls
                     } else {
                         result += encodeUInt32(symbol.code)
@@ -261,7 +265,7 @@ extension Dictionary: SelfPacking, SelfUnpacking, SelfFormatting {
             }
         }
         if userPropertyCount > 0 {
-            result += encodeUInt32(AppleEvents.keyASUserRecordFields)
+            result += encodeUInt32(OSType(keyASUserRecordFields))
             ListDescriptor(count: userPropertyCount, data: userProperties).appendTo(containerData: &result)
         }
         return RecordDescriptor(type: type, count: count, data: result)
@@ -272,14 +276,14 @@ extension Dictionary: SelfPacking, SelfUnpacking, SelfFormatting {
             throw UnpackError(appData: appData, desc: desc, type: self, message: "Not a record.")
         }
         var result = [Key:Value]()
-        if desc.type != AppleEvents.typeAERecord {
-            if let key = appData.glueClasses.symbolType.symbol(code: AppleEvents.pClass) as? Key,
+        if desc.type != typeAERecord {
+            if let key = appData.glueClasses.symbolType.symbol(code: pClass) as? Key,
                 let value = appData.glueClasses.symbolType.symbol(code: desc.type) as? Value {
                 result[key] = value
             }
         }
         for (key, itemDesc) in recordDesc {
-            if key == AppleEvents.keyASUserRecordFields, let userProperties = itemDesc as? ListDescriptor, userProperties.count % 2 == 0 {
+            if key == keyASUserRecordFields, let userProperties = itemDesc as? ListDescriptor, userProperties.count % 2 == 0 {
                 // unpack record properties whose keys are identifiers (represented as AEList of form: [key1,value1,key2,value2,...])
                 var items = userProperties.makeIterator()
                 while let keyDesc = items.next(), let valueDesc = items.next() {

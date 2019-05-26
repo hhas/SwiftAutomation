@@ -3,6 +3,10 @@
 //  SwiftAutomation
 //
 
+#if canImport(Carbon)
+import Carbon
+#endif
+
 import Foundation
 import AppleEvents
 
@@ -254,7 +258,7 @@ public class CommandError: AutomationError { // raised whenever an application c
     }
     
     public override var message: String? {
-        if let desc = self.reply?.parameter(AEKeyword(AppleEvents.keyErrorString))
+        if let desc = self.reply?.parameter(AEKeyword(keyErrorString))
                     ?? self.reply?.parameter(AEKeyword(kOSAErrorBriefMessage)) { // TO DO: get rid of this?
             if let result = try? unpackAsString(desc) { return result }
         }

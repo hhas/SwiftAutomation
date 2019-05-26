@@ -215,7 +215,7 @@ func parseRecordStructDefinition(_ string: String, classNamePrefix: String,
         chars.removeFirst()
         className = try parseIdentifier(&chars) // the object's 'class' as defined in app's dictionary
         let desc = typesByName[className]
-        if ![AppleEvents.typeType, AppleEvents.typeProperty].contains(desc?.type ?? 0) { throw SyntaxError("Invalid record class name: \(className)") }
+        if ![typeType, typeProperty].contains(desc?.type ?? 0) { throw SyntaxError("Invalid record class name: \(className)") }
     } else {
         className = "record"
     }
@@ -513,8 +513,8 @@ public func renderStaticGlueTemplate(glueSpec: GlueSpec, typeSupportSpec: TypeSu
     // note: both by-name and by-code tables are used here to ensure conflicting keywords are represented correctly, e.g. if keyword `foo` is defined as both a type and a property but with different codes for each, it should appear only once in TYPE_SYMBOL (by-name) list but twice in SYMBOL_SWITCH (by-code) list; this [hopefully] emulates the way in which AppleScript resolves these conflicts
     template.insertKeywords("SYMBOL_SWITCH", glueTable.typesByCode.sorted(by: {$0.1.lowercased()<$1.1.lowercased()}))
     let typesByName = glueTable.typesByName.sorted(by: {$0.0.lowercased()<$1.0.lowercased()})
-    template.insertKeywords("TYPE_SYMBOL", typesByName.filter({$1.type != AppleEvents.typeEnumerated}).map({(code: try! unpackAsFourCharCode($1), name: $0)}))
-    template.insertKeywords("ENUM_SYMBOL", typesByName.filter({$1.type == AppleEvents.typeEnumerated}).map({(code: try! unpackAsFourCharCode($1), name: $0)}))
+    template.insertKeywords("TYPE_SYMBOL", typesByName.filter({$1.type != typeEnumerated}).map({(code: try! unpackAsFourCharCode($1), name: $0)}))
+    template.insertKeywords("ENUM_SYMBOL", typesByName.filter({$1.type == typeEnumerated}).map({(code: try! unpackAsFourCharCode($1), name: $0)}))
     template.insertKeywords("TYPE_FORMATTER", glueTable.typesByCode.sorted(by: {$0.1.lowercased()<$1.1.lowercased()}), emptyContent: ":")
     template.insertKeywords("PROPERTY_FORMATTER", glueTable.propertiesByCode.sorted(by: {$0.1.lowercased()<$1.1.lowercased()}), emptyContent: ":")
     template.insertElements("ELEMENTS_FORMATTER", glueTable.elementsByCode.map({($0,$1)}).sorted(by: {$0.1.plural.lowercased()<$1.1.plural.lowercased()}), emptyContent: ":")

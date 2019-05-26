@@ -15,6 +15,10 @@
 // TO DO: this isn't the most efficient design: the parser loops over entire dictionary to extract lists of name+code pairs, then GlueTable loops over those again. Ideally parsers would add entries to glue tables directly as they read dictionaries; however, this'll need some thought as the order in which duplicate names/codes are read is significant. The current implementation mimics the AS behavior (when names are duplicated the last definition is used; however, when codes are duplicated the first definition is used); any replacement would need to do likewise. (Keyword conversion could also be more efficient; may be worth moving that to AETE+SDEF parsers.)
 
 
+#if canImport(Carbon)
+import Carbon
+#endif
+
 import Foundation
 import AppleEvents
 
@@ -226,9 +230,9 @@ public class GlueTable {
     // (note: default terminology is added automatically when GlueTable is instantiated; users should not add it themselves)
     public func add(terminology terms: ApplicationTerminology) {
         // build type tables
-        self.add(symbolKeywords: terms.properties, descriptorType: AppleEvents.typeType) // technically typeProperty, but typeType is prob. safest
-        self.add(symbolKeywords: terms.enumerators, descriptorType: AppleEvents.typeEnumerated)
-        self.add(symbolKeywords: terms.types, descriptorType: AppleEvents.typeType)
+        self.add(symbolKeywords: terms.properties, descriptorType: typeType) // technically typeProperty, but typeType is prob. safest
+        self.add(symbolKeywords: terms.enumerators, descriptorType: typeEnumerated)
+        self.add(symbolKeywords: terms.types, descriptorType: typeType)
         // build specifier tables
         self.add(elementKeywords: terms.elements, defaultKeywordsByName: self.defaultElementsByName)
         self.add(propertyKeywords: terms.properties, defaultKeywordsByName: self.defaultPropertiesByName)

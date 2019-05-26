@@ -7,6 +7,10 @@
 // TO DO: check endianness in read data methods
 // TO DO: when is this still needed? (e.g. remote AEs)
 
+#if canImport(Carbon)
+import Carbon
+#endif
+
 import Foundation
 import AppleEvents
 
@@ -39,7 +43,7 @@ public class AETEParser: ApplicationTerminology {
     
     public func parse(_ desc: Descriptor) throws { // accepts AETE/AEUT, or AEList of AETE/AEUTs; this takes ownership
         switch desc.type {
-        case AppleEvents.typeAETE, AppleEvents.typeAEUT:
+        case OSType(typeAETE), OSType(typeAEUT):
             self.aeteSize = desc.data.count
             self.aeteData = desc.data
             self.cursor = 6 // skip version, language, script integers
@@ -63,7 +67,7 @@ public class AETEParser: ApplicationTerminology {
             } catch {
                 throw TerminologyError("An error occurred while parsing AETE. \(error)")
             }
-        case AppleEvents.typeAEList:
+        case typeAEList:
             for item in (desc as! ListDescriptor) {
                 try self.parse(item)
             }
@@ -301,7 +305,7 @@ public class AETEParser: ApplicationTerminology {
 extension AEApplication { // extends the built-in Application object with convenience method for getting its AETE resource
 
     public func getAETE() throws -> Descriptor { // caller takes ownership
-        return try self.sendAppleEvent(AppleEvents.miscEventGetAETE, [AppleEvents.keyDirectObject:0])
+        return try self.sendAppleEvent(miscEventGetAETE, [keyDirectObject:0])
     }
 }
 

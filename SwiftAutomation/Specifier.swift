@@ -140,7 +140,7 @@ public protocol SpecifierProtocol { // glue-defined Command extensions, and by O
 
 open class Specifier: Query, SpecifierProtocol {
 
-    var _parentDescKey: OSType { return OSType(AppleEvents.keyAEContainer) }
+    var _parentDescKey: OSType { return OSType(keyAEContainer) }
     
     // An object specifier is constructed as a linked list of AERecords of typeObjectSpecifier, terminated by a root descriptor (e.g. a null descriptor represents the root node of the app's Apple event object graph). The topmost node may also be an insertion location specifier, represented by an AERecord of typeInsertionLoc. The abstract Specifier class implements functionality common to both object and insertion specifiers.
     
@@ -230,7 +230,7 @@ open class InsertionSpecifier: Specifier { // SwiftAutomation_packSelf
     
     public let position: Position
     
-    override var _parentDescKey: OSType { return AppleEvents.keyAEObject }
+    override var _parentDescKey: OSType { return keyAEObject }
 
     required public init(position: Position, parentQuery: Query?, appData: AppData, descriptor: Descriptor?) {
         self.position = position
@@ -450,7 +450,7 @@ open class RootSpecifier: ObjectSpecifier { // app, con, its, custom root (note:
     
     public required init(rootObject: Any, appData: AppData) {
         // rootObject is either one of the three standard AEDescs indicating app/con/its root, or an arbitrary object supplied by caller (e.g. an AEAddressDesc if constructing a fully qualified specifier)
-        super.init(wantType: AppleEvents.typeNull, // wantType and selectorForm are unused here
+        super.init(wantType: typeNull, // wantType and selectorForm are unused here
                    selectorForm: .absolutePosition, selectorData: rootObject,
                    parentQuery: nil, appData: appData, descriptor: rootObject as? Descriptor)
     }

@@ -22,7 +22,7 @@ open class Symbol: Hashable, Equatable, CustomStringConvertible, CustomDebugStri
     open var typeAliasName: String { return "Symbol" } // provides prefix used in description var; glue subclasses override this with their own strings (e.g. "FIN" for Finder)
     
     // TO DO: check `desc` vs `descriptor` naming consistency throughout code and standardize on one or other
-    public required init(name: String?, code: OSType, type: OSType = AppleEvents.typeType, descriptor: ScalarDescriptor? = nil) {
+    public required init(name: String?, code: OSType, type: OSType = typeType, descriptor: ScalarDescriptor? = nil) {
         self.name = name
         self.code = code
         self.type = type
@@ -46,12 +46,12 @@ open class Symbol: Hashable, Equatable, CustomStringConvertible, CustomDebugStri
         self.init(name: nil, code: UTGetOSTypeFromString(code as CFString), type: UTGetOSTypeFromString(type as CFString)) // caution: UTGetOSTypeFromString silently fails (returns 0) for invalid strings
     }
     
-    public convenience init(code: OSType, type: OSType = AppleEvents.typeType) {
+    public convenience init(code: OSType, type: OSType = typeType) {
         self.init(name: nil, code: code, type: type)
     }
     
     // this is called by AppData when unpacking typeType, typeEnumerated, etc; glue-defined symbol subclasses should override to return glue-defined symbols where available
-    open class func symbol(code: OSType, type: OSType = AppleEvents.typeType, descriptor: ScalarDescriptor? = nil) -> Symbol {
+    open class func symbol(code: OSType, type: OSType = typeType, descriptor: ScalarDescriptor? = nil) -> Symbol {
         return self.init(name: nil, code: code, type: type, descriptor: descriptor)
     }
     

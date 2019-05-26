@@ -107,11 +107,11 @@ public class SpecifierFormatter {
         var hasCustomRoot = true
         if let desc = specifier.rootObject as? Descriptor {
             switch desc.type {
-            case AppleEvents.typeCurrentContainer:
+            case typeCurrentContainer:
                 return "\(self.classNamePrefix)Con"
-            case AppleEvents.typeObjectBeingExamined:
+            case typeObjectBeingExamined:
                 return "\(self.classNamePrefix)Its"
-            case AppleEvents.typeNull:
+            case typeNull:
                 hasCustomRoot = false
             default:
                 break
@@ -172,20 +172,20 @@ public class SpecifierFormatter {
                 if specifier.wantType == parent.wantType {
                     return "\(result).\(name)()" // use shorthand form for neatness
                 } else {
-                    let element = self.formatSymbol(name: nil, code: specifier.wantType, type: AppleEvents.typeType)
+                    let element = self.formatSymbol(name: nil, code: specifier.wantType, type: typeType)
                     return "\(result).\(name)(\(element))"
                 }
             }
         default:
             result += formatElementsVar(specifier.wantType)
-            if let desc = specifier.selectorData as? Descriptor, (try? unpackAsEnum(desc)) == AppleEvents.kAEAll { // TO DO: check this is right (replaced `where` with `,`)
+            if let desc = specifier.selectorData as? Descriptor, (try? unpackAsEnum(desc)) == OSType(kAEAll) { // TO DO: check this is right (replaced `where` with `,`)
                 return result
             }
             switch form {
             case .absolutePosition: // specifier[IDX] or specifier.first/middle/last/any
                 if let desc = specifier.selectorData as? Descriptor, let code = try? unpackAsEnum(desc), // ObjectSpecifier.unpackSelf does not unpack ordinals
-                    let ordinal = [AppleEvents.kAEFirst: "first", AppleEvents.kAEMiddle: "middle",
-                                   AppleEvents.kAELast: "last", AppleEvents.kAEAny: "any"][code] {
+                    let ordinal = [OSType(kAEFirst): "first", OSType(kAEMiddle): "middle",
+                                   OSType(kAELast): "last", OSType(kAEAny): "any"][code] {
                     return "\(result).\(ordinal)"
                 } else {
                     return "\(result)[\(self.formatValue(specifier.selectorData))]"

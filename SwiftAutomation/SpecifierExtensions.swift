@@ -17,14 +17,14 @@ import AppleEvents
 
 
 // TO DO: TEMPORARY; lifted from AppleEvents
-private let firstPosition   = ScalarDescriptor(type: AppleEvents.typeAbsoluteOrdinal, data: Data([0x66, 0x69, 0x72, 0x73])) // kAEFirst
-private let middlePosition  = ScalarDescriptor(type: AppleEvents.typeAbsoluteOrdinal, data: Data([0x6D, 0x69, 0x64, 0x64])) // kAEMiddle
-private let lastPosition    = ScalarDescriptor(type: AppleEvents.typeAbsoluteOrdinal, data: Data([0x6C, 0x61, 0x73, 0x74])) // kAELast
-private let anyPosition     = ScalarDescriptor(type: AppleEvents.typeAbsoluteOrdinal, data: Data([0x61, 0x6E, 0x79, 0x20])) // kAEAny
-private let allPosition     = ScalarDescriptor(type: AppleEvents.typeAbsoluteOrdinal, data: Data([0x61, 0x6C, 0x6C, 0x20])) // kAEAll
+private let firstPosition   = ScalarDescriptor(type: typeAbsoluteOrdinal, data: Data([0x66, 0x69, 0x72, 0x73])) // kAEFirst
+private let middlePosition  = ScalarDescriptor(type: typeAbsoluteOrdinal, data: Data([0x6D, 0x69, 0x64, 0x64])) // kAEMiddle
+private let lastPosition    = ScalarDescriptor(type: typeAbsoluteOrdinal, data: Data([0x6C, 0x61, 0x73, 0x74])) // kAELast
+private let anyPosition     = ScalarDescriptor(type: typeAbsoluteOrdinal, data: Data([0x61, 0x6E, 0x79, 0x20])) // kAEAny
+private let allPosition     = ScalarDescriptor(type: typeAbsoluteOrdinal, data: Data([0x61, 0x6C, 0x6C, 0x20])) // kAEAll
 
-private let previousElement = ScalarDescriptor(type: AppleEvents.typeEnumerated, data: Data([0x70, 0x72, 0x65, 0x76])) // kAEPrevious
-private let nextElement     = ScalarDescriptor(type: AppleEvents.typeEnumerated, data: Data([0x6E, 0x65, 0x78, 0x74])) // kAENext
+private let previousElement = ScalarDescriptor(type: typeEnumerated, data: Data([0x70, 0x72, 0x65, 0x76])) // kAEPrevious
+private let nextElement     = ScalarDescriptor(type: typeEnumerated, data: Data([0x6E, 0x65, 0x78, 0x74])) // kAENext
 
 
 
@@ -41,13 +41,13 @@ public protocol ObjectSpecifierExtension: ObjectSpecifierProtocol {
 public extension ObjectSpecifierExtension {
 
     func userProperty(_ name: String) -> Self.ObjectSpecifierType {
-        return Self.ObjectSpecifierType(wantType: AppleEvents.typeProperty,
+        return Self.ObjectSpecifierType(wantType: typeProperty,
                                         selectorForm: .userProperty, selectorData: packAsString(name),
                                         parentQuery: (self as! Query), appData: self.appData, descriptor: nil)
     }
 
     func property(_ code: OSType) -> Self.ObjectSpecifierType {
-		return Self.ObjectSpecifierType(wantType: AppleEvents.typeProperty,
+		return Self.ObjectSpecifierType(wantType: typeProperty,
 		                                selectorForm: .property, selectorData: packAsType(code),
 		                                parentQuery: (self as! Query), appData: self.appData, descriptor: nil)
     }
@@ -59,7 +59,7 @@ public extension ObjectSpecifierExtension {
         } catch {
             data = error
         }
-        return Self.ObjectSpecifierType(wantType: AppleEvents.typeProperty,
+        return Self.ObjectSpecifierType(wantType: typeProperty,
                                         selectorForm: .property, selectorData: data,
                                         parentQuery: (self as! Query), appData: self.appData, descriptor: nil)
     }
@@ -76,7 +76,7 @@ public extension ObjectSpecifierExtension {
             want = try parseFourCharCode(code)
             data = allPosition
         } catch {
-            want = AppleEvents.typeNull
+            want = typeNull
             data = error
         } 
         return Self.MultipleObjectSpecifierType(wantType: want,
@@ -118,7 +118,7 @@ public extension ObjectSpecifierExtension {
                                                     selectorForm: .absolutePosition, selectorData: allPosition,
                                                     parentQuery: self.parentQuery, appData: self.appData, descriptor: nil)
         } else if self.selectorForm == .absolutePosition, let desc = self.selectorData as? Descriptor,
-            (try? unpackAsEnum(desc)) == AppleEvents.kAEAll, let specifier = self as? Self.MultipleObjectSpecifierType {
+            (try? unpackAsEnum(desc)) == OSType(kAEAll), let specifier = self as? Self.MultipleObjectSpecifierType {
             return specifier
         } else {
             let error = AutomationError(code: 1, message: "Invalid specifier: \(self).all")
@@ -140,7 +140,7 @@ extension MultipleObjectSpecifierExtension {
     // Note: calling an element[s] selector on an all-elements specifier effectively replaces its original gAll selector data with the new selector data, instead of extending the specifier chain. This ensures that applying any selector to `elements[all]` produces `elements[selector]` (effectively replacing the existing selector), while applying a second selector to `elements[selector]` produces `elements[selector][selector2]` (appending the second selection to the first) as normal; e.g. `first document whose modified is true` would be written as `documents[Its.modified==true].first`.
     var baseQuery: Query {
         if let desc = self.selectorData as? Descriptor,
-            desc.type == AppleEvents.typeAbsoluteOrdinal && (try? unpackAsEnum(desc)) == AppleEvents.kAEAll {
+            desc.type == typeAbsoluteOrdinal && (try? unpackAsEnum(desc)) == OSType(kAEAll) {
             return self.parentQuery
         } else {
             return self as! Query

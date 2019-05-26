@@ -166,6 +166,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		4F081B59229AE57700B2004B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4F1EA9E12283545F000E0A3A /* AppleEvents.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 4FD23EB6229A8770006792A7;
+			remoteInfo = "test-receive";
+		};
 		4F1A580E1D9E9FF700ACFA51 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 4F63C41C1B7CF06E000D74EE /* Project object */;
@@ -472,8 +479,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4F21AF6422861F8400A1B978 /* AppKit.framework in Frameworks */,
 				4F21AF6222861F7F00A1B978 /* Foundation.framework in Frameworks */,
+				4F21AF6422861F8400A1B978 /* AppKit.framework in Frameworks */,
 				4F21AF4C22861DBF00A1B978 /* libAppleEvents.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -499,9 +506,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4F1EA9EA2283546A000E0A3A /* AppleEvents.framework in Frameworks */,
 				4FFF5D561D89B6C4008ED4F5 /* Foundation.framework in Frameworks */,
 				4FFF5D541D89B6C4008ED4F5 /* AppKit.framework in Frameworks */,
+				4F1EA9EA2283546A000E0A3A /* AppleEvents.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -673,7 +680,8 @@
 			children = (
 				4F1EA9E72283545F000E0A3A /* AppleEvents.framework */,
 				4F21AF4822861DA400A1B978 /* libAppleEvents.a */,
-				4F1EA9E92283545F000E0A3A /* test */,
+				4F1EA9E92283545F000E0A3A /* test-send */,
+				4F081B5A229AE57700B2004B /* test-receive */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -975,16 +983,23 @@
 			projectRoot = "";
 			targets = (
 				4FFF5D231D899F0D008ED4F5 /* SwiftAutomation */,
+				4F21AF3C22861DA400A1B978 /* libSwiftAutomation */,
 				4F0E39641BAA98A900FF2A96 /* aeglue */,
 				4F9AFB351D5B58EB00A71890 /* test */,
 				4F1A57F91D9E81C300ACFA51 /* MacOSGlues */,
 				4FACE27122723090000A04A0 /* SwiftAutomationLite */,
-				4F21AF3C22861DA400A1B978 /* libSwiftAutomation */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
+		4F081B5A229AE57700B2004B /* test-receive */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.executable";
+			path = "test-receive";
+			remoteRef = 4F081B59229AE57700B2004B /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		4F1EA9E72283545F000E0A3A /* AppleEvents.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
@@ -992,10 +1007,10 @@
 			remoteRef = 4F1EA9E62283545F000E0A3A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		4F1EA9E92283545F000E0A3A /* test */ = {
+		4F1EA9E92283545F000E0A3A /* test-send */ = {
 			isa = PBXReferenceProxy;
 			fileType = "compiled.mach-o.executable";
-			path = test;
+			path = "test-send";
 			remoteRef = 4F1EA9E82283545F000E0A3A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
@@ -1499,7 +1514,7 @@
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
@@ -1535,7 +1550,7 @@
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;

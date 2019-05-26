@@ -29,7 +29,7 @@ public enum TerminologyType {
 public func formatAppleEvent(descriptor event: AppleEventDescriptor, useTerminology: TerminologyType = .sdef) -> String { // TO DO: return command/reply/error enum, giving caller more choice on how to display
     //  Format an outgoing or reply AppleEvent (if the latter, only the return value/error description is displayed).
     //  Caution: if sending events to self, caller MUST use TerminologyType.SDEF or call formatAppleEvent on a background thread, otherwise formatAppleEvent will deadlock the main loop when it tries to fetch host app's AETE via ascr/gdte event.
-    if event.type != AppleEvents.typeAppleEvent { // sanity check
+    if event.type != typeAppleEvent { // sanity check
         return "Can't format Apple event: wrong type: \(literalFourCharCode(event.type))."
     }
     let appData: DynamicAppData
@@ -42,7 +42,7 @@ public func formatAppleEvent(descriptor event: AppleEventDescriptor, useTerminol
         let errn = event.errorNumber
         if errn != 0 { // format error message
             return AutomationError(code: Int(errn), message: event.errorMessage).description // TO DO: use CommandError? (need to check it's happy with only replyEvent arg)
-        } else if let reply = event.parameter(AppleEvents.keyDirectObject) { // format return value
+        } else if let reply = event.parameter(keyDirectObject) { // format return value
             return appData.formatter.format((try? appData.unpackAsAny(reply)) ?? reply)
         } else {
             return MissingValue.description
@@ -148,7 +148,7 @@ open class DynamicAppData: AppData { // TO DO: rename this and make `public` as 
     }
     
     override func recordKey(forCode code: OSType) -> Symbol {
-        return self.glueClasses.symbolType.init(name: self.glueTable.typesByCode[code], code: code, type: AppleEvents.typeProperty)
+        return self.glueClasses.symbolType.init(name: self.glueTable.typesByCode[code], code: code, type: typeProperty)
     }
 }
 

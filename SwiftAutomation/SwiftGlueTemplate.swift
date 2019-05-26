@@ -55,7 +55,7 @@ public class «PREFIX»Symbol: «SWIFTAE»Symbol {
 
     override public var typeAliasName: String {return "«PREFIX»"}
 
-    public override class func symbol(code: OSType, type: OSType = AppleEvents.typeType, descriptor: ScalarDescriptor? = nil) -> «PREFIX»Symbol {
+    public override class func symbol(code: OSType, type: OSType = typeType, descriptor: ScalarDescriptor? = nil) -> «PREFIX»Symbol {
         switch (code) {«+SYMBOL_SWITCH»
         case «CODE»: return self.«NAME» // «CODE_STR»«-SYMBOL_SWITCH»
         default: return super.symbol(code: code, type: type, descriptor: descriptor) as! «PREFIX»Symbol
@@ -63,10 +63,10 @@ public class «PREFIX»Symbol: «SWIFTAE»Symbol {
     }
 
     // Types/properties«+TYPE_SYMBOL»
-    public static let «NAME» = «PREFIX»Symbol(name: "«NAME»", code: «CODE», type: AppleEvents.typeType) // «CODE_STR»«-TYPE_SYMBOL»
+    public static let «NAME» = «PREFIX»Symbol(name: "«NAME»", code: «CODE», type: typeType) // «CODE_STR»«-TYPE_SYMBOL»
 
     // Enumerators«+ENUM_SYMBOL»
-    public static let «NAME» = «PREFIX»Symbol(name: "«NAME»", code: «CODE», type: AppleEvents.typeEnumerated) // «CODE_STR»«-ENUM_SYMBOL»
+    public static let «NAME» = «PREFIX»Symbol(name: "«NAME»", code: «CODE», type: typeEnumerated) // «CODE_STR»«-ENUM_SYMBOL»
 }
 
 public typealias «PREFIX» = «PREFIX»Symbol // allows symbols to be written as (e.g.) «PREFIX».name instead of «PREFIX»Symbol.name
@@ -215,7 +215,7 @@ public struct «STRUCT_NAME»: «SWIFTAE»SelfPacking, «SWIFTAE»SelfUnpacking 
     public static func SwiftAutomation_unpackSelf(_ desc: Descriptor, appData: «SWIFTAE»AppData) throws -> «STRUCT_NAME» {",
 
         throw AppleEventError(code: 1, message: "TO DO")
-
+//        TO DO: see TODOs in AppleEvents
 //        if !desc.isRecord {
 //           throw «SWIFTAE»UnpackError(appData: appData, desc: desc, type: self, message: "Not a record.")
 //        }
