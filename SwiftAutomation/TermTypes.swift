@@ -28,9 +28,9 @@ public protocol ApplicationTerminology { // GlueTable.add() accepts any object t
 
 
 public class Term { // base class for keyword and command definitions
-
+    
     public var name: String // editable as GlueTable may need to escape names to disambiguate conflicting terms
-
+    
     init(name: String) {
         self.name = name
     }
@@ -38,7 +38,7 @@ public class Term { // base class for keyword and command definitions
 
 
 public class KeywordTerm: Term, Hashable, CustomStringConvertible { // type/enumerator/property/element/parameter name
-
+    
     public let code: OSType
     
     public init(name: String, code: OSType) {
@@ -95,10 +95,10 @@ public class CommandTerm: Term, Hashable, CustomStringConvertible {
         return "<Command:\(self.name)=\(literalEightCharCode(self.event))(\(params))>"
     }
     
-    func parameter(for name: String) -> KeywordTerm? {
+    public func parameter(for name: String) -> KeywordTerm? {
         return self.parameters.first{ $0.name == name }
     }
-    func parameter(for code: OSType) -> KeywordTerm? {
+    public func parameter(for code: OSType) -> KeywordTerm? {
         return self.parameters.first{ $0.code == code }
     }
     

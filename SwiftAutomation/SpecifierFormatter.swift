@@ -267,7 +267,7 @@ public class SpecifierFormatter {
             // so just match NSNumber (which also matches corresponding Swift types) and figure out appropriate representation
             return obj == 0 ? "false" : "true"
         default:
-            return "\(value)" // SwiftAutomation objects (specifiers, symbols) are self-formatting; any other value will use its own default description (which may or may not be the same as its literal representation, but that's Swift's problem, not ours)
+            return "«\(type(of: value))»" // SwiftAutomation objects (specifiers, symbols) are self-formatting; any other value will use its own default description (which may or may not be the same as its literal representation, but that's Swift's problem, not ours) // TO DO: fix recursion between this and `func format(_ object: Any)` above
         }
     }
     

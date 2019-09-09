@@ -3,13 +3,16 @@
 //  SwiftAutomation
 //
 //
+//  a SAX parser would be faster, but SDEFs use XInclude which only [NS]XMLDocument supports as standard
+//
+//  (long-term solution: replace SDEF format with a proper IDL that provides both fast machine-readable API description and slower user-readable [HTML/Markdown/whatever] documentation, in turn generating API description from API implementation and, as much as possible, double-dutying user-readable code examples as automatic unit tests as well)
+//
 
 // TO DO: what about synonym, xref?
 
 // note: GlueTable will resolve any conflicts between built-in and app-defined name+code definitions
 
-
-// TO DO: see if rewriting to use NSXMLDocument will take care of XInclude (there doesn't seem to be a convenience API for handling includes in SAX parser, and while adding support for simple includes shouldn't be hard some SDEF includes like to use xpointers as well, just to make the things even more insanely complex than they already are)
+// TO DO: throw instead of returning SOAP SDEF when malformed/non-existent file URL is given, e.g. `URL(string:"file://Applications/TextEdit.app")` instead of `URL(string:"file:///Applications/TextEdit.app")`
 
 
 import Foundation

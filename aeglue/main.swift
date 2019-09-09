@@ -19,7 +19,7 @@ import SwiftAutomation
 
 
 
-let optionsWithArguments = Set<Character>("npeo") // this MUST contain all options that also require arguments (used to separate option key from value if not explicitly separated by whitespace, e.g. '-pABC' -> '-p ABC')
+let optionsWithArguments = Set<Character>("enopst") // this MUST contain all options that also require arguments (used to separate option key from value if not explicitly separated by whitespace, e.g. '-pABC' -> '-p ABC')
 
 // TO DO: only include ANSI styles when writing to console; pull out char seqs into separate constants, and toggle according to stdout type
 

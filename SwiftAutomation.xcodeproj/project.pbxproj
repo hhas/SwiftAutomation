@@ -70,13 +70,11 @@
 		4F1ABE561E075B02008BA807 /* KeynoteGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F1ABE501E075B02008BA807 /* KeynoteGlue.swift.sdef */; };
 		4F1ABE5B1E081D98008BA807 /* DatabaseEventsGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1ABE591E081D98008BA807 /* DatabaseEventsGlue.swift */; };
 		4F1ABE5C1E081D98008BA807 /* DatabaseEventsGlue.swift.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4F1ABE5A1E081D98008BA807 /* DatabaseEventsGlue.swift.sdef */; };
-		4F1EA9EA2283546A000E0A3A /* AppleEvents.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F1EA9E72283545F000E0A3A /* AppleEvents.framework */; };
 		4F1EA9F122841D91000E0A3A /* TermTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39451BA86B5F00FF2A96 /* TermTypes.swift */; };
 		4F1EA9F222841D91000E0A3A /* DefaultTerminology.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39521BA9C6C700FF2A96 /* DefaultTerminology.swift */; };
 		4F1EA9F322841D91000E0A3A /* KeywordConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E394C1BA8C16300FF2A96 /* KeywordConverter.swift */; };
 		4F1EA9F422841D91000E0A3A /* AETEParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E394E1BA8D2F600FF2A96 /* AETEParser.swift */; };
 		4F1EA9F522841D91000E0A3A /* SDEFParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39481BA8717D00FF2A96 /* SDEFParser.swift */; };
-		4F21AF4C22861DBF00A1B978 /* libAppleEvents.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F21AF4822861DA400A1B978 /* libAppleEvents.a */; };
 		4F21AF4E22861DDB00A1B978 /* AEApplicationGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F2645AB1BA4F27700256402 /* AEApplicationGlue.swift */; };
 		4F21AF4F22861DDB00A1B978 /* AppData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F63C4401B86A335000D74EE /* AppData.swift */; };
 		4F21AF5022861DDB00A1B978 /* Symbol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F63C4421B87AC88000D74EE /* Symbol.swift */; };
@@ -99,14 +97,15 @@
 		4F21AF6222861F7F00A1B978 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F63C4331B7CF1C4000D74EE /* Foundation.framework */; };
 		4F21AF6422861F8400A1B978 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F63C4351B7CF1C8000D74EE /* AppKit.framework */; };
 		4F21AF6C2286221400A1B978 /* libSwiftAutomation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F21AF3D22861DA400A1B978 /* libSwiftAutomation.a */; };
-		4F21AF6F2286221D00A1B978 /* libAppleEvents.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F21AF4822861DA400A1B978 /* libAppleEvents.a */; };
 		4F252BB9224F936C00888935 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F63C4331B7CF1C4000D74EE /* Foundation.framework */; };
 		4F3C689E22843233002AD35C /* GlueTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39501BA9A7EA00FF2A96 /* GlueTable.swift */; };
 		4F3C68A1228432B1002AD35C /* StaticGlueBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E396D1BAA9BA700FF2A96 /* StaticGlueBuilder.swift */; };
 		4F3C68A2228432B1002AD35C /* SwiftGlueTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FFF5D491D89A26C008ED4F5 /* SwiftGlueTemplate.swift */; };
 		4F3C68A3228432E3002AD35C /* AEApplicationGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F2645AB1BA4F27700256402 /* AEApplicationGlue.swift */; };
 		4F3C68A422843506002AD35C /* AppleEventFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39951BADD58500FF2A96 /* AppleEventFormatter.swift */; };
+		4F46A43523225AFA008E0265 /* libAppleEvents.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F46A42A23225AAD008E0265 /* libAppleEvents.a */; };
 		4F4C1A0E1D910BDE004F9083 /* TypeExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F4C1A0D1D910BDE004F9083 /* TypeExtensions.swift */; };
+		4F4DD9F02322647C007C2162 /* AppleEvents.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F46A42823225AAD008E0265 /* AppleEvents.framework */; };
 		4F63093D1DFC19A90089ADDB /* index.html in Copy Files */ = {isa = PBXBuildFile; fileRef = 4F0E393D1BA864A400FF2A96 /* index.html */; };
 		4F63093E1DFC19A90089ADDB /* welcome.html in Copy Files */ = {isa = PBXBuildFile; fileRef = 4F1A57F01D9AAF5200ACFA51 /* welcome.html */; };
 		4F63093F1DFC19A90089ADDB /* installing-swiftautomation.html in Copy Files */ = {isa = PBXBuildFile; fileRef = 4F0FD46F1DF5C77E00F306D3 /* installing-swiftautomation.html */; };
@@ -148,10 +147,10 @@
 		4FACE28E227230D1000A04A0 /* StaticGlueBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E396D1BAA9BA700FF2A96 /* StaticGlueBuilder.swift */; };
 		4FACE28F227230D1000A04A0 /* SwiftGlueTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FFF5D491D89A26C008ED4F5 /* SwiftGlueTemplate.swift */; };
 		4FACE290227230D1000A04A0 /* AppleEventFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0E39951BADD58500FF2A96 /* AppleEventFormatter.swift */; };
+		4FF4D4AB2326A5E500837530 /* AppleEvents.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F46A42823225AAD008E0265 /* AppleEvents.framework */; };
 		4FFBE3E722959A7C00DADF30 /* aeglue in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4F0E39651BAA98A900FF2A96 /* aeglue */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		4FFBE3E82295F6D200DADF30 /* MacOSGlues.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F1A57FA1D9E81C300ACFA51 /* MacOSGlues.framework */; };
 		4FFBE3E92295F6D200DADF30 /* SwiftAutomation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4FFF5D241D899F0D008ED4F5 /* SwiftAutomation.framework */; };
-		4FFBE3EC2295FD0500DADF30 /* AppleEvents.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F1EA9E72283545F000E0A3A /* AppleEvents.framework */; };
 		4FFF5D281D899F0D008ED4F5 /* SwiftAutomation.h in Headers */ = {isa = PBXBuildFile; fileRef = 4FFF5D261D899F0D008ED4F5 /* SwiftAutomation.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4FFF5D311D899F29008ED4F5 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F63C4271B7CF06E000D74EE /* main.swift */; };
 		4FFF5D321D899F29008ED4F5 /* AppData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F63C4401B86A335000D74EE /* AppData.swift */; };
@@ -166,54 +165,12 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		4F081B59229AE57700B2004B /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4F1EA9E12283545F000E0A3A /* AppleEvents.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 4FD23EB6229A8770006792A7;
-			remoteInfo = "test-receive";
-		};
 		4F1A580E1D9E9FF700ACFA51 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 4F63C41C1B7CF06E000D74EE /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 4FFF5D231D899F0D008ED4F5;
 			remoteInfo = SwiftAutomation;
-		};
-		4F1EA9E62283545F000E0A3A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4F1EA9E12283545F000E0A3A /* AppleEvents.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 4F1EA99B22835040000E0A3A;
-			remoteInfo = AppleEvents;
-		};
-		4F1EA9E82283545F000E0A3A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4F1EA9E12283545F000E0A3A /* AppleEvents.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 4F1EA9C822835239000E0A3A;
-			remoteInfo = AppleEventDescriptor;
-		};
-		4F21AF0E2286170700A1B978 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4F1EA9E12283545F000E0A3A /* AppleEvents.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 4F1EA99A22835040000E0A3A;
-			remoteInfo = AppleEvents;
-		};
-		4F21AF4722861DA400A1B978 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4F1EA9E12283545F000E0A3A /* AppleEvents.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 4F21AF1F22861C7500A1B978;
-			remoteInfo = appleeventslib;
-		};
-		4F21AF4A22861DB900A1B978 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4F1EA9E12283545F000E0A3A /* AppleEvents.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 4F21AF1E22861C7500A1B978;
-			remoteInfo = appleeventslib;
 		};
 		4F21AF6A2286220D00A1B978 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -222,11 +179,39 @@
 			remoteGlobalIDString = 4F21AF3C22861DA400A1B978;
 			remoteInfo = libSwiftAutomation;
 		};
-		4F21AF6D2286221900A1B978 /* PBXContainerItemProxy */ = {
+		4F46A42723225AAD008E0265 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 4F1EA9E12283545F000E0A3A /* AppleEvents.xcodeproj */;
+			containerPortal = 4F46A41E23225AAD008E0265 /* AppleEvents.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 4F1EA99B22835040000E0A3A;
+			remoteInfo = AppleEvents;
+		};
+		4F46A42923225AAD008E0265 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4F46A41E23225AAD008E0265 /* AppleEvents.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 4F21AF1F22861C7500A1B978;
+			remoteInfo = libAppleEvents;
+		};
+		4F46A42B23225AAD008E0265 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4F46A41E23225AAD008E0265 /* AppleEvents.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 4F1EA9C822835239000E0A3A;
+			remoteInfo = "test-send";
+		};
+		4F46A42D23225AAD008E0265 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4F46A41E23225AAD008E0265 /* AppleEvents.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 4FD23EB6229A8770006792A7;
+			remoteInfo = "test-receive";
+		};
+		4F46A43323225AF3008E0265 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4F46A41E23225AAD008E0265 /* AppleEvents.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 4F21AF1E22861C7500A1B978;
+			remoteGlobalIDString = 4F2572BD2326468C0002AED8;
 			remoteInfo = libAppleEvents;
 		};
 		4F4C1A241D943D52004F9083 /* PBXContainerItemProxy */ = {
@@ -235,6 +220,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 4FFF5D231D899F0D008ED4F5;
 			remoteInfo = SwiftAutomation;
+		};
+		4FF4D4A92326A5DA00837530 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4F46A41E23225AAD008E0265 /* AppleEvents.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 4F257286232644F40002AED8;
+			remoteInfo = AppleEvents;
 		};
 		4FFBE3E422959A5B00DADF30 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -426,10 +418,10 @@
 		4F1ABE591E081D98008BA807 /* DatabaseEventsGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatabaseEventsGlue.swift; sourceTree = "<group>"; };
 		4F1ABE5A1E081D98008BA807 /* DatabaseEventsGlue.swift.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = DatabaseEventsGlue.swift.sdef; sourceTree = "<group>"; };
 		4F1D12401BA3042600875F74 /* SpecifierExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpecifierExtensions.swift; sourceTree = "<group>"; };
-		4F1EA9E12283545F000E0A3A /* AppleEvents.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = AppleEvents.xcodeproj; path = ../AppleEventDescriptor/AppleEvents.xcodeproj; sourceTree = "<group>"; };
 		4F21AEEF1DA6D004009C3605 /* 11 advanced-type-support.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "11 advanced-type-support.md"; path = "doc-source/11 advanced-type-support.md"; sourceTree = "<group>"; };
 		4F21AF3D22861DA400A1B978 /* libSwiftAutomation.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSwiftAutomation.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		4F2645AB1BA4F27700256402 /* AEApplicationGlue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AEApplicationGlue.swift; sourceTree = "<group>"; };
+		4F46A41E23225AAD008E0265 /* AppleEvents.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = AppleEvents.xcodeproj; path = ../AppleEvents/AppleEvents.xcodeproj; sourceTree = "<group>"; };
 		4F4C1A0D1D910BDE004F9083 /* TypeExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TypeExtensions.swift; sourceTree = "<group>"; };
 		4F53812A1BA62541001F24A9 /* README */ = {isa = PBXFileReference; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
 		4F63C4271B7CF06E000D74EE /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
@@ -460,7 +452,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				4F0E39841BAB743800FF2A96 /* Foundation.framework in Frameworks */,
-				4F21AF6F2286221D00A1B978 /* libAppleEvents.a in Frameworks */,
 				4F21AF6C2286221400A1B978 /* libSwiftAutomation.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -469,8 +460,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4F4DD9F02322647C007C2162 /* AppleEvents.framework in Frameworks */,
 				4F1A58151D9EA09B00ACFA51 /* Foundation.framework in Frameworks */,
-				4FFBE3EC2295FD0500DADF30 /* AppleEvents.framework in Frameworks */,
 				4F1A58141D9EA09B00ACFA51 /* SwiftAutomation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -479,9 +470,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4F46A43523225AFA008E0265 /* libAppleEvents.a in Frameworks */,
 				4F21AF6222861F7F00A1B978 /* Foundation.framework in Frameworks */,
 				4F21AF6422861F8400A1B978 /* AppKit.framework in Frameworks */,
-				4F21AF4C22861DBF00A1B978 /* libAppleEvents.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -506,9 +497,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4FF4D4AB2326A5E500837530 /* AppleEvents.framework in Frameworks */,
 				4FFF5D561D89B6C4008ED4F5 /* Foundation.framework in Frameworks */,
 				4FFF5D541D89B6C4008ED4F5 /* AppKit.framework in Frameworks */,
-				4F1EA9EA2283546A000E0A3A /* AppleEvents.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -675,17 +666,6 @@
 			path = MacOSGlues;
 			sourceTree = "<group>";
 		};
-		4F1EA9E22283545F000E0A3A /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				4F1EA9E72283545F000E0A3A /* AppleEvents.framework */,
-				4F21AF4822861DA400A1B978 /* libAppleEvents.a */,
-				4F1EA9E92283545F000E0A3A /* test-send */,
-				4F081B5A229AE57700B2004B /* test-receive */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		4F2645A31BA37C2B00256402 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -704,10 +684,21 @@
 			name = bin;
 			sourceTree = "<group>";
 		};
+		4F46A41F23225AAD008E0265 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				4F46A42823225AAD008E0265 /* AppleEvents.framework */,
+				4F46A42A23225AAD008E0265 /* libAppleEvents.a */,
+				4F46A42E23225AAD008E0265 /* test-receive */,
+				4F46A42C23225AAD008E0265 /* test-send */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		4F63C41B1B7CF06E000D74EE = {
 			isa = PBXGroup;
 			children = (
-				4F1EA9E12283545F000E0A3A /* AppleEvents.xcodeproj */,
+				4F46A41E23225AAD008E0265 /* AppleEvents.xcodeproj */,
 				4F53812A1BA62541001F24A9 /* README */,
 				4FEFCF1C1B93A31E0013FFC8 /* TODO.txt */,
 				4F0E38FF1BA76C8300FF2A96 /* doc-source */,
@@ -815,7 +806,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				4F21AF6E2286221900A1B978 /* PBXTargetDependency */,
 				4F21AF6B2286220D00A1B978 /* PBXTargetDependency */,
 			);
 			name = aeglue;
@@ -853,7 +843,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				4F21AF4B22861DB900A1B978 /* PBXTargetDependency */,
+				4F46A43423225AF3008E0265 /* PBXTargetDependency */,
 			);
 			name = libSwiftAutomation;
 			productName = swiftautomationlib;
@@ -910,7 +900,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				4F21AF0F2286170700A1B978 /* PBXTargetDependency */,
+				4FF4D4AA2326A5DA00837530 /* PBXTargetDependency */,
 				4FFBE3E522959A5B00DADF30 /* PBXTargetDependency */,
 			);
 			name = SwiftAutomation;
@@ -976,8 +966,8 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = 4F1EA9E22283545F000E0A3A /* Products */;
-					ProjectRef = 4F1EA9E12283545F000E0A3A /* AppleEvents.xcodeproj */;
+					ProductGroup = 4F46A41F23225AAD008E0265 /* Products */;
+					ProjectRef = 4F46A41E23225AAD008E0265 /* AppleEvents.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -993,32 +983,32 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		4F081B5A229AE57700B2004B /* test-receive */ = {
-			isa = PBXReferenceProxy;
-			fileType = "compiled.mach-o.executable";
-			path = "test-receive";
-			remoteRef = 4F081B59229AE57700B2004B /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		4F1EA9E72283545F000E0A3A /* AppleEvents.framework */ = {
+		4F46A42823225AAD008E0265 /* AppleEvents.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
 			path = AppleEvents.framework;
-			remoteRef = 4F1EA9E62283545F000E0A3A /* PBXContainerItemProxy */;
+			remoteRef = 4F46A42723225AAD008E0265 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		4F1EA9E92283545F000E0A3A /* test-send */ = {
-			isa = PBXReferenceProxy;
-			fileType = "compiled.mach-o.executable";
-			path = "test-send";
-			remoteRef = 4F1EA9E82283545F000E0A3A /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		4F21AF4822861DA400A1B978 /* libAppleEvents.a */ = {
+		4F46A42A23225AAD008E0265 /* libAppleEvents.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
 			path = libAppleEvents.a;
-			remoteRef = 4F21AF4722861DA400A1B978 /* PBXContainerItemProxy */;
+			remoteRef = 4F46A42923225AAD008E0265 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		4F46A42C23225AAD008E0265 /* test-send */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.executable";
+			path = "test-send";
+			remoteRef = 4F46A42B23225AAD008E0265 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		4F46A42E23225AAD008E0265 /* test-receive */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.executable";
+			path = "test-receive";
+			remoteRef = 4F46A42D23225AAD008E0265 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -1207,30 +1197,25 @@
 			target = 4FFF5D231D899F0D008ED4F5 /* SwiftAutomation */;
 			targetProxy = 4F1A580E1D9E9FF700ACFA51 /* PBXContainerItemProxy */;
 		};
-		4F21AF0F2286170700A1B978 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = AppleEvents;
-			targetProxy = 4F21AF0E2286170700A1B978 /* PBXContainerItemProxy */;
-		};
-		4F21AF4B22861DB900A1B978 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = appleeventslib;
-			targetProxy = 4F21AF4A22861DB900A1B978 /* PBXContainerItemProxy */;
-		};
 		4F21AF6B2286220D00A1B978 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 4F21AF3C22861DA400A1B978 /* libSwiftAutomation */;
 			targetProxy = 4F21AF6A2286220D00A1B978 /* PBXContainerItemProxy */;
 		};
-		4F21AF6E2286221900A1B978 /* PBXTargetDependency */ = {
+		4F46A43423225AF3008E0265 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = libAppleEvents;
-			targetProxy = 4F21AF6D2286221900A1B978 /* PBXContainerItemProxy */;
+			targetProxy = 4F46A43323225AF3008E0265 /* PBXContainerItemProxy */;
 		};
 		4F4C1A251D943D52004F9083 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 4FFF5D231D899F0D008ED4F5 /* SwiftAutomation */;
 			targetProxy = 4F4C1A241D943D52004F9083 /* PBXContainerItemProxy */;
+		};
+		4FF4D4AA2326A5DA00837530 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = AppleEvents;
+			targetProxy = 4FF4D4A92326A5DA00837530 /* PBXContainerItemProxy */;
 		};
 		4FFBE3E522959A5B00DADF30 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -1349,7 +1334,7 @@
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				PRODUCT_NAME = SwiftAutomation;
+				PRODUCT_NAME = "$(PROJECT_NAME)";
 				SKIP_INSTALL = YES;
 			};
 			name = Debug;
@@ -1369,7 +1354,7 @@
 				EXECUTABLE_PREFIX = lib;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				MTL_FAST_MATH = YES;
-				PRODUCT_NAME = SwiftAutomation;
+				PRODUCT_NAME = "$(PROJECT_NAME)";
 				SKIP_INSTALL = YES;
 			};
 			name = Release;
@@ -1420,7 +1405,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
@@ -1470,7 +1455,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
 				SWIFT_INSTALL_OBJC_HEADER = NO;

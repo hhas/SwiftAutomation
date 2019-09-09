@@ -5,6 +5,8 @@
 //
 //  Base classes for constructing AE queries
 //
+//  TO DO: would lighterweight protocols+extensions over glue-provided structs provide better performance? (class-based design provided wrappers around Cocoa's NSAppleEventDescriptor class, but AppleEvents.framework eliminates that middleware)
+//
 //  Notes: 
 //
 //  An AE query is represented as a linked list of AEDescs, primarily AERecordDescs of typeObjectSpecifier. Each object specifier record has four properties:

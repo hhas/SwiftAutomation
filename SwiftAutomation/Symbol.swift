@@ -14,6 +14,9 @@ import AppleEvents
 
 
 
+// TO DO: change to struct?
+// TO DO: get rid of cached `desc`; AppleEvents.framework API should be just as fast packing type and code directly
+
 open class Symbol: Hashable, Equatable, CustomStringConvertible, CustomDebugStringConvertible, CustomReflectable, SelfPacking {
     
     private var desc: ScalarDescriptor
