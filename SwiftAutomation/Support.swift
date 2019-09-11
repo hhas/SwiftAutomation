@@ -176,19 +176,27 @@ private let launchEvent = AppleEventDescriptor(code: miscEventLaunch)
 
 // Application initializers pass application-identifying information to AppData initializer as enum according to which initializer was called
 
-public enum TargetApplication: CustomReflectable {
+public enum TargetApplication: CustomReflectable, CustomDebugStringConvertible {
     case current
     case name(String) // application's name (.app suffix is optional) or full path
     case url(URL) // "file" or "eppc" URL
-    case bundleIdentifier(String, Bool) // bundleID, isDefault
+    case bundleIdentifier(String, Bool) // bundleID, isDefault // when isDefault is false, specifier formatter will show the bundle ID passed to the application object's constructor, e.g. TextEdit(bundleIdentifier:"com.apple.TextEdit"); when true, the bundle ID of the app from which the glue was generated is used by default, and the formatter will omit the bundle ID argument from the constructor, e.g. "TextEdit()"
     case processIdentifier(pid_t)
     case Descriptor(AddressDescriptor) // AEAddressDesc
     case none // used in untargeted AppData instances; sendAppleEvent() will raise ConnectionError if called
     
     // TO DO: implement `description` property and use it in all error messages raised here?
     
-    public var description: String {
-        return String(describing: self)
+    public var debugDescription: String {
+        switch self {
+        case .current: return "<current application>"
+        case .name(let name): return "<application \(name.debugDescription)>"
+        case .url(let url): return "<application \(url.debugDescription)>"
+        case .bundleIdentifier(let bundleID, _): return "<application id \(bundleID.debugDescription)>"
+        case .processIdentifier(let pid): return "<application id \(pid)>"
+        case .Descriptor(let desc): return "<application \(desc)>"
+        case .none: return "<untargeted application>"
+        }
     }
     
     public var customMirror: Mirror {

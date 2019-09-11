@@ -1,8 +1,5 @@
 //
 //  SwiftAutomationLite.h
-//  SwiftAutomationLite
-//
-//  Created by Hamish Sanderson on 25/04/2019.
 //
 
 #import <UIKit/UIKit.h>
