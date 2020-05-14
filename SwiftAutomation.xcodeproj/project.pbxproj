@@ -424,6 +424,7 @@
 		4F46A41E23225AAD008E0265 /* AppleEvents.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = AppleEvents.xcodeproj; path = ../AppleEvents/AppleEvents.xcodeproj; sourceTree = "<group>"; };
 		4F4C1A0D1D910BDE004F9083 /* TypeExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TypeExtensions.swift; sourceTree = "<group>"; };
 		4F53812A1BA62541001F24A9 /* README */ = {isa = PBXFileReference; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
+		4F5EBEF82444C0FF007EB83D /* aeglue.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = aeglue.entitlements; sourceTree = "<group>"; };
 		4F63C4271B7CF06E000D74EE /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		4F63C42F1B7CF133000D74EE /* Specifier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Specifier.swift; sourceTree = "<group>"; };
 		4F63C4331B7CF1C4000D74EE /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -579,6 +580,7 @@
 		4F0E39661BAA98A900FF2A96 /* aeglue */ = {
 			isa = PBXGroup;
 			children = (
+				4F5EBEF82444C0FF007EB83D /* aeglue.entitlements */,
 				4F0E39671BAA98A900FF2A96 /* main.swift */,
 			);
 			path = aeglue;
@@ -915,7 +917,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0800;
-				LastUpgradeCheck = 1020;
+				LastUpgradeCheck = 1130;
 				TargetAttributes = {
 					4F0E39641BAA98A900FF2A96 = {
 						CreatedOnToolsVersion = 7.0;
@@ -1233,9 +1235,11 @@
 		4F0E396A1BAA98A900FF2A96 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = aeglue/aeglue.entitlements;
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 27XZ82KJ77;
+				ENABLE_HARDENED_RUNTIME = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
@@ -1245,9 +1249,11 @@
 		4F0E396B1BAA98A900FF2A96 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = aeglue/aeglue.entitlements;
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 27XZ82KJ77;
+				ENABLE_HARDENED_RUNTIME = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
