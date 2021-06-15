@@ -221,20 +221,6 @@
 			remoteGlobalIDString = 4FFF5D231D899F0D008ED4F5;
 			remoteInfo = SwiftAutomation;
 		};
-		4FF4D4A92326A5DA00837530 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4F46A41E23225AAD008E0265 /* AppleEvents.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 4F257286232644F40002AED8;
-			remoteInfo = AppleEvents;
-		};
-		4FFBE3E422959A5B00DADF30 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4F63C41C1B7CF06E000D74EE /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 4F0E39641BAA98A900FF2A96;
-			remoteInfo = aeglue;
-		};
 		4FFBE3EA2295F6E500DADF30 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 4F63C41C1B7CF06E000D74EE /* Project object */;
@@ -902,8 +888,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				4FF4D4AA2326A5DA00837530 /* PBXTargetDependency */,
-				4FFBE3E522959A5B00DADF30 /* PBXTargetDependency */,
 			);
 			name = SwiftAutomation;
 			productName = SwiftAutomation;
@@ -916,7 +900,7 @@
 		4F63C41C1B7CF06E000D74EE /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 0800;
+				LastSwiftUpdateCheck = 1130;
 				LastUpgradeCheck = 1130;
 				TargetAttributes = {
 					4F0E39641BAA98A900FF2A96 = {
@@ -1213,16 +1197,6 @@
 			isa = PBXTargetDependency;
 			target = 4FFF5D231D899F0D008ED4F5 /* SwiftAutomation */;
 			targetProxy = 4F4C1A241D943D52004F9083 /* PBXContainerItemProxy */;
-		};
-		4FF4D4AA2326A5DA00837530 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = AppleEvents;
-			targetProxy = 4FF4D4A92326A5DA00837530 /* PBXContainerItemProxy */;
-		};
-		4FFBE3E522959A5B00DADF30 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 4F0E39641BAA98A900FF2A96 /* aeglue */;
-			targetProxy = 4FFBE3E422959A5B00DADF30 /* PBXContainerItemProxy */;
 		};
 		4FFBE3EB2295F6E500DADF30 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -1586,7 +1560,7 @@
 				INFOPLIST_FILE = SwiftAutomation/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = org.bitbucket.hhas.SwiftAutomation;
+				PRODUCT_BUNDLE_IDENTIFIER = org.github.hhas.SwiftAutomation;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
@@ -1616,7 +1590,7 @@
 				INFOPLIST_FILE = SwiftAutomation/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = org.bitbucket.hhas.SwiftAutomation;
+				PRODUCT_BUNDLE_IDENTIFIER = org.github.hhas.SwiftAutomation;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;

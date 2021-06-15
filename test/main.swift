@@ -110,7 +110,11 @@ do {
     print("// try doc.text.get()")
     print(try doc.text.get())
 
-    
+    try doc.text.color.set(to: [25186, 48058, 18246]) // green
+    print("TEST: get the color of text of doc")
+    print("// try doc.text.color.get()")
+    // print(try doc.text.color.get())  // WAS: Error -1700: Can't make some data into the expected type
+    print(try doc.text.color.get())     // NOW: [25186, 48058, 18246]
     
     
     /*

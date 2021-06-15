@@ -29,6 +29,7 @@ extension NSWorkspace {
         // first try to get the app's file URL, as this lets us use the better launchApplication(at:options:configuration:) method…
         if let url = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleID) {
             do {
+                // TO DO: DEPRECATED IN 10.15
                 return try NSWorkspace.shared.launchApplication(at: url, options: options, configuration: configuration)
             } catch {} // for now, we're not sure if urlForApplication(withBundleIdentifier:) will always return nil if blocked by sandbox; if it returns garbage URL instead then hopefully that'll cause launchApplication(at:...) to throw
         }
