@@ -115,7 +115,14 @@ do {
     print("// try doc.text.color.get()")
     // print(try doc.text.color.get())  // WAS: Error -1700: Can't make some data into the expected type
     print(try doc.text.color.get())     // NOW: [25186, 48058, 18246]
+    print(try textedit.windows.first.bounds.get()) // [left,top,right,bottom]
+
     
+    
+    let finder = Finder()
+    print("TEST: get desktop position of first item of desktop")
+    print(try finder.desktop.items.first.desktopPosition.get()) // [left,top]
+
     
     /*
 /*
