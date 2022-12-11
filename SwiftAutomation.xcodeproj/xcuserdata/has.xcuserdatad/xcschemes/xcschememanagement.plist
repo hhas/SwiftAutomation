@@ -4,12 +4,22 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
+		<key>Frameworks Release.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>15</integer>
+		</dict>
 		<key>Frameworks Release.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
 			<key>orderHint</key>
 			<integer>9</integer>
+		</dict>
+		<key>MacOSGlues.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>16</integer>
 		</dict>
 		<key>MacOSGlues.xcscheme_^#shared#^_</key>
 		<dict>
@@ -23,12 +33,22 @@
 			<key>isShown</key>
 			<false/>
 			<key>orderHint</key>
-			<integer>10</integer>
+			<integer>5</integer>
+		</dict>
+		<key>SwiftAutomation.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>17</integer>
 		</dict>
 		<key>SwiftAutomation.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
 			<integer>4</integer>
+		</dict>
+		<key>SwiftAutomationLite.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>18</integer>
 		</dict>
 		<key>SwiftAutomationLite.xcscheme_^#shared#^_</key>
 		<dict>
@@ -36,6 +56,11 @@
 			<false/>
 			<key>orderHint</key>
 			<integer>11</integer>
+		</dict>
+		<key>aeglue.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>14</integer>
 		</dict>
 		<key>aeglue.xcscheme_^#shared#^_</key>
 		<dict>
@@ -49,7 +74,12 @@
 			<key>isShown</key>
 			<true/>
 			<key>orderHint</key>
-			<integer>5</integer>
+			<integer>4</integer>
+		</dict>
+		<key>test.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>19</integer>
 		</dict>
 		<key>test.xcscheme_^#shared#^_</key>
 		<dict>
