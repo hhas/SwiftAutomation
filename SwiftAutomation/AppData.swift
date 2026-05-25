@@ -465,8 +465,8 @@ open class AppData {
     let relaunchableEvents: Set<EventIdentifier> = [eventOpenApplication, miscEventLaunch]
     
     
-    private func send(event: AppleEventDescriptor, sendMode: SendOptions, timeout: TimeInterval) throws -> ReplyEventDescriptor { // used by sendAppleEvent()
-        let (errorCode, replyEvent) = event.send() //sendEvent(options: sendMode, timeout: timeout)) // TO DO
+    private func send(event: AppleEventDescriptor) throws -> ReplyEventDescriptor { // used by sendAppleEvent()
+        let (errorCode, replyEvent) = event.send()
         if errorCode == 0 {
             return replyEvent ?? nullReplyEvent
         } else if errorCode == -1708 && event.code == miscEventLaunch {
@@ -541,12 +541,12 @@ open class AppData {
             event.setAttribute(OSType(enumConsiderations), to: considerations)
             event.setAttribute(OSType(enumConsidsAndIgnores), to: consideringIgnoring)
             // send the event
-            let sendMode = sendOptions ?? [.canInteract, waitReply ? .waitForReply : .noReply]
-            let timeout = withTimeout ?? defaultTimeout
+            event.wantsReply = waitReply || sendOptions?.contains(.waitForReply) == true || sendOptions?.contains(.queueReply) == true
+            event.timeout = withTimeout ?? defaultTimeout
             var replyEvent = nullReplyEvent
             sentEvent = event // the completed event, for use in error messages
             do {
-                replyEvent = try self.send(event: event, sendMode: sendMode, timeout: timeout) // throws on AEM error
+                replyEvent = try self.send(event: event) // throws on AEM error
             } catch { // handle errors raised by Apple Event Manager (e.g. timeout, process not found)
                 if relaunchableErrors.contains(error._code) && self.target.isRelaunchable &&
                     (self.relaunchMode == .always || (self.relaunchMode == .limited && relaunchableEvents.contains(eventIdentifier))) {
@@ -554,13 +554,18 @@ open class AppData {
                     self._targetDescriptor = nil
                     guard let target = try self.targetDescriptor() else { throw error }
                     event.target = target
-                    replyEvent = try self.send(event: event, sendMode: sendMode, timeout: timeout)
+                    replyEvent = try self.send(event: event)
                 } else {
                     throw error
                 }
             }
             repliedEvent = replyEvent // the received event, for use in error messages
-            if sendMode.contains(.waitForReply) {
+            if sendOptions?.contains(.queueReply) == true { // get the return ID that will be used by the reply event so that client code's main loop can identify that reply event in its own event queue later on
+                guard let returnIDDesc = event.attribute(keyReturnIDAttr) else { // sanity check // TO DO: FIX
+                    throw AutomationError(code: defaultErrorCode, message: "Can't get keyReturnIDAttr.")
+                }
+                return try self.unpack(returnIDDesc)
+            } else if waitReply || sendOptions?.contains(.waitForReply) == true {
                 if T.self == ReplyEventDescriptor.self { // return the entire reply event as-is
                     return replyEvent as! T
                 } else if replyEvent.errorNumber != 0 { // check if an application error occurred
@@ -568,11 +573,6 @@ open class AppData {
                 } else if let resultDesc = replyEvent.parameter(keyDirectObject) {
                     return try self.unpack(resultDesc) as T
                 } // no return value or error, so fall through
-            } else if sendMode.contains(.queueReply) { // get the return ID that will be used by the reply event so that client code's main loop can identify that reply event in its own event queue later on
-                guard let returnIDDesc = event.attribute(keyReturnIDAttr) else { // sanity check // TO DO: FIX
-                    throw AutomationError(code: defaultErrorCode, message: "Can't get keyReturnIDAttr.")
-                }
-                return try self.unpack(returnIDDesc)
             }
             // note that some Apple event handlers intentionally return a void result (e.g. `set`, `quit`), and now and again a crusty old Carbon app will forget to supply a return value where one is expected; however, rather than add `COMMAND()->void` methods to glue files (which would only cover the first case), it's simplest just to return an 'empty' value which covers both use cases
             if let result = MissingValue as? T { // this will succeed when T is Any (which it always will be when the caller ignores the command's result)

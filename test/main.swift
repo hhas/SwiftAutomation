@@ -74,18 +74,21 @@ do {
 
 do {
     
+    print(Date())
     let finder = Finder()
     print("TEST: get modification date of folder 1 of home")
-    print(try finder.home.folders["Downloads"].comment.get()) //
+    //print(try finder.home.folders["Downloads"].name.get()) //
 
-    print(try finder.home.folders["Downloads"].modificationDate.get()) //
+    print(try finder.home.folders["Downloads"].entireContents.modificationDate.get(withTimeout:500)) //
     print("ok")
-    
-     
+
+    print(Date())
+
+     /*
     let d: AppleEvents.ScalarDescriptor = AppleEvents.packAsDate(Date(timeIntervalSince1970: 10) + Double(TimeZone.current.secondsFromGMT(for: Date()))) // TO DO: tz fixes
     print(d)
     print( try AppleEvents.unpackAsAny(d))
-
+*/
     
         /*
     // get name of document 1
@@ -103,7 +106,7 @@ do {
     */
     
     
-    
+    /*
         
         let music = Music()
         print("// itunes.playerState.get()")
@@ -148,7 +151,7 @@ do {
         // print(try doc.text.color.get())  // WAS: Error -1700: Can't make some data into the expected type
         print(try doc.text.color.get())     // NOW: [25186, 48058, 18246]
         print(try textedit.windows.first.bounds.get()) // [left,top,right,bottom]
-        
+       */
         
     /*
         let finder = Finder()
